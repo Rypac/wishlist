@@ -96,12 +96,12 @@ extension Data: UserDefaultsSerializable {
   }
 }
 
-extension UserDefaultsSerializable where Self: RawRepresentable {
+extension UserDefaultsSerializable where Self: RawRepresentable, RawValue: UserDefaultsSerializable {
   public init?(from userDefaults: UserDefaults, key: String) {
-    guard let value = userDefaults.object(forKey: key) as? Self.RawValue else {
+    guard let rawValue = RawValue(from: userDefaults, key: key) else {
       return nil
     }
-    self.init(rawValue: value)
+    self.init(rawValue: rawValue)
   }
 
   public func write(to userDefaults: UserDefaults, key: String) {
