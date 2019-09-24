@@ -96,6 +96,45 @@ extension Data: UserDefaultsSerializable {
   }
 }
 
+extension Date: UserDefaultsSerializable {
+  public init?(from userDefaults: UserDefaults, key: String) {
+    guard let value = userDefaults.object(forKey: key) as? Self else {
+      return nil
+    }
+    self = value
+  }
+
+  public func write(to userDefaults: UserDefaults, key: String) {
+    userDefaults.set(self, forKey: key)
+  }
+}
+
+extension Array: UserDefaultsSerializable where Element: UserDefaultsSerializable {
+  public init?(from userDefaults: UserDefaults, key: String) {
+    guard let value = userDefaults.array(forKey: key) as? Self else {
+      return nil
+    }
+    self = value
+  }
+
+  public func write(to userDefaults: UserDefaults, key: String) {
+    userDefaults.set(self, forKey: key)
+  }
+}
+
+extension Dictionary: UserDefaultsSerializable where Key == String, Value: UserDefaultsSerializable {
+  public init?(from userDefaults: UserDefaults, key: String) {
+    guard let value = userDefaults.dictionary(forKey: key) as? Self else {
+      return nil
+    }
+    self = value
+  }
+
+  public func write(to userDefaults: UserDefaults, key: String) {
+    userDefaults.set(self, forKey: key)
+  }
+}
+
 extension UserDefaultsSerializable where Self: RawRepresentable, RawValue: UserDefaultsSerializable {
   public init?(from userDefaults: UserDefaults, key: String) {
     guard let rawValue = RawValue(from: userDefaults, key: key) else {
