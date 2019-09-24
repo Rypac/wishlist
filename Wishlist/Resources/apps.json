@@ -1,0 +1,456 @@
+[
+  {
+    "id": 1189322675,
+    "title": "Klimper",
+    "author": "POLYDIGM Software UG (haftungsbeschraenkt)",
+    "description": "Klimper is a mobile music studio with built-in music theory to spark your creativity and speed up your workflow.\n\n\nFind Chords that Work\n\nIn the chord palette your can explore chords that are available in your selected scale. While a chord is played, related chords are highlighted so you can easily find chord sequences that progress smoothly. Once you found a nice chord sequence, you can drag and drop chords into your song to build your composition upon it.\nIf you want to start your song with a melody and find a suitable chord progression, you can do that just as well: select notes and tap the search icon to show chords that match your melody fragment. It's real fun to experiment, seeing how different harmonic contexts affect the perception of the same melodic fragment.\n\n\nCreate Beautiful Melodies and Flowing Chord Progressions\n\nIn the piano roll, notes that are in harmony as well as the chords' root notes are highlighted. This makes it super easy to create leads, arpeggios and basslines and to experiment with different chord voicings to let your chord progressions flowing nicely. \n\n\nIntuitive Editing\n\nA simple, yet feature rich and context-aware user interface helps you build up your ideas into whole songs:\nGroup sections into song parts and arrange them via drag and drop. \nDuplicate, copy and paste, playback selected notes.\n\n\nFile Export\n\nExport and share your creations with audio file export.\nEdit your song in other Apps with MIDI-file export.\n\n\nUse your Favorite Instrument Apps\n\nIt's just more fun to explore and create with those awesome Instrument Apps that are available in the App Store: Klimper supports Inter-App-Audio Instruments like Animoog and Model 15 as well as Audio Unit Instruments like Ripplemaker and Mersenne.\n\n\nVideo Tutorials\n\nThe included tutorial will help you getting started. Stay tuned for additional video tutorials published on our youtube channel: https://www.youtube.com/channel/UClWxkJLttqC8lQ1m2mqAfFw\n\n\n\nIncluded Instruments: \nSynthesizer engine with a range of tweakable sounds,\nGrand Piano, Acoustic Guitar, Acoustic Bass, Violin, Cello, Harp, Glockenspiel, 8-Bit Synth, Soft Synth Bass, Electric Drumset.",
+    "price": 13.99,
+    "formattedPrice": "$13.99",
+    "url": "https://apps.apple.com/au/app/klimper/id1189322675?uo=4",
+    "iconURL": "https://is5-ssl.mzstatic.com/image/thumb/Purple113/v4/c1/08/dd/c108ddbe-1ff8-2c5e-5549-3dd36228ae4a/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Education"
+    ],
+    "version": "1.2.6"
+  },
+  {
+    "id": 1449640589,
+    "title": "Enso Looper",
+    "author": "Audio Damage, Inc.",
+    "description": "SPECIAL INTRO PRICE OF US$5.99 UNTIL APRIL 4TH\n\n*** PLEASE NOTE **** \nEnso is an AudioUnit V3 plugin; it requires an AUv3 host like Cubasis, Garageband, AUM, etc.\n\nAn architecturally unique and sonically characterful looping toolkit for producers and live performers, inspired by both modern looper pedals and vintage tape-based setups, Enso combines elegant and intuitive UI design with a deep but accessible feature set and stellar sound quality.\n\nEnso’s operation will be immediately familiar to users of hardware looper pedals or plugins such as Ableton Live’s bundled Looper. Start playback of the host DAW, hit Enso’s record button and capture your instrumental performance into a loop of whatever length you like, up to ten minutes (five minutes on iOS). Then, without stopping playback, overdub further passes to create layered grooves, complex harmonic textures, or dense, evolving soundscapes.\n\nBeyond those basics, though, Enso takes software looping into new territory. Two Overdub modes configure the plugin for conventional looper pedal behaviour or Frippertronics-style ‘dual tape deck’ manoeuvres, affecting the handling of the Feedback parameter for an endless range of layering possibilities; and up to four Sectors can be effortlessly defined, each with its own start and end points, for on-the-fly rearrangement of the loop.\n\nWith Enso, time and motion become truly fluid, as speed and direction are handled completely independently for playback and recording, the ‘through-zero’ bipolar Speed controls smoothly transitioning from forwards to backwards, and vice versa, in real time. Want to record forwards at half speed, while simultaneously playing the buffered loop in reverse at 1.25x? Of course you do…\n\nOnboard tape-style saturation, filtering and chorus effects bring dirt, frequency-shaping and stereo thickening to the party; and a comprehensive MIDI assignment system makes it a snap to set your MIDI pedal or button controller up for operation of all Enso’s buttons and switches. With its animated play and record heads, meanwhile, the looping waveform display provides a clean, clear visual representation of the potentially mind-bending temporal acrobatics taking place, letting you get a handle on exactly what’s happening at a glance.\n\nGiving you everything you need for limitlessly creative looping, on stage and in the studio, Enso is one of Audio Damage’s most beautifully realized plugins yet, and an empowering addition to any musician’s arsenal of effects",
+    "price": 9.99,
+    "formattedPrice": "$9.99",
+    "url": "https://apps.apple.com/au/app/enso-looper/id1449640589?uo=4",
+    "iconURL": "https://is3-ssl.mzstatic.com/image/thumb/Purple124/v4/59/a4/13/59a413b7-4e28-7f89-2ae6-f4a5322e0bcb/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "1.0"
+  },
+  {
+    "id": 1173932628,
+    "title": "Drop - Color Picker",
+    "author": "Christain Billings",
+    "description": "Drop is a delightful little color picker for developers and designers. \n\nPick a color and it will be copied in your preferred format. It's that easy.\n\n> Zooming Picker\nPicking a one pixel border? No worries! You can freely zoom the picker in and out with your scroll wheel or trackpad.\n\n> Accurate\nMost color pickers (including Apple's) don't pick the exact color value because of reasons that we have to understand but you don't. Drop lets you pick the exact color by switching the color profile associated with the app you are picking from. \n\n> Dark Mode\nFor all those fans of the dark side, we got you covered.\n\n> Touch Bar\nThat's right, get quick access to all your colors right from your fancy new Touch Bar. It's the most convenient way to have quick access to your colors. Ever.\n\n> Just the formats you use\nQuickly switch between the common formats you are actually going to need your colors copied into: HEX, RGB, Swift UIColor, Swift NSColor, Objective-C UIColor, and Objective-C NSColor.\n\n> Palette\nSave colors for later in your color palette.\n\n> Delight\nThis app was built with more TLC than you can even imagine. It's those little details that make all the difference.",
+    "price": 4.49,
+    "formattedPrice": "$4.49",
+    "url": "https://apps.apple.com/au/app/drop-color-picker/id1173932628?mt=12&uo=4",
+    "iconURL": "https://is1-ssl.mzstatic.com/image/thumb/Purple123/v4/4d/85/0c/4d850c86-dc25-91e6-b9d0-1ca6cfda05f1/source/512x512bb.png",
+    "genres": [
+      "Developer Tools",
+      "Graphics & Design"
+    ],
+    "version": "1.5.2"
+  },
+  {
+    "id": 995163144,
+    "title": "Korvpressor",
+    "author": "Klevgränd produkter AB",
+    "description": "IMPORTANT! This update of Korvpressor is AUv3 only. Do NOT buy or update if you're still using IAA/Audiobus 2.\n\nKorvpressor is an adaptive compressor/limiter with an easy-to-use interface (a whole new take on how to tame a compressor). The compression algorithm is developed with transparency in mind, and this effect processor will sound great on almost all kinds of sounds; all from a vocal track to a full blown mix.\n\nIn addition to the compression unit there are three knobs for controlling low, mid and high frequency levels.\n\nNoteworthy features:\n\n• Complex compression algorithm acclaimed for its transparency and musical sound.\n\n• Built-in 3 band EQ\n\n• Dry / wet mix\n\n• Intuitive and unique user interface\n\n• Enable/Disable lookahead time\n\n• Plenty of factory presets\n\n• Three state attack, ratio, release parameters.\n\n• Maximizer on / off switch\n\n• Built-in (optional) brick wall limiter (at 0dB)\n\nCheck out the product webpage for a video demo and more info.\n\nFeedback or suggestions? Drop us a mail: support(at)klevgrand.se or @klevgrand on Twitter",
+    "price": 7.99,
+    "formattedPrice": "$7.99",
+    "url": "https://apps.apple.com/au/app/korvpressor/id995163144?uo=4",
+    "iconURL": "https://is2-ssl.mzstatic.com/image/thumb/Purple113/v4/fc/69/d7/fc69d7b5-d144-0f0c-8139-105895dca415/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "2.0.2"
+  },
+  {
+    "id": 1453104408,
+    "title": "StepBud - AUv3 MIDI Sequencer",
+    "author": "Cem Olcay",
+    "description": "StepBud is a MIDI Sequencer with Audio Unit AUv3 plugin, Audiobus and Ableton Link.\n\nAdd an unlimited number of steps to your sequencer.\nYour steps appear with a LED and a fader on top of your screen.\nYou can change the active mode that your step faders displaying/controlling.\n  - Set the current note or chord in range of the scale and key you selected with respect the range of the octave you want to focus,\n  - Set the velocity, rate, gate time, modulation, pitch bend, portamento, probability and swing for each step,\n  - Try increasing the rate and repeat count your steps if you want to add more flavor. \n- Send unlimited custom MIDI CC messages if you want to control your hardware or software synth parameters.\n- Lock steps if you don't want them to change their value.\n- Skip steps for creating interesting live performances.\n  \nBelow the step faders, you have a master fader where you can control your entire sequencer. It has two modes which you can change from the settings strip on the bottom of the app. \n  - In copy mode, it assigns its value to each step.\n  - In shift mode, it shifts up or down each step.\n\nIf you want to go off-scale or try some crazy chords on some of your steps, or maybe on all of them, you can go to the Step Editor by double tapping the LED of the step you want to edit.\n\nIn StepBud's powerful Step Editor, you can set your step's notes either from the virtual keyboard or your connected MIDI keyboard. Don't forget to enable MIDI in port of your MIDI keyboard or the you want to receive MIDI from the settings menu. You may also preview the selected notes by pressing the preview button in Step Editor for making sure you created the perfect sound for your particular step.\n\nYou can also toggle the steps you want to disable by tapping its LED.\nIf you long-press the LED, you can access a menu where you may copy/paste the steps around, remove them or edit them.\n\nIf you enable the lock mode from the settings strip on the bottom of the app, you may adjust each visible step fader on the screen by a single swipe gesture without having to lift your finger up.\n\nTry to change your arppegio mode from the settings strip. You can sequence your steps up, down, up-down or random order.\n\nStepBud is a MIDI sequencer app and it does not generate sounds itself. You need to route its MIDI out port in the settings menu to the audio app you want to sequence. \n\nPlease note that you need to have an iOS 11+ device and an Audio Unit host application such as AUM, apeMatrix, Cubasis, BeatMaker or Audiobus in order to use the StepBud as an Audio Unit plugin. And don't forget to route StepBud's MIDI out to the app or audio unit you want to sequence.\n\nStepBud's MIDI layer powered by free and open-source project AudioKit\nhttps://github.com/AudioKit/AudioKit\n\nAlso, StepBud offers its core components for free on GitHub. Feel free to star, fork or contribute.\nhttps://github.com/cemolcay/MusicTheory\nhttps://github.com/cemolcay/LiveFader\nhttps://github.com/cemolcay/MIDIEventKit",
+    "price": 7.99,
+    "formattedPrice": "$7.99",
+    "url": "https://apps.apple.com/au/app/stepbud-auv3-midi-sequencer/id1453104408?uo=4",
+    "iconURL": "https://is2-ssl.mzstatic.com/image/thumb/Purple123/v4/56/20/72/562072de-1131-0878-d841-eb2ea8e98bc2/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Productivity"
+    ],
+    "version": "1.3.4"
+  },
+  {
+    "id": 1455200044,
+    "title": "Atom | Piano Roll",
+    "author": "Victor Porof",
+    "description": "Piano Roll is a sequencer for iOS, and the first in our Atom series of modular sequencer plugins. Record, replay, loop and manipulate MIDI notes anywhere.\n\nThe MIDI audio unit can be loaded in compatible hosts (AUM, ApeMatrix, Audiobus, BeatMaker 3, Cubasis 2, etc.). Make sure your host is capable of loading, transmitting to, and receiving MIDI from audio unit MIDI plugins.\n\nIt’s intended to augment existing MIDI processing capabilities, or in scenarios where a host doesn’t provide sequencing functionality out of the box.\n\nFeatures:\n\n1) Loop record\nGrow your ideas over any number of bars. Overdub drum loops, layer complex melodies, or even record an entire track. Arm recording in multiple instances, in the background, receiving from hardware or even other audio units. Piano Roll is always sample accurately synced with the host.\n\n2) Step input\nQuickly create sequences. Insert notes respecting grid length, and resize them to any duration. Layer chords in one operation. Just send the notes, Piano Roll takes care of the rest.\n\n3) Extensive editing tools\nAll the standard editing tools you are used to are implemented, pen for entering notes at any length, brush for painting continual notes at grid size and scissors for slicing. \n\nAdvanced tools allow you to be productive. Grow notes backwards or forwards. Group notes with additive selection. Select rows or chords in one operation. Time and pitch flip. Velocity editing is precise and unobtrusive. With Piano Roll, anything you need is a tap, hold, or swipe away.\n\n3) Non destructive quantize\nQuantised or not? You decide when, and how much! Enable full quantisation beforehand with grid snapping. Turn it back off, or adjust the strength afterwards on an already recorded sequence. Choose the quantisation percentage for note starts, note ends and even note durations. In Piano Roll, you have full control over timing precision.\n\n4) Dynamic stretching\nStretch a clip from 4 bars to 8. Fix the note lengths or extend them in harmony. In Piano Roll, your sequences are elastic.\n\n5) Advanced time signatures\nDoes 4/4 sound boring to you? Create complex polyrhythms by choosing any timing. From 3/8 to 11/8. From 2/1 to 17/16. Piano Roll lets you invent your own rhythm.\n\n6) Advanced tempo settings\nNegative BPM? No problem. Pick a tempo for every clip and play backwards or forwards. Multiply host tempo or choose something arbitrary, all with extreme accuracy. Piano Roll gives you control over tempo like never before.\n\n7) Scales\nNever go outside a scale, or go chromatic and add spice to the melody. With scale overlays, your music isn’t forced to sound in a predetermined way, and you aren’t forced to be a music theory genius to sound the way you want. Piano Roll gives you the ability to decide in which key to be and when.\n\n8) Visibility layers\nAid composition by overlaying other clips from other plugin instances over the one you’re editing. Make sure your chords are in harmony with the melody, visually. Piano Roll roll helps you focus where you need, when you need it.\n\n10) State saving\nYour sequences are saved alongside the project you already work with. And they’re loaded back automatically when opening up a project. Clips can be saved as host presets. Piano Roll is in perfect harmony with the host you already use.",
+    "price": 13.99,
+    "formattedPrice": "$13.99",
+    "url": "https://apps.apple.com/au/app/atom-piano-roll/id1455200044?uo=4",
+    "iconURL": "https://is4-ssl.mzstatic.com/image/thumb/Purple123/v4/89/a0/fc/89a0fc7d-ad06-d808-2f68-36762d9f94b3/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Utilities"
+    ],
+    "version": "1.0.1"
+  },
+  {
+    "id": 765422087,
+    "title": "Nominazer",
+    "author": "Javi Perez",
+    "description": "Nominazer finds cool names easily.\n\nFeatures:\n\n- Random names generator\n- Domain checker (.com .net .org)\n- Favorite name list\n- Word length edition\n- Vowel starting option\n- Share tools\n\nIf you have suggestions, please send me an email or write a review.\n\nEnjoy creating names :)",
+    "price": 2.99,
+    "formattedPrice": "$2.99",
+    "url": "https://apps.apple.com/au/app/nominazer/id765422087?uo=4",
+    "iconURL": "https://is1-ssl.mzstatic.com/image/thumb/Purple118/v4/bf/17/bc/bf17bc1c-2ccf-4e40-4e38-e3b2e3c23a84/source/512x512bb.jpg",
+    "genres": [
+      "Productivity",
+      "Utilities"
+    ],
+    "version": "2.3"
+  },
+  {
+    "id": 458535809,
+    "title": "Calculator ∞",
+    "author": "Incpt.Mobis",
+    "description": "◉ Top Paid Educational Apps in US, UK, AUS, GER,...\n◉ QAppReview.com Rated 9/10\n◉ Users Reviewed: \"Top Class Calculator !\"\n\nThe BEST Alternative to Graphing TI-83, TI-84, TI-89, Casio FX, Sharp EL,...\n\nCalculator Infinity (∞) – The sleek, multi-function calculator for iPhone/iPad is proud to offer a variety of features to satisfy all ranges of customers: The App possesses a powerful math core and algebra engine with mathematical display support, making it a viable tool for everyone from those looking for basic calculation to more advanced users, such as scientific computation, programmers, engineers, and math students. Calculator ∞ makes available everything you need – including a user manual and tutorial video clips – so you can master the app in a matter of minutes!\n\n◉ Official Website: http://iPhoneCalculator.com\n\n◉ GENERAL FEATURES:\n▸ Universal Calculator App \n▸ Support All the Latest Devices ¹\n▸ Support Multitasking (iPad)\n▸ Support Wireless KB²\n▸ Mathematical Display\n▸ Edit & Export Expression/Result\n▸ History Tape View\n▸ Basic Calculations (+, -, x, ÷, %, Abs,...)\n▸ Advanced Functions (Sin,Cos,Ln,X!, ^, √,…)\n▸ 14 Memory Variables (Including X,Y,Z,M)\n▸ Assignment Operator\n▸ F(x) Customize Functions (F1, F2, F3)\n▸ Unit Converter (21 Categories, 400+ Units)\n▸ Over 40 Common Constants\n▸ Fraction and Degree/Angle Calculation\n▸ Numeric Integral & Derivative Calculation\n▸ Dual Skins (Silver Light & Carbon+)\n▸ No Ads\n\n◉ ALGEBRA FEATURES:\n▸ Big Integer & Rational Number (Up to 500!)\n▸ Expand and Factor Polynomials\n▸ Indefinite integral & Derivative\n▸ Two-side Limit\n▸ Taylor Series Expansion\n▸ Hints and Solutions\n\n◉ 2D GRAPH:\n▸ Simultaneous Graph\n▸ Smooth Zoom & Transformation\n▸ Conic Equations (Parabola, Hyperbola, Ellipse)\n▸ Get Intersections, Min, Max & Special Points\n\n◉ CLOUD COMPUTING:\n▸ Advanced Two-side Limit\n▸ Advanced Indefinite Integral\n▸ General Equations (Accurate Roots)\n\n◉ EQUATIONS SOLVERS:\n▸ General Equations (Numerical Roots)\n▸ Quadratic & Cubic Equations\n▸ System of Linear Equations (2 & 3 Unknowns)\n\n◉ REGRESSION & STATISTICS:\n▸ Modify & Sort Data\n▸ Single Variable Statistics\n▸ Linear, Quadratic, Power Regression\n▸ Logarithmic & Exponential Regression\n\n◉ COMPLEX CALCULATION:\n▸ Polar & Rectangular Notation\n▸ Argument, Conjugate Function\n▸ Trigonometry Functions\n▸ Logarithmic & Exponential Functions\n\n◉ MATRIX/VECTOR MODE:\n▸ Support Up to 7x7 Matrix\n▸ Support Complex Numbers\n▸ Cross, Dot Product\n▸ Det, Inverse, Transpose\n▸ Cramer’s Rule Solver\n▸ Numerical Real Eigenvalues\n\n◉ NUMBER BASE-N MODE:\n▸ 15 Different Bases\n▸ Support Up to 64 Bits Integer\n▸ Binary Operation (NOT, OR, XOR, 2’S, …)\n\n◉ MULTIPLE LANGUAGES:\n▸ English, Spanish, German,\n▸ French, Japanese, Chinese\n\n¹: Include iPhone 6/6S+ HD Retina Display\n²: Standard English KB\n\nCalculator ∞ is not only the Calculator\nIT IS THE MUST HAVE CALCULATOR !!!!!!!\n\nWe love your feedback, Thanks a lot !\nPlease contact us for questions, bugs/crash reports, conversion requirements, etc....",
+    "price": 4.49,
+    "formattedPrice": "$4.49",
+    "url": "https://apps.apple.com/au/app/calculator/id458535809?uo=4",
+    "iconURL": "https://is1-ssl.mzstatic.com/image/thumb/Purple123/v4/30/70/8b/30708baf-bfd7-0c57-a2c7-16e71187dbc4/source/512x512bb.jpg",
+    "genres": [
+      "Education",
+      "Utilities"
+    ],
+    "version": "5.2"
+  },
+  {
+    "id": 523095780,
+    "title": "MIDI Guitar",
+    "author": "Jam Origin",
+    "description": "Play any synth or virtual instrument with your trusted old guitar, or record notation by playing it.\n\n##### Lots of user videos: jamorigin.com #####\n\nMIDI Guitar is the World’s first app to transcribe guitar playing into MIDI in real-time, with latency and accuracy comparable to expensive and inconvenient hardware MIDI guitar solutions.\n\nMIDI Guitar is over 10 years in development(!) and based upon state-of-the-art polyphonic pitch detection and –prediction technology that can accurately recognize guitar playing and -articulation with very low latency and without spurious hits. The technology has been validated by thousands of guitarists over the years.\n\nMIDI Guitar use Virtual MIDI to drive other iOS synth apps or Garageband, and it can host AudioUnit synths and effects.\n\nYou need a guitar interface for best results. We recommend a digital interface (using the lightning connector) over analog (via headphone jack), preferably with input gain control. Using an acoustic guitar with the built in microphone works for some purposes but is not optimal.\n\nThe free version will interrupt every few minutes, asking you to buy an in-app purchase. \n\nIf you have problems please refer to the built-in interactive help system, browse our website: www.jamorigin.com/docs or email  our support (via the contact form on our website).",
+    "price": 0,
+    "formattedPrice": "Free",
+    "url": "https://apps.apple.com/au/app/midi-guitar/id523095780?uo=4",
+    "iconURL": "https://is2-ssl.mzstatic.com/image/thumb/Purple123/v4/90/d0/11/90d0111d-e8e7-aa4e-473b-aa73af6fcfe8/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Entertainment"
+    ],
+    "version": "2.6.6"
+  },
+  {
+    "id": 1219789464,
+    "title": "ChordFlow",
+    "author": "Dmitry Klochkov",
+    "description": "ChordFlow is a songwriting sketchpad that will help you create amazing chord progressions and melodies for your songs fast and easily.\n\nHOW TO USE IT? \n\n1. Create a chord progression.\n2. Draw an arpeggio – a rythmic pattern for your chords.\n3. Compose a melody.\n4. Build a complete song adding more sections.\n5. Save your song, share or export to your favourite DAW as a MIDI file.\n\nCHORD PROGRESSION\n- Create chord progression of any length using intuitive chord selector. \n- Select a scale of your chord progression.\n- The chord selector will show you which chords are matching the selected scale.\n- Move chords around within chord progression using drag and drop gestures.\n- Transpose the chord progression by rotating the key wheel (with the lock button unlocked). Or transpose the key of the scale while keeping the existing chords unchanged (with locked mode).\n- See the notes of the selected chord and how the relate to the notes of the chord before and the one after the selected.\n\nARPEGGIO\n- When you draw the arpeggio you are not specifying absolute notes but relative steps of the chords. When played, the pattern will be translated to the absolute notes depending on the currently played chord. \n- Specify the length and rate of the arpeggio grid. Length defines the number of steps in the sequence and rate define the speed at which the sequence is played.\n- Add up to 4 tracks to your arpeggio grid. Each track has it’s color, octave and number of parallel voices.\nTo edit a track you select it with the track selection button, and then choose the required tool.\n- Draw complex curves spanning several rows and columns of the arpeggio grid with just one move with Dots tool\n- Draw long horizontal lines with Line tool\n- Move entire track along the grid using the Move tool\n- Clear a region of the selected track with the Eraser tool\n- Remove the selected track entirely using the Trash button\n- Set Loop region to repeatedly play only the selected section of your arpeggio.\n- Adjust notes velocities\n\nMELODY\n- Create up to 4 melody tracks.\n- Melodies are edited in their own grid, which also has length and rate params as the arpeggio grid. \n- Select the root note and the scale for the melody grid. You can also show and hide non-scale notes using the “Chromatic” switch. \n- Melody grid features the same collection of drawing tool as the arpeggio grid does.\n- While drawing your melody you will see which chords correspond to the specific steps and also which notes of the grid match the notes of the chords.\n- You can also set a loop region as in the arpeggio grid view.\n- Undo/Redo aslo works the same way as in arpeggio grid.\n\nSONG STRUCTURE\n- A song can contain unlimited number of sections\n- Each section has its own chord progression, arpeggio and melody parts\n- Add, remove, reorder, rename and clone sections\n- Make quantized or immediate  jumps between sections while playing.\n- Set a song loop mode. Loop one section. Loop entire song. Or play whole song once.\n\nCONNECTIVITY\n- Control any CoreMIDI compatible app \n- Control desktop synths through USB or Wi-Fi\n- Control hardware synths\n- Specify MIDI destination and channel for each track\n- Use ChordFlow as MIDI or Audio sender in Audiobus (http://audiob.us/)\n- Play in sync with other apps running on the same device or on other devices in same Wi-Fi network using a new technology, Ableton Link (http://www.ableton.com/link/)\n\nSHARE/EXPORT\n- Share your projects by AirDrop, Mail, Dropbox or any other app supporting sharing .\n- Export to Standard MIDI file and open it in the DAW of your choice(Ableton Live, Logic, GarageBand, etc. )",
+    "price": 14.99,
+    "formattedPrice": "$14.99",
+    "url": "https://apps.apple.com/au/app/chordflow/id1219789464?uo=4",
+    "iconURL": "https://is3-ssl.mzstatic.com/image/thumb/Purple118/v4/44/77/d5/4477d5c2-157e-54f0-df24-99296ac32f84/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Entertainment"
+    ],
+    "version": "2.5.2"
+  },
+  {
+    "id": 1064769019,
+    "title": "GeoShred",
+    "author": "Wizdom Music LLC",
+    "description": "GeoShred Pro Version 4.0, is an exciting update to the award-winning GeoShred musical instrument for iPad, iPhone and iPod touch, NOW WITH AUv3 plugin support for devices running iOS 11.4 or greater.  \n\nGeoShred is a unique, expressive musical instrument, which models the physics of a real guitar and makes it possible for everyone to shred. \n\nGold Medal Winner of the 2019 Denny Award, winner of a 2019 Guthman New Musical Instrument Award, and winner of the 2017 Electronic Musician Editor's Choice Award as \"one of the most innovative, groundbreaking products to emerge in the past twelve months\".  \n \nGeoShred’s performance surface with “almost magic” pitch rounding algorithms is coupled with a model of the physics of strings, support for AUv3, MIDI In/Out, MPE and 3D Touch.  It’s a fusion of Jordan Rudess’ performance concepts and moForte’s powerful, modeled guitar/effects based on the Physical Modeling research of Dr. Julius O. Smith III of Stanford/CCRMA. Add to that, incredible support for MIDI/MPE which makes GeoShred  both a powerful synth and a formidable MIDI/MPE controller!\n\nWith GeoShred 3.0, everyone can shred using the diatonic playing surface!  You can shred the blues and never hit a wrong note.  Slide your finger in any direction and let the magic happen using a scale that fits perfectly against a backing track.\n\nGeoShred Pro Version 4.0 Features Include:\n•\tA fluidly expressive playing surface + a Physically modeled guitar\n•\tAu3 plugin support on devices running iOS 11.4 or greater \n•\tIntelligent pitch rounding\n•      A diatonic keyboard where every key on the screen is in the scale.\n•\tMIDI IN/OUT and MPE support\n•\tMIDI control using Wi-Fi, Bluetooth, virtual MIDI and all digital interfaces \n•\tMIDI configuration presets\n•      3D touch on iPhones that support 3D touch\n•\tCustomizable control surface can be mapped to physical MIDI Controls\n•\tInter-App Audio and Audiobus support.\n•\tBacking tracks from the iTunes library\n•\tMultiple Modeled effects\n•\tModeled feedback and VCF effects\n•\tEcho, a unique looper and multi-tap echo \n•\tFinger vibrato, slide and fret scraping\n•\tUnique mono mode using intervals of multiple strings. \n•\tBuilt in Arpeggiator\n•\tAlternative tunings\n•\tSupport for world scales and temperaments including Indian Ragas, Arabic and Balinese scales. \n•\tEasily share presets with friends\n \nPraise for the GeoShred family of apps: \n\n“GeoShred is brilliant- it’s a real instrument.” – Eddie Jobson\n\n“A fantastic new invention which is going to revolutionize the way music is played, expressed and learned! “GeoShred” is one of the foremost best musical inventions I’ve had the pleasure to experience in recent years. Definitely 5 stars out of 5! GIGANTASTIVISSIMO…..R…A…Z !!!!!” – Patrick Moraz\n\n“That’s just nuts. You’re [Jordan] the best-guitarist-without-a-guitar of all time” – Joe Satriani\n\n“GeoShred is a breakthrough [musical instrument] for the iPad. Some might think it’s the best evidence yet that there has indeed been reverse engineering of alien technology, but if that’s the case, then aliens play guitar…and worship Jimi Hendrix.” – Craig Anderton Harmony Central\n\nWe are dedicated to offering the highest level musical instrument experience for our customers worldwide.  It would mean a lot to us if you could leave your positive review on the App Store and If you have any questions about GeoShred we would love to hear from you at our support email address: support@moforte.com \n\nMinimum Requirements:  iPad2, iPhone 4s, iOS 9.3 or better.  For AUv3 support iOS 11.4 or greater is required.",
+    "price": 38.99,
+    "formattedPrice": "$38.99",
+    "url": "https://apps.apple.com/au/app/geoshred/id1064769019?uo=4",
+    "iconURL": "https://is1-ssl.mzstatic.com/image/thumb/Purple113/v4/ff/71/50/ff7150cd-c94b-bede-8b49-fd5d227e0ea3/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Entertainment"
+    ],
+    "version": "4.1.4"
+  },
+  {
+    "id": 1448350913,
+    "title": "Stellr",
+    "author": "Georgi Georgiev",
+    "description": "Stellr is a pitch-shifter/delay/reverb sound processor aimed to recreate the classic shimmer effect. It makes deep ethereal ambiance on top of your sound, providing you with a wide variety of sonic possibilities. Add a new dimension to your music.\n\nThe effect features 15 ready to use presets which can be shared between devices as well as randomize button for endless variations.\n\nWhen loaded as Audio Unit effect, all parameters can be automated via host app.\n\nStellr main features:\n–  Pitch shifter which can be fine-tuned or snapped to semitone\n–  Two separate delays for creating a complex feedback effect\n–  LFO modulation and different types of reverb\n–  Set pre-gain and dry/wet levels\n–  Audio Unit Extension, Audiobus, Inter-App Audio support\n–  15 built-in presets\n–  Ability to save and randomize parameters\n–  Import and export of user presets\n–  Realtime frequency spectrum visualizer",
+    "price": 7.99,
+    "formattedPrice": "$7.99",
+    "url": "https://apps.apple.com/au/app/stellr/id1448350913?uo=4",
+    "iconURL": "https://is3-ssl.mzstatic.com/image/thumb/Purple123/v4/da/ba/39/daba3934-7030-4ab6-f3cc-5cda1b86306d/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Entertainment"
+    ],
+    "version": "1.0.1"
+  },
+  {
+    "id": 933445978,
+    "title": "CLIP+",
+    "author": "Whisk",
+    "description": "As seen in Top 50 Paid Utilities in the US App Store, and ProductHunt's \"Automate your Life\" collection, CLIP+ is the simple but powerful clipboard manager, now optimized for iOS12. Copy text from ANY app, store it in CLIP+, then quickly access it from Notification Center to paste back into any app.\n\nNow you can access all your copied text, from any app, at any time. Never lose a thing again!\n\nSee your clipped items in your iOS search results, you can even use the new Watch app to dictate notes directly to your clipboard!\n\nAutomatically recognizes different types of content. If you copy a phone number, then call it directly from the app. If you copy a URL, then just tap the icon to go to the site. If you copy an email address, then just tap the icon to compose a new email.\n\n\"But here’s something really cool: CLIP+ now has a preview image, which supports GIFs\" - Nate Swanner @ TheNextWeb\n\nCLIP+ recognizes URLs for images and previews the image in the app - you can even share animated GIFs directly via Messages, Twitter etc without having to save the actual image in your Photos.\n\nSimple to use, but powerful and customizable:\n• iCloud Sync - automatically sync your saved items between all of your iOS devices.\n• Share Extension - you can now send items directly to CLIP+ from other apps.\n• Preview images and animated GIFs - any URLs that point to images will be previewed in your list. Share the image directly rather than just the URL.\n• Edit items - swipe left for an \"Edit\" button.\n• Support for Siri Shortcuts - you can now save your clipboard to CLIP+ using Siri!\n• Reorder items - simply drag items to reorder them.\n• Spotlight Search integration - your clipped items are available in your iOS search results.\n• Safari Shared Links extension - your clipped URLs are available in Safari's \"Shared Links\" tab.\n• Today Widget - access your clipboard directly from Notification Center.\n• Universal app - pay once and use CLIP+ on your iPad & iPhone.\n• Watch app! Dictate straight into the CLIP+ clipboard.\n• Optimized for iOS12.\n• Customizable actions e.g. use Gmail instead of Mail.\n• Automatically add your Apple Affiliate code to any iTunes URLs.",
+    "price": 4.49,
+    "formattedPrice": "$4.49",
+    "url": "https://apps.apple.com/au/app/clip/id933445978?uo=4",
+    "iconURL": "https://is3-ssl.mzstatic.com/image/thumb/Purple123/v4/c0/7a/29/c07a2924-467e-c87a-6ec6-f484bdc4aad7/source/512x512bb.jpg",
+    "genres": [
+      "Utilities",
+      "Business"
+    ],
+    "version": "2.5.3"
+  },
+  {
+    "id": 1436855751,
+    "title": "RM-1 Wave Modulator",
+    "author": "Kai Aras",
+    "description": "RM-1 Wave Modulator\n\nRM-1 is a multi purpose audio effect designed around various types of modulation. \n\nFeaturing a built-in carrier oscillator, multimode filter, envelope follower and low frequency oscillator, RM-1 creates new sounds by combining carrier waveform and the audio input in different ways. \n\nTypes of modulation:\n- Ring Modulation (virtual analog)\n- Ring Modulation (digital)\n- Amplitude Modulation\n- Phase Modulation (DX-style FM)\n- Frequency Modulation (linear)\n\nOverview:\n- Built-in carrier oscillator with variable wave-shape (sine->square)\n- Built-in multimode Filter (LP, HP, BP) \n- Built-in Envelope Follower and LFO\n\nConnectivity:\n- Standalone (MIC, USB audio) \n- IAA / Audiobus \n- AUv3 Plugin",
+    "price": 9.99,
+    "formattedPrice": "$9.99",
+    "url": "https://apps.apple.com/au/app/rm-1-wave-modulator/id1436855751?uo=4",
+    "iconURL": "https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/c3/b7/9f/c3b79f0b-a12c-b77c-3bc5-006f85d184ed/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "1.0.1"
+  },
+  {
+    "id": 1457962653,
+    "title": "Mozaic Plugin Engine",
+    "author": "Bram Bos",
+    "description": "Create your own MIDI plugins: MIDI filters, generative music tools, basic sequencers, MIDI control panels, chaos experiments... Let your imagination take you places. \n\nMozaic runs inside your favorite AU MIDI host, and gives you practical building blocks such as LFOs, pre-fab GUI layouts, musical scales, AUv3 support (with AU Parameters, transport events, tempo syncing, etc.), random generators and a super-simple yet powerful script language. Mozaic even offers quick access to your device’s Tilt Sensors for expressive interaction concepts!\n\nThe Mozaic Script language is designed from the ground up to be the easiest and most flexible MIDI language on iOS. A language by creatives, for creatives. You’ll only need to write a few lines of script to achieve impressive things - or to create that uber-specific thing that was missing from your MIDI setup.\n\nCheck out the Programming Manual on Ruismaker.com to learn about the script language and to get inspiration for awesome scripts of your own.\n\nMozaic comes with a sizable collection of tutorials and pre-made scripts which you can use out of the box, or which can be a starting point for your own plugin adventures. \n\nFeatures in a nutshell:\n- Easy to learn Mozaic Script language: easy to learn, easy to read \n- Sample-accurate-everything: the tightest MIDI timing possible\n- Built-in script editor with code-completion, syntax hints, etc.\n- 5 immediately usable GUI layouts, with knobs, sliders, pads, etc.\n- In-depth, helpful programming manual available on Ruismaker.com\n- Easy access to LFOs, scales, MIDI I/O, AU parameters, timers\n- Supports Sysex, with built-in checksum calculations\n- AUv3; so you'll get multi-instance, state-saving, tempo sync and resource efficiency out of the box\n\nMozaic opens up the world of creative MIDI plugins to anyone willing to put in a few hours and a hot beverage or two.\n\nPractical notes: \n- Mozaic requires a plugin host with support for AUv3 MIDI plugins (AUM, ApeMatrix, Cubasis, Auria, Audiobus 3, etc.)\n- The standalone mode of Mozaic lets you edit, test and export projects, but for MIDI connections you need to run it inside an AUv3 MIDI host\n- MIDI is not sound; Mozaic on its own does not make noise... so bring your own synths, drum machines and other instruments! \n- AUv3 MIDI requires iOS11 or higher",
+    "price": 12.99,
+    "formattedPrice": "$12.99",
+    "url": "https://apps.apple.com/au/app/mozaic-plugin-engine/id1457962653?uo=4",
+    "iconURL": "https://is2-ssl.mzstatic.com/image/thumb/Purple123/v4/a8/44/14/a84414d4-f652-972f-a035-369d37ddded0/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Productivity"
+    ],
+    "version": "1.2"
+  },
+  {
+    "id": 1197611525,
+    "title": "Cycles - Daily Habit Creator",
+    "author": "Pixelogic, LLC",
+    "description": "Finish meaningful tasks every day! With the help of Cycles, you’ll always be motivated to reach for your goals. Whether it be walking the dog, taking out the trash, remembering to stay present, or even drinking water!\n\nBuilding habits is a difficult task and by using Cycles you will be able to keep working towards creating habits in your everyday life. Cycles notifies you periodically throughout the day to keep you on track with building your habit. As you complete your habits, a visual ring will begin to fill showing you your awesome progress. Keeping a daily streak has never been easier. Keep up the hard work and watch your rings start to fill!\n\nCycles gives you the ability to:\n    - Set as many Cycles as you want\n    - Set a starting hour for each Cycle\n    - Customize each cycle separately\n    - Select which days you want Cycles to notify you\n    - Use a range of beautiful colors\n    - Snooze cycles to keep focus and get reminded later\n    - Mute individual cycles for your convenience\n    - Use Apple Watch to create, edit, and monitor your progress\n    - Swipe right or left on your Cycle to reveal quick actions\n    - Mute or unmute cycles when necessary\n    - Motivating notification content to keep you reaching your goals\n\nInterested in checking out how Cycles is developed? Come watch the Cycles livestream on Twitch.tv to see the latest and greatest features being developed. Talk directly to the developer, ask questions, and get your feature suggestions add to the roadmap! https://twitch.tv/pixelogicdev",
+    "price": 0,
+    "formattedPrice": "Free",
+    "url": "https://apps.apple.com/au/app/cycles-daily-habit-creator/id1197611525?uo=4",
+    "iconURL": "https://is5-ssl.mzstatic.com/image/thumb/Purple123/v4/25/de/b9/25deb9ec-7724-72db-7333-68de6f174f8b/source/512x512bb.jpg",
+    "genres": [
+      "Productivity",
+      "Health & Fitness"
+    ],
+    "version": "1.3.3"
+  },
+  {
+    "id": 1105890031,
+    "title": "Gestrument Pro",
+    "author": "Gestrument AB",
+    "description": "Play, improvise and compose in real-time within a framework of interactive generative musical systems.\n\nAward-winning composer Jesper Nordin and leading iOS developer Jonatan Liljedahl (Kymatica) has completely re-invented their unique app from 2012 and taken the concept to the next level.\n\nGestrument Pro takes everything we loved about Gestrument and improves on its original functionality while introducing a host of new features such as multi-touch, recordable automations, advanced scale editing and our unique system of highly tweakable modular generators that define the pitches and rhythms.\n\nWith Gestrument Pro you can Play, Improvise and Compose music with deeper levels of personal expression than ever before.\n\nFeatures:\n\n• Up to 16 individual Instruments.\n• Each Instrument can be controlled by any of up to 8 Cursors.\n• Instruments can use internal high quality sounds or play other synthesizers or apps via MIDI.\n• Modular swappable Generators for producing the rhythms and pitches per Instrument, each with their own set of tweakable parameters and settings.\n• 8 performance sliders that each can control one or more parameters in the Instruments and their Generators.\n• A highly flexible modulation system allows assigning Sliders and Cursor position/pressure to any parameter in the Instruments.\n• Advanced microtonal Scale editor with several standard scales included.\n• 8 Scale Slots for fast switching between scales and tonalities during performance.\n• Sliders, Cursors and Scale Slots can be recorded into automated loops, or controlled via MIDI.\n• Supports Inter-App Audio and Audiobus, including host sync for following the hosts transport and tempo.",
+    "price": 13.99,
+    "formattedPrice": "$13.99",
+    "url": "https://apps.apple.com/au/app/gestrument-pro/id1105890031?uo=4",
+    "iconURL": "https://is5-ssl.mzstatic.com/image/thumb/Purple118/v4/af/37/c7/af37c752-51cf-1b9f-713a-aac280f0d02b/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Productivity"
+    ],
+    "version": "1.0.1"
+  },
+  {
+    "id": 1436855580,
+    "title": "FracPad III",
+    "author": "Granvaud Alexandre",
+    "description": "Control your Fractal Audio® AxeFx® II/XL/XL+/III or AX8/FX8®.\nModify your presets layout, name and blocks settings, load or save presets, and many more functions !\n\n• For AxeFx II/XL/XL+ control you will need a 3rd party MIDI interface.\n• For AX8/FX8, direct USB connection is needed as the AX8/FX8 does not support MIDI port sysex anymore !\n\n• For AxeFx III control, a USB connection (with Apple's USB camera adapter) is highly recommended.\nHowever, a bluetooth connection with Yamaha MD-BT01 can work, but is not officially supported.\n\n• AxeFx generation 1 are not supported.\n\nA full description of the connection options is available here : https://wiki.fractalaudio.com/axefx2/index.php?title=FracPad",
+    "price": 69.99,
+    "formattedPrice": "$69.99",
+    "url": "https://apps.apple.com/au/app/fracpad-iii/id1436855580?uo=4",
+    "iconURL": "https://is1-ssl.mzstatic.com/image/thumb/Purple123/v4/fc/99/f6/fc99f650-7149-f0c2-0ac8-1f9834576d86/source/512x512bb.jpg",
+    "genres": [
+      "Utilities",
+      "Music"
+    ],
+    "version": "3.18"
+  },
+  {
+    "id": 817419955,
+    "title": "Elastic Drums",
+    "author": "O-G-SUS",
+    "description": "Featured 170 times on App Store category pages!\n\nComes with Ableton Link synchronization and Ableton Live Set Export.\n\nMachinedrum: \"It's awesome, a lot of fun to work with and very easy to get something going. I love the sound presets too.“\n\nFunkstörung:\"Fantastic sounding, great fun to play with, a must have for live performances!\"\n\nPalm Sounds: \"I have to say that I've been completely impressed by this iPhone drum machine. In terms of sound, in terms of design, and in terms of functionality. It is amazing.\"\n\nKeyboards: „An extremely flexible beatbox with tons of character.\"\n\nCDM: \"Finally, Your Pocket Gets a Perfect Drum Synth: Elastic Drums for iPhone.\"\n\niOS Music&You: \"Highly, highly recommended.\"\n\n\nElastic Drums is a music app showcasing an interactive drum kit, that enables to create a huge range of rhythmic grids, ranging from classical analog drumkits up to experimental soundscapes. \nIt contains six channels of high quality synthesized drum sounds, a step sequencer and 4 effect channels. All important control parameters are automatable. The result: Elastic drum composition with a unique character!\n\nFeatures:\n- 6 synth channels with 13 different percussion synth engines (kick, snare, hihat, clap, tom, wobble, fm, fm4, square, grain, synth, drone, sampler)\n- 12 parameters for each synth engine\n- automation for each parameter via knob recording or velocity\n- 4 send effect channels with 2x13 mono effects and 2x11 stereo effects\n- automation for all of the 8 possible effect parameters via xy pad\n- master effects (stutter, delay, compressor ...)\n- 16 step sequencer for the 6 channels, each with it's own tempo multiplier & length\n- record audio and export to Soundcloud or Audioshare \n- email audio recordings and presets\n- Audiobus, Audiobus Remote, Inter-App Audio and Ableton Link support\n- Midi learn/Midi implementation of the most important parameters\n\nBecause all sounds get generated in realtime, the app is cpu heavy! iPhones 5 and greater can handle it with no problem, on iPhone 4s effects 3 and 4 get switched off by the engine automatically to save some cpu power. iPhone 4 and iPad1 are NOT recommended!\n\nElastic Drums is published by MoMinstruments, the instruments app label of Mouse on Mars and friends.",
+    "price": 14.99,
+    "formattedPrice": "$14.99",
+    "url": "https://apps.apple.com/au/app/elastic-drums/id817419955?uo=4",
+    "iconURL": "https://is4-ssl.mzstatic.com/image/thumb/Purple123/v4/7b/a3/13/7ba313eb-6d33-05fe-daa5-dfa80e9538f4/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "2.3"
+  },
+  {
+    "id": 1332154350,
+    "title": "Patterning 2",
+    "author": "Olympia Noise Co.",
+    "description": "MAKE BEATS.  GO DEEP.\n\nPatterning 2 is the next generation of the award-winning circular drum machine.  Named Apple's Runner-Up for App of the Year in 2015, Patterning lets you create beats like never before in a beautiful, intuitive interface that is both easy to use and brimming with features for the experienced producer. \n\nMake dynamic drum patterns with the swipe of a finger.  Quickly record rhythms and parameter automation. Use Patterning’s independent loop settings to explore rhythmic possibilities impossible to achieve in traditional sequencers. Automate and randomize parameters to create intricate & complex beats. Arrange patterns on the timeline to construct songs. Use the built-in effects to add atmosphere, shimmer and noise.  Export patterns directly to a Ableton Live Set or connect to other instruments with MIDI.  Download hundreds of free factory and user-created drum kits for use in your own songs using Cloud Kits.  \n\nIncludes a free download of Ableton Live Lite 10!  Available from the EXPORT menu on the FILE screen. \n\n\"10 / 10\" - MusicTech Magazine, August 2019\n\nSome of what’s new in Patterning 2 :\n\n• Record Beats with the New Drum Pads \n• Drum Kit Switching\n• Randomize (Almost) Everything\n• Next Generation Ratcheting\n• Automation Recording \n• Coarse Tune & MIDI Note Quantization\n• Quantized Pattern Launch\n• Monophonic/Polyphonic tracks\n• Keyboard Shortcuts \n• Sample Folders\n• Loop Rotate\n• Pattern Tempo Changes\n• Divide Mode Measure Length\n• New Automation Layers : Randomization, Ratcheting, MIDI CCs, and more.\n• Ableton Link Start/Stop\n• MIDI Learn Recording\n• MIDI Drum Triggering\n• MIDI Only Tracks\n• Unlimited MIDI CC Outputs\n• MIDI Gate Length Automation\n• Under the Hood Performance Improvements \n• Workflow Enhancements\n• And more… \n\nFor a full list of new and existing features, visit http://patterning.app\n\nPraise for Patterning : Drum Machine :\n\n“Patterning is brilliant; beautiful to look at, so very clever in terms of the programming options and, as far as I’m aware, unique as a drum/rhythm programming environment”  - MusicAppBlog\n\n“Patterning is an amazingly fun and creative app …The look, feel and layout are all first rate and the sounds are excellent. Even beginners will be able to create something that sounds cool, and more experienced users will be able to put together some amazing beats complete with automation and per-drum settings the likes of which you usually need a full DAW setup for.”  - AskAudio\n\n“I had thought all my iOS drum box desires were satisfied, but I was wrong. There’s room for another and this is it. Patterning has many unique strengths, and beats any hardware drum machine when it comes to polyrhythms and evolving patterns. It’s as mesmerizing to watch as it is to listen to.” - Sound on Sound",
+    "price": 30.99,
+    "formattedPrice": "$30.99",
+    "url": "https://apps.apple.com/au/app/patterning-2/id1332154350?uo=4",
+    "iconURL": "https://is4-ssl.mzstatic.com/image/thumb/Purple113/v4/a0/d9/1e/a0d91e32-ac54-3fd2-5ad9-2566ba863e25/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "2.1.5"
+  },
+  {
+    "id": 1185984394,
+    "title": "VOLT Synth",
+    "author": "Kai Aras",
+    "description": "VOLT is a virtual analog synthesizer designed to create classic synth sounds while emphasising expressive play. \n\nWith full support for multidimensional polyphonic expression (MPE) - VOLT is a great companion to any Seaboard player.\n\nOverview:\n* Polyphonic Virtual Analog Synthesizer\n* Expressive synth engine with MPE, poly-, channel aftertouch & 4D touch keyboard\n* 5 Keyboard Layouts (Classic, Uniform, String, Scale & Chord)\n* Built-in stereo effects \n* 100+ fine tuned factory presets \n* Supports ROLI Seaboard, LinnStrument, Geoshred and others out of the box \n* Standalone operation with support for USB audio interfaces, wired, network & bluetooth MIDI\n* Audio Unit v3 Extension \n* Inter App Audio support\n* Audiobus support\n* Ableton Link\n\nSynth Voice:\n* Variable waveshape\n* Variable pulse-width (on all waves)\n* Detunable sub & noise source\n* SEM style state-variable filter\n* LFO per voice\n* Dual ADSR\n* Poly drive (per voice distortion)\n* 8x Polyphony / Unison\n* Detune / Slop\n* Pan Spread\n* Arpeggiator\n\nEffects:\n* 3x stereo effect units \n* Vintage Chorus\n* Digital Delay (syncable)\n* Epic Reverb\n\nInput/Expression:\n* MPE MIDI hardware including but not limited to ROLI Seaboard Rise, Seaboard Block, Lightpad Block\n* MPE MIDI software including but not limited to Geoshred, Geoshred Control\n* Regular MIDI keyboards featuring channel or poly aftertouch, pitch- and mod wheels\n* Onscreen 2D Touch Keyboard (supports slide and glide)\n* Plain MIDI Input \n\nPresets:\n* Factory bank including 100+ expressive presets ready to play out of the box\n* Preset Management with Templates & Categories \n* Shared User Presets between Standalone and AUv3 versions\n* Preset Export & Import via Files.app, Airdrop etc. \n* iCloud Drive Support\n\nConnectivity:\n* Standalone \n* AUv3 Instrument\n* Inter-App Audio Instrument\n* Audiobus Instrument",
+    "price": 30.99,
+    "formattedPrice": "$30.99",
+    "url": "https://apps.apple.com/au/app/volt-synth/id1185984394?uo=4",
+    "iconURL": "https://is2-ssl.mzstatic.com/image/thumb/Purple123/v4/76/ed/0f/76ed0fc6-235e-b3fa-0f4b-e1c09aa826f3/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "1.4"
+  },
+  {
+    "id": 1292546479,
+    "title": "Rozeta Sequencer Suite",
+    "author": "Bram Bos",
+    "description": "Rozeta is a suite of MIDI sequencers and controllers that lets you explore a new, freeform approach to sequencing and controlling mobile music apps. \n\nThe app contains 10 MIDI Audio Units (a totally new feature in iOS11) in a single package, which can be loaded in compatible MIDI AU hosts (AUM, Cubasis 2, ApeMatrix, Sequencism).\n\n1) Rozeta Bassline: a monosequencer based on the popular Troublemaker sequencer. Obviously comes with all the randomization and mutation features. Up to 8 patterns per sequence, with Follow Actions. Transpose using MIDI.\n\n2) Rozeta Rhythm: a euclidean drum sequencer with mutations per instrument and polyrhythms. Comes with configurable key mappings for many popular drum apps.\n\n3) Rozeta X0X: classic TR-styles step sequencer for drum machines. Supports triplets, polyrhythms and mutations per channel. Optionally emulates the exact timing jitter pattern of the legendary TR-808\n\n4) Rozeta LFO: a triple MIDI LFO generator lets you modulate CC parameters of your MIDI instruments. Apply amplitude modulation to each wave for more organic behavior. Optionally syncs to tempo.\n\n5) Rozeta XY: a double XY Controller Pad for generating 4 simultaneous configurable CC controller streams per instance. Also features MOD wheel and PitchBend sliders.\n\n6) Rozeta Arpeggio: adds a MIDI arpeggiator to any of your synths. Offers latch mode, shuffle and automatic tempo synchronization. Turn any incoming MIDI stream into an arpeggio on the fly.\n\n7) Rozeta Particles: MIDI particle generator - generates a cloud of MIDI notes that create pseudo-random patterns when bounding off the walls.\n\n8) Rozeta Cells: Polyphonic Step Recorder - record and play back polyphonic phrases and patterns.\n\n9) Rozeta Collider: MIDI Hadron Collider - explore semi-repeating generative patterns and melodies.\n\n10) Rozeta Scaler (NEW): MIDI Scale Quantizer and Transposer - tune incoming MIDI to a different scale, never play out of tune again.\n\nNotes: \n- these plugins do not run as a standalone app and require a compatible host to work\n- MIDI is not sound. To make sound you'll have to feed the MIDI into a synthesizer or instrument app. Bring your own synths!",
+    "price": 14.99,
+    "formattedPrice": "$14.99",
+    "url": "https://apps.apple.com/au/app/rozeta-sequencer-suite/id1292546479?uo=4",
+    "iconURL": "https://is3-ssl.mzstatic.com/image/thumb/Purple123/v4/21/54/19/2154194f-b959-10e9-9b3b-b10f8e5fc4ec/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "1.2.3"
+  },
+  {
+    "id": 1441935745,
+    "title": "REAMP",
+    "author": "Klevgränd produkter AB",
+    "description": "This AUv3 plugin effect is a complex spectral saturation processor simulating a set of different analog gear in a new and unique way. Benefits of this algorithm is that it is highly CPU efficient and adds (almost) no latency. \n\nThe 7 models available are based on real analog gear individually measured in two dimensions; gain responses (-inf dB to +6 dB) at the frequency spectrum 20Hz to 20kHz. This data is used to transform input audio to output audio.\n\n\nModels:\n\nCassette Deck\n\nA consumer cassette deck produced in the mid 80’s. This profile adds some nice grit in the lower mids and rolls off the higher spectrum in a very pleasant way.\n\n1/4” Tape Reel\n\nA high quality tape reel machine was used for this profile. Set to one channel mode, there was plenty of dynamic bandwidth to capture on this one. Adds some subtle tape saturation that oozes mid 70’s.\n\nPreamp Tube Clean / Preamp Tube Drive\n\nThese two profiles are captured from a high end tube microphone preamp with two different input gain levels (normal gain on the Clean version and a boosted level on the Drive version). Used on only one channel, this profile is very subtle, but the impact adds up when several channels are used simultaneously. \n\nGuitar Tube Clean / Guitar Tube Drive\n\nThe guitar amp used is a well known pro amp used by several pro guitar players, and Just like the Preamp Tube profiles, these are recorded with two different input gain levels.\n\nTube Bass Amp\n\nOne of the developers friends dad had an old bass amplifier that we borrowed and profiled. Tip: Run a Fender Jazz bass through it and your neo soul licks will sound just like they’re supposed to.\n\nUsage:\n\nSince there are several models available, this one can be used on almost any type of audio in any genre. The output can span from lo-fi to high-end hifi. One approach is to put it on several tracks with a more subtle setting which makes the essence of the gear simulated add upp. Another is to put it on the mix, or a bus. \n\nSince we’re in the digital domain there can be some added aliasing when distorting the signal too much, resulting in an unpleasant high frequency boost. To prevent this, set the HARMONICS switch to SOME or FEW.\n\nFeature list\n\n• Seven handpicked profiles based on gear we love available.\n• Spectral drive (four bands)\n• Dry / Wet mix\n• Plenty of factory presets\n• Ultra low latency\n\n\nFull documentation available inside the app or at https://klevgrand.se/downloads/reamp-docs/\n\nNOTE! REAMP is an AUv3 plugin that only works in an AUv3 compliant host like Garageband, AUM, Cubasis, Beatmaker 3, Auria etc.",
+    "price": 30.99,
+    "formattedPrice": "$30.99",
+    "url": "https://apps.apple.com/au/app/reamp/id1441935745?uo=4",
+    "iconURL": "https://is1-ssl.mzstatic.com/image/thumb/Purple128/v4/a6/1d/d6/a61dd69e-b251-3638-e128-7eb2099949aa/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "1.0.0"
+  },
+  {
+    "id": 1407764053,
+    "title": "RE-1 Tape Machine",
+    "author": "Kai Aras",
+    "description": "RE-1 - Tape Echo \n\nRE-1 is a full featured virtual Tape Machine capable of delivering authentic tape based echo and chorus effects but it doesn't stop there. With it's interactive tape player, sample, loop and overdub features it's possible to use it like a virtual tape recorder, sample player, looper or simply as a master effect. \n\nOverview:\n- Virtual Tape deck including 3 individually controllable read heads, variable delay time and feedback\n- Interactive user interface and realtime visualisation of various parameters related to the tape simulation\n- Dedicated controls for Wow, Flutter, Color, Tape Hiss & saturation amount \n- Tape Loop mode with overdub, tape reverse and time-stretching \n- Sample/Loop library loads wave files onto the virtual tape loop\n- Transport and Tempo Sync\n- Stereo Spread & Stereo Panner\n- Input processing: Highpass filter \n- Output processing: 2 band eq\n\nTape Echo:\n- Authentic tape echo emulation\n- Multi-tap delay with 3 individually controllable read heads \n- Color Control adjusts the echo's tone from dark to bright\n- Delay Time: 5ms - 1000ms (or 1/32th to 1/1) \n- Wow & Flutter \n- Tape Hiss and Saturation\n- Stereo spread\n- Stereo panner\n\nLooper / Sample Player:\n- Uses the tape like a traditional looper with unlimited overdubs\n- Configurable Loop length with 1 - 8 bars and tempo sync and tape reverse\n- Tape transport can be linked to the host's transport controls\n- Time stretching keeps loops in sync  \n- Samples/loops can be loaded onto the tape directly\n- Samples can be created from the tape loop and stored in the sample library at any time\n- Factory content includes a variety of loops grouped by style\n- Samples/loops can be imported from and exported to other apps \n\nConnectivity:\n- Standalone\n- AUv3\n- InterApp-Audio\n- Audiobus\n- Ableton Link\n- MIDI (Tempo, CC, Program Change)\n\n- Requirements: \n- iOS 11+",
+    "price": 14.99,
+    "formattedPrice": "$14.99",
+    "url": "https://apps.apple.com/au/app/re-1-tape-machine/id1407764053?uo=4",
+    "iconURL": "https://is3-ssl.mzstatic.com/image/thumb/Purple128/v4/6e/0a/d3/6e0ad3b2-4ef3-cd38-599a-bce490df571c/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "1.1.1"
+  },
+  {
+    "id": 1453673283,
+    "title": "STARK Amp Simulator",
+    "author": "Klevgränd produkter AB",
+    "description": "STARK is a fully fledged amplifier simulator consisting of four modules: Amplifier, Cabinet, Room and effects slots. These modules are processing audio separately, which makes it possible to combine different amplifiers with different cabinets and rooms.\n\nThe amp module offers 12 different amplifier profiles. It has both a clean mode and a overdrive mode, an equalizer functionality (including presence), and a booster controlling the end stage amplification saturation.\n\nCabinet simulation consists of 10 different cabinets of various sizes and sound. This module also offers a stereo width knob that simulates the distance between two microphones put in front of the cone.\n\nRoom simulation offers 6 different kinds of rooms, where each room size can be changed between Small, Medium and Large. There’s also a decay parameter controlling reflectivity of the walls and a dry/wet mix.\n\nThe pedal board contains 4 slots where any of the 14 effects can be inserted. The order of the pedals can easily be changed using drag and drop.\n\nAvailable amps\n\n• American Guitar 1 - An edgy amp that rounds of nicely at the top\n• American Guitar 2 - Similar to American Guitar 1, but with some more presence\n• British Guitar A 1 - Gives a full sound with crisp\n• British Guitar A 2 - Similar to British Guitar A 1, but with more body\n• British Guitar B 1 - A slightly saturated amp with nice character in the high mids\n• British Guitar B 2 - Is just like British Guitar B 1 a bit saturated, but with a more linear frequency response\n• Vintage Guitar - Gives that perfect thickness when playing jazz and soul\n• General Tube Amp - Low saturation with a fairly linear frequency response\n• Garage Sale Amp - Limited frequency response and saturates. The obvious LoFi choice\n• American Bass - A versatile pro bass amp\n• British Bass - Works fine for  more edgy bass playing\n• Vintage Bass - Perfect for soul/jazz/RnB\n\nAvailable cabinets\n\n• Wide Small - Small speakers, lots of resonances\n• Tight Small - Small single speakers, few resonances\n• Wide Combo - Medium speakers, lots of resonances\n• Tight Combo - Medium speakers, few resonances\n• Wide Normal - Medium speakers, moderate resonances\n• Tight Large - Full range speakers, few resonances\n• Wide Large - Full range speakers, lots of resonances\n• Radiola - Small (broken) speakers, moderate resonances\n• Bass - Low end speaker/Medium speakers, few resonances\n• Passthrough - Full range speakers, no resonances\n\nAvailable ambiences\n\n• Normal - A good sounding recording room\n• Dark - A room that gives attenuated high frequencies\n• Bright - More significant reflections at higher frequencies\n• Cold - A room with attenuated low frequencies\n• Warm - Gives a livingroom:ish sound\n• Boomy - Loud and lots of resonances\n\n\nAvailable FX pedals\n\n• Delay - Digital stereo delay\n• Chorus - Classic chorus\n• Flanger - Flanger with feedback, tone, speed, mix and amount\n• Phaser - Classic phaser with the option to decide how many stages to be used\n• Reverb - Digital reverb\n• Vibrato - A stereo vibrato with reshapeable curve\n• Tremolo - A stereo tremolo with reshapeable curve\n• Equalizer - 6 band peak filter with fixed frequencies\n• Compressor - Simple one-knob compressor\n• Booster - Signal booster (gain, bass and treble)\n• Distortion - Simple distortion pedal with tone control\n• Distortion+ - Complex distortion pedal with optional distortion algorithms\n• Gate - Simple gate\n• Multiband Gate - Four band spectral gate\n\nThere are also about 100 predefined factory presets covering most scenarios.\n\nFull documentation available inside the app or at https://klevgrand.se/downloads/stark-docs/\n\nAudio examples and more info at https://klevgrand.se/products/stark\n\nObs! STARK consumes a lot of CPU and RAM, so if you’re having trouble using multiple instances at the same time, try to freeze some tracks and/or increase the buffer size.\n\nSTARK is an AUv3 plugin that only works in an AUv3 compliant host like Garageband, AUM, Cubasis, Beatmaker 3, Auria etc.",
+    "price": 30.99,
+    "formattedPrice": "$30.99",
+    "url": "https://apps.apple.com/au/app/stark-amp-simulator/id1453673283?uo=4",
+    "iconURL": "https://is1-ssl.mzstatic.com/image/thumb/Purple123/v4/c6/05/9e/c6059e62-2181-bd27-3d8a-834912fd2467/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "1.0.0"
+  },
+  {
+    "id": 517250782,
+    "title": "PocketCAS: Mathematics Toolkit",
+    "author": "Thomas Osthege und Daniel Alm",
+    "description": "PocketCAS is the most advanced mathematics application for iPhone and iPad. It can help you with any kind of math problem, from elementary school all the way up to calculus, algebra and statistics. It can replace your old graphing calculator, help you with your homework, and assist you in any kind of calculation for university or work.\n\nThis app is an indispensable tool for every student, teacher and engineer. It makes college-level calculus and algebra easy and can help you in a wide range of cases. It provides features comparable with a TI-89 calculator and combines them with a modern, intuitive interface and incredible graphics capabilities.\n\nMATHEMATICAL CAPABILITIES\n- 2D Plots: Quickly create 2D cartesian, implicit, polar or parametric plots.\n- 3D Plots: PocketCAS draws stunning 3D plots! Supports x-y cartesian plots, parametric area plots and parametric line plots.\n- Animated plots: Use the variable 'anim' to animate any plot over time.\n- Calculus: Calculate limits, derivatives, integrals and taylor expansions.\n- Linear Algebra: Invert and multiply matrices or calculate determinants, eigenvalues and much more!\n- Algebra: Perform integer and polynomial factorization and division, use permutations, and more.\n- Solving: PocketCAS will solve almost any equation for you. It even supports systems of linear equations and ordinary differential equations!\n- Scripting: PocketCAS' C-style scripting language allows you to define custom functions, use conditional expressions, loops and also supports recursion.\n- Physical Units: Constants and units are provided out of the box. Simply enter physical formulas with the corresponding units and convert results to the units you prefer.\n\nADDITIONAL FUNCTIONALITY\n- iCloud support: Sync documents between your Mac, iPhone and iPad!\n- Export: Print or export plots, entries or the whole document as PDF!\n- Document Import: Load functions and variables from existing documents to re-use your work in other calculations.\n- CSV Import: Load tabular data in CSV format and process it!\n- Mathematical keyboard: PocketCAS' mathematical keyboard is unmatched on the App Store.\n- Help: All functions are explained in the built-in reference. If you're stuck, there's plenty of tutorials as well as a manual (https://pocketcas.com/manual) to get you going. And you can always contact our support (https://pocketcas.com/support) for help!\n- Offline computation: PocketCAS doesn't need an internet connection to calculate results.\n\nUSER REVIEWS\n\"This program has an incredible amount of power for such a compact program. I teach high school math, and this program can work with all sorts of expressions, graphs, and help check my work. Definitely worth it!\"\n\n\"You will love this calculator. It's powerful to calculate everything, doesn't matter you're a high school student or college student. Specially for the people who like to solve problems with graphs!\"\n\n\"This app is so powerful and slick looking. It is totally amazing and what it can do.\"\n\n\"One of three Apps I use when teaching A Level maths. Have recommended to numerous students. Excellent.\"\n\n\"This is one of the best. The CAS capabilities are compatible to only two other apps, and this one is all offline and includes countless additional features. It's never steered me wrong and is the first thing I go to when I'm in a hurry to figure something out. If you're a student this is pretty much as good as it can get.\"\n\n\"I am 8 years old and this App is awesome! It helps you learn calculus quickly. It's a work of art!\"",
+    "price": 30.99,
+    "formattedPrice": "$30.99",
+    "url": "https://apps.apple.com/au/app/pocketcas-mathematics-toolkit/id517250782?uo=4",
+    "iconURL": "https://is2-ssl.mzstatic.com/image/thumb/Purple128/v4/f6/71/7f/f6717fc6-0400-4256-3ac8-0c2a3d165c56/source/512x512bb.jpg",
+    "genres": [
+      "Education",
+      "Utilities"
+    ],
+    "version": "3.12"
+  },
+  {
+    "id": 1464669442,
+    "title": "Xequence 2",
+    "author": "Seven Systems Cross-Platform Media Limited",
+    "description": "This app is targeted at enthusiasts & professionals working in digital music production.\n\nXequence is a comprehensive, fast & reliable MIDI sequencer, editor, arranger & controller for iPhone & iPad. \n\nProviding a desktop-class editing experience, it is the perfect centerpiece for your hardware studio, or for apps like AUM & Audiobus 3 to create a modular mobile music production environment.\n\nHIGHLIGHTS:\n\n- Efficient and fast User Interface for an amazing mobile editing workflow\n- Full support for scales and scale-based editing throughout the app (keyboard, pianoroll, etc.)\n- Over 70 scales in 10 categories included\n- Full Ableton Link 3 support\n- Full Audiobus 3 support\n- Robust MIDI File Import & Export (notes, controllers, program changes, track names, etc.)\n- Best-in-class MIDI timing and clock output\n- MIDI Time Stretching support in all editors\n- Full MIDI In & Thru with rechannelization & rerouting\n- MIDI Sync Master (Clock/Start/Stop/Continue/SPP) - other DAWs & sequencers can run in sync with Xequence, e.g. to use audio tracks, or external drum machines. Several modes for full compatibility\n\nARRANGER:\n\n- Unlimited Clips\n- Unlimited Tracks\n- Unlimited Sub Tracks per Track\n- 64 Undo/Redo steps\n- Fully adjustable grid\n- Per-track non-destructive Swing & MIDI Delay\n- Clips can be independent or linked (editing the original modifies all copies)\n- Powerful clip-based, per-track independent looping\n- Program changes\n- Selection tools: Marquee/Rectangle, Same Track, Same Instrument, Linked Clips, Invert, etc.\n- Editing tools: Create Copy, Create Linked Copy, Unlink, Split, Join, Convert loops to clips, etc.\n- All edits can be performed across multiple tracks and clips\n- Global clipboard, even between projects\n- Movement/Trimming Handles at screen edges for efficient editing\n\nPIANOROLL EDITOR:\n\n- 256 Undo/Redo steps\n- Fully scale-aware\n- Relative or absolute grid: Snap Events to nearest grid line, or move by grid increments\n- Live previews of all edits\n- Selection tools: Box, Same Note, Same Key, Same Beat Position, Invert, etc.\n- Editing tools: Copy, Legato, Quantize, Quantize Ends, Octave +/-, Flip H/V (mirror), Fill clip with selection, etc.\n- Smart Draw mode: Touch to create, touch again to delete, drag up/down to transpose, drag left/right to change length\n- Global clipboard, even between projects\n- Note velocities can be adjusted quickly via a handle, or edited just like controllers, see below:\n\nCONTROLLER EDITOR:\n\n- 256 Undo/Redo steps\n- Selection tools: Box, Same Beat Position, Invert\n- Selection modes: Add & Replace\n- Editing tools: Copy, Reduce, Quantize, Compress/Expand, Flip H/V (mirror), Ramp (various curves), Fill clip with selection\n- Smart Draw mode\n- Note Velocities can be shown as controllers and edited with the same tools\n\nKEYBOARD / CONTROLLER:\n\n- Fully scale-aware, very playable single or dual keyboards\n- Glide support\n- Freely adjustable key width\n- Velocity emulation (via vertical position on key)\n- Drum maps and pads, fully editable, 40+ factory maps\n- Touch ribbons next to the keyboard for live control\n- All controllers can be played by sliding (ribbon), device rotation (up to three axes simultaneously), played like a button (sustain pedal, \"trance gates\"), or by touching the keys at different vertical positions. All highly configurable.\n\nINSTRUMENTS:\n\n- Unlimited Instruments (MIDI devices or apps & channel)\n- Up to 30 definable controllers (CCs) per Instrument\n- Compatible with virtually ALL apps and class-compliant MIDI interfaces\n\nVARIOUS:\n\n- Audio or MIDI Metronome\n- Note chasing (notes play even when playback starts in the middle)\n- Controller chasing\n- Perfect song looping, no dropouts/jitter at loop points\n- Supports any time signature/BPM (fixed per song)\n- Includes PolyHymnia, an advanced Generative Music module\n- Dynamic Ruler (can be set to auto-hide to preserve screen space)\n- Bright or dark color scheme\n\nPlease report any issues via our website, we provide quick and comprehensive support!",
+    "price": 27.99,
+    "formattedPrice": "$27.99",
+    "url": "https://apps.apple.com/au/app/xequence-2/id1464669442?uo=4",
+    "iconURL": "https://is3-ssl.mzstatic.com/image/thumb/Purple123/v4/38/7e/cf/387ecf46-86c2-933c-dead-d6b286547aa8/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Utilities"
+    ],
+    "version": "2.1.0"
+  },
+  {
+    "id": 694599930,
+    "title": "ChordPolyPad",
+    "author": "Laurent Colson",
+    "description": "\"ChordPolyPad\" is a MIDI chords player that allows you to create chord sets from a large internal library, from any combination of notes, or from chords generated randomly. Each set consists of 8 groups of 16 pads, or 2 groups of 64 pads.\n\nIn addition to play chords, each pad can generate customizable MIDI controls on its horizontal and vertical axis.\n\nThe application supports full internal and external MIDI connections for input and output, Audiobus MIDI sender, and MIDI filter routing. An internal sound bank is included.\n\nUnlimited presets can be saved on a local device and synchronized to iCloud.\n\nFeatures:\n\n• 8 groups of 16 pads or 2 groups of 64 pads by preset (128 pads)\n• MIDI port and MIDI channel assignable for each pad\n• Customizable X/Y controller for each pad\n• Velocity assignable for each chord note\n• Strumming setup by pad\n• Copy and paste for pads and groups\n• Draggable chords directly from library\n• Searching for chords available in a defined scale\n• Random chords for instant inspiration\n• Multitasking\n• Internal sound bank\n• Receiving MIDI notes and control from external devices\n• Send MIDI to a virtual port that can be used as MIDI input by other \"Core MIDI\" compatible applications\n• Presets manager\n• \"Program Change\" support\n• Native iCloud support\n• \"Files\" application support\n• Full support of \"Split View\" and \"Slide Over\"\n• Undo/Redo\n\nSupported MIDI connections:\n\n• Virtual \"Core MIDI\" connections between applications\n• iOS compatible MIDI interface\n• MIDI over Wifi\n• MIDI over Bluetooth\n• Audiobus (MIDI, state saving)\n• Inter-App Audio (MIDI, audio, transport control)\n\nRequirements:\n\nAn iPad or iPhone with iOS 8 or later\n\nDocumentation:\n\nhttp://dev.laurentcolson.com/medias/ChordPolyPad/en/ChordPolyPad.pdf",
+    "price": 19.99,
+    "formattedPrice": "$19.99",
+    "url": "https://apps.apple.com/au/app/chordpolypad/id694599930?uo=4",
+    "iconURL": "https://is4-ssl.mzstatic.com/image/thumb/Purple123/v4/26/ad/d7/26add744-bbc6-78dc-5573-205db3136636/source/512x512bb.jpg",
+    "genres": [
+      "Music"
+    ],
+    "version": "1.8.2"
+  },
+  {
+    "id": 443663267,
+    "title": "Sunrizer synth",
+    "author": "BeepStreet",
+    "description": "\"This really is the synth that keeps on giving! Inspiration and intuition truly blend together in this musical instrument.\"  Alan Parsons\nSunrizer Synth is a virtual analog synthesizer that takes the definition of iOS synthesizer to the next level. \nThanks to carefully designed architecture and heavy usage of coprocessor it blurs the boundaries between iOS and hardware synthesizers. \nSunrizer was built to perform and works perfectly with any MIDI keyboard or sequencer. A lot of research has been done in order to achieve unheard warmth and clarity. \n\nHIGHLIGHTS \n· True SuperSaw sound emulation, first found in the legendary Roland JP-8000 synthesizer. SuperSaw is a layered waveform consisting of multiple saw waves which are detuned to create an extremely full and epic sound. \n· Two filters per voice with configurable routing. 15 filter types available, including less common like Comb, Formant or Frequency shifter. \n· The Morph Group function lets you continuously morph of up to 30 parameters in a sound (including effects), using only the modulation wheel. \n· Full support for CoreMidi, MIDI mapping, Virtual Midi Ports and background audio.\n· Multi mode lets you multiply oscillators to get unbelievably fat and full sound. \n· Support for microtuning - load scl and tun files. Create fascinating microtonal music which uses intervals not found in the Western system of 12 equal intervals to the octave.\n\nOSCILLATORS \n· 2 warm-sounding analog modelled oscillators, 2 sub-oscillators (except SuperSaw). Available waveforms: Saw, PWM pulse,Triangle, SuperSaw, FM (frequency of phase modulation). 6 oscillators per voice in multi-sono mode. \n· Oscillator 2 hard-sync and configurable routing \n· FM (true frequency modulation) and PM mode \n· Osc-mix, ring modulator \n· White noise oscillator \n\nFLEXIBLE MULTI FILTERS \n· Two independent filters per voice with configurable routing. Filter types: LPF, HPF, BPF, Analog LPF, Notch, Comb, All pass, Power LPF, Power BPF, Wave shaper, Resonator, Resampler, LPF+Resampler, Frequency shifter. \n· Configurable routing: serial or parallel with bypass option. \n· ADSR envelope, keyboard tracking and full LFO control. \n\nMODULATION \n· Two LFOs per voice. It's possible to assign each LFO to almost any parameter. 3 LFO running modes: trigger, 1 shot, global. 6 waveforms, phase and fade-in knobs.\n· The Morph Group function lets you continuously morph of up to 30 parameters in a sound (including effects), using only the modulation wheel. \n· Two Modulation ADSR Envelopes for amplitude and filters cutoff. \n· Pitch and modulation wheels. \n\nEFFECTS \n· A number of effects are built in: distortion, hi-q reverb, chorus, rotary speaker simulation, equalizer, phaser and stereo delay. Dual-band FX processing. \n\nARPEGGIATOR \n· Sunrizer incorporates very powerful programmable arpeggiator. You should think of it more like a small step sequencer. \n\nOTHER FEATURES \n· Over 380 presets, 7 additional banks available for FREE in web library (more coming soon)\n· Hold button allows you to to keep notes sustaining until you play new notes\n· With Chord Memory function you can play the chord by only pressing single keys\n· Phrase sequencer\n· Compatible with AudioBus \n· Adjustable polyphony: 6-20 voices \n· Playback modes: poly, solo, arp \n· Built-in recorder supporting AudioCopy, DropBox and iTunes file sharing. \n· Supports AUv3, MIDI, IAA, AudioBus 2.0\n\nVisit www.beepstreet.com for user manual and audio demos. \n* Sunrizer is now available on Mac and PC, check our website for more info\n\n\"Specs aside, the most important thing is the sound… and it’s great.\" musicradar.com \n\n\"Sunrizer is the first truly mature polyphonic synth for the iPad, a real, smooth and powerful sounding option for all sorts of stage and studio performances.\"\nMark Jenkins, author \"Analog Synthesizers\"",
+    "price": 14.99,
+    "formattedPrice": "$14.99",
+    "url": "https://apps.apple.com/au/app/sunrizer-synth/id443663267?uo=4",
+    "iconURL": "https://is3-ssl.mzstatic.com/image/thumb/Purple118/v4/e1/b6/47/e1b647e6-f258-1c1a-6ec8-8718e5e1e4d3/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Entertainment"
+    ],
+    "version": "4.02"
+  },
+  {
+    "id": 571863178,
+    "title": "AudioStretch",
+    "author": "Cognosonic Pte Ltd",
+    "description": "Before you buy AudioStretch, consider first downloading AudioStretch Lite for FREE. Apart from some feature limitations, it's the same as the full (paid) version. The Lite version is a great way to see whether AudioStretch works well for you. \n\nAs a musician one of the most helpful tools you can have is the ability to slow-down, loop or auto-transpose the notes for a piece of music you are trying to learn.\n\nAudioStretch is the world’s first audio and video transcription tool. \nNow you can manipulate the pitch, speed and transcribe your tunes from both audio and video files; or by using your phone’s camera you can capture video directly into AudioStretch and transcribe it!\n\nFEATURES INCLUDE:\n• Import audio or video files\n• Capture video with your phone camera for transcription\n• Change the speed of files without changing the pitch\n• Listen to the individual notes as you drag the waveform\n• Play audio and video at zero speed\n• Transpose any music\n• Loop difficult to learn sections\n\nWith AudioStretch you get all of this in an incredibly responsive and easy-to-use app. Ideal for transcription, learning songs by ear, crazy sonic experimentation, or just listening to your music library in a new way.\n\nDETAILED FEATURES:\n• Load songs from your Music Library. (Note: songs from Apple Music have DRM and therefore cannot be loaded).\n• Document Picker import/export option supports iCloud, OneDrive, and more\n• Open Dropbox files and email attachments via \"Open In\"\n• LiveScrub™ : listen as you drag/hold the waveform\n• Speed range -10x to 10x, including zero speed!\n• Instant freeze to zero speed by double-tapping on speed display\n• Pitch shift range +/- 36 semitones\n• Keyboard/spectrum feature for transcription\n• Super-fine speed/pitch adjustment via drag left-right on speed/pitch display\n• Flexible looping feature\n• Audiobus support: stream live audio directly to other Audiobus-compatible apps!\n• No ads or in-app purchases\n\nIf you run into any problems with AudioStretch or AudioStretch Lite, please contact support@audiostretch.com",
+    "price": 14.99,
+    "formattedPrice": "$14.99",
+    "url": "https://apps.apple.com/au/app/audiostretch/id571863178?uo=4",
+    "iconURL": "https://is4-ssl.mzstatic.com/image/thumb/Purple123/v4/09/9d/85/099d857b-8c78-b876-75bf-e11842d3f7e3/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Education"
+    ],
+    "version": "6.6.0"
+  },
+  {
+    "id": 1129130361,
+    "title": "Audiobus Audio and MIDI Studio",
+    "author": "Audiobus Pty Ltd",
+    "description": "Open up new worlds of creative music making possibilities with Audiobus, the app that lets you use your music apps together, just like virtual cables.\n\nSend live audio or MIDI from one Audiobus-compatible app or Audio Unit to another: add effects on top of your favourite synth, use your favourite step sequencer to drive the whole lot, and record it all in your favourite DAW, sampler or looper. Plug in a MIDI keyboard, run it through an arpeggiator or a key quantizer, and record the result in your DAW, or drive several different sound generators with a keyboard splitter. And control it all with a MIDI controller. The possibilities are endless.\n\nThen save your setup in a preset to be restored with one touch later on.\n\nWith a completely new MIDI routing system, support for Apple's new Audio Unit Extensions standard, a new built-in mixer, MIDI learn, and huge new workflow improvements, Audiobus 3 represents a big step forward for mobile music making.\n\nAudiobus has a rich community of over a thousand great compatible apps, including:\n\n - Korg Gadget\n - GarageBand\n - Launchpad\n - Animoog\n - Loopy HD\n - Cubasis\n - Amplitube\n\nand many more. See the full list at https://audiob.us/apps\n\nFind Audiobus' user manual at https://audiob.us/help\n\nWhat the internet is saying about Audiobus 3:\n\n\"Audiobus is the most essential audio app on iOS.\"\n - Charlie Sorrell, Cult of Mac\n\n\"[The| New MIDI routing and effects set to open up a whole new world of apps!\"\n - Tim Webb, Discchord.com\n\n\"Audiobus is one of the most intriguing and powerful additions to the iPad's music ecosystem.\"\n - Federico Viticci, Macstories.net\n\n\"Audiobus 3 revolutionizes iOS music making again\"\n- iDesignSound.com\n\n\nAudiobus: Your music apps. Connected.",
+    "price": 14.99,
+    "formattedPrice": "$14.99",
+    "url": "https://apps.apple.com/au/app/audiobus-audio-and-midi-studio/id1129130361?uo=4",
+    "iconURL": "https://is5-ssl.mzstatic.com/image/thumb/Purple113/v4/0a/2b/38/0a2b38ee-9066-3c15-fc87-169095f33cdb/source/512x512bb.jpg",
+    "genres": [
+      "Music",
+      "Utilities"
+    ],
+    "version": "3.4.6"
+  }
+]
