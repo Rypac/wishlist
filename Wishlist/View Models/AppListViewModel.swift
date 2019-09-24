@@ -15,7 +15,7 @@ final class AppListViewModel: ObservableObject {
       .prepend(settings.sortOrder) // Emit initial sort order again to work around layout issue.
       .removeDuplicates()
       .map(apps.sorted(by:))
-      .receive(on: RunLoop.main)
+      .receive(on: DispatchQueue.main)
       .sink { [unowned self] sortedApps in
         self.dataSource = sortedApps
       }
