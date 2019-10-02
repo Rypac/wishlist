@@ -7,7 +7,7 @@ struct SettingsView: View {
   var body: some View {
     NavigationView {
       Form {
-        Section(header: Text("Display settings")) {
+        Section(header: Text("Display")) {
           Picker(selection: $viewModel.sortOrder, label: Text("Sort order")) {
             ForEach(SortOrder.allCases, id: \.self) {
               Text($0.title).tag($0)

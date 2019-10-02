@@ -7,18 +7,19 @@ struct AppDetailsView: View {
 
   var body: some View {
     ScrollView(.vertical, showsIndicators: false) {
-      VStack(alignment: .leading, spacing: 16) {
-        VStack(alignment: .leading) {
-          Text(viewModel.title)
-            .font(.title)
-            .fixedSize(horizontal: false, vertical: true)
-          Text(viewModel.author)
-            .font(.headline)
-            .fixedSize(horizontal: false, vertical: true)
+      HStack {
+        VStack(alignment: .leading, spacing: 16) {
+          VStack(alignment: .leading) {
+            Text(viewModel.title)
+              .font(.title)
+            Text(viewModel.author)
+              .font(.headline)
+          }
+          Text(viewModel.description)
+            .font(.body)
         }
-        Text(viewModel.description)
-          .font(.body)
-          .fixedSize(horizontal: false, vertical: true)
+        .layoutPriority(1)
+        Spacer()
       }
       .padding()
     }
