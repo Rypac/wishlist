@@ -31,11 +31,9 @@ private struct AppRowView: View {
       VStack(alignment: .leading) {
         Text(app.title)
           .font(.headline)
-          .fixedSize(horizontal: false, vertical: true)
         Text(app.author)
           .font(.footnote)
           .foregroundColor(.secondary)
-          .fixedSize(horizontal: false, vertical: true)
       }
       .layoutPriority(1)
       Spacer(minLength: 8)
