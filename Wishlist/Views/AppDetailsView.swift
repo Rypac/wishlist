@@ -25,7 +25,9 @@ struct AppDetailsView: View {
     }
     .navigationBarTitle(Text("Details"), displayMode: .inline)
     .navigationBarItems(
-      trailing: Button(action: { self.showShareSheet = true }, label: { Image.share })
+      trailing: Button(action: { self.showShareSheet = true }) {
+        Image.share.imageScale(.large)
+      }
     )
     .sheet(isPresented: $showShareSheet, content: {
       ActivityView(showing: self.$showShareSheet, activityItems: [self.viewModel.url], applicationActivities: nil)

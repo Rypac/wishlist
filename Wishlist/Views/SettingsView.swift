@@ -14,8 +14,8 @@ struct SettingsView: View {
             }
           }
         }
-        .navigationBarTitle(Text("Settings"))
       }
+      .navigationBarTitle(Text("Settings"))
     }
   }
 }
