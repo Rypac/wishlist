@@ -7,12 +7,19 @@ struct AppListView: View {
 
   var body: some View {
     NavigationView {
-      List(viewModel.dataSource) { app in
-        AppRowView(viewModel: self.viewModel, app: app)
+      List {
+        ForEach(viewModel.apps) { app in
+          AppRowView(viewModel: self.viewModel, app: app)
+        }
+        .onDelete(perform: viewModel.removeApps)
+        .onMove(perform: viewModel.moveApps)
       }
       .navigationBarTitle(Text("Wishlist"))
       .navigationBarItems(
-        trailing: Button(action: { self.showAction = true }, label: { Image.slider })
+        leading: Button(action: { self.showAction = true }) {
+          Image.slider.imageScale(.large)
+        },
+        trailing: EditButton()
       )
       .sheet(isPresented: $showAction) {
         SettingsView()

@@ -2,14 +2,14 @@ import Combine
 import SwiftUI
 
 final class AppListViewModel: ObservableObject {
-  @Published private(set) var dataSource: [App]
+  @Published private(set) var apps: [App]
 
   private let settings: ObservableSettings
   private var cancellables = Set<AnyCancellable>()
 
   init(apps: [App], settings: ObservableSettings) {
     self.settings = settings
-    self.dataSource = apps.sorted(by: settings.sortOrder)
+    self.apps = apps.sorted(by: settings.sortOrder)
 
     settings.sortOrderPublisher
       .prepend(settings.sortOrder) // Emit initial sort order again to work around layout issue.
@@ -17,7 +17,7 @@ final class AppListViewModel: ObservableObject {
       .map(apps.sorted(by:))
       .receive(on: DispatchQueue.main)
       .sink { [unowned self] sortedApps in
-        self.dataSource = sortedApps
+        self.apps = sortedApps
       }
       .store(in: &cancellables)
   }
@@ -36,6 +36,14 @@ extension AppListViewModel {
 
   var settingsViewModel: SettingsViewModel {
     SettingsViewModel(settings: settings)
+  }
+
+  func removeApps(at offsets: IndexSet) {
+    apps.remove(atOffsets: offsets)
+  }
+
+  func moveApps(from fromOffsets: IndexSet, to toOffsets: Int) {
+    apps.move(fromOffsets: fromOffsets, toOffset: toOffsets)
   }
 }
 
