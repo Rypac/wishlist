@@ -2,17 +2,22 @@ import Combine
 import SwiftUI
 
 final class AppListViewModel: ObservableObject {
-  @Published private(set) var apps: [App]
+  @Published private(set) var apps: [App] {
+    didSet {
+      database.write(apps: apps)
+    }
+  }
 
-  private let settings: ObservableSettings
+  private let database: Database
+  private let settings: SettingsStore
   private var cancellables = Set<AnyCancellable>()
 
-  init(apps: [App], settings: ObservableSettings) {
+  init(database: Database, settings: SettingsStore) {
+    self.database = database
     self.settings = settings
-    self.apps = apps.sorted(by: settings.sortOrder)
+    self.apps = database.read().sorted(by: settings.sortOrder)
 
-    settings.sortOrderPublisher
-      .prepend(settings.sortOrder) // Emit initial sort order again to work around layout issue.
+    settings.$sortOrder.publisher
       .removeDuplicates()
       .map(apps.sorted(by:))
       .receive(on: DispatchQueue.main)
@@ -30,30 +35,24 @@ final class AppListViewModel: ObservableObject {
 }
 
 extension AppListViewModel {
-  func detailsViewModel(app: App) -> AppDetailsViewModel {
-    AppDetailsViewModel(app: app)
-  }
-
-  var settingsViewModel: SettingsViewModel {
-    SettingsViewModel(settings: settings)
+  func removeApp(_ app: App) {
+    apps.removeAll { $0.id == app.id }
+    database.write(apps: apps)
   }
 
   func removeApps(at offsets: IndexSet) {
     apps.remove(atOffsets: offsets)
-  }
-
-  func moveApps(from fromOffsets: IndexSet, to toOffsets: Int) {
-    apps.move(fromOffsets: fromOffsets, toOffset: toOffsets)
+    database.write(apps: apps)
   }
 }
 
 private extension Array where Element == App {
   func sorted(by order: SortOrder) -> [App] {
-    sorted(by: {
+    sorted {
       switch order {
       case .title: return $0.title < $1.title
       case .price: return $0.price < $1.price
       }
-    })
+    }
   }
 }

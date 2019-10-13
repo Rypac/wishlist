@@ -15,10 +15,14 @@ public struct UserDefault<Value: UserDefaultsSerializable> {
     get { defaults[key] }
     set { defaults[key] = newValue }
   }
+
+  public var projectedValue: UserDefault<Value> { self }
 }
 
 public extension UserDefault {
   var defaultValue: Value { key.defaultValue }
   var exists: Bool { defaults.has(key) }
+
+  @available(iOS 13.0, *)
   var publisher: UserDefaults.Publisher<Value> { defaults.publisher(for: key) }
 }

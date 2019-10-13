@@ -3,20 +3,19 @@ import SwiftUI
 struct AppDetailsView: View {
   @State private var showShareSheet = false
 
-  @EnvironmentObject var viewModel: AppDetailsViewModel
+  let app: App
 
   var body: some View {
     ScrollView(.vertical) {
       HStack {
         VStack(alignment: .leading, spacing: 16) {
           VStack(alignment: .leading) {
-            Text(viewModel.title)
+            Text(app.title)
               .font(.title)
-            Text(viewModel.author)
+            Text(app.author)
               .font(.headline)
           }
-          Text(viewModel.description)
-            .font(.body)
+          Text(app.description)
         }
         .layoutPriority(1)
         Spacer()
@@ -29,9 +28,9 @@ struct AppDetailsView: View {
         Image.share.imageScale(.large)
       }
     )
-    .sheet(isPresented: $showShareSheet, content: {
-      ActivityView(showing: self.$showShareSheet, activityItems: [self.viewModel.url], applicationActivities: nil)
-    })
+    .sheet(isPresented: $showShareSheet) {
+      ActivityView(showing: self.$showShareSheet, activityItems: [self.app.url], applicationActivities: nil)
+    }
   }
 }
 

@@ -20,14 +20,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     // Use a UIHostingController as window root view controller.
     if let windowScene = scene as? UIWindowScene {
-      let url = Bundle.main.url(forResource: "apps", withExtension: "json")!
-      let data = try! Data(contentsOf: url)
-      let apps = try! JSONDecoder().decode([App].self, from: data)
+      let database = try! Database()
+      let setttingsStore = SettingsStore()
 
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(
         rootView: AppListView()
-          .environmentObject(AppListViewModel(apps: apps, settings: SettingsStore()))
+          .environmentObject(AppListViewModel(database: database, settings: setttingsStore))
+          .environmentObject(setttingsStore)
       )
       self.window = window
       window.makeKeyAndVisible()

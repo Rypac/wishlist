@@ -2,13 +2,15 @@ import Foundation
 import SwiftUI
 
 struct SettingsView: View {
-  @EnvironmentObject var viewModel: SettingsViewModel
+  @Environment(\.presentationMode) var presentationMode
+
+  @EnvironmentObject var settings: SettingsStore
 
   var body: some View {
     NavigationView {
       Form {
         Section(header: Text("Display")) {
-          Picker("Sort order", selection: $viewModel.sortOrder) {
+          Picker("Sort order", selection: $settings.sortOrder) {
             ForEach(SortOrder.allCases, id: \.self) {
               Text($0.title).tag($0)
             }
@@ -16,6 +18,11 @@ struct SettingsView: View {
         }
       }
       .navigationBarTitle("Settings")
+      .navigationBarItems(
+        trailing: Button("Done") {
+          self.presentationMode.wrappedValue.dismiss()
+        }
+      )
     }
   }
 }

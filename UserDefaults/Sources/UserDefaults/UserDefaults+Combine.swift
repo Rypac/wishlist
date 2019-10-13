@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 
+@available(iOS 13.0, *)
 public extension UserDefaults {
   func publisher<Value: UserDefaultsSerializable>(for key: Key<Value>) -> UserDefaults.Publisher<Value> {
     UserDefaults.Publisher(defaults: self, key: key)
