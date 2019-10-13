@@ -14,7 +14,7 @@ struct AppListView: View {
         .onDelete(perform: viewModel.removeApps)
         .onMove(perform: viewModel.moveApps)
       }
-      .navigationBarTitle(Text("Wishlist"))
+      .navigationBarTitle("Wishlist")
       .navigationBarItems(
         leading: Button(action: { self.showAction = true }) {
           Image.slider.imageScale(.large)

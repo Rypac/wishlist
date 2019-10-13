@@ -6,7 +6,7 @@ struct AppDetailsView: View {
   @EnvironmentObject var viewModel: AppDetailsViewModel
 
   var body: some View {
-    ScrollView(.vertical, showsIndicators: false) {
+    ScrollView(.vertical) {
       HStack {
         VStack(alignment: .leading, spacing: 16) {
           VStack(alignment: .leading) {
@@ -23,7 +23,7 @@ struct AppDetailsView: View {
       }
       .padding()
     }
-    .navigationBarTitle(Text("Details"), displayMode: .inline)
+    .navigationBarTitle("Details", displayMode: .inline)
     .navigationBarItems(
       trailing: Button(action: { self.showShareSheet = true }) {
         Image.share.imageScale(.large)

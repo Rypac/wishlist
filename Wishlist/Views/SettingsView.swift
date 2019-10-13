@@ -8,14 +8,14 @@ struct SettingsView: View {
     NavigationView {
       Form {
         Section(header: Text("Display")) {
-          Picker(selection: $viewModel.sortOrder, label: Text("Sort order")) {
+          Picker("Sort order", selection: $viewModel.sortOrder) {
             ForEach(SortOrder.allCases, id: \.self) {
               Text($0.title).tag($0)
             }
           }
         }
       }
-      .navigationBarTitle(Text("Settings"))
+      .navigationBarTitle("Settings")
     }
   }
 }
