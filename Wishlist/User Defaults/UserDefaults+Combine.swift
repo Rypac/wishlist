@@ -17,7 +17,7 @@ public extension UserDefaults {
       self.key = key
     }
 
-    public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
+    public func receive<S>(subscriber: S) where S: Subscriber, Output == S.Input, Failure == S.Failure {
       let observer = UserDefaults.Observer(defaults: defaults, key: key)
       observer
         .subject
@@ -51,15 +51,14 @@ public extension UserDefaults {
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
       guard
-        keyPath == key.key,
         let kindKey = change?[NSKeyValueChangeKey.kindKey] as? NSNumber,
-        let key = NSKeyValueChange(rawValue: kindKey.uintValue),
-        key == .setting
+        let valueChange = NSKeyValueChange(rawValue: kindKey.uintValue),
+        valueChange == .setting
       else {
         return
       }
 
-      subject.send(defaults[self.key])
+      subject.send(defaults[key])
     }
   }
 }

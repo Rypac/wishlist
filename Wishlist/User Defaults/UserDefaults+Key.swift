@@ -19,3 +19,9 @@ public extension UserDefaults {
     set { newValue.write(to: self, key: key.key) }
   }
 }
+
+public extension UserDefaults.Key {
+  init<T>(key: String) where Value == T? {
+    self.init(key: key, defaultValue: nil)
+  }
+}

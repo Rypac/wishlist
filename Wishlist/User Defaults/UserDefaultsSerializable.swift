@@ -150,14 +150,14 @@ extension UserDefaultsSerializable where Self: RawRepresentable, RawValue: UserD
 
 extension UserDefaultsSerializable where Self: Codable {
   public init?(from userDefaults: UserDefaults, key: String) {
-    guard let data = userDefaults.data(forKey: key), let value = try? JSONDecoder().decode(Self.self, from: data) else {
+    guard let data = userDefaults.data(forKey: key), let value = try? PropertyListDecoder().decode(Self.self, from: data) else {
       return nil
     }
     self = value
   }
 
   public func write(to userDefaults: UserDefaults, key: String) {
-    if let data = try? JSONEncoder().encode(self) {
+    if let data = try? PropertyListEncoder().encode(self) {
       userDefaults.set(data, forKey: key)
     }
   }
