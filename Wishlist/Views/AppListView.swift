@@ -39,7 +39,7 @@ private struct AppRowView: View {
 
   var body: some View {
     NavigationLink(destination: AppDetailsView(app: app)) {
-      AppRowContentView(app: app)
+      AppRowContent(app: app)
         .contextMenu {
           Button(action: { self.viewModel.removeApp(self.app) }) {
             Text("Delete")
@@ -57,7 +57,7 @@ private struct AppRowView: View {
   }
 }
 
-private struct AppRowContentView: View {
+private struct AppRowContent: View {
   let app: App
 
   var body: some View {
