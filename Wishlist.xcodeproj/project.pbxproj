@@ -13,11 +13,13 @@
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */; };
 		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
+		9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9489E4DB242D6EAC00C396AD /* AppIcon.swift */; };
 		94BDFECB2349C9B400B25D81 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BDFECA2349C9B400B25D81 /* Database.swift */; };
 		94BDFECD2349D0C800B25D81 /* Wishlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BDFECC2349D0C800B25D81 /* Wishlist.swift */; };
 		94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* SettingsStore.swift */; };
 		94C7B1572330FE13008181D1 /* SortOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1562330FE13008181D1 /* SortOrder.swift */; };
 		94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B15A233104DF008181D1 /* SettingsView.swift */; };
+		94ECF1F8242CC6C100F09DA6 /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 94ECF1F7242CC6C100F09DA6 /* URLImage */; };
 		94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */; };
 		94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */; };
 		94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D2231BA2BC00EC1190 /* AppListView.swift */; };
@@ -33,6 +35,7 @@
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsView.swift; sourceTree = "<group>"; };
 		945CB45E23530B2F00DF3ABF /* UserDefaults */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UserDefaults; sourceTree = "<group>"; };
+		9489E4DB242D6EAC00C396AD /* AppIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIcon.swift; sourceTree = "<group>"; };
 		94BDFECA2349C9B400B25D81 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		94BDFECC2349D0C800B25D81 /* Wishlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wishlist.swift; sourceTree = "<group>"; };
 		94C7B1522330F13F008181D1 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
@@ -53,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94ECF1F8242CC6C100F09DA6 /* URLImage in Frameworks */,
 				945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -75,6 +79,7 @@
 				945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */,
 				94FA20D2231BA2BC00EC1190 /* AppListView.swift */,
 				94C7B15A233104DF008181D1 /* SettingsView.swift */,
+				9489E4DB242D6EAC00C396AD /* AppIcon.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -176,6 +181,7 @@
 			name = Wishlist;
 			packageProductDependencies = (
 				945CB46023530B5E00DF3ABF /* UserDefaults */,
+				94ECF1F7242CC6C100F09DA6 /* URLImage */,
 			);
 			productName = Wishlist;
 			productReference = 94FA20CB231BA2BC00EC1190 /* Wishlist.app */;
@@ -205,6 +211,9 @@
 				Base,
 			);
 			mainGroup = 94FA20C2231BA2BC00EC1190;
+			packageReferences = (
+				94ECF1F6242CC6C000F09DA6 /* XCRemoteSwiftPackageReference "url-image" */,
+			);
 			productRefGroup = 94FA20CC231BA2BC00EC1190 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -238,6 +247,7 @@
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
 				94295E14232E06D400D21BC6 /* AppListViewModel.swift in Sources */,
 				9459B56A231BA3F40023BD74 /* App.swift in Sources */,
+				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,
 				94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */,
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
 				94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */,
@@ -441,10 +451,26 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		94ECF1F6242CC6C000F09DA6 /* XCRemoteSwiftPackageReference "url-image" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dmytro-anokhin/url-image.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.13;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		945CB46023530B5E00DF3ABF /* UserDefaults */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UserDefaults;
+		};
+		94ECF1F7242CC6C100F09DA6 /* URLImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 94ECF1F6242CC6C000F09DA6 /* XCRemoteSwiftPackageReference "url-image" */;
+			productName = URLImage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

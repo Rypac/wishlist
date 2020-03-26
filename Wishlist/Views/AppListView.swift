@@ -1,8 +1,8 @@
 import SwiftUI
+import URLImage
 
 struct AppListView: View {
   @State private var showSettings = false
-  @State private var showShareSheet = false
 
   @EnvironmentObject var viewModel: AppListViewModel
   @EnvironmentObject var settingsStore: SettingsStore
@@ -10,25 +10,17 @@ struct AppListView: View {
   var body: some View {
     NavigationView {
       List(viewModel.apps) { app in
-        AppRowView(app: app)
-//          .contextMenu {
-//            Button(action: { self.viewModel.removeApp(app) }) {
-//              Text("Delete")
-//              Image.trash
-//            }
-//            Button(action: { self.showShareSheet = true }) {
-//              Text("Share")
-//              Image.share.padding()
-//            }
-//          }
-          .sheet(isPresented: self.$showShareSheet) {
-            ActivityView(showing: self.$showShareSheet, activityItems: [app.url], applicationActivities: nil)
-          }
+        AppRowView(viewModel: self.viewModel, app: app)
       }
       .navigationBarTitle("Wishlist")
       .navigationBarItems(
         trailing: Button(action: { self.showSettings = true }) {
-          Image.slider.imageScale(.large)
+          HStack {
+            Image.slider
+              .imageScale(.large)
+              .accessibility(label: Text("Settings"))
+          }
+          .frame(width: 24, height: 24)
         }
       )
       .sheet(isPresented: $showSettings) {
@@ -40,10 +32,37 @@ struct AppListView: View {
 }
 
 private struct AppRowView: View {
+  let viewModel: AppListViewModel
   let app: App
+
+  @State var showShareSheet = false
 
   var body: some View {
     NavigationLink(destination: AppDetailsView(app: app)) {
+      AppRowContentView(app: app)
+        .contextMenu {
+          Button(action: { self.viewModel.removeApp(self.app) }) {
+            Text("Delete")
+            Image.trash.imageScale(.small)
+          }.foregroundColor(.red)
+          Button(action: { self.showShareSheet = true }) {
+            Text("Share")
+            Image.share.imageScale(.small)
+          }
+        }
+        .sheet(isPresented: self.$showShareSheet) {
+          ActivityView(showing: self.$showShareSheet, activityItems: [self.app.url], applicationActivities: nil)
+        }
+    }
+  }
+}
+
+private struct AppRowContentView: View {
+  let app: App
+
+  var body: some View {
+    HStack {
+      AppIcon(app.iconURL, width: 50)
       Text(app.title)
         .layoutPriority(1)
       Spacer()

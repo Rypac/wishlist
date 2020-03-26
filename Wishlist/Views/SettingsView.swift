@@ -19,7 +19,7 @@ struct SettingsView: View {
       }
       .navigationBarTitle("Settings")
       .navigationBarItems(
-        trailing: Button("Done") {
+        leading: Button("Close") {
           self.presentationMode.wrappedValue.dismiss()
         }
       )

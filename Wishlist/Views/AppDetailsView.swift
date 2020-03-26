@@ -9,12 +9,7 @@ struct AppDetailsView: View {
     ScrollView(.vertical) {
       HStack {
         VStack(alignment: .leading, spacing: 16) {
-          VStack(alignment: .leading) {
-            Text(app.title)
-              .font(.title)
-            Text(app.author)
-              .font(.headline)
-          }
+          AppHeading(app: app)
           Text(app.description)
         }
         .layoutPriority(1)
@@ -30,6 +25,22 @@ struct AppDetailsView: View {
     )
     .sheet(isPresented: $showShareSheet) {
       ActivityView(showing: self.$showShareSheet, activityItems: [self.app.url], applicationActivities: nil)
+    }
+  }
+}
+
+private struct AppHeading: View {
+  let app: App
+
+  var body: some View {
+    HStack(alignment: .top, spacing: 16) {
+      AppIcon(app.iconURL, width: 100)
+      VStack(alignment: .leading) {
+        Text(app.title)
+          .font(Font.title.bold())
+        Text(app.author)
+          .font(.headline)
+      }
     }
   }
 }
