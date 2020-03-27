@@ -1,7 +1,7 @@
 import Foundation
 
 class Database {
-  private let databaseLocation: URL
+  private let databaseURL: URL
 
   private let encoder: JSONEncoder = {
     let encoder = JSONEncoder()
@@ -21,10 +21,14 @@ class Database {
       appropriateFor: nil,
       create: true
     )
-    databaseLocation = documentsDirectory.appendingPathComponent("apps.json", isDirectory: false)
+    databaseURL = documentsDirectory.appendingPathComponent("apps.json", isDirectory: false)
+
+    if !fileManager.fileExists(atPath: databaseURL.path) {
+      try populateWithDefaults()
+    }
   }
 
-  private func populate() throws {
+  private func populateWithDefaults() throws {
     let url = Bundle.main.url(forResource: "apps", withExtension: "json")!
     let data = try Data(contentsOf: url)
     let apps = try decoder.decode([App].self, from: data)
@@ -32,12 +36,12 @@ class Database {
   }
 
   func read() throws -> [App] {
-    let data = try Data(contentsOf: databaseLocation)
+    let data = try Data(contentsOf: databaseURL)
     return try decoder.decode([App].self, from: data)
   }
 
   func write(apps: [App]) throws {
     let data = try encoder.encode(apps)
-    try data.write(to: databaseLocation)
+    try data.write(to: databaseURL)
   }
 }
