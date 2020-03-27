@@ -9,7 +9,10 @@ struct App: Identifiable, Codable {
   let iconURL: URL
   let price: Double
   let formattedPrice: String
+  let bundleID: String
   let version: String
+  let releaseDate: Date
+  let updateDate: Date
 
   enum CodingKeys: String, CodingKey {
     case id = "trackId"
@@ -20,6 +23,9 @@ struct App: Identifiable, Codable {
     case iconURL = "artworkUrl100"
     case price
     case formattedPrice
+    case bundleID = "bundleId"
     case version
+    case releaseDate
+    case updateDate = "currentVersionReleaseDate"
   }
 }

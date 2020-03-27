@@ -3,8 +3,16 @@ import Foundation
 class Database {
   private let databaseLocation: URL
 
-  private let encoder = JSONEncoder()
-  private let decoder = JSONDecoder()
+  private let encoder: JSONEncoder = {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    return encoder
+  }()
+  private let decoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    return decoder
+  }()
 
   init(fileManager: FileManager = .default) throws {
     let documentsDirectory = try fileManager.url(
@@ -19,7 +27,7 @@ class Database {
   private func populate() throws {
     let url = Bundle.main.url(forResource: "apps", withExtension: "json")!
     let data = try Data(contentsOf: url)
-    let apps = try JSONDecoder().decode([App].self, from: data)
+    let apps = try decoder.decode([App].self, from: data)
     try write(apps: apps)
   }
 

@@ -3,6 +3,11 @@ import Combine
 
 class AppStoreService {
   private let session: URLSession
+  private let decoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    return decoder
+  }()
 
   init(session: URLSession = .shared) {
     self.session = session
@@ -22,7 +27,7 @@ class AppStoreService {
 
     return session.dataTaskPublisher(for: urlComponents.url!)
       .map(\.data)
-      .decode(type: AppStoreLookupResponse.self, decoder: JSONDecoder())
+      .decode(type: AppStoreLookupResponse.self, decoder: decoder)
       .map(\.results)
       .eraseToAnyPublisher()
   }
