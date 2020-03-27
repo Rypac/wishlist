@@ -21,7 +21,7 @@ class Database {
       appropriateFor: nil,
       create: true
     )
-    self.databaseLocation = documentsDirectory.appendingPathComponent("apps.json", isDirectory: false)
+    databaseLocation = documentsDirectory.appendingPathComponent("apps.json", isDirectory: false)
   }
 
   private func populate() throws {

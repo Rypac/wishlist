@@ -10,16 +10,26 @@ final class AppListViewModel: ObservableObject {
 
   private let database: Database
   private let settings: SettingsStore
+  private let appStoreService: AppStoreService
   private var cancellables = Set<AnyCancellable>()
 
-  init(database: Database, settings: SettingsStore) {
+  init(database: Database, settings: SettingsStore, appStoreService: AppStoreService) {
     self.database = database
     self.settings = settings
-    self.apps = database.read().sorted(by: settings.sortOrder)
+    self.appStoreService = appStoreService
+    self.apps = database.read()
+
+    appStoreService.lookup(ids: apps.map(\.id))
+      .map { $0.sorted(by: settings.sortOrder) }
+      .receive(on: DispatchQueue.main)
+      .sink(receiveCompletion: { error in print("Completion: \(error)") }) { [unowned self] apps in
+        self.apps = apps
+      }
+      .store(in: &cancellables)
 
     settings.$sortOrder.publisher
       .removeDuplicates()
-      .map(apps.sorted(by:))
+      .map { database.read().sorted(by: $0) }
       .receive(on: DispatchQueue.main)
       .sink { [unowned self] sortedApps in
         self.apps = sortedApps

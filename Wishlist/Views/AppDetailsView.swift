@@ -38,7 +38,7 @@ private struct AppHeading: View {
       VStack(alignment: .leading) {
         Text(app.title)
           .font(Font.title.bold())
-        Text(app.author)
+        Text(app.seller)
           .font(.headline)
       }
     }

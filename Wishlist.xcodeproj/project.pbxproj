@@ -13,6 +13,7 @@
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */; };
 		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
+		94703DC7242DA56800CC4B8E /* AppStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94703DC6242DA56800CC4B8E /* AppStoreService.swift */; };
 		9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9489E4DB242D6EAC00C396AD /* AppIcon.swift */; };
 		94BDFECB2349C9B400B25D81 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BDFECA2349C9B400B25D81 /* Database.swift */; };
 		94BDFECD2349D0C800B25D81 /* Wishlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BDFECC2349D0C800B25D81 /* Wishlist.swift */; };
@@ -35,6 +36,7 @@
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsView.swift; sourceTree = "<group>"; };
 		945CB45E23530B2F00DF3ABF /* UserDefaults */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UserDefaults; sourceTree = "<group>"; };
+		94703DC6242DA56800CC4B8E /* AppStoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreService.swift; sourceTree = "<group>"; };
 		9489E4DB242D6EAC00C396AD /* AppIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIcon.swift; sourceTree = "<group>"; };
 		94BDFECA2349C9B400B25D81 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		94BDFECC2349D0C800B25D81 /* Wishlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wishlist.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 				94BDFECA2349C9B400B25D81 /* Database.swift */,
 				94BDFECC2349D0C800B25D81 /* Wishlist.swift */,
 				94C7B1522330F13F008181D1 /* SettingsStore.swift */,
+				94703DC6242DA56800CC4B8E /* AppStoreService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -255,6 +258,7 @@
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
 				94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */,
 				94BDFECD2349D0C800B25D81 /* Wishlist.swift in Sources */,
+				94703DC7242DA56800CC4B8E /* AppStoreService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

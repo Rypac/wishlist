@@ -22,11 +22,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     if let windowScene = scene as? UIWindowScene {
       let database = try! Database()
       let setttingsStore = SettingsStore()
+      let appStoreService = AppStoreService()
 
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(
         rootView: AppListView()
-          .environmentObject(AppListViewModel(database: database, settings: setttingsStore))
+          .environmentObject(AppListViewModel(database: database, settings: setttingsStore, appStoreService: appStoreService))
           .environmentObject(setttingsStore)
       )
       self.window = window
