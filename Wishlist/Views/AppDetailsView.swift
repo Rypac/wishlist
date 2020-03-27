@@ -65,11 +65,8 @@ private struct ReleaseNotes: View {
   let app: App
 
   var body: some View {
-    guard let releaseNotes = app.releaseNotes else {
-      return AnyView(EmptyView())
-    }
-    return AnyView(
-      Group {
+    Group {
+      if app.releaseNotes != nil {
         Divider()
         HStack {
           Text("Release Notes")
@@ -80,9 +77,11 @@ private struct ReleaseNotes: View {
             .multilineTextAlignment(.trailing)
             .layoutPriority(1)
         }
-        Text(releaseNotes)
+        Text(app.releaseNotes!)
+      } else {
+        EmptyView()
       }
-    )
+    }
   }
 }
 
