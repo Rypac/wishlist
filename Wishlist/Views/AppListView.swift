@@ -55,19 +55,30 @@ private struct AppRow: View {
 }
 
 private struct AppRowContent: View {
+  @Environment(\.updateDateFormatter) private var dateFormatter
+  @EnvironmentObject private var settingsStore: SettingsStore
+
   let app: App
 
   var body: some View {
     HStack {
       AppIcon(app.iconURL, width: 50)
       Text(app.title)
+        .fontWeight(.medium)
         .layoutPriority(1)
       Spacer()
-      Text(app.formattedPrice)
+      Text(detailsContent)
         .lineLimit(1)
         .multilineTextAlignment(.trailing)
         .layoutPriority(1)
     }
+  }
+
+  private var detailsContent: String {
+    if settingsStore.sortOrder == .updated {
+      return dateFormatter.string(from: app.updateDate)
+    }
+    return app.formattedPrice
   }
 }
 
@@ -76,6 +87,7 @@ private extension SortOrder {
     switch self {
     case .price: return "Price"
     case .title: return "Title"
+    case .updated: return "Recently Updated"
     }
   }
 }

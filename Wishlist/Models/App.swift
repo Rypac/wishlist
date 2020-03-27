@@ -13,6 +13,7 @@ struct App: Identifiable, Codable {
   let version: String
   let releaseDate: Date
   let updateDate: Date
+  let releaseNotes: String?
 
   enum CodingKeys: String, CodingKey {
     case id = "trackId"
@@ -27,5 +28,6 @@ struct App: Identifiable, Codable {
     case version
     case releaseDate
     case updateDate = "currentVersionReleaseDate"
+    case releaseNotes
   }
 }

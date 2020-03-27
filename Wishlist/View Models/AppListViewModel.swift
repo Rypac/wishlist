@@ -67,6 +67,7 @@ private extension Array where Element == App {
       switch order {
       case .title: return $0.title < $1.title
       case .price: return $0.price < $1.price
+      case .updated: return $0.updateDate > $1.updateDate
       }
     }
   }

@@ -32,6 +32,7 @@ private extension SortOrder {
     switch self {
     case .price: return "Price"
     case .title: return "Title"
+    case .updated: return "Recently Updated"
     }
   }
 }

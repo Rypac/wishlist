@@ -10,7 +10,8 @@ struct AppDetailsView: View {
       HStack {
         VStack(alignment: .leading, spacing: 16) {
           AppHeading(app: app)
-          Text(app.description)
+          ReleaseNotes(app: app)
+          AppDescription(app: app)
         }
         .layoutPriority(1)
         Spacer()
@@ -42,6 +43,46 @@ private struct AppHeading: View {
           .font(.headline)
       }
     }
+  }
+}
+
+private struct AppDescription: View {
+  let app: App
+
+  var body: some View {
+    Group {
+      Divider()
+      Text("Description")
+        .bold()
+      Text(app.description)
+    }
+  }
+}
+
+private struct ReleaseNotes: View {
+  @Environment(\.updateDateFormatter) private var dateFormatter
+
+  let app: App
+
+  var body: some View {
+    guard let releaseNotes = app.releaseNotes else {
+      return AnyView(EmptyView())
+    }
+    return AnyView(
+      Group {
+        Divider()
+        HStack {
+          Text("Release Notes")
+            .bold()
+            .layoutPriority(2)
+          Spacer()
+          Text("Updated: \(dateFormatter.string(from: app.updateDate))")
+            .multilineTextAlignment(.trailing)
+            .layoutPriority(1)
+        }
+        Text(releaseNotes)
+      }
+    )
   }
 }
 
