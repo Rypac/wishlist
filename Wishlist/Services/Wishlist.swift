@@ -1,11 +1,3 @@
-//
-//  Wishlist.swift
-//  Wishlist
-//
-//  Created by Ryan Davis on 6/10/19.
-//  Copyright © 2019 Ryan Davis. All rights reserved.
-//
-
 import Foundation
 import Combine
 
@@ -15,14 +7,21 @@ final class Wishlist {
   private let database: Database
   private let appsUpdatedSubject = PassthroughSubject<Void, Never>()
 
-  init(database: Database) throws {
+  init(database: Database) {
     self.database = database
     self.apps = appsUpdatedSubject
-      .map(database.read)
+      .prepend(())
+      .tryMap(database.read)
+      .replaceError(with: [])
       .eraseToAnyPublisher()
   }
 
   func write(apps: [App]) {
-    database.write(apps: apps)
+    do {
+      try database.write(apps: apps)
+      appsUpdatedSubject.send()
+    } catch {
+      print("Failed to write app updates: \(error)")
+    }
   }
 }

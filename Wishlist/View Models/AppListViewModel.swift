@@ -2,34 +2,37 @@ import Combine
 import SwiftUI
 
 final class AppListViewModel: ObservableObject {
-  @Published private(set) var apps: [App] {
-    didSet {
-      database.write(apps: apps)
-    }
-  }
+  @Published private(set) var apps: [App] = []
 
-  private let database: Database
+  private let wishlist: Wishlist
   private let settings: SettingsStore
   private let appStoreService: AppStoreService
   private var cancellables = Set<AnyCancellable>()
 
-  init(database: Database, settings: SettingsStore, appStoreService: AppStoreService) {
-    self.database = database
+  init(wishlist: Wishlist, settings: SettingsStore, appStoreService: AppStoreService) {
+    self.wishlist = wishlist
     self.settings = settings
     self.appStoreService = appStoreService
-    self.apps = database.read()
 
-    appStoreService.lookup(ids: apps.map(\.id))
-      .map { $0.sorted(by: settings.sortOrder) }
-      .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { error in print("Completion: \(error)") }) { [unowned self] apps in
-        self.apps = apps
+    wishlist.apps
+      .first()
+      .setFailureType(to: Error.self)
+      .flatMap { apps in
+        appStoreService.lookup(ids: apps.map(\.id))
+      }
+      .sink(receiveCompletion: { _ in }) { [wishlist] apps in
+        wishlist.write(apps: apps)
       }
       .store(in: &cancellables)
 
-    settings.$sortOrder.publisher
+    let latestSortOrder = settings.$sortOrder.publisher
+      .prepend(settings.sortOrder)
       .removeDuplicates()
-      .map { database.read().sorted(by: $0) }
+
+    Publishers.CombineLatest(wishlist.apps, latestSortOrder)
+      .map { apps, sortOrder in
+        apps.sorted(by: sortOrder)
+      }
       .receive(on: DispatchQueue.main)
       .sink { [unowned self] sortedApps in
         self.apps = sortedApps
@@ -46,13 +49,15 @@ final class AppListViewModel: ObservableObject {
 
 extension AppListViewModel {
   func removeApp(_ app: App) {
-    apps.removeAll { $0.id == app.id }
-    database.write(apps: apps)
+    var updatedApps = apps
+    updatedApps.removeAll { $0.id == app.id }
+    wishlist.write(apps: updatedApps)
   }
 
   func removeApps(at offsets: IndexSet) {
-    apps.remove(atOffsets: offsets)
-    database.write(apps: apps)
+    var updatedApps = apps
+    updatedApps.remove(atOffsets: offsets)
+    wishlist.write(apps: updatedApps)
   }
 }
 
