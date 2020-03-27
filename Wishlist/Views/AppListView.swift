@@ -1,53 +1,50 @@
 import SwiftUI
-import URLImage
 
 struct AppListView: View {
-  @State private var showSettings = false
+  @State private var showActionSheet = false
 
-  @EnvironmentObject var viewModel: AppListViewModel
-  @EnvironmentObject var settingsStore: SettingsStore
+  @EnvironmentObject private var viewModel: AppListViewModel
+  @EnvironmentObject private var settingsStore: SettingsStore
 
   var body: some View {
     NavigationView {
-      List(viewModel.apps) { app in
-        AppRowView(viewModel: self.viewModel, app: app)
-      }
-      .navigationBarTitle("Wishlist")
-      .navigationBarItems(
-        trailing: Button(action: { self.showSettings = true }) {
-          HStack {
-            Image.slider
-              .imageScale(.large)
-              .accessibility(label: Text("Settings"))
+      List(viewModel.apps, rowContent: AppRow.init)
+        .navigationBarTitle("Wishlist")
+        .navigationBarItems(
+          trailing: Button(action: { self.showActionSheet = true }) {
+            HStack {
+              Image.sort
+                .imageScale(.large)
+                .accessibility(label: Text("Sort By"))
+            }
+            .frame(width: 24, height: 24)
           }
-          .frame(width: 24, height: 24)
+        )
+        .actionSheet(isPresented: $showActionSheet) {
+          var buttons = SortOrder.allCases.map { sortOrder in
+            Alert.Button.default(Text(sortOrder.title)) {
+              self.settingsStore.sortOrder = sortOrder
+            }
+          }
+          buttons.append(.cancel())
+          return ActionSheet(title: Text("Sort By"), buttons: buttons)
         }
-      )
-      .sheet(isPresented: $showSettings) {
-        SettingsView()
-          .environmentObject(self.settingsStore)
-      }
     }
   }
 }
 
-private struct AppRowView: View {
-  let viewModel: AppListViewModel
-  let app: App
+private struct AppRow: View {
+  @State private var showShareSheet = false
 
-  @State var showShareSheet = false
+  let app: App
 
   var body: some View {
     NavigationLink(destination: AppDetailsView(app: app)) {
       AppRowContent(app: app)
         .contextMenu {
-          Button(action: { self.viewModel.removeApp(self.app) }) {
-            Text("Delete")
-            Image.trash.imageScale(.small)
-          }.foregroundColor(.red)
           Button(action: { self.showShareSheet = true }) {
             Text("Share")
-            Image.share.imageScale(.small)
+            Image.share
           }
         }
         .sheet(isPresented: self.$showShareSheet) {
@@ -74,8 +71,16 @@ private struct AppRowContent: View {
   }
 }
 
+private extension SortOrder {
+  var title: String {
+    switch self {
+    case .price: return "Price"
+    case .title: return "Title"
+    }
+  }
+}
+
 private extension Image {
+  static var sort: Image { Image(systemName: "arrow.up.arrow.down") }
   static var share: Image { Image(systemName: "square.and.arrow.up") }
-  static var trash: Image { Image(systemName: "trash") }
-  static var slider: Image { Image(systemName: "slider.horizontal.3") }
 }

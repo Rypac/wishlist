@@ -30,7 +30,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Wishlist" largeTitleDisplayMode="always" id="PAb-03-Cu9">
-                        <barButtonItem key="rightBarButtonItem" title="Item" image="slider.horizontal.3" catalog="system" id="kfw-kS-alh"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="arrow.up.arrow.down" catalog="system" id="kfw-kS-alh"/>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HoH-US-lWE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -55,6 +55,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="slider.horizontal.3" catalog="system" width="128" height="100"/>
+        <image name="arrow.up.arrow.down" catalog="system" width="128" height="96"/>
     </resources>
 </document>
