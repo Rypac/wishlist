@@ -25,11 +25,11 @@ final class AppListViewModel: ObservableObject {
       }
       .store(in: &cancellables)
 
-    let latestSortOrder = settings.$sortOrder.publisher
-      .prepend(settings.sortOrder)
+    let sortOrder = settings.$sortOrder
+      .publisher(initialValue: .include)
       .removeDuplicates()
 
-    Publishers.CombineLatest(wishlist.apps, latestSortOrder)
+    Publishers.CombineLatest(wishlist.apps, sortOrder)
       .map { apps, sortOrder in
         apps.sorted(by: sortOrder)
       }

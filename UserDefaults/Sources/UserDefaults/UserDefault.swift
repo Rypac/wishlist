@@ -23,5 +23,7 @@ public struct UserDefault<Value: UserDefaultsSerializable> {
   public var exists: Bool { defaults.has(key) }
 
   @available(iOS 13.0, *)
-  public var publisher: UserDefaults.Publisher<Value> { defaults.publisher(for: key) }
+  public func publisher(initialValue: UserDefaults.InitialValueStrategy = .skip) -> UserDefaults.Publisher<Value> {
+    defaults.publisher(for: key, initialValue: initialValue)
+  }
 }

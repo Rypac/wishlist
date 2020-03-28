@@ -3,8 +3,13 @@ import Combine
 
 @available(iOS 13.0, *)
 public extension UserDefaults {
-  func publisher<Value: UserDefaultsSerializable>(for key: Key<Value>) -> UserDefaults.Publisher<Value> {
-    UserDefaults.Publisher(defaults: self, key: key)
+  func publisher<Value: UserDefaultsSerializable>(for key: Key<Value>, initialValue: InitialValueStrategy = .skip) -> UserDefaults.Publisher<Value> {
+    UserDefaults.Publisher(defaults: self, key: key, initialValue: initialValue)
+  }
+
+  enum InitialValueStrategy {
+    case skip
+    case include
   }
 
   struct Publisher<Output: UserDefaultsSerializable>: Combine.Publisher {
@@ -12,14 +17,16 @@ public extension UserDefaults {
 
     public let defaults: UserDefaults
     public let key: Key<Output>
+    public let initialValue: InitialValueStrategy
 
-    public init(defaults: UserDefaults, key: Key<Output>) {
+    public init(defaults: UserDefaults, key: Key<Output>, initialValue: InitialValueStrategy = .skip) {
       self.defaults = defaults
       self.key = key
+      self.initialValue = initialValue
     }
 
     public func receive<S>(subscriber: S) where S: Subscriber, Output == S.Input, Failure == S.Failure {
-      let observer = UserDefaults.Observer(defaults: defaults, key: key)
+      let observer = UserDefaults.Observer(defaults: defaults, key: key, initialValue: initialValue)
       observer
         .subject
         .handleEvents(
@@ -35,15 +42,18 @@ public extension UserDefaults {
 
     private let defaults: UserDefaults
     private let key: Key<Value>
+    private let initialValue: InitialValueStrategy
 
-    init(defaults: UserDefaults, key: Key<Value>) {
+    init(defaults: UserDefaults, key: Key<Value>, initialValue: InitialValueStrategy) {
       self.defaults = defaults
       self.key = key
+      self.initialValue = initialValue
       super.init()
     }
 
     func start() {
-      defaults.addObserver(self, forKeyPath: key.key, options: [], context: nil)
+      let options = initialValue == .include ? NSKeyValueObservingOptions.initial : []
+      defaults.addObserver(self, forKeyPath: key.key, options: options, context: nil)
     }
 
     func stop() {
