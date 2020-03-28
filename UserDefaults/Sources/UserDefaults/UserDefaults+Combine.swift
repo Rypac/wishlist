@@ -29,6 +29,7 @@ public extension UserDefaults {
       let observer = UserDefaults.Observer(defaults: defaults, key: key, initialValue: initialValue)
       observer
         .subject
+        .buffer(size: 1, prefetch: .keepFull, whenFull: .dropOldest)
         .handleEvents(
           receiveSubscription: { _ in observer.start() },
           receiveCancel: { observer.stop() }
