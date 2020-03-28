@@ -3,6 +3,7 @@ import Foundation
 public protocol UserDefaultsSerializable {
   init?(from userDefaults: UserDefaults, key: String)
   func write(to userDefaults: UserDefaults, key: String)
+  func register(in userDefaults: UserDefaults, key: String)
 }
 
 extension Bool: UserDefaultsSerializable {
@@ -15,6 +16,10 @@ extension Bool: UserDefaultsSerializable {
 
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
+  }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
   }
 }
 
@@ -29,6 +34,10 @@ extension Int: UserDefaultsSerializable {
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
   }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
+  }
 }
 
 extension String: UserDefaultsSerializable {
@@ -41,6 +50,10 @@ extension String: UserDefaultsSerializable {
 
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
+  }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
   }
 }
 
@@ -55,6 +68,10 @@ extension Double: UserDefaultsSerializable {
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
   }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
+  }
 }
 
 extension Float: UserDefaultsSerializable {
@@ -67,6 +84,10 @@ extension Float: UserDefaultsSerializable {
 
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
+  }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
   }
 }
 
@@ -81,6 +102,10 @@ extension URL: UserDefaultsSerializable {
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
   }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
+  }
 }
 
 extension Data: UserDefaultsSerializable {
@@ -93,6 +118,10 @@ extension Data: UserDefaultsSerializable {
 
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
+  }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
   }
 }
 
@@ -107,6 +136,10 @@ extension Date: UserDefaultsSerializable {
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
   }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
+  }
 }
 
 extension Array: UserDefaultsSerializable where Element: UserDefaultsSerializable {
@@ -120,6 +153,19 @@ extension Array: UserDefaultsSerializable where Element: UserDefaultsSerializabl
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
   }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
+  }
+}
+
+extension Array where Element == String {
+  public init?(from userDefaults: UserDefaults, key: String) {
+    guard let value = userDefaults.stringArray(forKey: key) else {
+      return nil
+    }
+    self = value
+  }
 }
 
 extension Dictionary: UserDefaultsSerializable where Key == String, Value: UserDefaultsSerializable {
@@ -132,6 +178,10 @@ extension Dictionary: UserDefaultsSerializable where Key == String, Value: UserD
 
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(self, forKey: key)
+  }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: self])
   }
 }
 
@@ -150,6 +200,12 @@ extension Optional: UserDefaultsSerializable where Wrapped: UserDefaultsSerializ
       userDefaults.set(nil, forKey: key)
     }
   }
+
+  public func register(in userDefaults: UserDefaults, key: String) {
+    if let value = self {
+      userDefaults.register(defaults: [key: value])
+    }
+  }
 }
 
 extension UserDefaultsSerializable where Self: RawRepresentable, RawValue: UserDefaultsSerializable {
@@ -163,19 +219,8 @@ extension UserDefaultsSerializable where Self: RawRepresentable, RawValue: UserD
   public func write(to userDefaults: UserDefaults, key: String) {
     userDefaults.set(rawValue, forKey: key)
   }
-}
 
-extension UserDefaultsSerializable where Self: Codable {
-  public init?(from userDefaults: UserDefaults, key: String) {
-    guard let data = userDefaults.data(forKey: key), let value = try? PropertyListDecoder().decode(Self.self, from: data) else {
-      return nil
-    }
-    self = value
-  }
-
-  public func write(to userDefaults: UserDefaults, key: String) {
-    if let data = try? PropertyListEncoder().encode(self) {
-      userDefaults.set(data, forKey: key)
-    }
+  public func register(in userDefaults: UserDefaults, key: String) {
+    userDefaults.register(defaults: [key: rawValue])
   }
 }
