@@ -50,7 +50,7 @@ public extension UserDefaults {
       defaults.removeObserver(self, forKeyPath: key.key)
     }
 
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
       guard
         let kindKey = change?[NSKeyValueChangeKey.kindKey] as? NSNumber,
         let valueChange = NSKeyValueChange(rawValue: kindKey.uintValue),

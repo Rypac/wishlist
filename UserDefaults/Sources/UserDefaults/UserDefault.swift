@@ -17,12 +17,11 @@ public struct UserDefault<Value: UserDefaultsSerializable> {
   }
 
   public var projectedValue: UserDefault<Value> { self }
-}
 
-public extension UserDefault {
-  var defaultValue: Value { key.defaultValue }
-  var exists: Bool { defaults.has(key) }
+  public var defaultValue: Value { key.defaultValue }
+
+  public var exists: Bool { defaults.has(key) }
 
   @available(iOS 13.0, *)
-  var publisher: UserDefaults.Publisher<Value> { defaults.publisher(for: key) }
+  public var publisher: UserDefaults.Publisher<Value> { defaults.publisher(for: key) }
 }
