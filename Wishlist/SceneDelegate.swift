@@ -19,16 +19,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
     // Use a UIHostingController as window root view controller.
-    if let windowScene = scene as? UIWindowScene {
+    if let windowScene = scene as? UIWindowScene, let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+      let settings = appDelegate.settings
       let wishlist = Wishlist(database: try! Database())
-      let setttingsStore = SettingsStore()
       let appStoreService = AppStoreService()
 
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(
         rootView: AppListView()
-          .environmentObject(AppListViewModel(wishlist: wishlist, settings: setttingsStore, appStoreService: appStoreService))
-          .environmentObject(setttingsStore)
+          .environmentObject(AppListViewModel(wishlist: wishlist, settings: settings, appStoreService: appStoreService))
+          .environmentObject(settings)
       )
       self.window = window
       window.makeKeyAndVisible()

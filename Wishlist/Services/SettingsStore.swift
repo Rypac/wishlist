@@ -5,6 +5,10 @@ import UserDefaults
 final class SettingsStore {
   @UserDefault(key: "sortOrder", defaultValue: .price)
   var sortOrder: SortOrder
+
+  func register() {
+    _sortOrder.register()
+  }
 }
 
 extension SettingsStore: ObservableObject {

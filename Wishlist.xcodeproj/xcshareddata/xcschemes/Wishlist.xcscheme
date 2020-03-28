@@ -50,16 +50,13 @@
             ReferencedContainer = "container:Wishlist.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-sortOrder price"
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "-sortOrder"
+            value = "title"
             isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-firstLaunch true"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
