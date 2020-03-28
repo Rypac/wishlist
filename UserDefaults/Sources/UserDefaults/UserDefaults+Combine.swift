@@ -62,14 +62,6 @@ public extension UserDefaults {
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-      guard
-        let kindKey = change?[NSKeyValueChangeKey.kindKey] as? NSNumber,
-        let valueChange = NSKeyValueChange(rawValue: kindKey.uintValue),
-        valueChange == .setting
-      else {
-        return
-      }
-
       subject.send(defaults[key])
     }
   }
