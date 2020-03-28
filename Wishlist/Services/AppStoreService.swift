@@ -26,14 +26,15 @@ class AppStoreService {
     ]
 
     return session.dataTaskPublisher(for: urlComponents.url!)
-      .map(\.data)
-      .decode(type: AppStoreLookupResponse.self, decoder: decoder)
-      .map(\.results)
+      .tryMap { [decoder] data, _ in
+        let lookup = try decoder.decode(LookupResponse.self, from: data)
+        return lookup.results
+      }
       .eraseToAnyPublisher()
   }
 }
 
-private struct AppStoreLookupResponse: Decodable {
+private struct LookupResponse: Decodable {
   let resultCount: Int
   let results: [App]
 }
