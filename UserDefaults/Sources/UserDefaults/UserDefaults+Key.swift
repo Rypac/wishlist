@@ -10,8 +10,18 @@ public extension UserDefaults {
     object(forKey: key.key) != nil
   }
 
-  func register<Value>(_ key: Key<Value>) {
-    register(defaults: [key.key: key.defaultValue])
+  func remove<Value>(_ key: Key<Value>) {
+    removeObject(forKey: key.key)
+  }
+
+  func register<Value>(_ keys: Key<Value>...) {
+    register(keys)
+  }
+
+  func register<S, Value>(_ keys: S) where S: Sequence, S.Element == Key<Value> {
+    register(defaults: keys.reduce(into: [:]) { defaults, key in
+      defaults[key.key] = key.defaultValue
+    })
   }
 
   subscript<Value: UserDefaultsSerializable>(key: Key<Value>) -> Value {

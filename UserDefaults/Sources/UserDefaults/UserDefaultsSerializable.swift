@@ -135,6 +135,23 @@ extension Dictionary: UserDefaultsSerializable where Key == String, Value: UserD
   }
 }
 
+extension Optional: UserDefaultsSerializable where Wrapped: UserDefaultsSerializable {
+  public init?(from userDefaults: UserDefaults, key: String) {
+    guard userDefaults.object(forKey: key) != nil else {
+      return nil
+    }
+    self = Wrapped(from: userDefaults, key: key)
+  }
+
+  public func write(to userDefaults: UserDefaults, key: String) {
+    if let value = self {
+      value.write(to: userDefaults, key: key)
+    } else {
+      userDefaults.set(nil, forKey: key)
+    }
+  }
+}
+
 extension UserDefaultsSerializable where Self: RawRepresentable, RawValue: UserDefaultsSerializable {
   public init?(from userDefaults: UserDefaults, key: String) {
     guard let rawValue = RawValue(from: userDefaults, key: key) else {
