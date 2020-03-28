@@ -20,8 +20,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     // Use a UIHostingController as window root view controller.
     if let windowScene = scene as? UIWindowScene, let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+      let wishlist = appDelegate.wishlist
       let settings = appDelegate.settings
-      let wishlist = Wishlist(database: try! Database())
       let appStoreService = AppStoreService()
 
       let window = UIWindow(windowScene: windowScene)
