@@ -6,9 +6,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   let wishlist = Wishlist(database: try! Database())
   let settings = SettingsStore()
 
+  private let wishlistUpdater: WishlistUpdater
+
+  override init() {
+    wishlistUpdater = WishlistUpdater(wishlist: wishlist, appStore: AppStoreService())
+  }
+
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
     settings.register()
+    wishlistUpdater.performUpdate()
 
     return true
   }

@@ -14,12 +14,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     if let windowScene = scene as? UIWindowScene, let appDelegate = UIApplication.shared.delegate as? AppDelegate {
       let wishlist = appDelegate.wishlist
       let settings = appDelegate.settings
-      let appStoreService = AppStoreService()
 
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(
         rootView: AppListView()
-          .environmentObject(AppListViewModel(wishlist: wishlist, settings: settings, appStoreService: appStoreService))
+          .environmentObject(AppListViewModel(wishlist: wishlist, settings: settings))
           .environmentObject(settings)
       )
       self.window = window

@@ -16,6 +16,7 @@
 		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
 		94703DC7242DA56800CC4B8E /* AppStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94703DC6242DA56800CC4B8E /* AppStoreService.swift */; };
 		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
+		9486FAB7243085D100EE2334 /* WishlistUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB6243085D100EE2334 /* WishlistUpdater.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
 		948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */; };
@@ -44,6 +45,7 @@
 		945CB45E23530B2F00DF3ABF /* UserDefaults */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UserDefaults; sourceTree = "<group>"; };
 		94703DC6242DA56800CC4B8E /* AppStoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreService.swift; sourceTree = "<group>"; };
 		9486FAB4243066AC00EE2334 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
+		9486FAB6243085D100EE2334 /* WishlistUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistUpdater.swift; sourceTree = "<group>"; };
 		948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsDelegate.swift; sourceTree = "<group>"; };
 		948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIdentifier.swift; sourceTree = "<group>"; };
 		948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneConfigurationNames.swift; sourceTree = "<group>"; };
@@ -115,8 +117,8 @@
 		948890C024304D1A00E3E5FA /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */,
 				948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */,
+				948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -145,6 +147,7 @@
 				94BDFECC2349D0C800B25D81 /* Wishlist.swift */,
 				94C7B1522330F13F008181D1 /* SettingsStore.swift */,
 				94703DC6242DA56800CC4B8E /* AppStoreService.swift */,
+				9486FAB6243085D100EE2334 /* WishlistUpdater.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -288,6 +291,7 @@
 				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,
 				94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */,
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
+				9486FAB7243085D100EE2334 /* WishlistUpdater.swift in Sources */,
 				94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */,
 				94BDFECB2349C9B400B25D81 /* Database.swift in Sources */,
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
