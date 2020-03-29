@@ -16,6 +16,13 @@ final class Wishlist {
       .eraseToAnyPublisher()
   }
 
+  func app(withId id: Int) -> App? {
+    guard let apps = try? database.read() else {
+      return nil
+    }
+    return apps.first { $0.id == id }
+  }
+
   func write(apps: [App]) {
     do {
       try database.write(apps: apps)

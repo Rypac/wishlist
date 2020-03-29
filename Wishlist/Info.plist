@@ -34,6 +34,12 @@
 					<key>UISceneDelegateClassName</key>
 					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
 				</dict>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Details Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).AppDetailsDelegate</string>
+				</dict>
 			</array>
 		</dict>
 	</dict>

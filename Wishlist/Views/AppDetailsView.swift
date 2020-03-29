@@ -6,6 +6,23 @@ struct AppDetailsView: View {
   let app: App
 
   var body: some View {
+    AppDetailsContentView(app: app)
+      .navigationBarTitle("Details", displayMode: .inline)
+      .navigationBarItems(
+        trailing: Button(action: { self.showShareSheet = true }) {
+          Image.share.imageScale(.large)
+        }
+      )
+      .sheet(isPresented: $showShareSheet) {
+        ActivityView(showing: self.$showShareSheet, activityItems: [self.app.url], applicationActivities: nil)
+      }
+  }
+}
+
+struct AppDetailsContentView: View {
+  let app: App
+
+  var body: some View {
     ScrollView(.vertical) {
       HStack {
         VStack(alignment: .leading, spacing: 16) {
@@ -17,15 +34,6 @@ struct AppDetailsView: View {
         Spacer()
       }
       .padding()
-    }
-    .navigationBarTitle("Details", displayMode: .inline)
-    .navigationBarItems(
-      trailing: Button(action: { self.showShareSheet = true }) {
-        Image.share.imageScale(.large)
-      }
-    )
-    .sheet(isPresented: $showShareSheet) {
-      ActivityView(showing: self.$showShareSheet, activityItems: [self.app.url], applicationActivities: nil)
     }
   }
 }

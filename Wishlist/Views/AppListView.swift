@@ -42,6 +42,14 @@ private struct AppRow: View {
     NavigationLink(destination: AppDetailsView(app: app)) {
       AppRowContent(app: app)
         .contextMenu {
+          Button(action: {
+            let userActivity = NSUserActivity(activityType: ActivityIdentifier.details.rawValue)
+            userActivity.userInfo = [ActivityIdentifier.UserInfoKey.id.rawValue: self.app.id]
+            UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil)
+          }) {
+            Text("Open in New Window")
+            Image.window
+          }
           Button(action: { self.showShareSheet = true }) {
             Text("Share")
             Image.share
@@ -95,4 +103,5 @@ private extension SortOrder {
 private extension Image {
   static var sort: Image { Image(systemName: "arrow.up.arrow.down") }
   static var share: Image { Image(systemName: "square.and.arrow.up") }
+  static var window: Image { Image(systemName: "square.grid.2x2") }
 }
