@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  Wishlist
-//
-//  Created by Ryan Davis on 1/9/19.
-//  Copyright © 2019 Ryan Davis. All rights reserved.
-//
-
 import UIKit
 
 @UIApplicationMain

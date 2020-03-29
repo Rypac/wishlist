@@ -1,11 +1,3 @@
-//
-//  AppIcon.swift
-//  Wishlist
-//
-//  Created by Ryan Davis on 27/3/20.
-//  Copyright © 2020 Ryan Davis. All rights reserved.
-//
-
 import SwiftUI
 import URLImage
 

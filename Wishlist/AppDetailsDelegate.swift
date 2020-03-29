@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
 
