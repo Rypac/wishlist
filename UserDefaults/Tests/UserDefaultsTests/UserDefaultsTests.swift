@@ -80,9 +80,27 @@ final class UserDefaultsTests: XCTestCase {
     XCTAssertNil(userDefaults[key])
   }
 
+  func testStringArrayKey() {
+    let key = UserDefaults.Key<[String]>(key: #function, defaultValue: [])
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [])
+
+    userDefaults[key] = ["one", "two", "three"]
+
+    XCTAssertTrue(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], ["one", "two", "three"])
+
+    userDefaults.remove(key)
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [])
+  }
+
   static var allTests = [
     ("testBooleanKey", testBooleanKey),
     ("testOptionalBooleanKey", testOptionalBooleanKey),
-    ("testOptionalBooleanDefaultNilKey", testOptionalBooleanDefaultNilKey)
+    ("testOptionalBooleanDefaultNilKey", testOptionalBooleanDefaultNilKey),
+    ("testStringArrayKey", testStringArrayKey)
   ]
 }

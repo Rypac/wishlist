@@ -159,15 +159,6 @@ extension Array: UserDefaultsSerializable where Element: UserDefaultsSerializabl
   }
 }
 
-extension Array where Element == String {
-  public init?(from userDefaults: UserDefaults, key: String) {
-    guard let value = userDefaults.stringArray(forKey: key) else {
-      return nil
-    }
-    self = value
-  }
-}
-
 extension Dictionary: UserDefaultsSerializable where Key == String, Value: UserDefaultsSerializable {
   public init?(from userDefaults: UserDefaults, key: String) {
     guard let value = userDefaults.dictionary(forKey: key) as? Self else {
