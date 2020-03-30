@@ -3,13 +3,17 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-  let wishlist = Wishlist(database: try! Database())
-  let settings = SettingsStore()
+  let wishlist: Wishlist
+  let settings: SettingsStore
 
   private let wishlistUpdater: WishlistUpdater
 
   override init() {
-    wishlistUpdater = WishlistUpdater(wishlist: wishlist, appStore: AppStoreService())
+    let database = try! Database()
+    let appStore = AppStoreService()
+    settings = SettingsStore()
+    wishlist = Wishlist(database: database, appStore: appStore)
+    wishlistUpdater = WishlistUpdater(wishlist: wishlist, appStore: appStore)
   }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -34,5 +38,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     return activity.sceneConfiguration()
   }
-
 }

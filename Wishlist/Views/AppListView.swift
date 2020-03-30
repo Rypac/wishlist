@@ -8,7 +8,12 @@ struct AppListView: View {
 
   var body: some View {
     NavigationView {
-      List(viewModel.apps, rowContent: AppRow.init)
+      List {
+        ForEach(viewModel.apps, id: \.id, content: AppRow.init)
+          .onDelete { indexes in
+            self.viewModel.removeApps(at: indexes)
+          }
+      }
         .navigationBarTitle("Wishlist")
         .navigationBarItems(
           trailing: Button(action: { self.showActionSheet = true }) {
@@ -29,6 +34,19 @@ struct AppListView: View {
           buttons.append(.cancel())
           return ActionSheet(title: Text("Sort By"), buttons: buttons)
         }
+    }.onDrop(of: [UTI.url], isTargeted: nil) { [viewModel] items in
+      guard !items.isEmpty else {
+        return false
+      }
+
+      _ = items.first?.loadObject(ofClass: URL.self) { url, error in
+        DispatchQueue.main.async {
+          if let url = url {
+            viewModel.addApp(url: url)
+          }
+        }
+      }
+      return true
     }
   }
 }
@@ -41,6 +59,7 @@ private struct AppRow: View {
   var body: some View {
     NavigationLink(destination: AppDetailsView(app: app)) {
       AppRowContent(app: app)
+        .onDrag { NSItemProvider(app: self.app) }
         .contextMenu {
           Button(action: {
             let userActivity = NSUserActivity(activityType: ActivityIdentifier.details.rawValue)

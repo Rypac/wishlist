@@ -14,6 +14,7 @@
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */; };
 		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
+		945CCA56243172DE000B7586 /* LinkItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* LinkItemProvider.swift */; };
 		94703DC7242DA56800CC4B8E /* AppStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94703DC6242DA56800CC4B8E /* AppStoreService.swift */; };
 		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
 		9486FAB7243085D100EE2334 /* WishlistUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB6243085D100EE2334 /* WishlistUpdater.swift */; };
@@ -43,6 +44,7 @@
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsView.swift; sourceTree = "<group>"; };
 		945CB45E23530B2F00DF3ABF /* UserDefaults */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UserDefaults; sourceTree = "<group>"; };
+		945CCA55243172DE000B7586 /* LinkItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkItemProvider.swift; sourceTree = "<group>"; };
 		94703DC6242DA56800CC4B8E /* AppStoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreService.swift; sourceTree = "<group>"; };
 		9486FAB4243066AC00EE2334 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		9486FAB6243085D100EE2334 /* WishlistUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistUpdater.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 			children = (
 				9459B569231BA3F40023BD74 /* App.swift */,
 				94C7B1562330FE13008181D1 /* SortOrder.swift */,
+				945CCA55243172DE000B7586 /* LinkItemProvider.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 				94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */,
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
 				9486FAB7243085D100EE2334 /* WishlistUpdater.swift in Sources */,
+				945CCA56243172DE000B7586 /* LinkItemProvider.swift in Sources */,
 				94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */,
 				94BDFECB2349C9B400B25D81 /* Database.swift in Sources */,
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
@@ -439,7 +443,7 @@
 				DEVELOPMENT_TEAM = 8PMW33R44A;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Wishlist/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -460,7 +464,7 @@
 				DEVELOPMENT_TEAM = 8PMW33R44A;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Wishlist/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
