@@ -11,6 +11,7 @@ let package = Package(
   products: [
     .library(
       name: "WishlistShared",
+      type: .dynamic,
       targets: ["WishlistShared"]
     )
   ],

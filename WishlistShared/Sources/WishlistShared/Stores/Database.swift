@@ -15,13 +15,15 @@ public final class Database {
   }()
 
   public init(fileManager: FileManager = .default) throws {
-    let documentsDirectory = try fileManager.url(
-      for: .documentDirectory,
-      in: .userDomainMask,
-      appropriateFor: nil,
-      create: true
-    )
+    guard let documentsDirectory = fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.wishlist.database") else {
+      throw WishlistDatabaseError()
+    }
+
     databaseURL = documentsDirectory.appendingPathComponent("apps.json", isDirectory: false)
+
+    if !fileManager.fileExists(atPath: databaseURL.path) {
+      try write(apps: [])
+    }
   }
 
   public func read() throws -> [App] {
@@ -34,3 +36,5 @@ public final class Database {
     try data.write(to: databaseURL)
   }
 }
+
+private struct WishlistDatabaseError: Error {}

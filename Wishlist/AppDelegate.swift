@@ -1,5 +1,6 @@
 import WishlistShared
 import UIKit
+import CoreData
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -8,6 +9,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   let settings: SettingsStore
 
   private let wishlistUpdater: WishlistUpdater
+
+  private lazy var persistentContainer: NSPersistentContainer = {
+    let container = NSPersistentCloudKitContainer(name: "Wishlist")
+    container.loadPersistentStores() { _, error in
+      if let error = error as NSError? {
+        fatalError("Unresolved error \(error), \(error.userInfo)")
+      }
+    }
+    return container
+  }()
 
   override init() {
     let database = try! Database()

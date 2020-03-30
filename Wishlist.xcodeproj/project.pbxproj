@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
+		9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		94295E14232E06D400D21BC6 /* AppListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94295E13232E06D400D21BC6 /* AppListViewModel.swift */; };
 		942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
@@ -14,12 +16,19 @@
 		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
 		945CCA56243172DE000B7586 /* LinkItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* LinkItemProvider.swift */; };
 		945CCA5924318C82000B7586 /* WishlistShared in Frameworks */ = {isa = PBXBuildFile; productRef = 945CCA5824318C82000B7586 /* WishlistShared */; };
+		94637EAC24319B64005EF584 /* WishlistShared in Frameworks */ = {isa = PBXBuildFile; productRef = 94637EAB24319B64005EF584 /* WishlistShared */; };
+		94637EAD24319B64005EF584 /* WishlistShared in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94637EAB24319B64005EF584 /* WishlistShared */; };
+		94637EAE24319B73005EF584 /* WishlistShared in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 945CCA5824318C82000B7586 /* WishlistShared */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
 		9486FAB7243085D100EE2334 /* WishlistUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB6243085D100EE2334 /* WishlistUpdater.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
 		948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */; };
 		9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9489E4DB242D6EAC00C396AD /* AppIcon.swift */; };
+		9494DA0C24319285003A7992 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9494DA0B24319285003A7992 /* Media.xcassets */; };
+		9494DA0E24319285003A7992 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9494DA0D24319285003A7992 /* ActionViewController.swift */; };
+		9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9494DA0F24319285003A7992 /* MainInterface.storyboard */; };
+		9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9494DA0924319285003A7992 /* Add to Wishlist.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* SettingsStore.swift */; };
 		94C7B1572330FE13008181D1 /* SortOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1562330FE13008181D1 /* SortOrder.swift */; };
 		94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B15A233104DF008181D1 /* SettingsView.swift */; };
@@ -32,7 +41,54 @@
 		94FA20DB231BA2BD00EC1190 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94FA20D9231BA2BD00EC1190 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		9494DA1324319285003A7992 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94FA20C3231BA2BC00EC1190 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9494DA0824319285003A7992;
+			remoteInfo = ActionExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		94637EAA24319B35005EF584 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				94637EAD24319B64005EF584 /* WishlistShared in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94637EAF24319B73005EF584 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				94637EAE24319B73005EF584 /* WishlistShared in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9494DA1924319285003A7992 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		94295E13232E06D400D21BC6 /* AppListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppListViewModel.swift; sourceTree = "<group>"; usesTabs = 0; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
@@ -40,12 +96,19 @@
 		945CB45E23530B2F00DF3ABF /* UserDefaults */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UserDefaults; sourceTree = "<group>"; };
 		945CCA55243172DE000B7586 /* LinkItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkItemProvider.swift; sourceTree = "<group>"; };
 		945CCA5724318B05000B7586 /* WishlistShared */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistShared; sourceTree = "<group>"; };
+		94637EB02431A211005EF584 /* Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wishlist.entitlements; sourceTree = "<group>"; };
+		94637EB12431A33C005EF584 /* Add to Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Add to Wishlist.entitlements"; sourceTree = "<group>"; };
 		9486FAB4243066AC00EE2334 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		9486FAB6243085D100EE2334 /* WishlistUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistUpdater.swift; sourceTree = "<group>"; };
 		948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsDelegate.swift; sourceTree = "<group>"; };
 		948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIdentifier.swift; sourceTree = "<group>"; };
 		948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneConfigurationNames.swift; sourceTree = "<group>"; };
 		9489E4DB242D6EAC00C396AD /* AppIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIcon.swift; sourceTree = "<group>"; };
+		9494DA0924319285003A7992 /* Add to Wishlist.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Add to Wishlist.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9494DA0B24319285003A7992 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		9494DA0D24319285003A7992 /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
+		9494DA1024319285003A7992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		9494DA1224319285003A7992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94C7B1522330F13F008181D1 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		94C7B1562330FE13008181D1 /* SortOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOrder.swift; sourceTree = "<group>"; };
 		94C7B15A233104DF008181D1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -60,11 +123,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9494DA0624319285003A7992 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94637EAC24319B64005EF584 /* WishlistShared in Frameworks */,
+				9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		94FA20C8231BA2BC00EC1190 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				945CCA5924318C82000B7586 /* WishlistShared in Frameworks */,
+				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
 				94ECF1F8242CC6C100F09DA6 /* URLImage in Frameworks */,
 				945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */,
 			);
@@ -89,6 +162,7 @@
 		945CB45F23530B5E00DF3ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9428D40A2431BEC000CBAC1F /* CloudKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -137,6 +211,18 @@
 			path = Stores;
 			sourceTree = "<group>";
 		};
+		9494DA0A24319285003A7992 /* ActionExtension */ = {
+			isa = PBXGroup;
+			children = (
+				9494DA0B24319285003A7992 /* Media.xcassets */,
+				9494DA0D24319285003A7992 /* ActionViewController.swift */,
+				9494DA0F24319285003A7992 /* MainInterface.storyboard */,
+				9494DA1224319285003A7992 /* Info.plist */,
+				94637EB12431A33C005EF584 /* Add to Wishlist.entitlements */,
+			);
+			path = ActionExtension;
+			sourceTree = "<group>";
+		};
 		94BDFEC92349C99E00B25D81 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -151,6 +237,7 @@
 				945CCA5724318B05000B7586 /* WishlistShared */,
 				945CB45E23530B2F00DF3ABF /* UserDefaults */,
 				94FA20CD231BA2BC00EC1190 /* Wishlist */,
+				9494DA0A24319285003A7992 /* ActionExtension */,
 				94FA20CC231BA2BC00EC1190 /* Products */,
 				945CB45F23530B5E00DF3ABF /* Frameworks */,
 			);
@@ -161,6 +248,7 @@
 			isa = PBXGroup;
 			children = (
 				94FA20CB231BA2BC00EC1190 /* Wishlist.app */,
+				9494DA0924319285003A7992 /* Add to Wishlist.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -178,6 +266,7 @@
 				94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */,
 				94FA20D4231BA2BD00EC1190 /* Assets.xcassets */,
 				94FA20DC231BA2BD00EC1190 /* Info.plist */,
+				94637EB02431A211005EF584 /* Wishlist.entitlements */,
 				94FA20D9231BA2BD00EC1190 /* LaunchScreen.storyboard */,
 				94FA20D6231BA2BD00EC1190 /* Preview Content */,
 			);
@@ -195,6 +284,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		9494DA0824319285003A7992 /* ActionExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9494DA1624319285003A7992 /* Build configuration list for PBXNativeTarget "ActionExtension" */;
+			buildPhases = (
+				9494DA0524319285003A7992 /* Sources */,
+				9494DA0624319285003A7992 /* Frameworks */,
+				9494DA0724319285003A7992 /* Resources */,
+				94637EAA24319B35005EF584 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ActionExtension;
+			packageProductDependencies = (
+				94637EAB24319B64005EF584 /* WishlistShared */,
+			);
+			productName = ActionExtension;
+			productReference = 9494DA0924319285003A7992 /* Add to Wishlist.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		94FA20CA231BA2BC00EC1190 /* Wishlist */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 94FA20DF231BA2BD00EC1190 /* Build configuration list for PBXNativeTarget "Wishlist" */;
@@ -202,10 +312,13 @@
 				94FA20C7231BA2BC00EC1190 /* Sources */,
 				94FA20C8231BA2BC00EC1190 /* Frameworks */,
 				94FA20C9231BA2BC00EC1190 /* Resources */,
+				9494DA1924319285003A7992 /* Embed App Extensions */,
+				94637EAF24319B73005EF584 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				9494DA1424319285003A7992 /* PBXTargetDependency */,
 			);
 			name = Wishlist;
 			packageProductDependencies = (
@@ -223,10 +336,13 @@
 		94FA20C3231BA2BC00EC1190 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1100;
+				LastSwiftUpdateCheck = 1140;
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Ryan Davis";
 				TargetAttributes = {
+					9494DA0824319285003A7992 = {
+						CreatedOnToolsVersion = 11.4;
+					};
 					94FA20CA231BA2BC00EC1190 = {
 						CreatedOnToolsVersion = 11.0;
 					};
@@ -249,11 +365,21 @@
 			projectRoot = "";
 			targets = (
 				94FA20CA231BA2BC00EC1190 /* Wishlist */,
+				9494DA0824319285003A7992 /* ActionExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		9494DA0724319285003A7992 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9494DA0C24319285003A7992 /* Media.xcassets in Resources */,
+				9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		94FA20C9231BA2BC00EC1190 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -267,6 +393,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		9494DA0524319285003A7992 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9494DA0E24319285003A7992 /* ActionViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		94FA20C7231BA2BC00EC1190 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -293,7 +427,23 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		9494DA1424319285003A7992 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9494DA0824319285003A7992 /* ActionExtension */;
+			targetProxy = 9494DA1324319285003A7992 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
+		9494DA0F24319285003A7992 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9494DA1024319285003A7992 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		94FA20D9231BA2BD00EC1190 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -305,6 +455,48 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		9494DA1724319285003A7992 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "ActionExtension/Add to Wishlist.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8PMW33R44A;
+				INFOPLIST_FILE = ActionExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.Wishlist.ActionExtension;
+				PRODUCT_NAME = "Add to Wishlist";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9494DA1824319285003A7992 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "ActionExtension/Add to Wishlist.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8PMW33R44A;
+				INFOPLIST_FILE = ActionExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.Wishlist.ActionExtension;
+				PRODUCT_NAME = "Add to Wishlist";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		94FA20DD231BA2BD00EC1190 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -355,7 +547,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -409,7 +601,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -422,7 +614,9 @@
 		94FA20E0231BA2BD00EC1190 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Wishlist/Wishlist.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Wishlist/Preview Content\"";
 				DEVELOPMENT_TEAM = 8PMW33R44A;
@@ -443,7 +637,9 @@
 		94FA20E1231BA2BD00EC1190 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Wishlist/Wishlist.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Wishlist/Preview Content\"";
 				DEVELOPMENT_TEAM = 8PMW33R44A;
@@ -464,6 +660,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		9494DA1624319285003A7992 /* Build configuration list for PBXNativeTarget "ActionExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9494DA1724319285003A7992 /* Debug */,
+				9494DA1824319285003A7992 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		94FA20C6231BA2BC00EC1190 /* Build configuration list for PBXProject "Wishlist" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -501,6 +706,10 @@
 			productName = UserDefaults;
 		};
 		945CCA5824318C82000B7586 /* WishlistShared */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistShared;
+		};
+		94637EAB24319B64005EF584 /* WishlistShared */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WishlistShared;
 		};
