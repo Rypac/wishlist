@@ -1,3 +1,4 @@
+import WishlistShared
 import Combine
 import SwiftUI
 

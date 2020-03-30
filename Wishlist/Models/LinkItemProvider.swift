@@ -1,5 +1,6 @@
 import Foundation
 import MobileCoreServices
+import WishlistShared
 
 enum UTI {
   static let url = kUTTypeURL as String

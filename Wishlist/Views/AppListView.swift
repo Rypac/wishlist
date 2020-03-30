@@ -1,3 +1,4 @@
+import WishlistShared
 import SwiftUI
 
 struct AppListView: View {

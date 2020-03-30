@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class AppStoreService {
+public final class AppStoreService {
   private let session: URLSession
   private let decoder: JSONDecoder = {
     let decoder = JSONDecoder()
@@ -9,11 +9,11 @@ class AppStoreService {
     return decoder
   }()
 
-  init(session: URLSession = .shared) {
+  public init(session: URLSession = .shared) {
     self.session = session
   }
 
-  func lookup(ids: [Int]) -> AnyPublisher<[App], Error> {
+  public func lookup(ids: [Int]) -> AnyPublisher<[App], Error> {
     if ids.isEmpty {
       return Result.Publisher([]).eraseToAnyPublisher()
     }
@@ -27,8 +27,7 @@ class AppStoreService {
 
     return session.dataTaskPublisher(for: urlComponents.url!)
       .tryMap { [decoder] data, _ in
-        let lookup = try decoder.decode(LookupResponse.self, from: data)
-        return lookup.results
+        try decoder.decode(LookupResponse.self, from: data).results
       }
       .eraseToAnyPublisher()
   }

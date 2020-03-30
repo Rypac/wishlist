@@ -1,8 +1,8 @@
 import Foundation
 import Combine
 
-final class Wishlist {
-  let apps: AnyPublisher<[App], Never>
+public final class Wishlist {
+  public let apps: AnyPublisher<[App], Never>
 
   private let database: Database
   private let appStore: AppStoreService
@@ -10,7 +10,7 @@ final class Wishlist {
 
   private var cancellables = Set<AnyCancellable>()
 
-  init(database: Database, appStore: AppStoreService) {
+  public init(database: Database, appStore: AppStoreService) {
     self.database = database
     self.appStore = appStore
     self.apps = appsUpdatedSubject
@@ -26,14 +26,14 @@ final class Wishlist {
     }
   }
 
-  func app(withId id: Int) -> App? {
+  public func app(withId id: Int) -> App? {
     guard let apps = try? database.read() else {
       return nil
     }
     return apps.first { $0.id == id }
   }
 
-  func addApp(id: Int) {
+  public func addApp(id: Int) {
     appStore.lookup(ids: [id])
       .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [weak self, database] apps in
@@ -50,7 +50,7 @@ final class Wishlist {
       .store(in: &cancellables)
   }
 
-  func write(apps: [App]) {
+  public func write(apps: [App]) {
     do {
       try database.write(apps: apps)
       appsUpdatedSubject.send()

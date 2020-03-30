@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import WishlistShared
 
 final class WishlistUpdater {
   let wishlist: Wishlist
