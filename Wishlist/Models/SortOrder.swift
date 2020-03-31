@@ -1,4 +1,3 @@
-import Foundation
 import UserDefaults
 
 enum SortOrder: String, CaseIterable, UserDefaultsSerializable {

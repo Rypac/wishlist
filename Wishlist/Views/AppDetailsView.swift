@@ -1,5 +1,5 @@
-import WishlistShared
 import SwiftUI
+import WishlistShared
 
 struct AppDetailsView: View {
   @State private var showShareSheet = false

@@ -1,6 +1,6 @@
-import WishlistShared
 import Combine
 import SwiftUI
+import WishlistShared
 
 final class AppListViewModel: ObservableObject {
   @Published private(set) var apps: [App] = []

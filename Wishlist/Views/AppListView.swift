@@ -1,5 +1,5 @@
-import WishlistShared
 import SwiftUI
+import WishlistShared
 
 struct AppListView: View {
   @State private var showActionSheet = false

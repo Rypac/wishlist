@@ -1,6 +1,6 @@
-import WishlistShared
 import SwiftUI
 import UIKit
+import WishlistShared
 
 class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
 
