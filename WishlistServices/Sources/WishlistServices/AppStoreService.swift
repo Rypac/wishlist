@@ -1,7 +1,8 @@
 import Foundation
 import Combine
+import WishlistShared
 
-public final class AppStoreService {
+public final class AppStoreService: AppLookupService {
   private let session: URLSession
   private let decoder: JSONDecoder = {
     let decoder = JSONDecoder()

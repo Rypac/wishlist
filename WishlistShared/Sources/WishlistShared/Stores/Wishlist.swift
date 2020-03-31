@@ -5,14 +5,14 @@ public final class Wishlist {
   public let apps: AnyPublisher<[App], Never>
 
   private let database: Database
-  private let appStore: AppStoreService
+  private let appLookupService: AppLookupService
   private let appsUpdatedSubject = PassthroughSubject<Void, Never>()
 
   private var cancellables = Set<AnyCancellable>()
 
-  public init(database: Database, appStore: AppStoreService) {
+  public init(database: Database, appLookupService: AppLookupService) {
     self.database = database
-    self.appStore = appStore
+    self.appLookupService = appLookupService
     self.apps = appsUpdatedSubject
       .prepend(())
       .tryMap(database.read)
@@ -34,7 +34,7 @@ public final class Wishlist {
   }
 
   public func addApp(id: Int) {
-    appStore.lookup(ids: [id])
+    appLookupService.lookup(ids: [id])
       .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [weak self, database] apps in
         do {

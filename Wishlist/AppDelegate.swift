@@ -1,6 +1,7 @@
-import WishlistShared
-import UIKit
 import CoreData
+import UIKit
+import WishlistServices
+import WishlistShared
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,11 +22,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }()
 
   override init() {
-    let database = try! Database()
+    let database = try! FileDatabase()
     let appStore = AppStoreService()
     settings = SettingsStore()
-    wishlist = Wishlist(database: database, appStore: appStore)
-    wishlistUpdater = WishlistUpdater(wishlist: wishlist, appStore: appStore)
+    wishlist = Wishlist(database: database, appLookupService: appStore)
+    wishlistUpdater = WishlistUpdater(wishlist: wishlist, appLookupService: appStore)
   }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {

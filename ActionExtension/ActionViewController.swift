@@ -2,10 +2,11 @@ import UIKit
 import Combine
 import MobileCoreServices
 import WishlistShared
+import WishlistServices
 
 class ActionViewController: UIViewController {
 
-  private let wishlist = Wishlist(database: try! Database(), appStore: AppStoreService())
+  private let wishlist = Wishlist(database: try! FileDatabase(), appLookupService: AppStoreService())
 
   private var cancellables = Set<AnyCancellable>()
 

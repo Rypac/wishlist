@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		942833AA24334A1700A8921E /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; };
+		942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		942833AD24334A2400A8921E /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 942833AC24334A2400A8921E /* WishlistServices */; };
+		942833AE24334A2400A8921E /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 942833AC24334A2400A8921E /* WishlistServices */; };
 		9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		94295E14232E06D400D21BC6 /* AppListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94295E13232E06D400D21BC6 /* AppListViewModel.swift */; };
@@ -20,7 +24,6 @@
 		94637EAD24319B64005EF584 /* WishlistShared in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94637EAB24319B64005EF584 /* WishlistShared */; };
 		94637EAE24319B73005EF584 /* WishlistShared in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 945CCA5824318C82000B7586 /* WishlistShared */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
-		9486FAB7243085D100EE2334 /* WishlistUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB6243085D100EE2334 /* WishlistUpdater.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
 		948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */; };
@@ -59,6 +62,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				94637EAD24319B64005EF584 /* WishlistShared in Embed Frameworks */,
+				942833AE24334A2400A8921E /* WishlistServices in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,6 +74,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				94637EAE24319B73005EF584 /* WishlistShared in Embed Frameworks */,
+				942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,6 +93,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		94295E13232E06D400D21BC6 /* AppListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppListViewModel.swift; sourceTree = "<group>"; usesTabs = 0; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
@@ -99,7 +105,6 @@
 		94637EB02431A211005EF584 /* Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wishlist.entitlements; sourceTree = "<group>"; };
 		94637EB12431A33C005EF584 /* Add to Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Add to Wishlist.entitlements"; sourceTree = "<group>"; };
 		9486FAB4243066AC00EE2334 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
-		9486FAB6243085D100EE2334 /* WishlistUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistUpdater.swift; sourceTree = "<group>"; };
 		948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsDelegate.swift; sourceTree = "<group>"; };
 		948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIdentifier.swift; sourceTree = "<group>"; };
 		948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneConfigurationNames.swift; sourceTree = "<group>"; };
@@ -127,6 +132,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				942833AD24334A2400A8921E /* WishlistServices in Frameworks */,
 				94637EAC24319B64005EF584 /* WishlistShared in Frameworks */,
 				9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */,
 			);
@@ -138,6 +144,7 @@
 			files = (
 				945CCA5924318C82000B7586 /* WishlistShared in Frameworks */,
 				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
+				942833AA24334A1700A8921E /* WishlistServices in Frameworks */,
 				94ECF1F8242CC6C100F09DA6 /* URLImage in Frameworks */,
 				945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */,
 			);
@@ -223,18 +230,11 @@
 			path = ActionExtension;
 			sourceTree = "<group>";
 		};
-		94BDFEC92349C99E00B25D81 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				9486FAB6243085D100EE2334 /* WishlistUpdater.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
 		94FA20C2231BA2BC00EC1190 = {
 			isa = PBXGroup;
 			children = (
 				945CCA5724318B05000B7586 /* WishlistShared */,
+				942833A8243348FF00A8921E /* WishlistServices */,
 				945CB45E23530B2F00DF3ABF /* UserDefaults */,
 				94FA20CD231BA2BC00EC1190 /* Wishlist */,
 				9494DA0A24319285003A7992 /* ActionExtension */,
@@ -258,7 +258,6 @@
 			children = (
 				9486FAB32430669F00EE2334 /* Extensions */,
 				948890C024304D1A00E3E5FA /* Scenes */,
-				94BDFEC92349C99E00B25D81 /* Services */,
 				9494DA042431916C003A7992 /* Stores */,
 				94930CF8232CD47700AE81BC /* Models */,
 				94930CF9232CD49800AE81BC /* View Models */,
@@ -300,6 +299,7 @@
 			name = ActionExtension;
 			packageProductDependencies = (
 				94637EAB24319B64005EF584 /* WishlistShared */,
+				942833AC24334A2400A8921E /* WishlistServices */,
 			);
 			productName = ActionExtension;
 			productReference = 9494DA0924319285003A7992 /* Add to Wishlist.appex */;
@@ -325,6 +325,7 @@
 				945CB46023530B5E00DF3ABF /* UserDefaults */,
 				94ECF1F7242CC6C100F09DA6 /* URLImage */,
 				945CCA5824318C82000B7586 /* WishlistShared */,
+				942833A924334A1700A8921E /* WishlistServices */,
 			);
 			productName = Wishlist;
 			productReference = 94FA20CB231BA2BC00EC1190 /* Wishlist.app */;
@@ -416,7 +417,6 @@
 				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,
 				94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */,
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
-				9486FAB7243085D100EE2334 /* WishlistUpdater.swift in Sources */,
 				945CCA56243172DE000B7586 /* LinkItemProvider.swift in Sources */,
 				94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */,
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
@@ -701,6 +701,14 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		942833A924334A1700A8921E /* WishlistServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistServices;
+		};
+		942833AC24334A2400A8921E /* WishlistServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistServices;
+		};
 		945CB46023530B5E00DF3ABF /* UserDefaults */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UserDefaults;

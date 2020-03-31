@@ -1,16 +1,15 @@
 import Foundation
 import Combine
-import WishlistShared
 
-final class WishlistUpdater {
-  let wishlist: Wishlist
-  let appStore: AppStoreService
+public final class WishlistUpdater {
+  private let wishlist: Wishlist
+  private let appLookupService: AppLookupService
 
   private var cancellables = Set<AnyCancellable>()
 
-  init(wishlist: Wishlist, appStore: AppStoreService) {
+  public init(wishlist: Wishlist, appLookupService: AppLookupService) {
     self.wishlist = wishlist
-    self.appStore = appStore
+    self.appLookupService = appLookupService
   }
 
   deinit {
@@ -19,12 +18,12 @@ final class WishlistUpdater {
     }
   }
 
-  func performUpdate() {
+  public func performUpdate() {
     wishlist.apps
       .first()
       .setFailureType(to: Error.self)
-      .flatMap { [appStore] apps in
-        appStore.lookup(ids: apps.map(\.id))
+      .flatMap { [appLookupService] apps in
+        appLookupService.lookup(ids: apps.map(\.id))
       }
       .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [wishlist] apps in
