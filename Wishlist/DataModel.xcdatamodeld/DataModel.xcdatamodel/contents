@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="AppEntity" representedClassName=".AppEntity" syncable="YES">
+        <attribute name="appDescription" optional="YES" attributeType="String"/>
+        <attribute name="bundleID" optional="YES" attributeType="String"/>
+        <attribute name="formattedPrice" optional="YES" attributeType="String"/>
+        <attribute name="iconURL" optional="YES" attributeType="URI"/>
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="price" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="releaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="releaseNotes" optional="YES" attributeType="String"/>
+        <attribute name="seller" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="updateDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" optional="YES" attributeType="URI"/>
+        <attribute name="version" optional="YES" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="AppEntity" positionX="-1286.890625" positionY="-916.20703125" width="117.296875" height="238"/>
+    </elements>
+</model>

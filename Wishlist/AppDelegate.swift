@@ -6,14 +6,11 @@ import WishlistShared
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-  let wishlist: Wishlist
-  let settings: SettingsStore
+  let settings = SettingsStore()
 
-  private let wishlistUpdater: WishlistUpdater
-
-  private lazy var persistentContainer: NSPersistentContainer = {
-    let container = NSPersistentCloudKitContainer(name: "Wishlist")
-    container.loadPersistentStores() { _, error in
+  lazy var persistentContainer: NSPersistentContainer = {
+    let container = NSPersistentCloudKitContainer(name: "DataModel")
+    container.loadPersistentStores() { des, error in
       if let error = error as NSError? {
         fatalError("Unresolved error \(error), \(error.userInfo)")
       }
@@ -21,13 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return container
   }()
 
-  override init() {
-    let database = try! FileDatabase()
-    let appStore = AppStoreService()
-    settings = SettingsStore()
-    wishlist = Wishlist(database: database, appLookupService: appStore)
-    wishlistUpdater = WishlistUpdater(wishlist: wishlist, appLookupService: appStore)
-  }
+  private lazy var database = CoreDataDatabase(context: persistentContainer.viewContext)
+
+  private let appStore = AppStoreService()
+  private(set) lazy var wishlist = Wishlist(database: database, appLookupService: appStore)
+  private lazy var wishlistUpdater = WishlistUpdater(wishlist: wishlist, appLookupService: appStore)
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 

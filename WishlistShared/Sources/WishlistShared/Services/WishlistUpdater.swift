@@ -27,7 +27,7 @@ public final class WishlistUpdater {
       }
       .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [wishlist] apps in
-        wishlist.write(apps: apps)
+        wishlist.update(apps: apps)
       }
       .store(in: &cancellables)
   }

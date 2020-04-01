@@ -46,15 +46,17 @@ extension AppListViewModel {
   }
 
   func removeApp(_ app: App) {
-    var updatedApps = apps
-    updatedApps.removeAll { $0.id == app.id }
-    wishlist.write(apps: updatedApps)
+    wishlist.remove(app: app)
   }
 
   func removeApps(at offsets: IndexSet) {
     var updatedApps = apps
     updatedApps.remove(atOffsets: offsets)
-    wishlist.write(apps: updatedApps)
+
+    let appsToRemove = apps.filter { app in
+      !updatedApps.contains { $0.id == app.id }
+    }
+    wishlist.remove(apps: appsToRemove)
   }
 }
 

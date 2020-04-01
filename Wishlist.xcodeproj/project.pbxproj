@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		942239662433EFB300BB935D /* CoreDataDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942239652433EFB300BB935D /* CoreDataDatabase.swift */; };
 		942833AA24334A1700A8921E /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; };
 		942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		942833AD24334A2400A8921E /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 942833AC24334A2400A8921E /* WishlistServices */; };
@@ -15,6 +16,7 @@
 		9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		94295E14232E06D400D21BC6 /* AppListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94295E13232E06D400D21BC6 /* AppListViewModel.swift */; };
 		942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */; };
+		94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */; };
 		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
@@ -93,10 +95,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		942239652433EFB300BB935D /* CoreDataDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataDatabase.swift; sourceTree = "<group>"; };
 		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		94295E13232E06D400D21BC6 /* AppListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppListViewModel.swift; sourceTree = "<group>"; usesTabs = 0; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
+		94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsView.swift; sourceTree = "<group>"; };
 		945CB45E23530B2F00DF3ABF /* UserDefaults */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UserDefaults; sourceTree = "<group>"; };
@@ -214,6 +218,7 @@
 			isa = PBXGroup;
 			children = (
 				94C7B1522330F13F008181D1 /* SettingsStore.swift */,
+				942239652433EFB300BB935D /* CoreDataDatabase.swift */,
 			);
 			path = Stores;
 			sourceTree = "<group>";
@@ -266,6 +271,7 @@
 				94FA20D4231BA2BD00EC1190 /* Assets.xcassets */,
 				94FA20DC231BA2BD00EC1190 /* Info.plist */,
 				94637EB02431A211005EF584 /* Wishlist.entitlements */,
+				94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */,
 				94FA20D9231BA2BD00EC1190 /* LaunchScreen.storyboard */,
 				94FA20D6231BA2BD00EC1190 /* Preview Content */,
 			);
@@ -410,8 +416,10 @@
 				94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */,
 				9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */,
 				948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */,
+				94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */,
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
 				942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */,
+				942239662433EFB300BB935D /* CoreDataDatabase.swift in Sources */,
 				94295E14232E06D400D21BC6 /* AppListViewModel.swift in Sources */,
 				948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */,
 				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,
@@ -727,6 +735,19 @@
 			productName = URLImage;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */,
+			);
+			currentVersion = 94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */;
+			path = DataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 94FA20C3231BA2BC00EC1190 /* Project object */;
 }

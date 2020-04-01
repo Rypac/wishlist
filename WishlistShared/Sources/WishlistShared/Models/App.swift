@@ -15,6 +15,36 @@ public struct App: Identifiable, Codable {
   public let updateDate: Date
   public let releaseNotes: String?
 
+  public init(
+    id: Int,
+    title: String,
+    seller: String,
+    description: String,
+    url: URL,
+    iconURL: URL,
+    price: Double,
+    formattedPrice: String,
+    bundleID: String,
+    version: String,
+    releaseDate: Date,
+    updateDate: Date,
+    releaseNotes: String?
+  ) {
+    self.id = id
+    self.title = title
+    self.seller = seller
+    self.description = description
+    self.url = url
+    self.iconURL = iconURL
+    self.price = price
+    self.formattedPrice = formattedPrice
+    self.bundleID = bundleID
+    self.version = version
+    self.releaseDate = releaseDate
+    self.updateDate = updateDate
+    self.releaseNotes = releaseNotes
+  }
+
   enum CodingKeys: String, CodingKey {
     case id = "trackId"
     case title = "trackName"

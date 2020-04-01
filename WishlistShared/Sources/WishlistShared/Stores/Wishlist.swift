@@ -15,7 +15,7 @@ public final class Wishlist {
     self.appLookupService = appLookupService
     self.apps = appsUpdatedSubject
       .prepend(())
-      .tryMap(database.read)
+      .tryMap(database.fetchAll)
       .replaceError(with: [])
       .eraseToAnyPublisher()
   }
@@ -27,22 +27,23 @@ public final class Wishlist {
   }
 
   public func app(withId id: Int) -> App? {
-    guard let apps = try? database.read() else {
+    do {
+      return try database.fetch(id: id)
+    } catch {
       return nil
     }
-    return apps.first { $0.id == id }
   }
 
   public func addApp(id: Int) {
     appLookupService.lookup(ids: [id])
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { _ in }) { [weak self, database] apps in
+      .sink(receiveCompletion: { _ in }) { [database, appsUpdatedSubject] apps in
         do {
-          let newAppIds = apps.map(\.id)
-          var currentApps = try database.read()
-          currentApps.removeAll { newAppIds.contains($0.id) }
-          currentApps.append(contentsOf: apps)
-          self?.write(apps: currentApps)
+          guard let app = apps.first else {
+            return
+          }
+          try database.add(app: app)
+          appsUpdatedSubject.send()
         } catch {
           print(error)
         }
@@ -50,12 +51,39 @@ public final class Wishlist {
       .store(in: &cancellables)
   }
 
-  public func write(apps: [App]) {
+  public func update(apps: [App]) {
     do {
-      try database.write(apps: apps)
+      try database.add(apps: apps)
       appsUpdatedSubject.send()
     } catch {
-      print("Failed to write app updates: \(error)")
+      print("Failed to update apps: \(error)")
+    }
+  }
+
+  public func remove(app: App) {
+    do {
+      try database.remove(app: app)
+      appsUpdatedSubject.send()
+    } catch {
+      print("Failed to remove app: \(error)")
+    }
+  }
+
+  public func remove(apps: [App]) {
+    do {
+      try database.remove(apps: apps)
+      appsUpdatedSubject.send()
+    } catch {
+      print("Failed to remove app: \(error)")
+    }
+  }
+
+  public func removeAll() {
+    do {
+      let apps = try database.fetchAll()
+      try database.remove(apps: apps)
+    } catch {
+      print("Failed to remove all apps: \(error)")
     }
   }
 }

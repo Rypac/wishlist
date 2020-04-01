@@ -1,4 +1,8 @@
 public protocol Database {
-  func read() throws -> [App]
-  func write(apps: [App]) throws
+  func fetchAll() throws -> [App]
+  func fetch(id: Int) throws -> App?
+  func add(app: App) throws
+  func add(apps: [App]) throws
+  func remove(app: App) throws
+  func remove(apps: [App]) throws
 }
