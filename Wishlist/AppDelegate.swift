@@ -25,12 +25,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   private let appStore = AppStoreService()
   private(set) lazy var wishlist = Wishlist(database: database, appLookupService: appStore)
-  private lazy var wishlistUpdater = WishlistUpdater(wishlist: wishlist, appLookupService: appStore)
+  private(set) lazy var wishlistUpdater = WishlistUpdater(wishlist: wishlist, appLookupService: appStore)
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
     settings.register()
-    wishlistUpdater.performUpdate()
 
     return true
   }
