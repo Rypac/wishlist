@@ -10,9 +10,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   lazy var persistentContainer: NSPersistentContainer = {
     let container = NSPersistentCloudKitContainer(name: "DataModel")
+
     let storeURL = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
-    let storeDescription = NSPersistentStoreDescription(url: storeURL)
-    container.persistentStoreDescriptions = [storeDescription]
+    let cloudStoreDescription = NSPersistentStoreDescription(url: storeURL)
+    cloudStoreDescription.configuration = "Cloud"
+    cloudStoreDescription.cloudKitContainerOptions =
+      NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.org.rypac.Wishlist")
+    container.persistentStoreDescriptions = [cloudStoreDescription]
+
     container.loadPersistentStores() { des, error in
       if let error = error as NSError? {
         fatalError("Unresolved error \(error), \(error.userInfo)")
