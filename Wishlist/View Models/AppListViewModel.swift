@@ -35,14 +35,24 @@ final class AppListViewModel: ObservableObject {
   }
 }
 
-extension AppListViewModel {
-  func addApp(url: URL) {
-    let matches = url.absoluteString.matchingStrings(regex: "https?://(?:itunes|apps).apple.com/(\\w+)/.*/id(\\d+)")
-    guard matches.count == 1, matches[0].count == 3, let id = Int(matches[0][2]) else {
-      return
-    }
+private extension URL {
+  private static let appStoreURLRegex = "https?://(?:itunes|apps).apple.com/(\\w+)/.*/id(\\d+)"
 
-    wishlist.addApp(id: id)
+  var appID: Int? {
+    let matches = absoluteString.matchingStrings(regex: Self.appStoreURLRegex)
+    guard matches.count == 1, matches[0].count == 3, let id = Int(matches[0][2]) else {
+      return nil
+    }
+    return id
+  }
+}
+
+extension AppListViewModel {
+  func addApps(urls: [URL]) {
+    let ids = urls.compactMap(\.appID)
+    if !ids.isEmpty {
+      wishlist.addApps(ids: ids)
+    }
   }
 
   func removeApp(_ app: App) {

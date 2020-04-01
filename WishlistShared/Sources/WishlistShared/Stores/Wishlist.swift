@@ -29,15 +29,12 @@ public final class Wishlist {
     }
   }
 
-  public func addApp(id: Int) {
-    appLookupService.lookup(ids: [id])
+  public func addApps(ids: [Int]) {
+    appLookupService.lookup(ids: ids)
       .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [database] apps in
         do {
-          guard let app = apps.first else {
-            return
-          }
-          try database.add(app: app)
+          try database.add(apps: apps)
         } catch {
           print(error)
         }

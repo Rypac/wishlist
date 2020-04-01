@@ -72,7 +72,7 @@ class ActionViewController: UIViewController {
                 }
                 .store(in: &self.cancellables)
 
-              wishlist.addApp(id: id)
+              wishlist.addApps(ids: [id])
             }
           }
         }

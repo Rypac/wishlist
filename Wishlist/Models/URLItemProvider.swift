@@ -1,13 +1,7 @@
 import Foundation
-import MobileCoreServices
 import WishlistShared
 
-enum UTI {
-  static let url = kUTTypeURL as String
-  static let plainText = kUTTypePlainText as String
-}
-
-final class LinkItemProvider: NSObject, Encodable, NSItemProviderWriting {
+final class URLItemProvider: NSObject, Encodable, NSItemProviderWriting {
   let url: URL
   let title: String?
 
@@ -47,7 +41,7 @@ final class LinkItemProvider: NSObject, Encodable, NSItemProviderWriting {
 
 extension NSItemProvider {
   convenience init(app: App) {
-    self.init(object: LinkItemProvider(url: app.url, title: app.title))
+    self.init(object: URLItemProvider(url: app.url, title: app.title))
     self.suggestedName = app.title
   }
 }

@@ -35,20 +35,9 @@ struct AppListView: View {
           buttons.append(.cancel())
           return ActionSheet(title: Text("Sort By"), buttons: buttons)
         }
-    }.onDrop(of: [UTI.url], isTargeted: nil) { [viewModel] items in
-      guard !items.isEmpty else {
-        return false
-      }
-
-      _ = items.first?.loadObject(ofClass: URL.self) { url, error in
-        DispatchQueue.main.async {
-          if let url = url {
-            viewModel.addApp(url: url)
-          }
-        }
-      }
-      return true
-    }
+    }.onDrop(of: [UTI.url], delegate: URLDropDelegate { [viewModel] urls in
+      viewModel.addApps(urls: urls)
+    })
   }
 }
 
