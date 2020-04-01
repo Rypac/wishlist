@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
-    <entity name="AppEntity" representedClassName=".AppEntity" syncable="YES">
+    <entity name="AppEntity" representedClassName="WishlistServices.AppEntity" syncable="YES">
         <attribute name="appDescription" optional="YES" attributeType="String"/>
         <attribute name="bundleID" optional="YES" attributeType="String"/>
         <attribute name="formattedPrice" optional="YES" attributeType="String"/>

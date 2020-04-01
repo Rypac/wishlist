@@ -1,12 +1,29 @@
 import UIKit
 import Combine
+import CoreData
 import MobileCoreServices
 import WishlistShared
 import WishlistServices
 
 class ActionViewController: UIViewController {
 
-  private let wishlist = Wishlist(database: try! FileDatabase(), appLookupService: AppStoreService())
+  lazy var persistentContainer: NSPersistentContainer = {
+    let container = NSPersistentCloudKitContainer(name: "DataModel")
+    let storeURL = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
+    let storeDescription = NSPersistentStoreDescription(url: storeURL)
+    container.persistentStoreDescriptions = [storeDescription]
+    container.loadPersistentStores() { des, error in
+      if let error = error as NSError? {
+        fatalError("Unresolved error \(error), \(error.userInfo)")
+      }
+    }
+    return container
+  }()
+
+  private lazy var database = CoreDataDatabase(context: persistentContainer.viewContext)
+
+  private let appStore = AppStoreService()
+  private(set) lazy var wishlist = Wishlist(database: database, appLookupService: appStore)
 
   private var cancellables = Set<AnyCancellable>()
 
@@ -77,5 +94,14 @@ private extension String {
           : ""
       }
     }
+  }
+}
+
+public extension FileManager {
+  func storeURL(for appGroup: String, databaseName: String) -> URL {
+    guard let fileContainer = containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
+      fatalError("Shared file container could not be created.")
+    }
+    return fileContainer.appendingPathComponent("\(databaseName).sqlite")
   }
 }

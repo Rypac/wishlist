@@ -10,6 +10,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   lazy var persistentContainer: NSPersistentContainer = {
     let container = NSPersistentCloudKitContainer(name: "DataModel")
+    let storeURL = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
+    let storeDescription = NSPersistentStoreDescription(url: storeURL)
+    container.persistentStoreDescriptions = [storeDescription]
     container.loadPersistentStores() { des, error in
       if let error = error as NSError? {
         fatalError("Unresolved error \(error), \(error.userInfo)")
@@ -45,5 +48,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     return activity.sceneConfiguration()
+  }
+}
+
+public extension FileManager {
+  func storeURL(for appGroup: String, databaseName: String) -> URL {
+    guard let fileContainer = containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
+      fatalError("Shared file container could not be created.")
+    }
+    return fileContainer.appendingPathComponent("\(databaseName).sqlite")
   }
 }
