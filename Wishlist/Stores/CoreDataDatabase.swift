@@ -1,58 +1,51 @@
 import Foundation
+import Combine
 import CoreData
 import WishlistShared
 
-public protocol Entity where Self: NSManagedObject {
-  static var entityName: String { get }
-}
-
-public final class AppEntity: NSManagedObject, Entity {
-  @NSManaged var id: NSNumber?
-  @NSManaged var title: String?
-  @NSManaged var seller: String?
-  @NSManaged var appDescription: String?
-  @NSManaged var url: URL?
-  @NSManaged var iconURL: URL?
-  @NSManaged var price: NSNumber?
-  @NSManaged var formattedPrice: String?
-  @NSManaged var bundleID: String?
-  @NSManaged var version: String?
-  @NSManaged var releaseDate: Date?
-  @NSManaged var updateDate: Date?
-  @NSManaged var releaseNotes: String?
-
-  public static var entityName: String { "AppEntity" }
-}
-
-private extension AppEntity {
-  static func fetchRequest(forID id: Int) -> NSFetchRequest<AppEntity> {
-    let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
-    fetchRequest.predicate = NSPredicate(format: "id = %@", NSNumber(value: id))
-    fetchRequest.fetchLimit = 1
-    return fetchRequest
-  }
-}
-
-public class CoreDataDatabase: Database {
+public class CoreDataDatabase: NSObject, Database, NSFetchedResultsControllerDelegate {
   private let managedContext: NSManagedObjectContext
+  private let controller: NSFetchedResultsController<AppEntity>
+  private let subject = CurrentValueSubject<[App], Never>([])
 
   public init(context: NSManagedObjectContext) {
     self.managedContext = context
+    self.controller = NSFetchedResultsController(fetchRequest: AppEntity.fetchAllRequest(), managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+    super.init()
+
+    do {
+      try controller.performFetch()
+      if let entities = controller.fetchedObjects {
+        subject.send(entities.map(App.init))
+      }
+      controller.delegate = self
+    } catch {
+      fatalError("Failed to fetch entities: \(error)")
+    }
+  }
+
+  deinit {
+    controller.delegate = nil
+  }
+
+  public func publisher() -> AnyPublisher<[App], Never> {
+    subject.eraseToAnyPublisher()
+  }
+
+  public func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+    if let entities = self.controller.fetchedObjects {
+      subject.send(entities.map(App.init))
+    }
   }
 
   public func fetchAll() throws -> [App] {
-    let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
-    fetchRequest.sortDescriptors = [
-      NSSortDescriptor(key: "price", ascending: true),
-      NSSortDescriptor(key: "title", ascending: true)
-    ]
+    let fetchRequest = AppEntity.fetchAllRequest()
     return try managedContext.fetch(fetchRequest).map(App.init)
   }
 
   public func fetch(id: Int) throws -> App? {
     let fetchRequest = AppEntity.fetchRequest(forID: id)
-    let entities = try managedContext.fetch(fetchRequest)
-    return entities.first.flatMap(App.init)
+    return try managedContext.fetch(fetchRequest).first.flatMap(App.init)
   }
 
   public func add(app: App) throws {
@@ -106,22 +99,33 @@ public class CoreDataDatabase: Database {
   }
 }
 
+private extension AppEntity {
+  static func fetchAllRequest() -> NSFetchRequest<AppEntity> {
+    let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
+    fetchRequest.sortDescriptors = [
+      NSSortDescriptor(key: "price", ascending: true),
+      NSSortDescriptor(key: "title", ascending: true)
+    ]
+    return fetchRequest
+  }
+}
+
 private extension App {
   init(entity: AppEntity) {
     self.init(
-      id: entity.id!.intValue,
-      title: entity.title!,
-      seller: entity.seller!,
-      description: entity.appDescription!,
-      url: entity.url!,
-      iconURL: entity.iconURL!,
-      price: entity.price!.doubleValue,
-      formattedPrice: entity.formattedPrice!,
-      bundleID: entity.bundleID!,
-      version: entity.version!,
-      releaseDate: entity.releaseDate!,
-      updateDate: entity.updateDate!,
-      releaseNotes: entity.releaseNotes!
+      id: entity.id.intValue,
+      title: entity.title,
+      seller: entity.seller,
+      description: entity.appDescription,
+      url: entity.url,
+      iconURL: entity.iconURL,
+      price: entity.price.doubleValue,
+      formattedPrice: entity.formattedPrice,
+      bundleID: entity.bundleID,
+      version: entity.version,
+      releaseDate: entity.releaseDate,
+      updateDate: entity.updateDate,
+      releaseNotes: entity.releaseNotes
     )
   }
 }
@@ -129,9 +133,9 @@ private extension App {
 private extension AppEntity {
   func update(app: App) {
     id = NSNumber(value: app.id)
-    title = app.title
+    title = app.title.trimmingCharacters(in: .whitespaces)
     seller = app.seller
-    appDescription = app.description
+    appDescription = app.description.trimmingCharacters(in: .whitespacesAndNewlines)
     url = app.url
     iconURL = app.iconURL
     price = NSNumber(value: app.price)
@@ -140,6 +144,6 @@ private extension AppEntity {
     version = app.version
     releaseDate = app.releaseDate
     updateDate = app.updateDate
-    releaseNotes = app.releaseNotes
+    releaseNotes = app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 }

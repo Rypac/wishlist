@@ -6,18 +6,13 @@ public final class Wishlist {
 
   private let database: Database
   private let appLookupService: AppLookupService
-  private let appsUpdatedSubject = PassthroughSubject<Void, Never>()
 
   private var cancellables = Set<AnyCancellable>()
 
   public init(database: Database, appLookupService: AppLookupService) {
     self.database = database
     self.appLookupService = appLookupService
-    self.apps = appsUpdatedSubject
-      .prepend(())
-      .tryMap(database.fetchAll)
-      .replaceError(with: [])
-      .eraseToAnyPublisher()
+    self.apps = database.publisher()
   }
 
   deinit {
@@ -37,13 +32,12 @@ public final class Wishlist {
   public func addApp(id: Int) {
     appLookupService.lookup(ids: [id])
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { _ in }) { [database, appsUpdatedSubject] apps in
+      .sink(receiveCompletion: { _ in }) { [database] apps in
         do {
           guard let app = apps.first else {
             return
           }
           try database.add(app: app)
-          appsUpdatedSubject.send()
         } catch {
           print(error)
         }
@@ -54,7 +48,6 @@ public final class Wishlist {
   public func update(apps: [App]) {
     do {
       try database.add(apps: apps)
-      appsUpdatedSubject.send()
     } catch {
       print("Failed to update apps: \(error)")
     }
@@ -63,7 +56,6 @@ public final class Wishlist {
   public func remove(app: App) {
     do {
       try database.remove(app: app)
-      appsUpdatedSubject.send()
     } catch {
       print("Failed to remove app: \(error)")
     }
@@ -72,7 +64,6 @@ public final class Wishlist {
   public func remove(apps: [App]) {
     do {
       try database.remove(apps: apps)
-      appsUpdatedSubject.send()
     } catch {
       print("Failed to remove app: \(error)")
     }

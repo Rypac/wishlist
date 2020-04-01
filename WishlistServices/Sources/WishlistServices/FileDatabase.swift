@@ -1,8 +1,10 @@
+import Combine
 import Foundation
 import WishlistShared
 
 public final class FileDatabase: Database {
   private let databaseURL: URL
+  private let subject = PassthroughSubject<[App], Never>()
 
   private let encoder: JSONEncoder = {
     let encoder = JSONEncoder()
@@ -25,6 +27,10 @@ public final class FileDatabase: Database {
     if !fileManager.fileExists(atPath: databaseURL.path) {
       try write(apps: [])
     }
+  }
+
+  public func publisher() -> AnyPublisher<[App], Never> {
+    subject.eraseToAnyPublisher()
   }
 
   public func fetchAll() throws -> [App] {
