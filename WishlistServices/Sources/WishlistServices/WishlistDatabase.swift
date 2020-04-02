@@ -3,32 +3,49 @@ import Combine
 import CoreData
 import WishlistShared
 
-public class CoreDataDatabase: NSObject, Database, NSFetchedResultsControllerDelegate {
+public class WishlistDatabase: NSObject, Database, NSFetchedResultsControllerDelegate {
   private let managedContext: NSManagedObjectContext
   private let controller: NSFetchedResultsController<AppEntity>
   private let subject: CurrentValueSubject<[App], Never>
 
+  private var cancellables = Set<AnyCancellable>()
+
   public init(context: NSManagedObjectContext) {
-    self.managedContext = context
-    self.controller = NSFetchedResultsController(fetchRequest: AppEntity.fetchAllRequest(), managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+    managedContext = context
+    controller = NSFetchedResultsController(fetchRequest: AppEntity.fetchAllRequest(), managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
 
     do {
       try controller.performFetch()
-      if let entities = controller.fetchedObjects {
-        self.subject = CurrentValueSubject(entities.map(App.init))
-      } else {
-        self.subject = CurrentValueSubject([])
-      }
-
-      super.init()
-      controller.delegate = self
     } catch {
       fatalError("Failed to fetch entities: \(error)")
     }
+
+    if let entities = controller.fetchedObjects {
+      subject = CurrentValueSubject(entities.map(App.init))
+    } else {
+      subject = CurrentValueSubject([])
+    }
+
+    super.init()
+    controller.delegate = self
+
+    DarwinNotificationCenter.shared.publisher(for: .didSaveManagedObjectContextExternally)
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] in
+        do {
+          try self?.synchronize()
+        } catch {
+          print("Failed to synchonize: \(error)")
+        }
+      }
+      .store(in: &cancellables)
   }
 
   deinit {
     controller.delegate = nil
+    cancellables.forEach { cancellable in
+      cancellable.cancel()
+    }
   }
 
   public func publisher() -> AnyPublisher<[App], Never> {
@@ -53,24 +70,25 @@ public class CoreDataDatabase: NSObject, Database, NSFetchedResultsControllerDel
 
   public func add(app: App) throws {
     try upsert(app: app)
-    try managedContext.save()
+    try saveIfNeeded()
   }
 
   public func add(apps: [App]) throws {
     try apps.forEach { app in
       try upsert(app: app)
     }
-    try managedContext.save()
+    try saveIfNeeded()
   }
 
   public func remove(app: App) throws {
     let fetchRequest = AppEntity.fetchRequest(forID: app.id)
-
     let existingApps = try managedContext.fetch(fetchRequest)
-    if let existingApp = existingApps.first {
-      managedContext.delete(existingApp)
-      try managedContext.save()
+    guard let existingApp = existingApps.first else {
+      return
     }
+
+    managedContext.delete(existingApp)
+    try saveIfNeeded()
   }
 
   public func remove(apps: [App]) throws {
@@ -86,18 +104,33 @@ public class CoreDataDatabase: NSObject, Database, NSFetchedResultsControllerDel
     existingApps.forEach { existingApp in
       managedContext.delete(existingApp)
     }
-    try managedContext.save()
+    try saveIfNeeded()
   }
 
   private func upsert(app: App) throws {
     let fetchRequest = AppEntity.fetchRequest(forID: app.id)
-
     let existingApps = try managedContext.fetch(fetchRequest)
     if let existingApp = existingApps.first {
       existingApp.update(app: app)
     } else {
       let entity = AppEntity(context: managedContext)
       entity.update(app: app)
+    }
+  }
+
+  private func saveIfNeeded() throws {
+    guard managedContext.hasChanges else {
+      return
+    }
+
+    try managedContext.save()
+    DarwinNotificationCenter.shared.postNotification(.didSaveManagedObjectContextLocally)
+  }
+
+  private func synchronize() throws {
+    try controller.performFetch()
+    if let entities = controller.fetchedObjects {
+      subject.send(entities.map(App.init))
     }
   }
 }

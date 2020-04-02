@@ -25,7 +25,7 @@ class ActionViewController: UIViewController {
     return container
   }()
 
-  private lazy var database = CoreDataDatabase(context: persistentContainer.viewContext)
+  private lazy var database = WishlistDatabase(context: persistentContainer.viewContext)
   private lazy var wishlist = Wishlist(database: database, appLookupService: AppStoreService())
 
   private var cancellables = Set<AnyCancellable>()

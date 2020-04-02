@@ -22,6 +22,7 @@ public final class AppStoreService: AppLookupService {
     var urlComponents = URLComponents(string: "https://itunes.apple.com/lookup")!
     urlComponents.queryItems = [
       URLQueryItem(name: "id", value: ids.map(String.init).joined(separator: ",")),
+      URLQueryItem(name: "entity", value: "software"),
       URLQueryItem(name: "country", value: "au"),
       URLQueryItem(name: "limit", value: String(ids.count))
     ]

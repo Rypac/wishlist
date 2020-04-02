@@ -1,26 +1,22 @@
 import Foundation
 import CoreData
 
-public protocol Entity where Self: NSManagedObject {
-  static var entityName: String { get }
-}
+public final class AppEntity: NSManagedObject {
+  @NSManaged var id: NSNumber
+  @NSManaged var title: String
+  @NSManaged var seller: String
+  @NSManaged var appDescription: String
+  @NSManaged var url: URL
+  @NSManaged var iconURL: URL
+  @NSManaged var price: NSNumber
+  @NSManaged var formattedPrice: String
+  @NSManaged var bundleID: String
+  @NSManaged var version: String
+  @NSManaged var releaseDate: Date
+  @NSManaged var updateDate: Date
+  @NSManaged var releaseNotes: String?
 
-public final class AppEntity: NSManagedObject, Entity {
-  @NSManaged public var id: NSNumber
-  @NSManaged public var title: String
-  @NSManaged public var seller: String
-  @NSManaged public var appDescription: String
-  @NSManaged public var url: URL
-  @NSManaged public var iconURL: URL
-  @NSManaged public var price: NSNumber
-  @NSManaged public var formattedPrice: String
-  @NSManaged public var bundleID: String
-  @NSManaged public var version: String
-  @NSManaged public var releaseDate: Date
-  @NSManaged public var updateDate: Date
-  @NSManaged public var releaseNotes: String?
-
-  public static var entityName: String { "AppEntity" }
+  static var entityName: String { "AppEntity" }
 }
 
 public extension AppEntity {

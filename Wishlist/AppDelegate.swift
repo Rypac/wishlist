@@ -8,7 +8,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   let settings = SettingsStore()
 
-  lazy var persistentContainer: NSPersistentContainer = {
+  private(set) lazy var persistentContainer: NSPersistentContainer = {
     let container = NSPersistentCloudKitContainer(name: "DataModel")
 
     let storeURL = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return container
   }()
 
-  private lazy var database = CoreDataDatabase(context: persistentContainer.viewContext)
+  private lazy var database = WishlistDatabase(context: persistentContainer.viewContext)
 
   private let appStore = AppStoreService()
   private(set) lazy var wishlist = Wishlist(database: database, appLookupService: appStore)

@@ -1,4 +1,5 @@
 import SwiftUI
+import WishlistShared
 
 struct SettingsView: View {
   @Environment(\.presentationMode) var presentationMode

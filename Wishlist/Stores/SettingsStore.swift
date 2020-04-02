@@ -1,6 +1,9 @@
 import Combine
 import SwiftUI
 import UserDefaults
+import WishlistShared
+
+extension SortOrder: UserDefaultsSerializable {}
 
 final class SettingsStore {
   @UserDefault(key: "sortOrder", defaultValue: .price)
