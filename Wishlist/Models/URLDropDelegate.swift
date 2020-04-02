@@ -22,6 +22,7 @@ final class URLDropDelegate: DropDelegate {
     }
 
     info.loadURLs()
+      .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [acceptURLs] urls in
         acceptURLs(urls)
       }
@@ -41,19 +42,3 @@ private extension DropInfo {
       .eraseToAnyPublisher()
   }
 }
-
-private extension NSItemProvider {
-  func loadURL() -> Future<URL, Error> {
-    Future { [item = self] promise in
-      _ = item.loadObject(ofClass: URL.self) { url, error in
-        if let url = url {
-          promise(.success(url))
-        } else {
-          promise(.failure(error ?? LoadURLError()))
-        }
-      }
-    }
-  }
-}
-
-private struct LoadURLError: Error {}

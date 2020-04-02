@@ -17,7 +17,7 @@ class ActionViewController: UIViewController {
       NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.org.rypac.Wishlist")
     container.persistentStoreDescriptions = [cloudStoreDescription]
 
-    container.loadPersistentStores() { des, error in
+    container.loadPersistentStores() { _, error in
       if let error = error as NSError? {
         fatalError("Unresolved error \(error), \(error.userInfo)")
       }
@@ -26,9 +26,7 @@ class ActionViewController: UIViewController {
   }()
 
   private lazy var database = CoreDataDatabase(context: persistentContainer.viewContext)
-
-  private let appStore = AppStoreService()
-  private(set) lazy var wishlist = Wishlist(database: database, appLookupService: appStore)
+  private lazy var wishlist = Wishlist(database: database, appLookupService: AppStoreService())
 
   private var cancellables = Set<AnyCancellable>()
 
@@ -43,41 +41,36 @@ class ActionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    for item in self.extensionContext!.inputItems as! [NSExtensionItem] {
-      for provider in item.attachments! {
-        if provider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
-          weak var label = self.statusLabel
-          provider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil) { [wishlist] data, error in
-            OperationQueue.main.addOperation {
-              guard let nsURL = data as? NSURL else {
-                return
-              }
+    extensionContext!.loadURLs()
+      .map(AppStore.extractIDs)
+      .receive(on: DispatchQueue.main)
+      .sink(receiveCompletion: { _ in }) { [weak self] ids in
+        guard !ids.isEmpty else {
+          self?.statusLabel.text = "No apps to add."
+          return
+        }
 
-              let url = nsURL as URL
+        self?.statusLabel.text = "Adding \(ids.count) apps…"
+        self?.wishlist.addApps(ids: ids)
+        self?.dismissWhenAllAppsHaveBeenAdded(ids: ids)
+      }
+      .store(in: &cancellables)
+  }
 
-              let matches = url.absoluteString.matchingStrings(regex: "https?://(?:itunes|apps).apple.com/(\\w+)/.*/id(\\d+)")
-              guard matches.count == 1, matches[0].count == 3, let id = Int(matches[0][2]) else {
-                label?.text = "Invalid App Store URL"
-                return
-              }
+  private func dismissWhenAllAppsHaveBeenAdded(ids: [Int]) {
+    wishlist.apps
+      .receive(on: DispatchQueue.main)
+      .sink(receiveCompletion: { _ in }) { [weak self] apps in
+        guard !ids.isEmpty else {
+          return
+        }
 
-              label?.text = "Adding \(url.absoluteString)…"
-
-              wishlist.apps
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] apps in
-                  if apps.contains(where: { $0.id == id }) {
-                    self?.done()
-                  }
-                }
-                .store(in: &self.cancellables)
-
-              wishlist.addApps(ids: [id])
-            }
-          }
+        let hasAllIDs = ids.allSatisfy { id in apps.contains { $0.id == id } }
+        if hasAllIDs {
+          self?.done()
         }
       }
-    }
+      .store(in: &cancellables)
   }
 
   @IBAction func done() {
@@ -85,28 +78,27 @@ class ActionViewController: UIViewController {
   }
 }
 
-private extension String {
-  func matchingStrings(regex: String) -> [[String]] {
-    guard let regex = try? NSRegularExpression(pattern: regex, options: []) else {
+private extension NSExtensionContext {
+  var urlItemProviders: [NSItemProvider] {
+    guard let items = inputItems as? [NSExtensionItem] else {
       return []
     }
-    let nsString = self as NSString
-    let results  = regex.matches(in: self, options: [], range: NSMakeRange(0, nsString.length))
-    return results.map { result in
-      (0..<result.numberOfRanges).map {
-        result.range(at: $0).location != NSNotFound
-          ? nsString.substring(with: result.range(at: $0))
-          : ""
-      }
-    }
-  }
-}
 
-public extension FileManager {
-  func storeURL(for appGroup: String, databaseName: String) -> URL {
-    guard let fileContainer = containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
-      fatalError("Shared file container could not be created.")
+    return items.compactMap(\.attachments)
+      .flatMap { $0 }
+      .filter { $0.hasItemConformingToTypeIdentifier(kUTTypeURL as String) }
+  }
+
+  func loadURLs() -> AnyPublisher<[URL], Error> {
+    let providers = urlItemProviders
+    if providers.isEmpty {
+      return Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
-    return fileContainer.appendingPathComponent("\(databaseName).sqlite")
+
+    let futureURLs = providers.map { $0.loadURL() }
+    return Publishers.Sequence(sequence: futureURLs)
+      .flatMap { $0 }
+      .collect()
+      .eraseToAnyPublisher()
   }
 }

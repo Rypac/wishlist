@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.org.rypac.Wishlist")
     container.persistentStoreDescriptions = [cloudStoreDescription]
 
-    container.loadPersistentStores() { des, error in
+    container.loadPersistentStores() { _, error in
       if let error = error as NSError? {
         fatalError("Unresolved error \(error), \(error.userInfo)")
       }
@@ -52,14 +52,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     return activity.sceneConfiguration()
-  }
-}
-
-public extension FileManager {
-  func storeURL(for appGroup: String, databaseName: String) -> URL {
-    guard let fileContainer = containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
-      fatalError("Shared file container could not be created.")
-    }
-    return fileContainer.appendingPathComponent("\(databaseName).sqlite")
   }
 }
