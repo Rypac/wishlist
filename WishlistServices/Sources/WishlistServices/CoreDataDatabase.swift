@@ -6,18 +6,21 @@ import WishlistShared
 public class CoreDataDatabase: NSObject, Database, NSFetchedResultsControllerDelegate {
   private let managedContext: NSManagedObjectContext
   private let controller: NSFetchedResultsController<AppEntity>
-  private let subject = CurrentValueSubject<[App], Never>([])
+  private let subject: CurrentValueSubject<[App], Never>
 
   public init(context: NSManagedObjectContext) {
     self.managedContext = context
     self.controller = NSFetchedResultsController(fetchRequest: AppEntity.fetchAllRequest(), managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-    super.init()
 
     do {
       try controller.performFetch()
       if let entities = controller.fetchedObjects {
-        subject.send(entities.map(App.init))
+        self.subject = CurrentValueSubject(entities.map(App.init))
+      } else {
+        self.subject = CurrentValueSubject([])
       }
+
+      super.init()
       controller.delegate = self
     } catch {
       fatalError("Failed to fetch entities: \(error)")
