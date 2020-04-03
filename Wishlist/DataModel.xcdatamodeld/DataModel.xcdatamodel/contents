@@ -14,6 +14,11 @@
         <attribute name="updateDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" optional="YES" attributeType="URI"/>
         <attribute name="version" optional="YES" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <configuration name="Cloud" usedWithCloudKit="YES">
         <memberEntity name="AppEntity"/>
