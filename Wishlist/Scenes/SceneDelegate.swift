@@ -39,9 +39,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     let now = Date()
     let oneMinute = 60
+    let fiveMinutes = oneMinute * 5
     let timeSinceLastUpdate = now.timeIntervalSince(lastUpdateDate)
 
-    return timeSinceLastUpdate > TimeInterval(oneMinute)
+    return timeSinceLastUpdate > TimeInterval(fiveMinutes)
   }
 
   private var appDelegate: AppDelegate {
