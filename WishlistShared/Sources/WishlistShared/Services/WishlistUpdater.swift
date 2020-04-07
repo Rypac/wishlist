@@ -29,7 +29,7 @@ public final class WishlistUpdater {
               guard let app = apps.first(where: { $0.id == updatedApp.id }) else {
                 return
               }
-              if updatedApp.updateDate > app.updateDate {
+              if updatedApp.isUpdated(from: app) {
                 result.append(updatedApp)
               }
             }
@@ -42,5 +42,18 @@ public final class WishlistUpdater {
         }
       }
       .store(in: &cancellables)
+  }
+}
+
+private extension App {
+  func isUpdated(from app: App) -> Bool {
+    updateDate > app.updateDate
+      || title != app.title
+      || description != app.description
+      || price != app.price
+      || url != app.url
+      || iconURL != app.iconURL
+      || version != app.version
+      || releaseNotes != app.releaseNotes
   }
 }
