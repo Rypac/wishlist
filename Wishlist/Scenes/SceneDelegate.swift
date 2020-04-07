@@ -6,7 +6,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
 
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-    if let windowScene = scene as? UIWindowScene, let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+    if let windowScene = scene as? UIWindowScene {
       let wishlist = appDelegate.wishlist
       let settings = appDelegate.settings
 
@@ -22,27 +22,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneDidBecomeActive(_ scene: UIScene) {
-    checkForWishlistUpdates()
+    appDelegate.wishlistUpdater.performPeriodicUpdate()
   }
 
-  private func checkForWishlistUpdates() {
-    if shouldUpdate {
-      appDelegate.wishlistUpdater.performUpdate()
-      appDelegate.settings.lastUpdateCheck = Date()
-    }
-  }
-
-  private var shouldUpdate: Bool {
-    guard let lastUpdateDate = appDelegate.settings.lastUpdateCheck else {
-      return true
-    }
-
-    let now = Date()
-    let oneMinute = 60
-    let fiveMinutes = oneMinute * 5
-    let timeSinceLastUpdate = now.timeIntervalSince(lastUpdateDate)
-
-    return timeSinceLastUpdate > TimeInterval(fiveMinutes)
+  func sceneDidEnterBackground(_ scene: UIScene) {
+    appDelegate.scheduleAppRefresh()
   }
 
   private var appDelegate: AppDelegate {

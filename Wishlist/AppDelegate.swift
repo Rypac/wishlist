@@ -1,3 +1,4 @@
+import BackgroundTasks
 import CoreData
 import UIKit
 import WishlistServices
@@ -30,11 +31,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   private let appStore = AppStoreService()
   private(set) lazy var wishlist = Wishlist(database: database, appLookupService: appStore)
-  private(set) lazy var wishlistUpdater = WishlistUpdater(wishlist: wishlist, appLookupService: appStore)
+  private(set) lazy var wishlistUpdater = WishlistUpdater(wishlist: database, appLookupService: appStore, lastUpdateDate: settings.$lastUpdateCheck)
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-
     settings.register()
+    registerBackgroundTasks()
 
     return true
   }
@@ -52,5 +53,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     return activity.sceneConfiguration()
+  }
+}
+
+// MARK: - Background Tasks
+
+extension AppDelegate {
+  private static let refreshTaskIdentifier = "org.rypac.Wishlist.refresh"
+
+  func registerBackgroundTasks() {
+    BGTaskScheduler.shared.register(forTaskWithIdentifier: Self.refreshTaskIdentifier, using: nil) { task in
+      self.handleAppRefresh(task: task as! BGAppRefreshTask)
+    }
+  }
+
+  func scheduleAppRefresh() {
+    let request = BGAppRefreshTaskRequest(identifier: Self.refreshTaskIdentifier)
+    request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60)
+
+    do {
+      try BGTaskScheduler.shared.submit(request)
+    } catch {
+      print("Could not schedule app refresh: \(error)")
+    }
+  }
+
+  func handleAppRefresh(task: BGAppRefreshTask) {
+    scheduleAppRefresh()
+    wishlistUpdater.performBackgroundUpdate(task: task)
   }
 }
