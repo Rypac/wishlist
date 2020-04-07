@@ -24,7 +24,7 @@ struct AppListView: View {
                 .accessibility(label: Text("Sort By"))
             }
             .frame(width: 24, height: 24)
-          }
+          }.hoverEffect()
         )
         .actionSheet(isPresented: $showActionSheet) {
           var buttons = SortOrder.allCases.map { sortOrder in

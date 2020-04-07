@@ -12,7 +12,7 @@ struct AppDetailsView: View {
       .navigationBarItems(
         trailing: Button(action: { self.showShareSheet = true }) {
           Image.share.imageScale(.large)
-        }
+        }.hoverEffect()
       )
       .sheet(isPresented: $showShareSheet) {
         ActivityView(showing: self.$showShareSheet, activityItems: [self.app.url], applicationActivities: nil)

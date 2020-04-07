@@ -36,7 +36,7 @@ private struct AppDetailsNavigationView: View {
         .navigationBarItems(
           trailing: Button("Close") {
             UIApplication.shared.requestSceneSessionDestruction(self.session, options: nil)
-          }
+          }.hoverEffect()
         )
     }.navigationViewStyle(StackNavigationViewStyle())
   }
