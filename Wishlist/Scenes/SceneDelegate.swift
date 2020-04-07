@@ -10,8 +10,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       let wishlist = appDelegate.wishlist
       let settings = appDelegate.settings
 
-      appDelegate.persistentContainer.viewContext.automaticallyMergesChangesFromParent = true
-
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(
         rootView: AppListView()

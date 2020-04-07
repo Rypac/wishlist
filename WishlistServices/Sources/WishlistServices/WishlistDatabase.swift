@@ -12,7 +12,7 @@ public class WishlistDatabase: NSObject, Database, NSFetchedResultsControllerDel
 
   public init(context: NSManagedObjectContext) {
     managedContext = context
-    managedContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+    managedContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     managedContext.automaticallyMergesChangesFromParent = true
     controller = NSFetchedResultsController(fetchRequest: AppEntity.fetchAllRequest(), managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
 
