@@ -31,7 +31,6 @@ public final class Wishlist {
 
   public func addApps(ids: [Int]) {
     appLookupService.lookup(ids: ids)
-      .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [database] apps in
         do {
           try database.add(apps: apps)
@@ -62,16 +61,7 @@ public final class Wishlist {
     do {
       try database.remove(apps: apps)
     } catch {
-      print("Failed to remove app: \(error)")
-    }
-  }
-
-  public func removeAll() {
-    do {
-      let apps = try database.fetchAll()
-      try database.remove(apps: apps)
-    } catch {
-      print("Failed to remove all apps: \(error)")
+      print("Failed to remove apps: \(error)")
     }
   }
 }

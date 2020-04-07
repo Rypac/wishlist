@@ -35,7 +35,6 @@ public final class WishlistUpdater {
             }
           }
       }
-      .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [wishlist] apps in
         if !apps.isEmpty {
           wishlist.update(apps: apps)
