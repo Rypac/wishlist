@@ -1,6 +1,6 @@
 import SwiftUI
 import UIKit
-import WishlistShared
+import WishlistData
 
 class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -10,7 +10,7 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
     if let windowScene = scene as? UIWindowScene, let appDelegate = UIApplication.shared.delegate as? AppDelegate {
       guard
         let id = session.userInfo?[ActivityIdentifier.UserInfoKey.id] as? Int,
-        let app = appDelegate.wishlist.app(withId: id)
+        let app = try? appDelegate.appRepository.fetch(id: id)
       else {
         print("Attempted to show scene with invalid app id.")
         UIApplication.shared.requestSceneSessionDestruction(session, options: nil)

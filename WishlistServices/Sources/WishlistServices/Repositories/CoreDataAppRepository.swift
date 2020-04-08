@@ -1,66 +1,21 @@
-import Foundation
 import Combine
 import CoreData
-import WishlistShared
+import WishlistFoundation
+import WishlistData
 
-public class WishlistDatabase: NSObject, Database, NSFetchedResultsControllerDelegate {
+public class CoreDataAppRepository: AppRepository {
   private let managedContext: NSManagedObjectContext
-  private let controller: NSFetchedResultsController<AppEntity>
-  private let subject: CurrentValueSubject<[App], Never>
-
-  private var cancellables = Set<AnyCancellable>()
 
   public init(context: NSManagedObjectContext) {
     managedContext = context
     managedContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     managedContext.automaticallyMergesChangesFromParent = true
-    controller = NSFetchedResultsController(fetchRequest: AppEntity.fetchAllRequest(), managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-
-    do {
-      try controller.performFetch()
-    } catch {
-      fatalError("Failed to fetch entities: \(error)")
-    }
-
-    if let entities = controller.fetchedObjects {
-      subject = CurrentValueSubject(entities.map(App.init))
-    } else {
-      subject = CurrentValueSubject([])
-    }
-
-    super.init()
-    controller.delegate = self
-
-    DarwinNotificationCenter.shared.publisher(for: .didSaveManagedObjectContextExternally)
-      .receive(on: DispatchQueue.main)
-      .sink { [controller, subject] in
-        do {
-          try controller.performFetch()
-          if let entities = controller.fetchedObjects {
-            subject.send(entities.map(App.init))
-          }
-        } catch {
-          print("Failed to synchonize: \(error)")
-        }
-      }
-      .store(in: &cancellables)
-  }
-
-  deinit {
-    controller.delegate = nil
-    cancellables.forEach { cancellable in
-      cancellable.cancel()
-    }
   }
 
   public func publisher() -> AnyPublisher<[App], Never> {
-    subject.eraseToAnyPublisher()
-  }
-
-  public func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-    if let entities = self.controller.fetchedObjects {
-      subject.send(entities.map(App.init))
-    }
+    NSFetchRequestPublisher(request: AppEntity.fetchAllRequest(), context: managedContext, refresh: .didSaveManagedObjectContextExternally)
+      .map { $0.map(App.init) }
+      .eraseToAnyPublisher()
   }
 
   public func fetchAll() throws -> [App] {
@@ -68,12 +23,12 @@ public class WishlistDatabase: NSObject, Database, NSFetchedResultsControllerDel
     return try managedContext.fetch(fetchRequest).map(App.init)
   }
 
-  public func fetch(id: Int) throws -> App? {
-    let fetchRequest = AppEntity.fetchRequest(forID: id)
+  public func fetch(id: App.ID) throws -> App? {
+    let fetchRequest = AppEntity.fetchRequest(id: id)
     return try managedContext.fetch(fetchRequest).first.flatMap(App.init)
   }
 
-  public func add(app: App) throws {
+  public func add(_ app: App) throws {
     managedContext.perform { [managedContext] in
       let entity = AppEntity(context: managedContext)
       entity.update(app: app)
@@ -81,19 +36,27 @@ public class WishlistDatabase: NSObject, Database, NSFetchedResultsControllerDel
     }
   }
 
-  public func add(apps: [App]) throws {
+  public func add(_ apps: [App]) throws {
     managedContext.perform { [managedContext] in
       apps.forEach { app in
         let entity = AppEntity(context: managedContext)
         entity.update(app: app)
       }
-      try? managedContext.saveIfNeeded()
+      do {
+        try managedContext.saveIfNeeded()
+      } catch {
+        print("Failed to add app: \(error)")
+      }
     }
   }
 
-  public func remove(app: App) throws {
+  public func update(_ apps: [App]) throws {
+    try add(apps)
+  }
+
+  public func delete(_ app: App) throws {
     managedContext.perform { [managedContext] in
-      let fetchRequest = AppEntity.fetchRequest(forID: app.id)
+      let fetchRequest = AppEntity.fetchRequest(id: app.id)
       let existingApps = try? managedContext.fetch(fetchRequest)
       guard let existingApp = existingApps?.first else {
         return
@@ -104,20 +67,21 @@ public class WishlistDatabase: NSObject, Database, NSFetchedResultsControllerDel
     }
   }
 
-  public func remove(apps: [App]) throws {
-    let ids = apps.map { NSNumber(value: $0.id) }
-    let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
-    fetchRequest.predicate = NSPredicate(format: "id in %@", ids)
+  public func delete(_ apps: [App]) throws {
+    managedContext.perform { [managedContext] in
+      let ids = apps.map { NSNumber(value: $0.id) }
+      let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
+      fetchRequest.predicate = NSPredicate(format: "id in %@", ids)
 
-    let existingApps = try managedContext.fetch(fetchRequest)
-    guard !existingApps.isEmpty else {
-      return
-    }
+      guard let existingApps = try? managedContext.fetch(fetchRequest), !existingApps.isEmpty else {
+        return
+      }
 
-    existingApps.forEach { existingApp in
-      managedContext.delete(existingApp)
+      existingApps.forEach { existingApp in
+        managedContext.delete(existingApp)
+      }
+      try? managedContext.saveIfNeeded()
     }
-    try managedContext.saveIfNeeded()
   }
 }
 
@@ -139,6 +103,13 @@ private extension AppEntity {
       NSSortDescriptor(key: "price", ascending: true),
       NSSortDescriptor(key: "title", ascending: true)
     ]
+    return fetchRequest
+  }
+
+  static func fetchRequest(id: Int) -> NSFetchRequest<AppEntity> {
+    let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
+    fetchRequest.predicate = NSPredicate(format: "id = %@", NSNumber(value: id))
+    fetchRequest.fetchLimit = 1
     return fetchRequest
   }
 }

@@ -1,7 +1,7 @@
 import Combine
 import SwiftUI
 import UserDefaults
-import WishlistShared
+import WishlistData
 
 extension SortOrder: UserDefaultsSerializable {}
 
@@ -9,12 +9,8 @@ final class SettingsStore {
   @UserDefault(key: "sortOrder", defaultValue: .price)
   var sortOrder: SortOrder
 
-  @UserDefault(key: "lastUpdateCheck", defaultValue: nil)
-  var lastUpdateCheck: Date?
-
   func register() {
     _sortOrder.register()
-    _lastUpdateCheck.register()
   }
 }
 

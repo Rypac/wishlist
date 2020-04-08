@@ -1,5 +1,5 @@
 import Foundation
-import WishlistShared
+import WishlistFoundation
 
 extension DarwinNotification.Name {
   private static let appIsExtension = Bundle.main.bundlePath.hasSuffix(".appex")
@@ -22,9 +22,7 @@ extension DarwinNotification.Name {
     }
   }
 
-  /// Notification to be posted when the shared Core Data database has been saved to disk from an extension. Posting this notification between processes can help us fetching new changes when needed.
   private static let extensionDidSaveManagedObjectContext: DarwinNotification.Name = "org.rypac.wishlist.extension-did-save"
 
-  /// Notification to be posted when the shared Core Data database has been saved to disk from the app. Posting this notification between processes can help us fetching new changes when needed.
   private static let appDidSaveManagedObjectContext: DarwinNotification.Name = "org.rypac.wishlist.app-did-save"
 }

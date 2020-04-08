@@ -6,7 +6,8 @@ import PackageDescription
 let package = Package(
   name: "WishlistServices",
   platforms: [
-    .iOS(.v13)
+    .iOS(.v13),
+    .macOS(.v10_15)
   ],
   products: [
     .library(
@@ -16,12 +17,14 @@ let package = Package(
     )
   ],
   dependencies: [
-    .package(path: "../WishlistShared")
+    .package(path: "../WishlistFoundation"),
+    .package(path: "../WishlistData"),
+    .package(path: "../UserDefaults")
   ],
   targets: [
     .target(
       name: "WishlistServices",
-      dependencies: ["WishlistShared"]
+      dependencies: ["WishlistFoundation", "WishlistData", "UserDefaults"]
     ),
     .testTarget(
       name: "WishlistServicesTests",

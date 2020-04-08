@@ -2,7 +2,7 @@ import BackgroundTasks
 import CoreData
 import UIKit
 import WishlistServices
-import WishlistShared
+import WishlistData
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -27,11 +27,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return container
   }()
 
-  private lazy var database = WishlistDatabase(context: persistentContainer.viewContext)
-
-  private let appStore = AppStoreService()
-  private(set) lazy var wishlist = Wishlist(database: database, appLookupService: appStore)
-  private(set) lazy var wishlistUpdater = WishlistUpdater(wishlist: database, appLookupService: appStore, lastUpdateDate: settings.$lastUpdateCheck)
+  let appStore = AppStoreService()
+  private(set) lazy var appRepository: AppRepository = CoreDataAppRepository(context: persistentContainer.viewContext)
+  private(set) lazy var wishlistUpdater = UpdateWishlistTask(appRepository: appRepository, appLookupService: appStore, updateScheduler: WishlistUpdateScheduler())
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     settings.register()

@@ -2,8 +2,27 @@ import UIKit
 import Combine
 import CoreData
 import MobileCoreServices
-import WishlistShared
+import WishlistData
+import WishlistFoundation
 import WishlistServices
+
+final class Wishlist {
+  let repository: AppRepository
+  let lookupService: AppLookupService
+
+  init(repository: AppRepository, lookupService: AppLookupService) {
+    self.repository = repository
+    self.lookupService = lookupService
+  }
+
+  func addApps(ids: [Int]) -> AnyPublisher<Void, Error> {
+    lookupService.lookup(ids: ids)
+      .tryMap { [repository] apps in
+        try repository.add(apps)
+      }
+      .eraseToAnyPublisher()
+  }
+}
 
 class ActionViewController: UIViewController {
 
@@ -25,8 +44,7 @@ class ActionViewController: UIViewController {
     return container
   }()
 
-  private lazy var database = WishlistDatabase(context: persistentContainer.viewContext)
-  private lazy var wishlist = Wishlist(database: database, appLookupService: AppStoreService())
+  private lazy var wishlist = Wishlist(repository: CoreDataAppRepository(context: persistentContainer.viewContext), lookupService: AppStoreService())
 
   private var cancellables = Set<AnyCancellable>()
 
@@ -41,34 +59,29 @@ class ActionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    extensionContext!.loadURLs()
+    let appIDs = extensionContext!.loadURLs()
       .map(AppStore.extractIDs)
+      .buffer(size: 1, prefetch: .keepFull, whenFull: .dropOldest)
+//      .share()
+
+    appIDs
       .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [weak self] ids in
-        guard !ids.isEmpty else {
+        if !ids.isEmpty {
+          self?.statusLabel.text = "Adding \(ids.count) apps…"
+        } else {
           self?.statusLabel.text = "No apps to add."
-          return
         }
-
-        self?.statusLabel.text = "Adding \(ids.count) apps…"
-        self?.wishlist.addApps(ids: ids)
-        self?.dismissWhenAllAppsHaveBeenAdded(ids: ids)
       }
       .store(in: &cancellables)
-  }
 
-  private func dismissWhenAllAppsHaveBeenAdded(ids: [Int]) {
-    wishlist.apps
+    appIDs
+      .flatMap { [wishlist] ids in
+        wishlist.addApps(ids: ids)
+      }
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { _ in }) { [weak self] apps in
-        guard !ids.isEmpty else {
-          return
-        }
-
-        let hasAllIDs = ids.allSatisfy { id in apps.contains { $0.id == id } }
-        if hasAllIDs {
-          self?.done()
-        }
+      .sink(receiveCompletion: { _ in }) { [weak self] in
+        self?.done()
       }
       .store(in: &cancellables)
   }
@@ -95,8 +108,8 @@ private extension NSExtensionContext {
       return Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
 
-    let futureURLs = providers.map { $0.loadURL() }
-    return Publishers.Sequence(sequence: futureURLs)
+    let loadURLs = providers.map { $0.loadURL() }
+    return Publishers.Sequence(sequence: loadURLs)
       .flatMap { $0 }
       .collect()
       .eraseToAnyPublisher()

@@ -18,12 +18,3 @@ public final class AppEntity: NSManagedObject {
 
   static var entityName: String { "AppEntity" }
 }
-
-public extension AppEntity {
-  static func fetchRequest(forID id: Int) -> NSFetchRequest<AppEntity> {
-    let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
-    fetchRequest.predicate = NSPredicate(format: "id = %@", NSNumber(value: id))
-    fetchRequest.fetchLimit = 1
-    return fetchRequest
-  }
-}

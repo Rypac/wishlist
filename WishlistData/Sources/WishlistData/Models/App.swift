@@ -1,6 +1,6 @@
 import Foundation
 
-public struct App: Identifiable, Codable {
+public struct App: Identifiable {
   public let id: Int
   public let title: String
   public let seller: String
@@ -43,21 +43,5 @@ public struct App: Identifiable, Codable {
     self.releaseDate = releaseDate
     self.updateDate = updateDate
     self.releaseNotes = releaseNotes
-  }
-
-  enum CodingKeys: String, CodingKey {
-    case id = "trackId"
-    case title = "trackName"
-    case seller = "artistName"
-    case description
-    case url = "trackViewUrl"
-    case iconURL = "artworkUrl100"
-    case price
-    case formattedPrice
-    case bundleID = "bundleId"
-    case version
-    case releaseDate
-    case updateDate = "currentVersionReleaseDate"
-    case releaseNotes
   }
 }

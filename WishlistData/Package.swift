@@ -4,28 +4,27 @@
 import PackageDescription
 
 let package = Package(
-  name: "WishlistShared",
+  name: "WishlistData",
   platforms: [
-    .iOS(.v13)
+    .iOS(.v13),
+    .macOS(.v10_15)
   ],
   products: [
     .library(
-      name: "WishlistShared",
+      name: "WishlistData",
       type: .dynamic,
-      targets: ["WishlistShared"]
+      targets: ["WishlistData"]
     )
   ],
-  dependencies: [
-    .package(path: "../UserDefaults")
-  ],
+  dependencies: [],
   targets: [
     .target(
-      name: "WishlistShared",
-      dependencies: ["UserDefaults"]
+      name: "WishlistData",
+      dependencies: []
     ),
     .testTarget(
-      name: "WishlistSharedTests",
-      dependencies: ["WishlistShared"]
+      name: "WishlistDataTests",
+      dependencies: ["WishlistData"]
     )
   ]
 )

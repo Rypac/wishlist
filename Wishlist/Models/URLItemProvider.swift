@@ -1,5 +1,5 @@
 import Foundation
-import WishlistShared
+import WishlistData
 
 final class URLItemProvider: NSObject, Encodable, NSItemProviderWriting {
   let url: URL

@@ -1,19 +1,18 @@
 import BackgroundTasks
 import Combine
 import Foundation
-import UserDefaults
 
-public final class WishlistUpdater {
-  private let wishlist: Database
+public final class UpdateWishlistTask {
+  private let appRepository: AppRepository
   private let appLookupService: AppLookupService
-  private var lastUpdateDate: UserDefault<Date?>
+  private let updateScheduler: UpdateScheduler
 
   private var cancellables = Set<AnyCancellable>()
 
-  public init(wishlist: Database, appLookupService: AppLookupService, lastUpdateDate: UserDefault<Date?>) {
-    self.wishlist = wishlist
+  public init(appRepository: AppRepository, appLookupService: AppLookupService, updateScheduler: UpdateScheduler) {
+    self.appRepository = appRepository
     self.appLookupService = appLookupService
-    self.lastUpdateDate = lastUpdateDate
+    self.updateScheduler = updateScheduler
   }
 
   deinit {
@@ -34,6 +33,7 @@ public final class WishlistUpdater {
       .store(in: &cancellables)
   }
 
+  @available(iOS 13.0, *)
   public func performBackgroundUpdate(task: BGAppRefreshTask) {
     let cancellable = updatedApps()
       .sink(receiveCompletion: { _ in task.setTaskCompleted(success: true) }) { [weak self] apps in
@@ -44,20 +44,18 @@ public final class WishlistUpdater {
       cancellable.cancel()
     }
   }
-}
 
-private extension WishlistUpdater {
-  var shouldUpdate: Bool {
-    guard let lastUpdateDate = lastUpdateDate.wrappedValue else {
+  private var shouldUpdate: Bool {
+    guard let lastUpdateDate = updateScheduler.lastUpdateDate else {
       return true
     }
 
     let timeSinceLastUpdate = Date().timeIntervalSince(lastUpdateDate)
-    return timeSinceLastUpdate > TimeInterval(5 * 60)
+    return timeSinceLastUpdate > TimeInterval(updateScheduler.updateFrequency)
   }
 
-  func updatedApps() -> AnyPublisher<[App], Never> {
-    guard let apps = try? wishlist.fetchAll(), !apps.isEmpty else {
+  private func updatedApps() -> AnyPublisher<[App], Never> {
+    guard let apps = try? appRepository.fetchAll(), !apps.isEmpty else {
       return Just([]).eraseToAnyPublisher()
     }
 
@@ -76,12 +74,12 @@ private extension WishlistUpdater {
       .eraseToAnyPublisher()
   }
 
-  func saveUpdatedAppsToWishlist(_ apps: [App]) {
+  private func saveUpdatedAppsToWishlist(_ apps: [App]) {
     do {
       if !apps.isEmpty {
-        try wishlist.add(apps: apps)
+        try appRepository.update(apps)
       }
-      lastUpdateDate.wrappedValue = Date()
+      updateScheduler.lastUpdateDate = Date()
     } catch {
       print("Failed to update apps: \(error)")
     }

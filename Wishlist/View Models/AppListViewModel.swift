@@ -1,27 +1,37 @@
 import Combine
 import SwiftUI
-import WishlistShared
+import WishlistData
+import WishlistFoundation
 
 final class AppListViewModel: ObservableObject {
-  @Published private(set) var apps: [App] = []
+  @Published private(set) var apps: [App]
 
-  private let wishlist: Wishlist
+  private let appRepository: AppRepository
+  private let lookupService: AppLookupService
   private let settings: SettingsStore
 
   private var cancellables = Set<AnyCancellable>()
 
-  init(wishlist: Wishlist, settings: SettingsStore) {
-    self.wishlist = wishlist
+  init(appRepository: AppRepository, lookupService: AppLookupService, settings: SettingsStore) {
+    self.appRepository = appRepository
+    self.lookupService = lookupService
     self.settings = settings
+
+    do {
+      self.apps = try appRepository.fetchAll().sorted(by: settings.sortOrder)
+    } catch {
+      self.apps = []
+    }
 
     let sortOrder = settings.$sortOrder
       .publisher(initialValue: .include)
       .removeDuplicates()
 
-    Publishers.CombineLatest(wishlist.apps, sortOrder)
+    Publishers.CombineLatest(appRepository.publisher(), sortOrder)
       .map { apps, sortOrder in
         apps.sorted(by: sortOrder)
       }
+      .receive(on: DispatchQueue.main)
       .sink { [unowned self] sortedApps in
         self.apps = sortedApps
       }
@@ -38,9 +48,17 @@ final class AppListViewModel: ObservableObject {
 extension AppListViewModel {
   func addApps(urls: [URL]) {
     let ids = AppStore.extractIDs(from: urls)
-    if !ids.isEmpty {
-      wishlist.addApps(ids: ids)
+    guard !ids.isEmpty else {
+      return
     }
+
+    lookupService.lookup(ids: ids)
+      .sink(receiveCompletion: { _ in }) { [appRepository] apps in
+        if !apps.isEmpty {
+          try? appRepository.add(apps)
+        }
+      }
+      .store(in: &cancellables)
   }
 
   func removeApps(at offsets: IndexSet) {
@@ -50,7 +68,7 @@ extension AppListViewModel {
     let appsToRemove = apps.filter { app in
       !updatedApps.contains { $0.id == app.id }
     }
-    wishlist.remove(apps: appsToRemove)
+    try? appRepository.delete(appsToRemove)
   }
 }
 

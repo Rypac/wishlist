@@ -21,10 +21,8 @@
 		945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */; };
 		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
 		945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* URLItemProvider.swift */; };
-		945CCA5924318C82000B7586 /* WishlistShared in Frameworks */ = {isa = PBXBuildFile; productRef = 945CCA5824318C82000B7586 /* WishlistShared */; };
-		94637EAC24319B64005EF584 /* WishlistShared in Frameworks */ = {isa = PBXBuildFile; productRef = 94637EAB24319B64005EF584 /* WishlistShared */; };
-		94637EAD24319B64005EF584 /* WishlistShared in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94637EAB24319B64005EF584 /* WishlistShared */; };
-		94637EAE24319B73005EF584 /* WishlistShared in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 945CCA5824318C82000B7586 /* WishlistShared */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		946017A1243D99E00065E384 /* WishlistData in Frameworks */ = {isa = PBXBuildFile; productRef = 946017A0243D99E00065E384 /* WishlistData */; };
+		946017A2243D99E00065E384 /* WishlistData in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 946017A0243D99E00065E384 /* WishlistData */; };
 		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
@@ -35,6 +33,12 @@
 		9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9494DA0F24319285003A7992 /* MainInterface.storyboard */; };
 		9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9494DA0924319285003A7992 /* Add to Wishlist.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		949C700E2434644900009960 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
+		94B015E8243D90DB00BB4E7C /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015E7243D90DB00BB4E7C /* WishlistFoundation */; };
+		94B015E9243D90DB00BB4E7C /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015E7243D90DB00BB4E7C /* WishlistFoundation */; };
+		94B015EB243D90E800BB4E7C /* WishlistData in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015EA243D90E800BB4E7C /* WishlistData */; };
+		94B015EC243D90E800BB4E7C /* WishlistData in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015EA243D90E800BB4E7C /* WishlistData */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015ED243D90E800BB4E7C /* WishlistFoundation */; };
+		94B015EF243D90E800BB4E7C /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015ED243D90E800BB4E7C /* WishlistFoundation */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* SettingsStore.swift */; };
 		94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B15A233104DF008181D1 /* SettingsView.swift */; };
 		94C8D0852435756300D9C077 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8D0842435756300D9C077 /* UTI.swift */; };
@@ -65,8 +69,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				94637EAD24319B64005EF584 /* WishlistShared in Embed Frameworks */,
+				946017A2243D99E00065E384 /* WishlistData in Embed Frameworks */,
 				942833AE24334A2400A8921E /* WishlistServices in Embed Frameworks */,
+				94B015E9243D90DB00BB4E7C /* WishlistFoundation in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -77,7 +82,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				94637EAE24319B73005EF584 /* WishlistShared in Embed Frameworks */,
+				94B015EF243D90E800BB4E7C /* WishlistFoundation in Embed Frameworks */,
+				94B015EC243D90E800BB4E7C /* WishlistData in Embed Frameworks */,
 				94C8D0892435F1B200D9C077 /* UserDefaults in Embed Frameworks */,
 				942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */,
 			);
@@ -98,6 +104,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		94173E48243D5D9400984DED /* WishlistData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistData; sourceTree = "<group>"; };
 		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		94295E13232E06D400D21BC6 /* AppListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppListViewModel.swift; sourceTree = "<group>"; usesTabs = 0; };
@@ -108,7 +115,6 @@
 		945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsView.swift; sourceTree = "<group>"; };
 		945CB45E23530B2F00DF3ABF /* UserDefaults */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UserDefaults; sourceTree = "<group>"; };
 		945CCA55243172DE000B7586 /* URLItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLItemProvider.swift; sourceTree = "<group>"; };
-		945CCA5724318B05000B7586 /* WishlistShared */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistShared; sourceTree = "<group>"; };
 		94637EB02431A211005EF584 /* Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wishlist.entitlements; sourceTree = "<group>"; };
 		94637EB12431A33C005EF584 /* Add to Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Add to Wishlist.entitlements"; sourceTree = "<group>"; };
 		9486FAB4243066AC00EE2334 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
@@ -121,6 +127,7 @@
 		9494DA0D24319285003A7992 /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
 		9494DA1024319285003A7992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		9494DA1224319285003A7992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		94B015E3243D6C6F00BB4E7C /* WishlistFoundation */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistFoundation; sourceTree = "<group>"; };
 		94C7B1522330F13F008181D1 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		94C7B15A233104DF008181D1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		94C8D0842435756300D9C077 /* UTI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTI.swift; sourceTree = "<group>"; };
@@ -139,8 +146,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94B015E8243D90DB00BB4E7C /* WishlistFoundation in Frameworks */,
+				946017A1243D99E00065E384 /* WishlistData in Frameworks */,
 				942833AD24334A2400A8921E /* WishlistServices in Frameworks */,
-				94637EAC24319B64005EF584 /* WishlistShared in Frameworks */,
 				9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,8 +157,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				945CCA5924318C82000B7586 /* WishlistShared in Frameworks */,
 				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
+				94B015EB243D90E800BB4E7C /* WishlistData in Frameworks */,
+				94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */,
 				942833AA24334A1700A8921E /* WishlistServices in Frameworks */,
 				94ECF1F8242CC6C100F09DA6 /* URLImage in Frameworks */,
 				945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */,
@@ -241,7 +250,8 @@
 		94FA20C2231BA2BC00EC1190 = {
 			isa = PBXGroup;
 			children = (
-				945CCA5724318B05000B7586 /* WishlistShared */,
+				94B015E3243D6C6F00BB4E7C /* WishlistFoundation */,
+				94173E48243D5D9400984DED /* WishlistData */,
 				942833A8243348FF00A8921E /* WishlistServices */,
 				945CB45E23530B2F00DF3ABF /* UserDefaults */,
 				94FA20CD231BA2BC00EC1190 /* Wishlist */,
@@ -307,8 +317,9 @@
 			);
 			name = ActionExtension;
 			packageProductDependencies = (
-				94637EAB24319B64005EF584 /* WishlistShared */,
 				942833AC24334A2400A8921E /* WishlistServices */,
+				94B015E7243D90DB00BB4E7C /* WishlistFoundation */,
+				946017A0243D99E00065E384 /* WishlistData */,
 			);
 			productName = ActionExtension;
 			productReference = 9494DA0924319285003A7992 /* Add to Wishlist.appex */;
@@ -333,8 +344,9 @@
 			packageProductDependencies = (
 				945CB46023530B5E00DF3ABF /* UserDefaults */,
 				94ECF1F7242CC6C100F09DA6 /* URLImage */,
-				945CCA5824318C82000B7586 /* WishlistShared */,
 				942833A924334A1700A8921E /* WishlistServices */,
+				94B015EA243D90E800BB4E7C /* WishlistData */,
+				94B015ED243D90E800BB4E7C /* WishlistFoundation */,
 			);
 			productName = Wishlist;
 			productReference = 94FA20CB231BA2BC00EC1190 /* Wishlist.app */;
@@ -725,13 +737,21 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = UserDefaults;
 		};
-		945CCA5824318C82000B7586 /* WishlistShared */ = {
+		946017A0243D99E00065E384 /* WishlistData */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = WishlistShared;
+			productName = WishlistData;
 		};
-		94637EAB24319B64005EF584 /* WishlistShared */ = {
+		94B015E7243D90DB00BB4E7C /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = WishlistShared;
+			productName = WishlistFoundation;
+		};
+		94B015EA243D90E800BB4E7C /* WishlistData */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistData;
+		};
+		94B015ED243D90E800BB4E7C /* WishlistFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistFoundation;
 		};
 		94ECF1F7242CC6C100F09DA6 /* URLImage */ = {
 			isa = XCSwiftPackageProductDependency;
