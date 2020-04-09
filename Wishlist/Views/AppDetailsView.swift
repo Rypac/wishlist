@@ -25,14 +25,10 @@ struct AppDetailsContentView: View {
 
   var body: some View {
     ScrollView(.vertical) {
-      HStack {
-        VStack(alignment: .leading, spacing: 16) {
-          AppHeading(app: app)
-          ReleaseNotes(app: app)
-          AppDescription(app: app)
-        }
-        .layoutPriority(1)
-        Spacer()
+      VStack(alignment: .leading, spacing: 16) {
+        AppHeading(app: app)
+        ReleaseNotes(app: app)
+        AppDescription(app: app)
       }
       .padding()
     }
@@ -48,10 +44,33 @@ private struct AppHeading: View {
       VStack(alignment: .leading) {
         Text(app.title)
           .font(Font.title.bold())
+          .fixedSize(horizontal: false, vertical: true)
         Text(app.seller)
           .font(.headline)
+        HStack {
+          Text(app.formattedPrice)
+          Spacer()
+          ViewInAppStoreButton(url: app.url)
+        }.padding(.top, 8)
       }
     }
+  }
+}
+
+private struct ViewInAppStoreButton: View {
+  let url: URL
+
+  var body: some View {
+    Button(action: { UIApplication.shared.open(self.url) }) {
+      Text("VIEW")
+        .font(.subheadline)
+        .fontWeight(.bold)
+        .foregroundColor(.white)
+        .padding([.leading, .trailing], 20)
+        .padding([.top, .bottom], 6)
+        .background(Color.blue)
+        .cornerRadius(.infinity)
+    }.hoverEffect()
   }
 }
 
@@ -64,6 +83,7 @@ private struct AppDescription: View {
       Text("Description")
         .bold()
       Text(app.description)
+        .expandable(initialLineLimit: 3)
     }
   }
 }
@@ -87,10 +107,55 @@ private struct ReleaseNotes: View {
             .layoutPriority(1)
         }
         Text(app.releaseNotes!)
+          .expandable(initialLineLimit: 3)
       } else {
         EmptyView()
       }
     }
+  }
+}
+
+struct ExpandableTextModifier: ViewModifier {
+  @State private var expanded = false
+
+  let initialLineLimit: Int
+  let expandedLineLimit: Int?
+
+  init(initialLineLimit: Int, expandedLineLimit: Int? = nil) {
+    self.initialLineLimit = initialLineLimit
+    self.expandedLineLimit = expandedLineLimit
+  }
+
+  func body(content: Content) -> some View {
+    ZStack(alignment: .bottomTrailing) {
+      HStack {
+        content
+          .lineLimit(expanded ? expandedLineLimit : initialLineLimit)
+        Spacer(minLength: 0)
+      }
+      if !expanded {
+        Button("more") {
+          self.expanded.toggle()
+        }
+          .padding(.leading, 20)
+          .background(
+            LinearGradient(
+              gradient: Gradient(stops: [
+                Gradient.Stop(color: Color.black.opacity(0), location: 0),
+                Gradient.Stop(color: .black, location: 0.25)
+              ]),
+              startPoint: .leading,
+              endPoint: .trailing
+            )
+          )
+      }
+    }
+  }
+}
+
+extension View {
+  func expandable(initialLineLimit: Int, expandedLineLimit: Int? = nil) -> some View {
+    modifier(ExpandableTextModifier(initialLineLimit: initialLineLimit, expandedLineLimit: expandedLineLimit))
   }
 }
 
