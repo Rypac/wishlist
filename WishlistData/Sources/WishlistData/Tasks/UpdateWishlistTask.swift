@@ -88,8 +88,15 @@ public final class UpdateWishlistTask {
 
 private extension App {
   func isUpdated(from app: App) -> Bool {
-    updateDate > app.updateDate
-      || title != app.title
+    if updateDate > app.updateDate {
+      return true
+    }
+
+    guard updateDate == app.updateDate else {
+      return false
+    }
+
+    return title != app.title
       || description != app.description
       || price != app.price
       || url != app.url
