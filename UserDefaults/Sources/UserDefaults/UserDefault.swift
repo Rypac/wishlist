@@ -27,7 +27,7 @@ public struct UserDefault<Value: UserDefaultsSerializable> {
   }
 
   @available(iOS 13.0, *)
-  public func publisher(initialValue: UserDefaults.InitialValueStrategy = .skip) -> UserDefaults.Publisher<Value> {
+  public func publisher(initialValue: UserDefaults.InitialValueStrategy = .include) -> UserDefaults.Publisher<Value> {
     defaults.publisher(for: key, initialValue: initialValue)
   }
 }

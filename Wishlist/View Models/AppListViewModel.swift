@@ -24,7 +24,7 @@ final class AppListViewModel: ObservableObject {
     }
 
     let sortOrder = settings.$sortOrder
-      .publisher(initialValue: .include)
+      .publisher()
       .removeDuplicates()
 
     Publishers.CombineLatest(appRepository.publisher(), sortOrder)
