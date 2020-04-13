@@ -27,6 +27,7 @@ public final class UpdateWishlistTask {
     }
 
     updatedApps()
+      .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [weak self] apps in
         self?.saveUpdatedAppsToWishlist(apps)
       }
@@ -36,6 +37,7 @@ public final class UpdateWishlistTask {
   @available(iOS 13.0, *)
   public func performBackgroundUpdate(task: BGAppRefreshTask) {
     let cancellable = updatedApps()
+      .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in task.setTaskCompleted(success: true) }) { [weak self] apps in
         self?.saveUpdatedAppsToWishlist(apps)
       }
