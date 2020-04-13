@@ -20,11 +20,14 @@ public final class AppStoreService: AppLookupService {
     }
 
     var urlComponents = URLComponents(string: "https://itunes.apple.com/lookup")!
+
+    // Randomise order of query items to decrease chance of stale API cache.
     urlComponents.queryItems = [
-      URLQueryItem(name: "id", value: ids.map(String.init).joined(separator: ",")),
+      URLQueryItem(name: "id", value: ids.shuffled().map(String.init).joined(separator: ",")),
       URLQueryItem(name: "country", value: "au"),
+      URLQueryItem(name: "media", value: "software"),
       URLQueryItem(name: "limit", value: String(ids.count))
-    ]
+    ].shuffled()
 
     let request = URLRequest(url: urlComponents.url!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
 
