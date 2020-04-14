@@ -10,7 +10,9 @@ struct AppListView: View {
   var body: some View {
     NavigationView {
       List {
-        ForEach(viewModel.apps, id: \.id, content: AppRow.init)
+        ForEach(viewModel.apps, id: \.id) { app in
+          AppRow(app: app, sortOrder: self.settingsStore.sortOrder)
+        }
           .onDelete { indexes in
             self.viewModel.removeApps(at: indexes)
           }
@@ -45,10 +47,11 @@ private struct AppRow: View {
   @State private var showShareSheet = false
 
   let app: App
+  let sortOrder: SortOrder
 
   var body: some View {
     NavigationLink(destination: AppDetailsView(app: app)) {
-      AppRowContent(app: app)
+      AppRowContent(app: app, sortOrder: sortOrder)
         .onDrag { NSItemProvider(app: self.app) }
         .contextMenu {
           Button(action: {
@@ -73,9 +76,9 @@ private struct AppRow: View {
 
 private struct AppRowContent: View {
   @Environment(\.updateDateFormatter) private var dateFormatter
-  @EnvironmentObject private var settingsStore: SettingsStore
 
   let app: App
+  let sortOrder: SortOrder
 
   var body: some View {
     HStack {
@@ -84,15 +87,15 @@ private struct AppRowContent: View {
         .fontWeight(.medium)
         .layoutPriority(1)
       Spacer()
-      Text(detailsContent)
+      Text(appDetails)
         .lineLimit(1)
         .multilineTextAlignment(.trailing)
         .layoutPriority(1)
     }
   }
 
-  private var detailsContent: String {
-    if settingsStore.sortOrder == .updated {
+  private var appDetails: String {
+    if sortOrder == .updated {
       return dateFormatter.string(from: app.updateDate)
     }
     return app.formattedPrice

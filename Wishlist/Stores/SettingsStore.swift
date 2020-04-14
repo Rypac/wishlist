@@ -19,6 +19,7 @@ extension SettingsStore: ObservableObject {
     NotificationCenter.default
       .publisher(for: UserDefaults.didChangeNotification)
       .map { _ in () }
+      .receive(on: DispatchQueue.main)
       .eraseToAnyPublisher()
   }
 }
