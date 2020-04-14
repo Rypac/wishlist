@@ -15,7 +15,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       window.rootViewController = UIHostingController(
         rootView: AppListView()
           .environmentObject(AppListViewModel(appRepository: appRepository, lookupService: lookupService, settings: settings))
-          .environmentObject(settings)
       )
       self.window = window
       window.makeKeyAndVisible()

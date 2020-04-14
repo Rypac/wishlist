@@ -5,13 +5,12 @@ struct AppListView: View {
   @State private var showActionSheet = false
 
   @EnvironmentObject private var viewModel: AppListViewModel
-  @EnvironmentObject private var settingsStore: SettingsStore
 
   var body: some View {
     NavigationView {
       List {
         ForEach(viewModel.apps, id: \.id) { app in
-          AppRow(app: app, sortOrder: self.settingsStore.sortOrder)
+          AppRow(app: app, sortOrder: self.viewModel.sortOrder)
         }
           .onDelete { indexes in
             self.viewModel.removeApps(at: indexes)
@@ -31,7 +30,7 @@ struct AppListView: View {
         .actionSheet(isPresented: $showActionSheet) {
           var buttons = SortOrder.allCases.map { sortOrder in
             Alert.Button.default(Text(sortOrder.title)) {
-              self.settingsStore.sortOrder = sortOrder
+              self.viewModel.sortOrder = sortOrder
             }
           }
           buttons.append(.cancel())

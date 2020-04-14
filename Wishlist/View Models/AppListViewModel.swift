@@ -46,6 +46,11 @@ final class AppListViewModel: ObservableObject {
 }
 
 extension AppListViewModel {
+  var sortOrder: SortOrder {
+    get { settings.sortOrder }
+    set { settings.sortOrder = newValue}
+  }
+
   func addApps(urls: [URL]) {
     let ids = AppStore.extractIDs(from: urls)
     guard !ids.isEmpty else {
