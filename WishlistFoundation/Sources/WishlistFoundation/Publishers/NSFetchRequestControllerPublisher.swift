@@ -22,7 +22,7 @@ public struct NSFetchRequestPublisher<Entity: NSManagedObject>: Publisher {
 
 private final class NSFetchedResultsSubscription<Entity: NSManagedObject, Downstream: Subscriber>: NSObject, Subscription, NSFetchedResultsControllerDelegate where Downstream.Input == [Entity], Downstream.Failure == Never {
   private var controller: NSFetchedResultsController<Entity>?
-  private let refresh: DarwinNotification.Name?
+  private var refresh: DarwinNotification.Name?
   private let downstream: Downstream
 
   private var demand = Subscribers.Demand.none
@@ -54,6 +54,10 @@ private final class NSFetchedResultsSubscription<Entity: NSManagedObject, Downst
   func request(_ demand: Subscribers.Demand) {
     lock.synchronized {
       self.demand += demand
+
+      if let controller = self.controller as? NSFetchedResultsController<NSFetchRequestResult> {
+        controllerDidChangeContent(controller)
+      }
     }
   }
 
@@ -64,6 +68,7 @@ private final class NSFetchedResultsSubscription<Entity: NSManagedObject, Downst
 
       if let refreshNotfication = refresh {
         DarwinNotificationCenter.shared.removeObserver(self, for: refreshNotfication)
+        refresh = nil
       }
     }
   }
