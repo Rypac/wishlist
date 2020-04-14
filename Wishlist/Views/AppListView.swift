@@ -79,7 +79,7 @@ private struct AppRowContent: View {
 
   var body: some View {
     HStack {
-      AppIcon(app.iconURL, width: 50)
+      AppIcon(app.icon.medium, width: 50)
       Text(app.title)
         .fontWeight(.medium)
         .layoutPriority(1)

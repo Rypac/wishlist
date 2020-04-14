@@ -33,7 +33,8 @@ public final class AppStoreService: AppLookupService {
 
     return session.dataTaskPublisher(for: request)
       .tryMap { [decoder] data, _ in
-        try decoder.decode(LookupResponse.self, from: data).results.map(App.init)
+//        print(data.prettyPrintedJSONString!)
+        return try decoder.decode(LookupResponse.self, from: data).results.map(App.init)
       }
       .eraseToAnyPublisher()
   }
@@ -49,7 +50,9 @@ private struct LookupResponse: Decodable {
     let seller: String
     let description: String
     let url: URL
-    let iconURL: URL
+    let iconSmallURL: URL
+    let iconMediumURL: URL
+    let iconLargeURL: URL
     let price: Double
     let formattedPrice: String
     let bundleID: String
@@ -64,7 +67,9 @@ private struct LookupResponse: Decodable {
       case seller = "artistName"
       case description
       case url = "trackViewUrl"
-      case iconURL = "artworkUrl100"
+      case iconSmallURL = "artworkUrl60"
+      case iconMediumURL = "artworkUrl100"
+      case iconLargeURL = "artworkUrl512"
       case price
       case formattedPrice
       case bundleID = "bundleId"
@@ -84,7 +89,7 @@ private extension App {
       seller: app.seller,
       description: app.description,
       url: app.url,
-      iconURL: app.iconURL,
+      icon: App.Icon(small: app.iconSmallURL, medium: app.iconMediumURL, large: app.iconLargeURL),
       price: app.price,
       formattedPrice: app.formattedPrice,
       bundleID: app.bundleID,
@@ -94,4 +99,14 @@ private extension App {
       releaseNotes: app.releaseNotes
     )
   }
+}
+
+extension Data {
+    var prettyPrintedJSONString: NSString? { /// NSString gives us a nice sanitized debugDescription
+        guard let object = try? JSONSerialization.jsonObject(with: self, options: []),
+              let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
+              let prettyPrintedString = NSString(data: data, encoding: String.Encoding.utf8.rawValue) else { return nil }
+
+        return prettyPrintedString
+    }
 }

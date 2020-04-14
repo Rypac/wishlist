@@ -40,7 +40,7 @@ private struct AppHeading: View {
 
   var body: some View {
     HStack(alignment: .top, spacing: 16) {
-      AppIcon(app.iconURL, width: 100)
+      AppIcon(app.icon.large, width: 100)
       VStack(alignment: .leading) {
         Text(app.title)
           .font(Font.title.bold())

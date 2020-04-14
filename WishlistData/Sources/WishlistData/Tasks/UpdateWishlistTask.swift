@@ -102,7 +102,7 @@ private extension App {
       || description != app.description
       || price != app.price
       || url != app.url
-      || iconURL != app.iconURL
+      || icon != app.icon
       || version != app.version
       || releaseNotes != app.releaseNotes
   }

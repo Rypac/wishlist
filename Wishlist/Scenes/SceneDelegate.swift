@@ -65,6 +65,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       } catch {
         print("Unable to export apps")
       }
+    case "deleteAll":
+      do {
+        let apps = try appDelegate.appRepository.fetchAll()
+        try appDelegate.appRepository.delete(apps)
+        print("Deleted all apps")
+      } catch {
+        print("Unable to delete all apps")
+      }
     default:
       print("Unhandled URL scheme action: \(action)")
     }
