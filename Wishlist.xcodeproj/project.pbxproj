@@ -23,6 +23,7 @@
 		945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* URLItemProvider.swift */; };
 		946017A1243D99E00065E384 /* WishlistData in Frameworks */ = {isa = PBXBuildFile; productRef = 946017A0243D99E00065E384 /* WishlistData */; };
 		946017A2243D99E00065E384 /* WishlistData in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 946017A0243D99E00065E384 /* WishlistData */; };
+		94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94629D36244682070072C271 /* DeviceVisibilityModifier.swift */; };
 		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
@@ -115,6 +116,7 @@
 		945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsView.swift; sourceTree = "<group>"; };
 		945CB45E23530B2F00DF3ABF /* UserDefaults */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UserDefaults; sourceTree = "<group>"; };
 		945CCA55243172DE000B7586 /* URLItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLItemProvider.swift; sourceTree = "<group>"; };
+		94629D36244682070072C271 /* DeviceVisibilityModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceVisibilityModifier.swift; sourceTree = "<group>"; };
 		94637EB02431A211005EF584 /* Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wishlist.entitlements; sourceTree = "<group>"; };
 		94637EB12431A33C005EF584 /* Add to Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Add to Wishlist.entitlements"; sourceTree = "<group>"; };
 		9486FAB4243066AC00EE2334 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 		945B44C1232CCD6B00A3B573 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				94629D31244681720072C271 /* Modifiers */,
 				945B44BB232CC42E00A3B573 /* ActivityView.swift */,
 				945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */,
 				94FA20D2231BA2BC00EC1190 /* AppListView.swift */,
@@ -188,6 +191,14 @@
 				9428D40A2431BEC000CBAC1F /* CloudKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		94629D31244681720072C271 /* Modifiers */ = {
+			isa = PBXGroup;
+			children = (
+				94629D36244682070072C271 /* DeviceVisibilityModifier.swift */,
+			);
+			path = Modifiers;
 			sourceTree = "<group>";
 		};
 		9486FAB32430669F00EE2334 /* Extensions */ = {
@@ -434,6 +445,7 @@
 				94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */,
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
 				94C8D0852435756300D9C077 /* UTI.swift in Sources */,
+				94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */,
 				942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */,
 				94295E14232E06D400D21BC6 /* AppListViewModel.swift in Sources */,
 				948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */,

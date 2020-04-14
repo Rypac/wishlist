@@ -60,7 +60,7 @@ private struct AppRow: View {
           }) {
             Text("Open in New Window")
             Image.window
-          }
+          }.visible(on: .iPad)
           Button(action: { self.showShareSheet = true }) {
             Text("Share")
             Image.share
