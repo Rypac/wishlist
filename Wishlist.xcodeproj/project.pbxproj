@@ -24,6 +24,7 @@
 		946017A1243D99E00065E384 /* WishlistData in Frameworks */ = {isa = PBXBuildFile; productRef = 946017A0243D99E00065E384 /* WishlistData */; };
 		946017A2243D99E00065E384 /* WishlistData in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 946017A0243D99E00065E384 /* WishlistData */; };
 		94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94629D36244682070072C271 /* DeviceVisibilityModifier.swift */; };
+		94629D3A24468B890072C271 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 94629D3924468B890072C271 /* SDWebImageSwiftUI */; };
 		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
@@ -44,7 +45,6 @@
 		94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B15A233104DF008181D1 /* SettingsView.swift */; };
 		94C8D0852435756300D9C077 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8D0842435756300D9C077 /* UTI.swift */; };
 		94C8D0892435F1B200D9C077 /* UserDefaults in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		94ECF1F8242CC6C100F09DA6 /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 94ECF1F7242CC6C100F09DA6 /* URLImage */; };
 		94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */; };
 		94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */; };
 		94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D2231BA2BC00EC1190 /* AppListView.swift */; };
@@ -159,11 +159,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94629D3A24468B890072C271 /* SDWebImageSwiftUI in Frameworks */,
 				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
 				94B015EB243D90E800BB4E7C /* WishlistData in Frameworks */,
 				94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */,
 				942833AA24334A1700A8921E /* WishlistServices in Frameworks */,
-				94ECF1F8242CC6C100F09DA6 /* URLImage in Frameworks */,
 				945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,10 +354,10 @@
 			name = Wishlist;
 			packageProductDependencies = (
 				945CB46023530B5E00DF3ABF /* UserDefaults */,
-				94ECF1F7242CC6C100F09DA6 /* URLImage */,
 				942833A924334A1700A8921E /* WishlistServices */,
 				94B015EA243D90E800BB4E7C /* WishlistData */,
 				94B015ED243D90E800BB4E7C /* WishlistFoundation */,
+				94629D3924468B890072C271 /* SDWebImageSwiftUI */,
 			);
 			productName = Wishlist;
 			productReference = 94FA20CB231BA2BC00EC1190 /* Wishlist.app */;
@@ -391,7 +391,7 @@
 			);
 			mainGroup = 94FA20C2231BA2BC00EC1190;
 			packageReferences = (
-				94ECF1F6242CC6C000F09DA6 /* XCRemoteSwiftPackageReference "url-image" */,
+				94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 			);
 			productRefGroup = 94FA20CC231BA2BC00EC1190 /* Products */;
 			projectDirPath = "";
@@ -726,12 +726,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		94ECF1F6242CC6C000F09DA6 /* XCRemoteSwiftPackageReference "url-image" */ = {
+		94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/dmytro-anokhin/url-image.git";
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.13;
+				minimumVersion = 1.3.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -753,6 +753,11 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = WishlistData;
 		};
+		94629D3924468B890072C271 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
 		94B015E7243D90DB00BB4E7C /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WishlistFoundation;
@@ -764,11 +769,6 @@
 		94B015ED243D90E800BB4E7C /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WishlistFoundation;
-		};
-		94ECF1F7242CC6C100F09DA6 /* URLImage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94ECF1F6242CC6C000F09DA6 /* XCRemoteSwiftPackageReference "url-image" */;
-			productName = URLImage;
 		};
 /* End XCSwiftPackageProductDependency section */
 
