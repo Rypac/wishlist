@@ -1,5 +1,8 @@
+import ComposableArchitecture
 import SwiftUI
 import UIKit
+import WishlistData
+import WishlistFoundation
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -8,13 +11,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     if let windowScene = scene as? UIWindowScene {
       let appRepository = appDelegate.appRepository
-      let addToWishlistService = appDelegate.wishlistAdder
       let settings = appDelegate.settings
+
+      let apps: [App]
+      do {
+        apps = try appRepository.fetchAll()
+      } catch {
+        apps = []
+      }
 
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(
-        rootView: AppListView()
-          .environmentObject(AppListViewModel(appRepository: appRepository, addToWishlistService: addToWishlistService, settings: settings))
+        rootView: AppListView(
+          store: Store(
+            initialState: AppListState(
+              apps: apps,
+              sortOrder: settings.sortOrder
+            ),
+            reducer: appListReducer,
+            environment: AppListEnvironment(
+              mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
+              loadApps: pipe(AppStore.extractIDs, appDelegate.appStore.lookup(ids:)),
+              settings: settings
+            )
+          )
+        )
       )
       self.window = window
       window.makeKeyAndVisible()

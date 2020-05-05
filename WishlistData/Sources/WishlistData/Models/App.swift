@@ -1,6 +1,6 @@
 import Foundation
 
-public struct App: Identifiable {
+public struct App: Identifiable, Equatable {
   public struct Icon: Equatable {
     public let small: URL
     public let medium: URL

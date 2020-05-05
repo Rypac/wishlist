@@ -13,9 +13,11 @@
 		942833AE24334A2400A8921E /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 942833AC24334A2400A8921E /* WishlistServices */; };
 		9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
-		94295E14232E06D400D21BC6 /* AppListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94295E13232E06D400D21BC6 /* AppListViewModel.swift */; };
 		942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */; };
+		943047742460FC4900EEDBBF /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 943047732460FC4900EEDBBF /* ComposableArchitecture */; };
+		943047752460FC4900EEDBBF /* ComposableArchitecture in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 943047732460FC4900EEDBBF /* ComposableArchitecture */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9432BAC024355C20001CCCD9 /* URLDropDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */; };
+		943F70582461538F007425BA /* Prelude.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F70572461538F007425BA /* Prelude.swift */; };
 		94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */; };
@@ -42,7 +44,6 @@
 		94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015ED243D90E800BB4E7C /* WishlistFoundation */; };
 		94B015EF243D90E800BB4E7C /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015ED243D90E800BB4E7C /* WishlistFoundation */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* SettingsStore.swift */; };
-		94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B15A233104DF008181D1 /* SettingsView.swift */; };
 		94C8D0852435756300D9C077 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8D0842435756300D9C077 /* UTI.swift */; };
 		94C8D0892435F1B200D9C077 /* UserDefaults in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */; };
@@ -83,6 +84,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				943047752460FC4900EEDBBF /* ComposableArchitecture in Embed Frameworks */,
 				94B015EF243D90E800BB4E7C /* WishlistFoundation in Embed Frameworks */,
 				94B015EC243D90E800BB4E7C /* WishlistData in Embed Frameworks */,
 				94C8D0892435F1B200D9C077 /* UserDefaults in Embed Frameworks */,
@@ -108,9 +110,9 @@
 		94173E48243D5D9400984DED /* WishlistData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistData; sourceTree = "<group>"; };
 		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
-		94295E13232E06D400D21BC6 /* AppListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppListViewModel.swift; sourceTree = "<group>"; usesTabs = 0; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
 		9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLDropDelegate.swift; sourceTree = "<group>"; };
+		943F70572461538F007425BA /* Prelude.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prelude.swift; sourceTree = "<group>"; };
 		94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsView.swift; sourceTree = "<group>"; };
@@ -131,7 +133,6 @@
 		9494DA1224319285003A7992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94B015E3243D6C6F00BB4E7C /* WishlistFoundation */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistFoundation; sourceTree = "<group>"; };
 		94C7B1522330F13F008181D1 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
-		94C7B15A233104DF008181D1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		94C8D0842435756300D9C077 /* UTI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTI.swift; sourceTree = "<group>"; };
 		94FA20CB231BA2BC00EC1190 /* Wishlist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wishlist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -161,6 +162,7 @@
 			files = (
 				94629D3A24468B890072C271 /* SDWebImageSwiftUI in Frameworks */,
 				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
+				943047742460FC4900EEDBBF /* ComposableArchitecture in Frameworks */,
 				94B015EB243D90E800BB4E7C /* WishlistData in Frameworks */,
 				94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */,
 				942833AA24334A1700A8921E /* WishlistServices in Frameworks */,
@@ -178,7 +180,6 @@
 				945B44BB232CC42E00A3B573 /* ActivityView.swift */,
 				945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */,
 				94FA20D2231BA2BC00EC1190 /* AppListView.swift */,
-				94C7B15A233104DF008181D1 /* SettingsView.swift */,
 				9489E4DB242D6EAC00C396AD /* AppIcon.swift */,
 				942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */,
 			);
@@ -205,6 +206,7 @@
 			isa = PBXGroup;
 			children = (
 				9486FAB4243066AC00EE2334 /* Dictionary.swift */,
+				943F70572461538F007425BA /* Prelude.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -228,14 +230,6 @@
 				945CCA55243172DE000B7586 /* URLItemProvider.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		94930CF9232CD49800AE81BC /* View Models */ = {
-			isa = PBXGroup;
-			children = (
-				94295E13232E06D400D21BC6 /* AppListViewModel.swift */,
-			);
-			path = "View Models";
 			sourceTree = "<group>";
 		};
 		9494DA042431916C003A7992 /* Stores */ = {
@@ -289,7 +283,6 @@
 				948890C024304D1A00E3E5FA /* Scenes */,
 				9494DA042431916C003A7992 /* Stores */,
 				94930CF8232CD47700AE81BC /* Models */,
-				94930CF9232CD49800AE81BC /* View Models */,
 				945B44C1232CCD6B00A3B573 /* Views */,
 				94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */,
 				94FA20D4231BA2BD00EC1190 /* Assets.xcassets */,
@@ -358,6 +351,7 @@
 				94B015EA243D90E800BB4E7C /* WishlistData */,
 				94B015ED243D90E800BB4E7C /* WishlistFoundation */,
 				94629D3924468B890072C271 /* SDWebImageSwiftUI */,
+				943047732460FC4900EEDBBF /* ComposableArchitecture */,
 			);
 			productName = Wishlist;
 			productReference = 94FA20CB231BA2BC00EC1190 /* Wishlist.app */;
@@ -392,6 +386,7 @@
 			mainGroup = 94FA20C2231BA2BC00EC1190;
 			packageReferences = (
 				94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				943047722460FC4900EEDBBF /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 			);
 			productRefGroup = 94FA20CC231BA2BC00EC1190 /* Products */;
 			projectDirPath = "";
@@ -447,13 +442,12 @@
 				94C8D0852435756300D9C077 /* UTI.swift in Sources */,
 				94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */,
 				942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */,
-				94295E14232E06D400D21BC6 /* AppListViewModel.swift in Sources */,
+				943F70582461538F007425BA /* Prelude.swift in Sources */,
 				948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */,
 				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,
 				94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */,
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
 				945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */,
-				94C7B15B233104DF008181D1 /* SettingsView.swift in Sources */,
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
 				94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */,
 				948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */,
@@ -726,6 +720,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		943047722460FC4900EEDBBF /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 		94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
@@ -744,6 +746,11 @@
 		942833AC24334A2400A8921E /* WishlistServices */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WishlistServices;
+		};
+		943047732460FC4900EEDBBF /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 943047722460FC4900EEDBBF /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
 		945CB46023530B5E00DF3ABF /* UserDefaults */ = {
 			isa = XCSwiftPackageProductDependency;
