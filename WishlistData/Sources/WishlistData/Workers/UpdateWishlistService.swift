@@ -2,7 +2,7 @@ import BackgroundTasks
 import Combine
 import Foundation
 
-public final class UpdateWishlistTask {
+public final class UpdateWishlistService {
   private let appRepository: AppRepository
   private let appLookupService: AppLookupService
   private let updateScheduler: UpdateScheduler

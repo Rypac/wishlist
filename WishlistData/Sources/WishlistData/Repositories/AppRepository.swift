@@ -9,8 +9,8 @@ public protocol AppRepository {
   func add(_ apps: [App]) throws
   func update(_ app: App) throws
   func update(_ apps: [App]) throws
-  func delete(_ app: App) throws
-  func delete(_ apps: [App]) throws
+  func delete(id: App.ID) throws
+  func delete(ids: [App.ID]) throws
 }
 
 public extension AppRepository {
@@ -26,7 +26,15 @@ public extension AppRepository {
     try update([app])
   }
 
+  func delete(id: App.ID) throws {
+    try delete(ids: [id])
+  }
+
   func delete(_ app: App) throws {
-    try delete([app])
+    try delete(id: app.id)
+  }
+
+  func delete(_ apps: [App]) throws {
+    try delete(ids: apps.map(\.id))
   }
 }

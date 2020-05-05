@@ -62,7 +62,6 @@ class ActionViewController: UIViewController {
     let appIDs = extensionContext!.loadURLs()
       .map(AppStore.extractIDs)
       .buffer(size: 1, prefetch: .keepFull, whenFull: .dropOldest)
-//      .share()
 
     appIDs
       .receive(on: DispatchQueue.main)

@@ -54,9 +54,9 @@ public class CoreDataAppRepository: AppRepository {
     try add(apps)
   }
 
-  public func delete(_ app: App) throws {
+  public func delete(id: App.ID) throws {
     managedContext.perform { [managedContext] in
-      let fetchRequest = AppEntity.fetchRequest(id: app.id)
+      let fetchRequest = AppEntity.fetchRequest(id: id)
       let existingApps = try? managedContext.fetch(fetchRequest)
       guard let existingApp = existingApps?.first else {
         return
@@ -67,9 +67,9 @@ public class CoreDataAppRepository: AppRepository {
     }
   }
 
-  public func delete(_ apps: [App]) throws {
+  public func delete(ids: [App.ID]) throws {
     managedContext.perform { [managedContext] in
-      let ids = apps.map { NSNumber(value: $0.id) }
+      let ids = ids.map(NSNumber.init)
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
       fetchRequest.predicate = NSPredicate(format: "id in %@", ids)
 

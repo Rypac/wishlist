@@ -8,13 +8,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     if let windowScene = scene as? UIWindowScene {
       let appRepository = appDelegate.appRepository
-      let lookupService = appDelegate.appStore
+      let addToWishlistService = appDelegate.wishlistAdder
       let settings = appDelegate.settings
 
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(
         rootView: AppListView()
-          .environmentObject(AppListViewModel(appRepository: appRepository, lookupService: lookupService, settings: settings))
+          .environmentObject(AppListViewModel(appRepository: appRepository, addToWishlistService: addToWishlistService, settings: settings))
       )
       self.window = window
       window.makeKeyAndVisible()

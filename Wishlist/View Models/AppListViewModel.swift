@@ -1,20 +1,19 @@
 import Combine
 import SwiftUI
 import WishlistData
-import WishlistFoundation
 
 final class AppListViewModel: ObservableObject {
   @Published private(set) var apps: [App]
 
   private let appRepository: AppRepository
-  private let lookupService: AppLookupService
+  private let addToWishlistService: AddToWishlistService
   private let settings: SettingsStore
 
   private var cancellables = Set<AnyCancellable>()
 
-  init(appRepository: AppRepository, lookupService: AppLookupService, settings: SettingsStore) {
+  init(appRepository: AppRepository, addToWishlistService: AddToWishlistService, settings: SettingsStore) {
     self.appRepository = appRepository
-    self.lookupService = lookupService
+    self.addToWishlistService = addToWishlistService
     self.settings = settings
 
     do {
@@ -52,17 +51,8 @@ extension AppListViewModel {
   }
 
   func addApps(urls: [URL]) {
-    let ids = AppStore.extractIDs(from: urls)
-    guard !ids.isEmpty else {
-      return
-    }
-
-    lookupService.lookup(ids: ids)
-      .sink(receiveCompletion: { _ in }) { [appRepository] apps in
-        if !apps.isEmpty {
-          try? appRepository.add(apps)
-        }
-      }
+    addToWishlistService.addApps(urls: urls)
+      .sink(receiveCompletion: { _ in }, receiveValue: { _ in })
       .store(in: &cancellables)
   }
 

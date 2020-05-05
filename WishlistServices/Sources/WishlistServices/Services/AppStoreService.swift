@@ -33,8 +33,7 @@ public final class AppStoreService: AppLookupService {
 
     return session.dataTaskPublisher(for: request)
       .tryMap { [decoder] data, _ in
-//        print(data.prettyPrintedJSONString!)
-        return try decoder.decode(LookupResponse.self, from: data).results.map(App.init)
+        try decoder.decode(LookupResponse.self, from: data).results.map(App.init)
       }
       .eraseToAnyPublisher()
   }
@@ -99,14 +98,4 @@ private extension App {
       releaseNotes: app.releaseNotes
     )
   }
-}
-
-extension Data {
-    var prettyPrintedJSONString: NSString? { /// NSString gives us a nice sanitized debugDescription
-        guard let object = try? JSONSerialization.jsonObject(with: self, options: []),
-              let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
-              let prettyPrintedString = NSString(data: data, encoding: String.Encoding.utf8.rawValue) else { return nil }
-
-        return prettyPrintedString
-    }
 }
