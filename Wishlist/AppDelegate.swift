@@ -30,7 +30,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   let appStore: AppLookupService = AppStoreService()
   private(set) lazy var appRepository: AppRepository = CoreDataAppRepository(context: persistentContainer.viewContext)
   private(set) lazy var wishlistUpdater = UpdateWishlistService(appRepository: appRepository, appLookupService: appStore, updateScheduler: WishlistUpdateScheduler())
-  private(set) lazy var wishlistAdder = AddToWishlistService(appRepository: appRepository, appLookupService: appStore)
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     settings.register()

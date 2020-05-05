@@ -1,3 +1,4 @@
+import Combine
 import ComposableArchitecture
 import SwiftUI
 import UIKit
@@ -8,37 +9,43 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   var window: UIWindow?
 
+  private lazy var store: Store<AppState, AppAction> = {
+    let apps: [App]
+    do {
+      apps = try appDelegate.appRepository.fetchAll()
+    } catch {
+      apps = []
+    }
+
+    return Store(
+      initialState: AppState(
+        appListState: AppListState(
+          apps: apps,
+          sortOrder: appDelegate.settings.sortOrder
+        )
+      ),
+      reducer: appReducer,
+      environment: AppEnvironment(
+        repository: appDelegate.appRepository,
+        mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
+        loadApps: appDelegate.appStore.lookup(ids:),
+        settings: appDelegate.settings
+      )
+    )
+  }()
+  private lazy var viewStore: ViewStore<AppState, AppAction> = ViewStore(store)
+
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     if let windowScene = scene as? UIWindowScene {
-      let appRepository = appDelegate.appRepository
-      let settings = appDelegate.settings
-
-      let apps: [App]
-      do {
-        apps = try appRepository.fetchAll()
-      } catch {
-        apps = []
-      }
-
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(
         rootView: AppListView(
-          store: Store(
-            initialState: AppListState(
-              apps: apps,
-              sortOrder: settings.sortOrder
-            ),
-            reducer: appListReducer,
-            environment: AppListEnvironment(
-              mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
-              loadApps: pipe(AppStore.extractIDs, appDelegate.appStore.lookup(ids:)),
-              settings: settings
-            )
-          )
+          store: store.scope(state: \.appListState, action: AppAction.appList)
         )
       )
       self.window = window
       window.makeKeyAndVisible()
+      viewStore.send(.lifecycle(.didStart))
     }
 
     if let urlContext = connectionOptions.urlContexts.first {
@@ -48,10 +55,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   func sceneDidBecomeActive(_ scene: UIScene) {
     appDelegate.wishlistUpdater.performPeriodicUpdate()
+    viewStore.send(.lifecycle(.didBecomeAction))
   }
 
   func sceneDidEnterBackground(_ scene: UIScene) {
     appDelegate.scheduleAppRefresh()
+    viewStore.send(.lifecycle(.didEnterBackground))
   }
 
   func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
@@ -70,13 +79,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     case "add":
       if let appIDs = components.queryItems?.first(where: { $0.name == "id" })?.value {
         let ids = appIDs.split(separator: ",").compactMap { Int($0, radix: 10) }
-        guard !ids.isEmpty else {
-          return
+        if !ids.isEmpty {
+          viewStore.send(.addApps(ids: ids))
         }
-        print("Adding ids: \(ids)")
-        appDelegate.wishlistAdder.addApps(ids: ids)
       } else {
-        print("Add action requires a list of comma separated app IDs.")
+        print("Add action requires a list of comma separated app IDs")
       }
     case "export":
       do {
@@ -102,3 +109,66 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     UIApplication.shared.delegate as! AppDelegate
   }
 }
+
+struct AppState: Equatable {
+  var appListState: AppListState
+}
+
+enum AppLifecycleEvent {
+  case didStart
+  case didBecomeAction
+  case didEnterBackground
+}
+
+enum AppAction {
+  case appsUpdated([App])
+  case appList(AppListAction)
+  case lifecycle(AppLifecycleEvent)
+  case addAppsResponse(Result<[App], Error>)
+  case addApps(ids: [Int])
+}
+
+struct AppEnvironment {
+  let repository: AppRepository
+  let mainQueue: AnySchedulerOf<DispatchQueue>
+  let loadApps: ([Int]) -> AnyPublisher<[App], Error>
+  let settings: SettingsStore
+}
+
+let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
+  Reducer { state, action, environment in
+    switch action {
+    case .appsUpdated(let apps):
+      state.appListState.apps = apps
+      state.appListState.apps.sort(by: state.appListState.sortOrder)
+      return .none
+    case .lifecycle(.didStart):
+      return environment.repository.publisher()
+        .eraseToEffect()
+        .map(AppAction.appsUpdated)
+    case .addApps(let ids):
+      return environment.loadApps(ids)
+        .subscribe(on: environment.mainQueue)
+        .catchToEffect()
+        .map(AppAction.addAppsResponse)
+    case .addAppsResponse(.success(let apps)):
+      return .fireAndForget {
+        try? environment.repository.add(apps)
+      }
+    case .addAppsResponse(.failure), .appList, .lifecycle:
+      return .none
+    }
+  },
+  appListReducer.pullback(
+    state: \.appListState,
+    action: /AppAction.appList,
+    environment: {
+      AppListEnvironment(
+        repository: $0.repository,
+        settings: $0.settings,
+        loadApps: pipe(AppStore.extractIDs, $0.loadApps),
+        mainQueue: $0.mainQueue
+      )
+    }
+  )
+)

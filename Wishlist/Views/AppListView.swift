@@ -6,6 +6,7 @@ import WishlistData
 struct AppListState: Equatable {
   var apps: [App]
   var sortOrder: SortOrder
+
   var isSortOrderSheetPresented: Bool = false
   var displayedAppDetailsID: Int? = nil
 }
@@ -20,9 +21,10 @@ enum AppListAction {
 }
 
 struct AppListEnvironment {
-  var mainQueue: AnySchedulerOf<DispatchQueue>
-  var loadApps: ([URL]) -> AnyPublisher<[App], Error>
+  let repository: AppRepository
   var settings: SettingsStore
+  var loadApps: ([URL]) -> AnyPublisher<[App], Error>
+  var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
 let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment> { state, action, environment in
@@ -31,19 +33,26 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment> { 
     state.isSortOrderSheetPresented = isPresented
     return .none
   case .addAppsResponse(let result):
-    if case .success(let apps) = result, !apps.isEmpty {
-      state.apps.append(contentsOf: apps)
-      state.apps.sort(by: state.sortOrder)
+    guard case .success(let apps) = result, !apps.isEmpty else {
+      return .none
     }
-    return .none
+    state.apps.append(contentsOf: apps)
+    state.apps.sort(by: state.sortOrder)
+    return .fireAndForget {
+      try? environment.repository.add(apps)
+    }
   case .addApps(let urls):
     return environment.loadApps(urls)
       .receive(on: environment.mainQueue)
       .catchToEffect()
       .map(AppListAction.addAppsResponse)
   case .removeApps(let indexes):
+    let originalApps = state.apps
     state.apps.remove(atOffsets: indexes)
-    return .none
+    let deletedApps = originalApps.filter { !state.apps.contains($0) }
+    return .fireAndForget {
+      try? environment.repository.delete(deletedApps)
+    }
   case .setSortOrder(let sortOrder):
     state.sortOrder = sortOrder
     state.apps.sort(by: sortOrder)
@@ -182,7 +191,7 @@ private extension SortOrder {
   }
 }
 
-private extension Array where Element == App {
+extension Array where Element == App {
   mutating func sort(by order: SortOrder) {
     sort {
       switch order {
