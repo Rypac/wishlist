@@ -86,6 +86,28 @@ public final class UpdateWishlistService {
   }
 }
 
+typealias AppLookup = ([Int]) -> AnyPublisher<[App], Error>
+
+private func checkForUpdates(apps: [App], lookup: AppLookup) -> AnyPublisher<[App], Never> {
+  guard !apps.isEmpty else {
+    return Just([]).eraseToAnyPublisher()
+  }
+
+  return lookup(apps.map(\.id))
+    .map { updatedApps in
+      updatedApps.reduce(into: []) { result, updatedApp in
+        guard let app = apps.first(where: { $0.id == updatedApp.id }) else {
+          return
+        }
+        if updatedApp.isUpdated(from: app) {
+          result.append(updatedApp)
+        }
+      }
+    }
+    .replaceError(with: [])
+    .eraseToAnyPublisher()
+}
+
 private extension App {
   func isUpdated(from app: App) -> Bool {
     if updateDate > app.updateDate {

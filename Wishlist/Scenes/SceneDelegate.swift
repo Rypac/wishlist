@@ -10,16 +10,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
 
   private lazy var store: Store<AppState, AppAction> = {
-    let apps: [App]
-    do {
-      apps = try appDelegate.appRepository.fetchAll()
-    } catch {
-      apps = []
-    }
-
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     return Store(
       initialState: AppState(
-        apps: apps,
+        apps: (try? appDelegate.appRepository.fetchAll()) ?? [],
         sortOrder: appDelegate.settings.sortOrder
       ),
       reducer: appReducer,
@@ -52,12 +46,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneDidBecomeActive(_ scene: UIScene) {
-    appDelegate.wishlistUpdater.performPeriodicUpdate()
-    viewStore.send(.lifecycle(.didBecomeAction))
+    viewStore.send(.lifecycle(.didBecomeActive))
   }
 
   func sceneDidEnterBackground(_ scene: UIScene) {
-    appDelegate.scheduleAppRefresh()
     viewStore.send(.lifecycle(.didEnterBackground))
   }
 
@@ -65,10 +57,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     if let urlContext = urlContexts.first {
       viewStore.send(.lifecycle(.openURL(urlContext.url)))
     }
-  }
-
-  private var appDelegate: AppDelegate {
-    UIApplication.shared.delegate as! AppDelegate
   }
 }
 
@@ -93,7 +81,7 @@ struct AppState: Equatable {
 
 enum AppLifecycleEvent {
   case didStart
-  case didBecomeAction
+  case didBecomeActive
   case didEnterBackground
   case openURL(URL)
 }
@@ -103,8 +91,6 @@ enum AppAction {
   case appList(AppListAction)
   case urlScheme(URLSchemeAction)
   case lifecycle(AppLifecycleEvent)
-  case addAppsResponse(Result<[App], Error>)
-  case addApps(ids: [Int])
 }
 
 struct AppEnvironment {
@@ -130,16 +116,13 @@ let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
         return .none
       }
       return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
-    case .addApps(let ids):
-      return environment.loadApps(ids)
-        .subscribe(on: environment.mainQueue)
-        .catchToEffect()
-        .map(AppAction.addAppsResponse)
-    case .addAppsResponse(.success(let apps)):
-      return .fireAndForget {
-        try? environment.repository.add(apps)
-      }
-    case .addAppsResponse(.failure), .urlScheme, .appList, .lifecycle:
+    case .lifecycle(.didBecomeActive):
+//      appDelegate.wishlistUpdater.performPeriodicUpdate()
+      return .none
+    case .lifecycle(.didEnterBackground):
+//      appDelegate.scheduleAppRefresh()
+      return .none
+    case .urlScheme, .appList:
       return .none
     }
   },

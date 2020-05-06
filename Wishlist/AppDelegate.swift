@@ -1,4 +1,6 @@
 import BackgroundTasks
+import Combine
+import ComposableArchitecture
 import CoreData
 import UIKit
 import WishlistServices
@@ -33,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     settings.register()
-    registerBackgroundTasks()
+//    registerBackgroundTasks()
 
     return true
   }
@@ -54,30 +56,71 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 }
 
-// MARK: - Background Tasks
+// MARK: - Background Task Reducer
 
-extension AppDelegate {
-  private static let refreshTaskIdentifier = "org.rypac.Wishlist.refresh"
+struct BackgroundTask {
+  let identifier: String
+  let frequency: TimeInterval
+}
 
-  func registerBackgroundTasks() {
-    BGTaskScheduler.shared.register(forTaskWithIdentifier: Self.refreshTaskIdentifier, using: nil) { task in
-      self.handleAppRefresh(task: task as! BGAppRefreshTask)
+extension BackgroundTask {
+  static let updateApps = BackgroundTask(identifier: "org.rypac.Wishlist.refresh", frequency: 30 * 60)
+}
+
+enum BackgroundTaskAction {
+  case registerTasks
+  case scheduleTask(BackgroundTask)
+  case handleAppUpdateTask(BGAppRefreshTask)
+}
+
+struct BackgroundTaskEnvironment {
+  var registerTask: (BackgroundTask) -> Effect<BGTask, Never>
+  var submitTask: (BGTaskRequest) throws -> Void
+  var fetchApps: () -> [App]
+  var checkForUpdates: ([App]) -> AnyPublisher<[App], Error>
+  var saveUpdatedApps: ([App]) -> Void
+  var now: () -> Date
+}
+
+let backgroundTaskReducer = Reducer<Void, BackgroundTaskAction, BackgroundTaskEnvironment> { _, action, environment in
+  switch action {
+  case .registerTasks:
+    return registerTask(.updateApps)
+      .map { .handleAppUpdateTask($0 as! BGAppRefreshTask) }
+  case .scheduleTask(let task):
+    return .fireAndForget {
+      do {
+        let request = BGAppRefreshTaskRequest(identifier: task.identifier)
+        request.earliestBeginDate = environment.now().addingTimeInterval(task.frequency)
+        try environment.submitTask(request)
+      } catch {
+        print("Could not schedule app refresh: \(error)")
+      }
     }
+  case .handleAppUpdateTask(let task):
+    return .concatenate(
+      Effect(value: .scheduleTask(.updateApps)),
+      .async { _ in
+        let apps = environment.fetchApps()
+        let cancellable = environment.checkForUpdates(apps)
+          .sink(receiveCompletion: { _ in }) { newApps in
+            environment.saveUpdatedApps(newApps)
+          }
+        task.expirationHandler = {
+          cancellable.cancel()
+        }
+        return cancellable
+      }
+    )
   }
+}
 
-  func scheduleAppRefresh() {
-    let request = BGAppRefreshTaskRequest(identifier: Self.refreshTaskIdentifier)
-    request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60)
+private struct FailedToRegisterTaskError: Error {}
 
-    do {
-      try BGTaskScheduler.shared.submit(request)
-    } catch {
-      print("Could not schedule app refresh: \(error)")
+func registerTask(_ task: BackgroundTask, queue: DispatchQueue? = nil) -> Effect<BGTask, Never> {
+  .future { thing in
+    BGTaskScheduler.shared.register(forTaskWithIdentifier: task.identifier, using: queue) { task in
+      thing(.success(task))
     }
-  }
-
-  func handleAppRefresh(task: BGAppRefreshTask) {
-    scheduleAppRefresh()
-    wishlistUpdater.performBackgroundUpdate(task: task)
   }
 }
