@@ -19,10 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     return Store(
       initialState: AppState(
-        appListState: AppListState(
-          apps: apps,
-          sortOrder: appDelegate.settings.sortOrder
-        )
+        apps: apps,
+        sortOrder: appDelegate.settings.sortOrder
       ),
       reducer: appReducer,
       environment: AppEnvironment(
@@ -49,7 +47,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     if let urlContext = connectionOptions.urlContexts.first {
-      handleURLScheme(urlContext.url)
+      viewStore.send(.lifecycle(.openURL(urlContext.url)))
     }
   }
 
@@ -65,43 +63,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
     if let urlContext = urlContexts.first {
-      handleURLScheme(urlContext.url)
-    }
-  }
-
-  private func handleURLScheme(_ url: URL) {
-    guard let components = NSURLComponents(url: url, resolvingAgainstBaseURL: true), let action = components.host else {
-      print("Invalid URL or action is missing")
-      return
-    }
-
-    switch action {
-    case "add":
-      if let appIDs = components.queryItems?.first(where: { $0.name == "id" })?.value {
-        let ids = appIDs.split(separator: ",").compactMap { Int($0, radix: 10) }
-        if !ids.isEmpty {
-          viewStore.send(.addApps(ids: ids))
-        }
-      } else {
-        print("Add action requires a list of comma separated app IDs")
-      }
-    case "export":
-      do {
-        let ids = try appDelegate.appRepository.fetchAll().map { String($0.id) }.joined(separator: ",")
-        print("appdates://add?id=\(ids)")
-      } catch {
-        print("Unable to export apps")
-      }
-    case "deleteAll":
-      do {
-        let apps = try appDelegate.appRepository.fetchAll()
-        try appDelegate.appRepository.delete(apps)
-        print("Deleted all apps")
-      } catch {
-        print("Unable to delete all apps")
-      }
-    default:
-      print("Unhandled URL scheme action: \(action)")
+      viewStore.send(.lifecycle(.openURL(urlContext.url)))
     }
   }
 
@@ -110,19 +72,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 }
 
+// MARK: - App State
+
 struct AppState: Equatable {
+  var apps: [App] {
+    didSet {
+      appListState.apps = apps
+      urlSchemeState.apps = apps
+    }
+  }
   var appListState: AppListState
+  var urlSchemeState: URLSchemeState
+
+  init(apps: [App], sortOrder: SortOrder) {
+    self.apps = apps
+    self.appListState = AppListState(apps: apps, sortOrder: sortOrder)
+    self.urlSchemeState = URLSchemeState(apps: apps)
+  }
 }
 
 enum AppLifecycleEvent {
   case didStart
   case didBecomeAction
   case didEnterBackground
+  case openURL(URL)
 }
 
 enum AppAction {
   case appsUpdated([App])
   case appList(AppListAction)
+  case urlScheme(URLSchemeAction)
   case lifecycle(AppLifecycleEvent)
   case addAppsResponse(Result<[App], Error>)
   case addApps(ids: [Int])
@@ -146,6 +125,11 @@ let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
       return environment.repository.publisher()
         .eraseToEffect()
         .map(AppAction.appsUpdated)
+    case .lifecycle(.openURL(let url)):
+      guard let urlScheme = URLScheme(rawValue: url) else {
+        return .none
+      }
+      return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
     case .addApps(let ids):
       return environment.loadApps(ids)
         .subscribe(on: environment.mainQueue)
@@ -155,7 +139,7 @@ let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
       return .fireAndForget {
         try? environment.repository.add(apps)
       }
-    case .addAppsResponse(.failure), .appList, .lifecycle:
+    case .addAppsResponse(.failure), .urlScheme, .appList, .lifecycle:
       return .none
     }
   },
@@ -170,5 +154,70 @@ let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
         mainQueue: $0.mainQueue
       )
     }
+  ),
+  urlSchemeReducer.pullback(
+    state: \.urlSchemeState,
+    action: /AppAction.urlScheme,
+    environment: { environment in
+      URLSchemeEnvironment(
+        loadApps: environment.loadApps,
+        addApps: { apps in try? environment.repository.add(apps) },
+        deleteApps: { ids in try? environment.repository.delete(ids: ids) },
+        mainQueue: environment.mainQueue
+      )
+    }
   )
 )
+
+// MARK: - URLScheme
+
+struct URLSchemeState: Equatable {
+  var apps: [App]
+  var loadingApps: Bool = false
+}
+
+enum URLSchemeAction {
+  case handleURLScheme(URLScheme)
+  case addAppsResponse(Result<[App], Error>)
+}
+
+struct URLSchemeEnvironment {
+  let loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
+  let addApps: ([App]) -> Void
+  let deleteApps: ([App.ID]) -> Void
+  let mainQueue: AnySchedulerOf<DispatchQueue>
+}
+
+let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, URLSchemeEnvironment> { state, action, environment in
+  switch action {
+  case .addAppsResponse(let result):
+    state.loadingApps = false
+    switch result {
+    case .success(let apps):
+      return .fireAndForget {
+        environment.addApps(apps)
+      }
+    case .failure:
+      return .none
+    }
+  case .handleURLScheme(let urlScheme):
+    switch urlScheme {
+    case .addApps(let ids):
+      state.loadingApps = true
+      return environment.loadApps(ids)
+        .subscribe(on: environment.mainQueue)
+        .catchToEffect()
+        .map(URLSchemeAction.addAppsResponse)
+    case .export:
+      let addAppsURLScheme = URLScheme.addApps(ids: state.apps.map(\.id))
+      return .fireAndForget {
+        print(addAppsURLScheme.rawValue)
+      }
+    case .deleteAll:
+      let appIDs = state.apps.map(\.id)
+      return .fireAndForget {
+        environment.deleteApps(appIDs)
+      }
+    }
+  }
+}
