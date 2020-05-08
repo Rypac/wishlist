@@ -70,7 +70,7 @@ private struct AppHeading: View {
         Text(app.seller)
           .font(.headline)
         HStack {
-          Text(app.formattedPrice)
+          Text(app.price.formatted)
           Spacer()
           ViewInAppStoreButton(url: app.url)
         }.padding(.top, 8)

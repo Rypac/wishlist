@@ -123,8 +123,7 @@ private extension App {
       description: entity.appDescription,
       url: entity.url,
       icon: Icon(small: entity.iconSmallURL, medium: entity.iconMediumURL, large: entity.iconLargeURL),
-      price: entity.price.doubleValue,
-      formattedPrice: entity.formattedPrice,
+      price: Price(value: entity.price.doubleValue, formatted: entity.formattedPrice),
       bundleID: entity.bundleID,
       version: entity.version,
       releaseDate: entity.releaseDate,
@@ -144,8 +143,8 @@ private extension AppEntity {
     iconSmallURL = app.icon.small
     iconMediumURL = app.icon.medium
     iconLargeURL = app.icon.large
-    price = NSNumber(value: app.price)
-    formattedPrice = app.formattedPrice
+    price = NSNumber(value: app.price.value)
+    formattedPrice = app.price.formatted
     bundleID = app.bundleID
     version = app.version
     releaseDate = app.releaseDate

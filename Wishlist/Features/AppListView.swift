@@ -18,6 +18,7 @@ enum AppListAction {
   case showAppDetails(id: Int?)
   case setSortOrder(SortOrder)
   case setSortOrderSheet(isPresented: Bool)
+  case dealWithIt(id: App.ID, app: App)
 }
 
 struct AppListEnvironment {
@@ -28,6 +29,10 @@ struct AppListEnvironment {
 }
 
 private extension AppListState {
+  var sortedApps: IdentifiedArrayOf<App> {
+    IdentifiedArray(apps.sorted(by: sortOrder))
+  }
+
   var appDetailsState: AppDetailsState? {
     get {
       guard let id = displayedAppDetailsID, let app = apps.first(where: { $0.id == id }) else {
@@ -50,7 +55,6 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
         return .none
       }
       state.apps.append(contentsOf: apps)
-      state.apps.sort(by: state.sortOrder)
       return .fireAndForget {
         try? environment.repository.add(apps)
       }
@@ -68,14 +72,13 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
       }
     case .setSortOrder(let sortOrder):
       state.sortOrder = sortOrder
-      state.apps.sort(by: sortOrder)
       return .fireAndForget {
         environment.persistSortOrder(sortOrder)
       }
     case .showAppDetails(let id):
       state.displayedAppDetailsID = id
       return .none
-    case .appDetails:
+    case .appDetails, .dealWithIt:
       return .none
     }
   },
@@ -93,19 +96,21 @@ struct AppListView: View {
     WithViewStore(store) { viewStore in
       NavigationView {
         List {
-          ForEach(viewStore.apps) { app in
-            NavigationLink(
-              destination: IfLetStore(
-                self.store.scope(state: \.appDetailsState, action: AppListAction.appDetails),
-                then: ConnectedAppDetailsView.init
-              ),
-              isActive: viewStore.binding(
-                get: { $0.displayedAppDetailsID == app.id },
-                send: { show in .showAppDetails(id: show ? app.id : nil) }
-              )
-            ) {
-              AppRow(app: app, sortOrder: viewStore.sortOrder)
-            }
+          ForEachStore(self.store.scope(state: \.sortedApps, action: AppListAction.dealWithIt)) { appStore in
+            WithViewStore(appStore) { appViewStore in
+              NavigationLink(
+                destination: IfLetStore(
+                  self.store.scope(state: \.appDetailsState, action: AppListAction.appDetails),
+                  then: ConnectedAppDetailsView.init
+                ),
+                isActive: viewStore.binding(
+                  get: { $0.displayedAppDetailsID == appViewStore.id },
+                  send: { show in .showAppDetails(id: show ? appViewStore.id : nil) }
+                )
+              ) {
+                AppRow(app: appViewStore.state, sortOrder: viewStore.sortOrder)
+              }
+            }.debug(prefix: "AppViewStore")
           }.onDelete { indexes in
             viewStore.send(.removeApps(indexes))
           }
@@ -195,7 +200,7 @@ private struct AppRowContent: View {
     if sortOrder == .updated {
       return dateFormatter.string(from: app.updateDate)
     }
-    return app.formattedPrice
+    return app.price.formatted
   }
 }
 
@@ -216,11 +221,21 @@ private extension SortOrder {
 }
 
 extension Array where Element == App {
+  func sorted(by order: SortOrder) -> [App] {
+    sorted {
+      switch order {
+      case .title: return $0.title < $1.title
+      case .price: return $0.price.value < $1.price.value
+      case .updated: return $0.updateDate > $1.updateDate
+      }
+    }
+  }
+
   mutating func sort(by order: SortOrder) {
     sort {
       switch order {
       case .title: return $0.title < $1.title
-      case .price: return $0.price < $1.price
+      case .price: return $0.price.value < $1.price.value
       case .updated: return $0.updateDate > $1.updateDate
       }
     }

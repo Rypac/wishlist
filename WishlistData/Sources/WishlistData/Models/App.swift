@@ -13,14 +13,23 @@ public struct App: Identifiable, Equatable {
     }
   }
 
+  public struct Price: Equatable {
+    public let value: Double
+    public let formatted: String
+
+    public init(value: Double, formatted: String) {
+      self.value = value
+      self.formatted = formatted
+    }
+  }
+
   public let id: Int
   public let title: String
   public let seller: String
   public let description: String
   public let url: URL
   public let icon: Icon
-  public let price: Double
-  public let formattedPrice: String
+  public let price: Price
   public let bundleID: String
   public let version: String
   public let releaseDate: Date
@@ -34,8 +43,7 @@ public struct App: Identifiable, Equatable {
     description: String,
     url: URL,
     icon: Icon,
-    price: Double,
-    formattedPrice: String,
+    price: Price,
     bundleID: String,
     version: String,
     releaseDate: Date,
@@ -49,7 +57,6 @@ public struct App: Identifiable, Equatable {
     self.url = url
     self.icon = icon
     self.price = price
-    self.formattedPrice = formattedPrice
     self.bundleID = bundleID
     self.version = version
     self.releaseDate = releaseDate
