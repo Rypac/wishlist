@@ -1,5 +1,27 @@
+import ComposableArchitecture
 import SwiftUI
 import WishlistData
+
+struct AppDetailsState: Equatable {
+  var app: App
+}
+
+typealias AppDetailsAction = Void
+typealias AppDetailsEnvironment = Void
+
+let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, AppDetailsEnvironment> { state, action, environment in
+  .none
+}
+
+struct ConnectedAppDetailsView: View {
+  var store: Store<AppDetailsState, AppDetailsAction>
+
+  var body: some View {
+    WithViewStore(store) { viewStore in
+      AppDetailsView(app: viewStore.app)
+    }
+  }
+}
 
 struct AppDetailsView: View {
   @State private var showShareSheet = false

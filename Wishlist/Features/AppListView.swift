@@ -13,6 +13,7 @@ struct AppListState: Equatable {
 enum AppListAction {
   case addApps([URL])
   case addAppsResponse(Result<[App], Error>)
+  case appDetails(AppDetailsAction)
   case removeApps(IndexSet)
   case showAppDetails(id: Int?)
   case setSortOrder(SortOrder)
@@ -26,43 +27,64 @@ struct AppListEnvironment {
   var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment> { state, action, environment in
-  switch action {
-  case .setSortOrderSheet(let isPresented):
-    state.isSortOrderSheetPresented = isPresented
-    return .none
-  case .addAppsResponse(let result):
-    guard case .success(let apps) = result, !apps.isEmpty else {
-      return .none
+private extension AppListState {
+  var appDetailsState: AppDetailsState? {
+    get {
+      guard let id = displayedAppDetailsID, let app = apps.first(where: { $0.id == id }) else {
+        return nil
+      }
+      return AppDetailsState(app: app)
     }
-    state.apps.append(contentsOf: apps)
-    state.apps.sort(by: state.sortOrder)
-    return .fireAndForget {
-      try? environment.repository.add(apps)
-    }
-  case .addApps(let urls):
-    return environment.loadApps(urls)
-      .receive(on: environment.mainQueue)
-      .catchToEffect()
-      .map(AppListAction.addAppsResponse)
-  case .removeApps(let indexes):
-    let originalApps = state.apps
-    state.apps.remove(atOffsets: indexes)
-    let deletedApps = originalApps.filter { !state.apps.contains($0) }
-    return .fireAndForget {
-      try? environment.repository.delete(deletedApps)
-    }
-  case .setSortOrder(let sortOrder):
-    state.sortOrder = sortOrder
-    state.apps.sort(by: sortOrder)
-    return .fireAndForget {
-      environment.persistSortOrder(sortOrder)
-    }
-  case .showAppDetails(let id):
-    state.displayedAppDetailsID = id
-    return .none
+    set {}
   }
 }
+
+let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.combine(
+  Reducer { state, action, environment in
+    switch action {
+    case .setSortOrderSheet(let isPresented):
+      state.isSortOrderSheetPresented = isPresented
+      return .none
+    case .addAppsResponse(let result):
+      guard case .success(let apps) = result, !apps.isEmpty else {
+        return .none
+      }
+      state.apps.append(contentsOf: apps)
+      state.apps.sort(by: state.sortOrder)
+      return .fireAndForget {
+        try? environment.repository.add(apps)
+      }
+    case .addApps(let urls):
+      return environment.loadApps(urls)
+        .receive(on: environment.mainQueue)
+        .catchToEffect()
+        .map(AppListAction.addAppsResponse)
+    case .removeApps(let indexes):
+      let originalApps = state.apps
+      state.apps.remove(atOffsets: indexes)
+      let deletedApps = originalApps.filter { !state.apps.contains($0) }
+      return .fireAndForget {
+        try? environment.repository.delete(deletedApps)
+      }
+    case .setSortOrder(let sortOrder):
+      state.sortOrder = sortOrder
+      state.apps.sort(by: sortOrder)
+      return .fireAndForget {
+        environment.persistSortOrder(sortOrder)
+      }
+    case .showAppDetails(let id):
+      state.displayedAppDetailsID = id
+      return .none
+    case .appDetails:
+      return .none
+    }
+  },
+  appDetailsReducer.optional.pullback(
+    state: \.appDetailsState,
+    action: /AppListAction.appDetails,
+    environment: { _ in AppDetailsEnvironment() }
+  )
+)
 
 struct AppListView: View {
   let store: Store<AppListState, AppListAction>
@@ -73,7 +95,10 @@ struct AppListView: View {
         List {
           ForEach(viewStore.apps) { app in
             NavigationLink(
-              destination: AppDetailsView(app: app),
+              destination: IfLetStore(
+                self.store.scope(state: \.appDetailsState, action: AppListAction.appDetails),
+                then: ConnectedAppDetailsView.init
+              ),
               isActive: viewStore.binding(
                 get: { $0.displayedAppDetailsID == app.id },
                 send: { show in .showAppDetails(id: show ? app.id : nil) }
