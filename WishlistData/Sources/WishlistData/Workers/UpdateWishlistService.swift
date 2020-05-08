@@ -86,9 +86,9 @@ public final class UpdateWishlistService {
   }
 }
 
-typealias AppLookup = ([Int]) -> AnyPublisher<[App], Error>
+public typealias AppLookup = ([Int]) -> AnyPublisher<[App], Error>
 
-private func checkForUpdates(apps: [App], lookup: AppLookup) -> AnyPublisher<[App], Never> {
+public func checkForUpdates(apps: [App], lookup: AppLookup) -> AnyPublisher<[App], Never> {
   guard !apps.isEmpty else {
     return Just([]).eraseToAnyPublisher()
   }

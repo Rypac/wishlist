@@ -1,5 +1,3 @@
-import Combine
-import SwiftUI
 import UserDefaults
 import WishlistData
 
@@ -11,15 +9,5 @@ final class SettingsStore {
 
   func register() {
     _sortOrder.register()
-  }
-}
-
-extension SettingsStore: ObservableObject {
-  var objectWillChange: AnyPublisher<Void, Never> {
-    NotificationCenter.default
-      .publisher(for: UserDefaults.didChangeNotification)
-      .map { _ in () }
-      .receive(on: DispatchQueue.main)
-      .eraseToAnyPublisher()
   }
 }

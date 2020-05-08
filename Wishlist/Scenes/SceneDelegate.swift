@@ -21,7 +21,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         repository: appDelegate.appRepository,
         mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
         loadApps: appDelegate.appStore.lookup(ids:),
-        settings: appDelegate.settings
+        settings: appDelegate.settings,
+        scheduleBackgroundTasks: { appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask)) }
       )
     )
   }()
@@ -63,19 +64,44 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 // MARK: - App State
 
 struct AppState: Equatable {
-  var apps: [App] {
-    didSet {
-      appListState.apps = apps
-      urlSchemeState.apps = apps
+  var apps: [App]
+  var sortOrder: SortOrder
+  var viewingAppDetails: App.ID? = nil
+  var isLoadingAppsFromURLScheme: Bool = false
+  var isSortOrderSheetPresented: Bool = false
+}
+
+extension AppState {
+  var appListState: AppListState {
+    get {
+      AppListState(
+        apps: apps,
+        sortOrder: sortOrder,
+        displayedAppDetailsID: viewingAppDetails,
+        isSortOrderSheetPresented: isSortOrderSheetPresented
+      )
+    }
+    set {
+      apps = newValue.apps
+      sortOrder = newValue.sortOrder
+      isSortOrderSheetPresented = newValue.isSortOrderSheetPresented
+      viewingAppDetails = newValue.displayedAppDetailsID
     }
   }
-  var appListState: AppListState
-  var urlSchemeState: URLSchemeState
 
-  init(apps: [App], sortOrder: SortOrder) {
-    self.apps = apps
-    self.appListState = AppListState(apps: apps, sortOrder: sortOrder)
-    self.urlSchemeState = URLSchemeState(apps: apps)
+  var urlSchemeState: URLSchemeState {
+    get {
+      URLSchemeState(
+        apps: apps,
+        viewingAppDetails: viewingAppDetails,
+        loadingApps: isLoadingAppsFromURLScheme
+      )
+    }
+    set {
+      apps = newValue.apps
+      viewingAppDetails = newValue.viewingAppDetails
+      isLoadingAppsFromURLScheme = newValue.loadingApps
+    }
   }
 }
 
@@ -98,9 +124,10 @@ struct AppEnvironment {
   let mainQueue: AnySchedulerOf<DispatchQueue>
   let loadApps: ([Int]) -> AnyPublisher<[App], Error>
   let settings: SettingsStore
+  let scheduleBackgroundTasks: () -> Void
 }
 
-let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
+let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
   Reducer { state, action, environment in
     switch action {
     case .appsUpdated(let apps):
@@ -120,8 +147,9 @@ let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
 //      appDelegate.wishlistUpdater.performPeriodicUpdate()
       return .none
     case .lifecycle(.didEnterBackground):
-//      appDelegate.scheduleAppRefresh()
-      return .none
+      return .fireAndForget {
+        environment.scheduleBackgroundTasks()
+      }
     case .urlScheme, .appList:
       return .none
     }
@@ -129,12 +157,12 @@ let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
   appListReducer.pullback(
     state: \.appListState,
     action: /AppAction.appList,
-    environment: {
+    environment: { environment in
       AppListEnvironment(
-        repository: $0.repository,
-        settings: $0.settings,
-        loadApps: pipe(AppStore.extractIDs, $0.loadApps),
-        mainQueue: $0.mainQueue
+        repository: environment.repository,
+        persistSortOrder: { environment.settings.sortOrder = $0 },
+        loadApps: pipe(AppStore.extractIDs, environment.loadApps),
+        mainQueue: environment.mainQueue
       )
     }
   ),
@@ -144,63 +172,8 @@ let appReducer: Reducer<AppState, AppAction, AppEnvironment> = .combine(
     environment: { environment in
       URLSchemeEnvironment(
         loadApps: environment.loadApps,
-        addApps: { apps in try? environment.repository.add(apps) },
-        deleteApps: { ids in try? environment.repository.delete(ids: ids) },
         mainQueue: environment.mainQueue
       )
     }
   )
 )
-
-// MARK: - URLScheme
-
-struct URLSchemeState: Equatable {
-  var apps: [App]
-  var loadingApps: Bool = false
-}
-
-enum URLSchemeAction {
-  case handleURLScheme(URLScheme)
-  case addAppsResponse(Result<[App], Error>)
-}
-
-struct URLSchemeEnvironment {
-  let loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
-  let addApps: ([App]) -> Void
-  let deleteApps: ([App.ID]) -> Void
-  let mainQueue: AnySchedulerOf<DispatchQueue>
-}
-
-let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, URLSchemeEnvironment> { state, action, environment in
-  switch action {
-  case .addAppsResponse(let result):
-    state.loadingApps = false
-    switch result {
-    case .success(let apps):
-      return .fireAndForget {
-        environment.addApps(apps)
-      }
-    case .failure:
-      return .none
-    }
-  case .handleURLScheme(let urlScheme):
-    switch urlScheme {
-    case .addApps(let ids):
-      state.loadingApps = true
-      return environment.loadApps(ids)
-        .subscribe(on: environment.mainQueue)
-        .catchToEffect()
-        .map(URLSchemeAction.addAppsResponse)
-    case .export:
-      let addAppsURLScheme = URLScheme.addApps(ids: state.apps.map(\.id))
-      return .fireAndForget {
-        print(addAppsURLScheme.rawValue)
-      }
-    case .deleteAll:
-      let appIDs = state.apps.map(\.id)
-      return .fireAndForget {
-        environment.deleteApps(appIDs)
-      }
-    }
-  }
-}

@@ -33,9 +33,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   private(set) lazy var appRepository: AppRepository = CoreDataAppRepository(context: persistentContainer.viewContext)
   private(set) lazy var wishlistUpdater = UpdateWishlistService(appRepository: appRepository, appLookupService: appStore, updateScheduler: WishlistUpdateScheduler())
 
+  private lazy var store: Store<AppDelegateState, AppDelegateAction> = {
+    Store(
+      initialState: AppDelegateState(
+        backgroundTaskState: BackgroundTaskState(
+          updateAppsTask: BackgroundTask(id: "org.rypac.Wishlist.refresh", frequency: 30 * 60)
+        )
+      ),
+      reducer: appDelegateReducer,
+      environment: AppDelegateEnvironment(
+        registerTask: BGTaskScheduler.shared.register,
+        submitTask: BGTaskScheduler.shared.submit,
+        fetchApps: { (try? self.appRepository.fetchAll()) ?? [] },
+        checkForUpdates: { apps in checkForUpdates(apps: apps, lookup: self.appStore.lookup) },
+        saveUpdatedApps: { try? self.appRepository.add($0) },
+        now: Date.init
+      )
+    )
+  }()
+  private(set) lazy var viewStore = ViewStore(store)
+
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     settings.register()
-//    registerBackgroundTasks()
+    viewStore.send(.backgroundTask(.registerTasks))
 
     return true
   }
@@ -56,71 +76,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 }
 
-// MARK: - Background Task Reducer
+// MARK: - Composable Architecture
 
-struct BackgroundTask {
-  let identifier: String
-  let frequency: TimeInterval
+struct AppDelegateState: Equatable {
+  var backgroundTaskState: BackgroundTaskState
 }
 
-extension BackgroundTask {
-  static let updateApps = BackgroundTask(identifier: "org.rypac.Wishlist.refresh", frequency: 30 * 60)
+enum AppDelegateAction {
+  case backgroundTask(BackgroundTaskAction)
 }
 
-enum BackgroundTaskAction {
-  case registerTasks
-  case scheduleTask(BackgroundTask)
-  case handleAppUpdateTask(BGAppRefreshTask)
-}
+typealias AppDelegateEnvironment = BackgroundTaskEnvironment
 
-struct BackgroundTaskEnvironment {
-  var registerTask: (BackgroundTask) -> Effect<BGTask, Never>
-  var submitTask: (BGTaskRequest) throws -> Void
-  var fetchApps: () -> [App]
-  var checkForUpdates: ([App]) -> AnyPublisher<[App], Error>
-  var saveUpdatedApps: ([App]) -> Void
-  var now: () -> Date
-}
+let appDelegateReducer = backgroundTaskReducer.pullback(
+  state: \AppDelegateState.backgroundTaskState,
+  action: /AppDelegateAction.backgroundTask,
+  environment: { (environment: AppDelegateEnvironment) in environment }
+)
 
-let backgroundTaskReducer = Reducer<Void, BackgroundTaskAction, BackgroundTaskEnvironment> { _, action, environment in
-  switch action {
-  case .registerTasks:
-    return registerTask(.updateApps)
-      .map { .handleAppUpdateTask($0 as! BGAppRefreshTask) }
-  case .scheduleTask(let task):
-    return .fireAndForget {
-      do {
-        let request = BGAppRefreshTaskRequest(identifier: task.identifier)
-        request.earliestBeginDate = environment.now().addingTimeInterval(task.frequency)
-        try environment.submitTask(request)
-      } catch {
-        print("Could not schedule app refresh: \(error)")
+// MARK: - Background Tasks
+
+extension BGTaskScheduler {
+  func register(task: BackgroundTask) -> Effect<BGTask, Never> {
+    .async { subscriber in
+      BGTaskScheduler.shared.register(forTaskWithIdentifier: task.id, using: nil) { task in
+        subscriber.send(task)
       }
-    }
-  case .handleAppUpdateTask(let task):
-    return .concatenate(
-      Effect(value: .scheduleTask(.updateApps)),
-      .async { _ in
-        let apps = environment.fetchApps()
-        let cancellable = environment.checkForUpdates(apps)
-          .sink(receiveCompletion: { _ in }) { newApps in
-            environment.saveUpdatedApps(newApps)
-          }
-        task.expirationHandler = {
-          cancellable.cancel()
-        }
-        return cancellable
-      }
-    )
-  }
-}
-
-private struct FailedToRegisterTaskError: Error {}
-
-func registerTask(_ task: BackgroundTask, queue: DispatchQueue? = nil) -> Effect<BGTask, Never> {
-  .future { thing in
-    BGTaskScheduler.shared.register(forTaskWithIdentifier: task.identifier, using: queue) { task in
-      thing(.success(task))
+      return AnyCancellable {}
     }
   }
 }

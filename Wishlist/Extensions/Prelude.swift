@@ -25,12 +25,20 @@ public func chain<A, B, C>(
   }
 }
 
-public func curry<A, B, C> (
+public func curry<A, B, C>(
   _ f: @escaping (A, B) -> C
 ) -> (A) -> (B) -> C {
   { (a: A) -> (B) -> C in
     { (b: B) -> C in
       f(a, b)
     }
+  }
+}
+
+public func flip<A, B, C>(
+  _ f: @escaping (A, B) -> C
+) -> (B, A) -> C {
+  { b, a in
+    f(a, b)
   }
 }

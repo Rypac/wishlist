@@ -6,9 +6,8 @@ import WishlistData
 struct AppListState: Equatable {
   var apps: [App]
   var sortOrder: SortOrder
-
-  var isSortOrderSheetPresented: Bool = false
   var displayedAppDetailsID: Int? = nil
+  var isSortOrderSheetPresented: Bool = false
 }
 
 enum AppListAction {
@@ -22,7 +21,7 @@ enum AppListAction {
 
 struct AppListEnvironment {
   let repository: AppRepository
-  var settings: SettingsStore
+  var persistSortOrder: (SortOrder) -> Void
   var loadApps: ([URL]) -> AnyPublisher<[App], Error>
   var mainQueue: AnySchedulerOf<DispatchQueue>
 }
@@ -57,7 +56,7 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment> { 
     state.sortOrder = sortOrder
     state.apps.sort(by: sortOrder)
     return .fireAndForget {
-      environment.settings.sortOrder = sortOrder
+      environment.persistSortOrder(sortOrder)
     }
   case .showAppDetails(let id):
     state.displayedAppDetailsID = id

@@ -3,6 +3,7 @@ import WishlistData
 
 enum URLScheme {
   case addApps(ids: [App.ID])
+  case viewApp(id: App.ID)
   case export
   case deleteAll
 }
@@ -18,6 +19,11 @@ extension URLScheme: RawRepresentable {
       urlComponents.host = "add"
       urlComponents.queryItems = [
         URLQueryItem(name: "id", value: ids.map(String.init).joined(separator: ","))
+      ]
+    case .viewApp(let id):
+      urlComponents.host = "view"
+      urlComponents.queryItems = [
+        URLQueryItem(name: "id", value: String(id))
       ]
     case .export:
       urlComponents.host = "export"
@@ -42,6 +48,11 @@ extension URLScheme: RawRepresentable {
         return nil
       }
       self = .addApps(ids: ids)
+    case "view":
+      guard let appID = components.queryItems?.first(where: { $0.name == "id" })?.value, let id = Int(appID, radix: 10) else {
+        return nil
+      }
+      self = .viewApp(id: id)
     case "export":
       self = .export
     case "deleteAll":
