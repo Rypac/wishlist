@@ -21,6 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         repository: appDelegate.appRepository,
         mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
         loadApps: appDelegate.appStore.lookup,
+        openURL: { UIApplication.shared.open($0) },
         settings: appDelegate.settings,
         scheduleBackgroundTasks: { appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask)) }
       )
@@ -123,6 +124,7 @@ struct AppEnvironment {
   let repository: AppRepository
   let mainQueue: AnySchedulerOf<DispatchQueue>
   let loadApps: ([Int]) -> AnyPublisher<[App], Error>
+  let openURL: (URL) -> Void
   let settings: SettingsStore
   let scheduleBackgroundTasks: () -> Void
 }
@@ -166,6 +168,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
         repository: environment.repository,
         persistSortOrder: { environment.settings.sortOrder = $0 },
         loadApps: pipe(AppStore.extractIDs, environment.loadApps),
+        openURL: environment.openURL,
         mainQueue: environment.mainQueue
       )
     }

@@ -6,11 +6,21 @@ struct AppDetailsState: Equatable {
   var app: App
 }
 
-typealias AppDetailsAction = Void
-typealias AppDetailsEnvironment = Void
+enum AppDetailsAction {
+  case openInAppStore(URL)
+}
+
+struct AppDetailsEnvironment {
+  var openURL: (URL) -> Void
+}
 
 let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, AppDetailsEnvironment> { state, action, environment in
-  .none
+  switch action {
+  case .openInAppStore(let url):
+    return .fireAndForget {
+      environment.openURL(url)
+    }
+  }
 }
 
 struct ConnectedAppDetailsView: View {

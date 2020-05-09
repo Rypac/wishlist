@@ -3,6 +3,8 @@ import ComposableArchitecture
 import SwiftUI
 import WishlistData
 
+// MARK: - Composable Architecture
+
 struct AppListState: Equatable {
   var apps: [App]
   var sortOrder: SortOrder
@@ -24,6 +26,7 @@ struct AppListEnvironment {
   let repository: AppRepository
   var persistSortOrder: (SortOrder) -> Void
   var loadApps: ([URL]) -> AnyPublisher<[App], Error>
+  var openURL: (URL) -> Void
   var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -40,6 +43,7 @@ struct AppSummaryState: Identifiable, Equatable {
 
 enum AppSummaryAction {
   case selected(Bool)
+  case openInNewWindow
   case viewDetails(AppDetailsAction)
 }
 
@@ -95,6 +99,12 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
     case let .app(id, .selected(selected)):
       state.displayedAppDetailsID = selected ? id : nil
       return .none
+    case let .app(id, .openInNewWindow):
+      return .fireAndForget {
+        let userActivity = NSUserActivity(activityType: ActivityIdentifier.details.rawValue)
+        userActivity.userInfo = [ActivityIdentifier.UserInfoKey.id.rawValue: id]
+        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil)
+      }
     case .appDetails, .app:
       return .none
     }
@@ -102,12 +112,71 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
   appDetailsReducer.optional.pullback(
     state: \.appDetailsState,
     action: /AppListAction.appDetails,
-    environment: { _ in AppDetailsEnvironment() }
+    environment: { AppDetailsEnvironment(openURL: $0.openURL) }
   )
 )
 
-struct ConnectedAppRow: View {
+// MARK: - View
+
+struct AppListView: View {
+  let store: Store<AppListState, AppListAction>
+
+  var body: some View {
+    WithViewStore(store.scope(state: { _ in () }), removeDuplicates: ==) { viewStore in
+      NavigationView {
+        ZStack {
+          List {
+            ForEachStore(
+              self.store.scope(state: \.sortedApps, action: AppListAction.app),
+              content: AppRow.init
+            ).onDelete { viewStore.send(.removeApps($0)) }
+          }
+          SortOrderSelector(store: self.store.scope(state: \.isSortOrderSheetPresented))
+        }.navigationBarTitle("Wishlist")
+      }.onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
+        viewStore.send(.addApps(urls))
+      })
+    }
+  }
+}
+
+private struct SortOrderSelector: View {
+  let store: Store<Bool, AppListAction>
+
+  var body: some View {
+    WithViewStore(store) { viewStore in
+      EmptyView()
+        .navigationBarItems(
+          trailing: Button(action: {
+            viewStore.send(.setSortOrderSheet(isPresented: true))
+          }) {
+            HStack {
+              Image.sort
+                .imageScale(.large)
+                .accessibility(label: Text("Sort By"))
+            }
+            .frame(width: 24, height: 24)
+          }.hoverEffect()
+        )
+        .actionSheet(
+          isPresented: viewStore.binding(send: AppListAction.setSortOrderSheet)
+        ) {
+          var buttons = SortOrder.allCases.map { sortOrder in
+            Alert.Button.default(Text(sortOrder.title)) {
+              viewStore.send(.setSortOrder(sortOrder))
+            }
+          }
+          buttons.append(.cancel())
+          return ActionSheet(title: Text("Sort By"), buttons: buttons)
+        }
+    }
+  }
+}
+
+private struct AppRow: View {
   let store: Store<AppSummaryState, AppSummaryAction>
+
+  @State private var showShareSheet = false
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -117,92 +186,27 @@ struct ConnectedAppRow: View {
         ),
         isActive: viewStore.binding(get: \.isSelected, send: AppSummaryAction.selected)
       ) {
-        AppRow(app: viewStore.app, sortOrder: viewStore.sortOrder)
-      }
-    }
-  }
-}
-
-extension AppListState {
-  var view: AppListView.ViewState {
-    .init(isSortOrderSheetPresented: isSortOrderSheetPresented)
-  }
-}
-
-struct AppListView: View {
-  struct ViewState: Equatable {
-    var isSortOrderSheetPresented: Bool
-  }
-
-  let store: Store<AppListState, AppListAction>
-
-  var body: some View {
-    WithViewStore(store.scope(state: \.view)) { viewStore in
-      NavigationView {
-        List {
-          ForEachStore(
-            self.store.scope(state: \.sortedApps, action: AppListAction.app),
-            content: ConnectedAppRow.init
-          ).onDelete { viewStore.send(.removeApps($0)) }
-        }
-          .navigationBarTitle("Wishlist")
-          .navigationBarItems(
-            trailing: Button(action: { viewStore.send(.setSortOrderSheet(isPresented: true)) }) {
-              HStack {
-                Image.sort
-                  .imageScale(.large)
-                  .accessibility(label: Text("Sort By"))
-              }
-              .frame(width: 24, height: 24)
-            }.hoverEffect()
-          )
-          .actionSheet(
-            isPresented: viewStore.binding(
-              get: \.isSortOrderSheetPresented,
-              send: AppListAction.setSortOrderSheet
-            )
-          ) {
-            var buttons = SortOrder.allCases.map { sortOrder in
-              Alert.Button.default(Text(sortOrder.title)) {
-                viewStore.send(.setSortOrder(sortOrder))
-              }
+        AppRowContent(app: viewStore.app, sortOrder: viewStore.sortOrder)
+          .onDrag { NSItemProvider(app: viewStore.app) }
+          .contextMenu {
+            Button(action: { viewStore.send(.openInNewWindow) }) {
+              Text("Open in New Window")
+              Image.window
+            }.visible(on: .iPad)
+            Button(action: { self.showShareSheet = true }) {
+              Text("Share")
+              Image.share
             }
-            buttons.append(.cancel())
-            return ActionSheet(title: Text("Sort By"), buttons: buttons)
           }
-      }.onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
-        viewStore.send(.addApps(urls))
-      })
+          .sheet(isPresented: self.$showShareSheet) {
+            ActivityView(
+              showing: self.$showShareSheet,
+              activityItems: [viewStore.app.url],
+              applicationActivities: nil
+            )
+          }
+      }
     }
-  }
-}
-
-private struct AppRow: View {
-  @State private var showShareSheet = false
-
-  let app: App
-  let sortOrder: SortOrder
-
-  var body: some View {
-    AppRowContent(app: app, sortOrder: sortOrder)
-      .onDrag { NSItemProvider(app: self.app) }
-      .contextMenu {
-        Button(action: {
-          let userActivity = NSUserActivity(activityType: ActivityIdentifier.details.rawValue)
-          userActivity.userInfo = [ActivityIdentifier.UserInfoKey.id.rawValue: self.app.id]
-          UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil)
-        }) {
-          Text("Open in New Window")
-          Image.window
-        }.visible(on: .iPad)
-        Button(action: { self.showShareSheet = true }) {
-          Text("Share")
-          Image.share
-        }
-      }
-      .sheet(isPresented: self.$showShareSheet) {
-        ActivityView(showing: self.$showShareSheet, activityItems: [self.app.url], applicationActivities: nil)
-      }
   }
 }
 
