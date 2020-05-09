@@ -31,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   let appStore: AppLookupService = AppStoreService()
   private(set) lazy var appRepository: AppRepository = CoreDataAppRepository(context: persistentContainer.viewContext)
-  private(set) lazy var wishlistUpdater = UpdateWishlistService(appRepository: appRepository, appLookupService: appStore, updateScheduler: WishlistUpdateScheduler())
 
   private lazy var store: Store<AppDelegateState, AppDelegateAction> = {
     Store(
@@ -47,6 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         fetchApps: { (try? self.appRepository.fetchAll()) ?? [] },
         checkForUpdates: { apps in checkForUpdates(apps: apps, lookup: self.appStore.lookup) },
         saveUpdatedApps: { try? self.appRepository.add($0) },
+        mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
         now: Date.init
       )
     )
@@ -72,7 +72,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       activity = .list
     }
 
-    return activity.sceneConfiguration()
+    return activity.sceneConfiguration
   }
 }
 

@@ -122,13 +122,13 @@ struct AppListView: View {
   let store: Store<AppListState, AppListAction>
 
   var body: some View {
-    WithViewStore(store.scope(state: { _ in () }), removeDuplicates: ==) { viewStore in
+    WithViewStore(store.stateless) { viewStore in
       NavigationView {
         ZStack {
           List {
             ForEachStore(
               self.store.scope(state: \.sortedApps, action: AppListAction.app),
-              content: AppRow.init
+              content: ConnectedAppRow.init
             ).onDelete { viewStore.send(.removeApps($0)) }
           }
           SortOrderSelector(store: self.store.scope(state: \.isSortOrderSheetPresented))
@@ -173,21 +173,43 @@ private struct SortOrderSelector: View {
   }
 }
 
-private struct AppRow: View {
+private extension AppSummaryState {
+  var view: ConnectedAppRow.ViewState {
+    .init(url: app.url, isSelected: isSelected)
+  }
+
+  var contentView: ConnectedAppRow.ContentViewState {
+    .init(app: app, sortOrder: sortOrder)
+  }
+}
+
+private struct ConnectedAppRow: View {
+  struct ViewState: Equatable {
+    let url: URL
+    let isSelected: Bool
+  }
+
+  struct ContentViewState: Equatable {
+    let app: App
+    let sortOrder: SortOrder
+  }
+
   let store: Store<AppSummaryState, AppSummaryAction>
 
   @State private var showShareSheet = false
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store.scope(state: \.view)) { viewStore in
       NavigationLink(
         destination: ConnectedAppDetailsView(
           store: self.store.scope(state: \.detailsState, action: AppSummaryAction.viewDetails)
         ),
         isActive: viewStore.binding(get: \.isSelected, send: AppSummaryAction.selected)
       ) {
-        AppRowContent(app: viewStore.app, sortOrder: viewStore.sortOrder)
-          .onDrag { NSItemProvider(app: viewStore.app) }
+        WithViewStore(self.store.scope(state: \.contentView).actionless) { viewStore in
+          AppRow(app: viewStore.app, sortOrder: viewStore.sortOrder)
+            .onDrag { NSItemProvider(app: viewStore.app) }
+        }
           .contextMenu {
             Button(action: { viewStore.send(.openInNewWindow) }) {
               Text("Open in New Window")
@@ -201,7 +223,7 @@ private struct AppRow: View {
           .sheet(isPresented: self.$showShareSheet) {
             ActivityView(
               showing: self.$showShareSheet,
-              activityItems: [viewStore.app.url],
+              activityItems: [viewStore.url],
               applicationActivities: nil
             )
           }
@@ -210,7 +232,7 @@ private struct AppRow: View {
   }
 }
 
-private struct AppRowContent: View {
+private struct AppRow: View {
   @Environment(\.updateDateFormatter) private var dateFormatter
 
   let app: App
@@ -257,16 +279,6 @@ private extension SortOrder {
 extension Array where Element == App {
   func sorted(by order: SortOrder) -> [App] {
     sorted {
-      switch order {
-      case .title: return $0.title < $1.title
-      case .price: return $0.price.value < $1.price.value
-      case .updated: return $0.updateDate > $1.updateDate
-      }
-    }
-  }
-
-  mutating func sort(by order: SortOrder) {
-    sort {
       switch order {
       case .title: return $0.title < $1.title
       case .price: return $0.price.value < $1.price.value

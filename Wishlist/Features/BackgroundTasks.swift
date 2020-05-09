@@ -24,6 +24,7 @@ struct BackgroundTaskEnvironment {
   var fetchApps: () -> [App]
   var checkForUpdates: ([App]) -> AnyPublisher<[App], Never>
   var saveUpdatedApps: ([App]) -> Void
+  var mainQueue: AnySchedulerOf<DispatchQueue>
   var now: () -> Date
 }
 
@@ -35,13 +36,9 @@ let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAction, B
   case .scheduleAppUpdateTask:
     let task = state.updateAppsTask
     return .fireAndForget {
-      do {
-        let request = BGAppRefreshTaskRequest(identifier: task.id)
-        request.earliestBeginDate = environment.now().addingTimeInterval(task.frequency)
-        try environment.submitTask(request)
-      } catch {
-        print("Could not schedule app refresh: \(error)")
-      }
+      let request = BGAppRefreshTaskRequest(identifier: task.id)
+      request.earliestBeginDate = environment.now().addingTimeInterval(task.frequency)
+      try? environment.submitTask(request)
     }
   case .handleAppUpdateTask(let task):
     return .concatenate(
@@ -49,6 +46,7 @@ let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAction, B
       .async { _ in
         let apps = environment.fetchApps()
         let cancellable = environment.checkForUpdates(apps)
+          .receive(on: environment.mainQueue)
           .sink(receiveCompletion: { _ in }) { newApps in
             environment.saveUpdatedApps(newApps)
           }

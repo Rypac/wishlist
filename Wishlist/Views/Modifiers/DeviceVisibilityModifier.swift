@@ -19,12 +19,10 @@ struct DeviceVisibilityModifier: ViewModifier {
   }
 
   func body(content: Content) -> some View {
-    Group {
-      if device.contains(UIDevice.current.userInterfaceIdiom.device) {
-        content
-      } else {
-        EmptyView()
-      }
+    if device.contains(UIDevice.current.userInterfaceIdiom.device) {
+      return ViewBuilder.buildEither(first: content) as _ConditionalContent<Content, EmptyView>
+    } else {
+      return ViewBuilder.buildEither(second: EmptyView()) as _ConditionalContent<Content, EmptyView>
     }
   }
 }

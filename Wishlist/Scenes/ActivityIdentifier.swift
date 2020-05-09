@@ -8,7 +8,7 @@ enum ActivityIdentifier: String {
   case list = "org.rypac.wishlist.list"
   case details = "org.rypac.wishlist.details"
 
-  func sceneConfiguration() -> UISceneConfiguration {
+  var sceneConfiguration: UISceneConfiguration {
     switch self {
     case .details:
       return UISceneConfiguration(name: SceneConfigurationNames.details, sessionRole: .windowApplication)

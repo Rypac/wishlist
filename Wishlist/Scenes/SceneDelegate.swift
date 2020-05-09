@@ -14,7 +14,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     return Store(
       initialState: AppState(
         apps: (try? appDelegate.appRepository.fetchAll()) ?? [],
-        sortOrder: appDelegate.settings.sortOrder
+        sortOrder: appDelegate.settings.sortOrder,
+        lastUpdateDate: appDelegate.settings.lastUpdateDate,
+        appUpdateFrequency: 15 * 60
       ),
       reducer: appReducer,
       environment: AppEnvironment(
@@ -23,7 +25,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         loadApps: appDelegate.appStore.lookup,
         openURL: { UIApplication.shared.open($0) },
         settings: appDelegate.settings,
-        scheduleBackgroundTasks: { appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask)) }
+        scheduleBackgroundTasks: { appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask)) },
+        now: Date.init
       )
     )
   }()
@@ -67,9 +70,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 struct AppState: Equatable {
   var apps: [App]
   var sortOrder: SortOrder
+  var lastUpdateDate: Date?
+  var appUpdateFrequency: TimeInterval
   var viewingAppDetails: App.ID? = nil
   var isLoadingAppsFromURLScheme: Bool = false
   var isSortOrderSheetPresented: Bool = false
+  var isUpdateInProgress: Bool = false
 }
 
 extension AppState {
@@ -104,6 +110,23 @@ extension AppState {
       isLoadingAppsFromURLScheme = newValue.loadingApps
     }
   }
+
+  var appUpdateState: AppUpdateState {
+    get {
+      AppUpdateState(
+        apps: apps,
+        lastUpdateDate: lastUpdateDate,
+        updateFrequency: appUpdateFrequency,
+        isUpdateInProgress: isUpdateInProgress
+      )
+    }
+    set {
+      apps = newValue.apps
+      lastUpdateDate = newValue.lastUpdateDate
+      appUpdateFrequency = newValue.updateFrequency
+      isUpdateInProgress = newValue.isUpdateInProgress
+    }
+  }
 }
 
 enum AppLifecycleEvent {
@@ -118,6 +141,7 @@ enum AppAction {
   case appList(AppListAction)
   case urlScheme(URLSchemeAction)
   case lifecycle(AppLifecycleEvent)
+  case updates(AppUpdateAction)
 }
 
 struct AppEnvironment {
@@ -127,6 +151,7 @@ struct AppEnvironment {
   let openURL: (URL) -> Void
   let settings: SettingsStore
   let scheduleBackgroundTasks: () -> Void
+  let now: () -> Date
 }
 
 let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
@@ -145,18 +170,17 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
       }
       return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
     case .lifecycle(.didBecomeActive):
-      let apps = state.apps
-      return .async { _ in
-        checkForUpdates(apps: apps, lookup: environment.loadApps)
-          .sink(receiveCompletion: { _ in }) { newApps in
-            try? environment.repository.add(newApps)
-          }
-      }
+      return Effect(value: .updates(.checkForUpdates))
     case .lifecycle(.didEnterBackground):
       return .fireAndForget {
         environment.scheduleBackgroundTasks()
       }
-    case .urlScheme, .appList:
+    case let .updates(.receivedUpdates(updatedApps, at: date)):
+      return .fireAndForget {
+        try? environment.repository.add(updatedApps)
+        environment.settings.lastUpdateDate = date
+      }
+    case .urlScheme, .appList, .updates:
       return .none
     }
   },
@@ -180,6 +204,17 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
       URLSchemeEnvironment(
         loadApps: environment.loadApps,
         mainQueue: environment.mainQueue
+      )
+    }
+  ),
+  appUpdateReducer.pullback(
+    state: \.appUpdateState,
+    action: /AppAction.updates,
+    environment: { environment in
+      AppUpdateEnvironment(
+        lookupApps: environment.loadApps,
+        mainQueue: environment.mainQueue,
+        now: environment.now
       )
     }
   )

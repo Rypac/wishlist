@@ -32,7 +32,7 @@ let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, URLSchemeEnviron
     case .addApps(let ids):
       state.loadingApps = true
       return environment.loadApps(ids)
-        .subscribe(on: environment.mainQueue)
+        .receive(on: environment.mainQueue)
         .catchToEffect()
         .map(URLSchemeAction.addAppsResponse)
     case .viewApp(let id):
