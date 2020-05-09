@@ -180,6 +180,18 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
         try? environment.repository.add(updatedApps)
         environment.settings.lastUpdateDate = date
       }
+    case let .appList(.addAppsResponse(.success(apps))), let .urlScheme(.addAppsResponse(.success(apps))):
+      return .fireAndForget {
+        try? environment.repository.add(apps)
+      }
+    case let .appList(.removeApps(ids)):
+      return .fireAndForget {
+        try? environment.repository.delete(ids: ids)
+      }
+    case let .appList(.setSortOrder(sortOrder)):
+      return .fireAndForget {
+        environment.settings.sortOrder = sortOrder
+      }
     case .urlScheme, .appList, .updates:
       return .none
     }
@@ -189,8 +201,6 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
     action: /AppAction.appList,
     environment: { environment in
       AppListEnvironment(
-        repository: environment.repository,
-        persistSortOrder: { environment.settings.sortOrder = $0 },
         loadApps: pipe(AppStore.extractIDs, environment.loadApps),
         openURL: environment.openURL,
         mainQueue: environment.mainQueue

@@ -23,8 +23,6 @@ enum AppListAction {
 }
 
 struct AppListEnvironment {
-  let repository: AppRepository
-  var persistSortOrder: (SortOrder) -> Void
   var loadApps: ([URL]) -> AnyPublisher<[App], Error>
   var openURL: (URL) -> Void
   var mainQueue: AnySchedulerOf<DispatchQueue>
@@ -78,9 +76,7 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
         return .none
       }
       state.apps.append(contentsOf: apps)
-      return .fireAndForget {
-        try? environment.repository.add(apps)
-      }
+      return .none
     case .addApps(let urls):
       return environment.loadApps(urls)
         .receive(on: environment.mainQueue)
@@ -88,14 +84,10 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
         .map(AppListAction.addAppsResponse)
     case .removeApps(let ids):
       state.apps.removeAll(where: { ids.contains($0.id) })
-      return .fireAndForget {
-        try? environment.repository.delete(ids: ids)
-      }
+      return .none
     case .setSortOrder(let sortOrder):
       state.sortOrder = sortOrder
-      return .fireAndForget {
-        environment.persistSortOrder(sortOrder)
-      }
+      return .none
     case let .app(id, .selected(selected)):
       state.displayedAppDetailsID = selected ? id : nil
       return .none
