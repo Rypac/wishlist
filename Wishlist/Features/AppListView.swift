@@ -42,6 +42,7 @@ struct AppSummaryState: Identifiable, Equatable {
 enum AppSummaryAction {
   case selected(Bool)
   case openInNewWindow
+  case viewInAppStore
   case viewDetails(AppDetailsAction)
 }
 
@@ -96,6 +97,13 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
         let userActivity = NSUserActivity(activityType: ActivityIdentifier.details.rawValue)
         userActivity.userInfo = [ActivityIdentifier.UserInfoKey.id.rawValue: id]
         UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil)
+      }
+    case let .app(id, .viewInAppStore):
+      guard let url = state.apps.first(where: { $0.id == id })?.url else {
+        return .none
+      }
+      return .fireAndForget {
+        environment.openURL(url)
       }
     case .appDetails, .app:
       return .none
@@ -207,6 +215,10 @@ private struct ConnectedAppRow: View {
               Text("Open in New Window")
               Image.window
             }.visible(on: .iPad)
+            Button(action: { viewStore.send(.viewInAppStore) }) {
+              Text("View in App Store")
+              Image.store
+            }
             Button(action: { self.showShareSheet = true }) {
               Text("Share")
               Image.share
@@ -255,6 +267,7 @@ private struct AppRow: View {
 private extension Image {
   static var sort: Image { Image(systemName: "arrow.up.arrow.down") }
   static var share: Image { Image(systemName: "square.and.arrow.up") }
+  static var store: Image { Image(systemName: "bag") }
   static var window: Image { Image(systemName: "square.grid.2x2") }
 }
 
