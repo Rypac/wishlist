@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       environment: AppEnvironment(
         repository: appDelegate.appRepository,
         mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
-        loadApps: appDelegate.appStore.lookup(ids:),
+        loadApps: appDelegate.appStore.lookup,
         settings: appDelegate.settings,
         scheduleBackgroundTasks: { appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask)) }
       )
@@ -132,7 +132,6 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
     switch action {
     case .appsUpdated(let apps):
       state.appListState.apps = apps
-      state.appListState.apps.sort(by: state.appListState.sortOrder)
       return .none
     case .lifecycle(.didStart):
       return environment.repository.publisher()
@@ -144,8 +143,13 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
       }
       return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
     case .lifecycle(.didBecomeActive):
-//      appDelegate.wishlistUpdater.performPeriodicUpdate()
-      return .none
+      let apps = state.apps
+      return .async { _ in
+        checkForUpdates(apps: apps, lookup: environment.loadApps)
+          .sink(receiveCompletion: { _ in }) { newApps in
+            try? environment.repository.add(newApps)
+          }
+      }
     case .lifecycle(.didEnterBackground):
       return .fireAndForget {
         environment.scheduleBackgroundTasks()

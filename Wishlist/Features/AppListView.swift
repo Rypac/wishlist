@@ -14,11 +14,10 @@ enum AppListAction {
   case addApps([URL])
   case addAppsResponse(Result<[App], Error>)
   case appDetails(AppDetailsAction)
-  case removeApps(IndexSet)
-  case showAppDetails(id: Int?)
+  case removeApps([App.ID])
   case setSortOrder(SortOrder)
   case setSortOrderSheet(isPresented: Bool)
-  case dealWithIt(id: App.ID, app: App)
+  case app(id: App.ID, action: AppSummaryAction)
 }
 
 struct AppListEnvironment {
@@ -28,9 +27,29 @@ struct AppListEnvironment {
   var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
+struct AppSummaryState: Identifiable, Equatable {
+  var id: App.ID { app.id }
+  var app: App
+  var sortOrder: SortOrder
+  var isSelected: Bool
+
+  var detailsState: AppDetailsState {
+    AppDetailsState(app: app)
+  }
+}
+
+enum AppSummaryAction {
+  case selected(Bool)
+  case viewDetails(AppDetailsAction)
+}
+
 private extension AppListState {
-  var sortedApps: IdentifiedArrayOf<App> {
-    IdentifiedArray(apps.sorted(by: sortOrder))
+  var sortedApps: IdentifiedArrayOf<AppSummaryState> {
+    IdentifiedArray(
+      apps.sorted(by: sortOrder).map {
+        AppSummaryState(app: $0, sortOrder: sortOrder, isSelected: $0.id == displayedAppDetailsID)
+      }
+    )
   }
 
   var appDetailsState: AppDetailsState? {
@@ -63,22 +82,20 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
         .receive(on: environment.mainQueue)
         .catchToEffect()
         .map(AppListAction.addAppsResponse)
-    case .removeApps(let indexes):
-      let originalApps = state.apps
-      state.apps.remove(atOffsets: indexes)
-      let deletedApps = originalApps.filter { !state.apps.contains($0) }
+    case .removeApps(let ids):
+      state.apps.removeAll(where: { ids.contains($0.id) })
       return .fireAndForget {
-        try? environment.repository.delete(deletedApps)
+        try? environment.repository.delete(ids: ids)
       }
     case .setSortOrder(let sortOrder):
       state.sortOrder = sortOrder
       return .fireAndForget {
         environment.persistSortOrder(sortOrder)
       }
-    case .showAppDetails(let id):
-      state.displayedAppDetailsID = id
+    case let .app(id, .selected(selected)):
+      state.displayedAppDetailsID = selected ? id : nil
       return .none
-    case .appDetails, .dealWithIt:
+    case .appDetails, .app:
       return .none
     }
   },
@@ -89,31 +106,44 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
   )
 )
 
-struct AppListView: View {
-  let store: Store<AppListState, AppListAction>
+struct ConnectedAppRow: View {
+  let store: Store<AppSummaryState, AppSummaryAction>
 
   var body: some View {
     WithViewStore(store) { viewStore in
+      NavigationLink(
+        destination: ConnectedAppDetailsView(
+          store: self.store.scope(state: \.detailsState, action: AppSummaryAction.viewDetails)
+        ),
+        isActive: viewStore.binding(get: \.isSelected, send: AppSummaryAction.selected)
+      ) {
+        AppRow(app: viewStore.app, sortOrder: viewStore.sortOrder)
+      }
+    }
+  }
+}
+
+extension AppListState {
+  var view: AppListView.ViewState {
+    .init(isSortOrderSheetPresented: isSortOrderSheetPresented)
+  }
+}
+
+struct AppListView: View {
+  struct ViewState: Equatable {
+    var isSortOrderSheetPresented: Bool
+  }
+
+  let store: Store<AppListState, AppListAction>
+
+  var body: some View {
+    WithViewStore(store.scope(state: \.view)) { viewStore in
       NavigationView {
         List {
-          ForEachStore(self.store.scope(state: \.sortedApps, action: AppListAction.dealWithIt)) { appStore in
-            WithViewStore(appStore) { appViewStore in
-              NavigationLink(
-                destination: IfLetStore(
-                  self.store.scope(state: \.appDetailsState, action: AppListAction.appDetails),
-                  then: ConnectedAppDetailsView.init
-                ),
-                isActive: viewStore.binding(
-                  get: { $0.displayedAppDetailsID == appViewStore.id },
-                  send: { show in .showAppDetails(id: show ? appViewStore.id : nil) }
-                )
-              ) {
-                AppRow(app: appViewStore.state, sortOrder: viewStore.sortOrder)
-              }
-            }.debug(prefix: "AppViewStore")
-          }.onDelete { indexes in
-            viewStore.send(.removeApps(indexes))
-          }
+          ForEachStore(
+            self.store.scope(state: \.sortedApps, action: AppListAction.app),
+            content: ConnectedAppRow.init
+          ).onDelete { viewStore.send(.removeApps($0)) }
         }
           .navigationBarTitle("Wishlist")
           .navigationBarItems(
