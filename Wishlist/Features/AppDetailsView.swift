@@ -175,8 +175,8 @@ struct ExpandableTextModifier: ViewModifier {
           .background(
             LinearGradient(
               gradient: Gradient(stops: [
-                Gradient.Stop(color: Color.black.opacity(0), location: 0),
-                Gradient.Stop(color: .black, location: 0.25)
+                Gradient.Stop(color: Color(.systemBackground).opacity(0), location: 0),
+                Gradient.Stop(color: Color(.systemBackground), location: 0.25)
               ]),
               startPoint: .leading,
               endPoint: .trailing
