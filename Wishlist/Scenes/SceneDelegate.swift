@@ -148,7 +148,7 @@ enum AppAction {
 struct AppEnvironment {
   let repository: AppRepository
   let mainQueue: AnySchedulerOf<DispatchQueue>
-  let loadApps: ([Int]) -> AnyPublisher<[App], Error>
+  let loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
   let openURL: (URL) -> Void
   let settings: SettingsStore
   let scheduleBackgroundTasks: () -> Void

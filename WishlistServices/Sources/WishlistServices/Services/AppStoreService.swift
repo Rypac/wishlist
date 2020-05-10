@@ -14,7 +14,7 @@ public final class AppStoreService: AppLookupService {
     self.session = session
   }
 
-  public func lookup(ids: [Int]) -> AnyPublisher<[App], Error> {
+  public func lookup(ids: [App.ID]) -> AnyPublisher<[App], Error> {
     if ids.isEmpty {
       return Result.Publisher([]).eraseToAnyPublisher()
     }

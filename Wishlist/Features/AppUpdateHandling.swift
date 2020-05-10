@@ -3,7 +3,7 @@ import ComposableArchitecture
 import Foundation
 import WishlistData
 
-typealias AppLookup = ([Int]) -> AnyPublisher<[App], Error>
+typealias AppLookup = ([App.ID]) -> AnyPublisher<[App], Error>
 
 struct AppUpdateState: Equatable {
   var apps: [App]

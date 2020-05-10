@@ -15,7 +15,7 @@ final class Wishlist {
     self.lookupService = lookupService
   }
 
-  func addApps(ids: [Int]) -> AnyPublisher<Void, Error> {
+  func addApps(ids: [App.ID]) -> AnyPublisher<Void, Error> {
     lookupService.lookup(ids: ids)
       .tryMap { [repository] apps in
         try repository.add(apps)
