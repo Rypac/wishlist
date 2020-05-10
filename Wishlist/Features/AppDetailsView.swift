@@ -14,11 +14,13 @@ struct AppDetailsEnvironment {
   var openURL: (URL) -> Void
 }
 
-let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, AppDetailsEnvironment> { state, action, environment in
+let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, AppDetailsEnvironment>.strict { state, action in
   switch action {
-  case .openInAppStore(let url):
-    return .fireAndForget {
-      environment.openURL(url)
+  case let .openInAppStore(url):
+    return { environment in
+      .fireAndForget {
+        environment.openURL(url)
+      }
     }
   }
 }
