@@ -138,6 +138,7 @@ enum AppLifecycleEvent {
 
 enum AppAction {
   case appsUpdated([App])
+  case sortOrderUpdated(SortOrder)
   case appList(AppListAction)
   case urlScheme(URLSchemeAction)
   case lifecycle(AppLifecycleEvent)
@@ -158,13 +159,26 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
   Reducer { state, action, environment in
     switch action {
     case .appsUpdated(let apps):
-      state.appListState.apps = apps
+      state.apps = apps
       return .none
+    case let .sortOrderUpdated(sortOrder):
+      state.sortOrder = sortOrder
+      return .fireAndForget {
+        environment.settings.sortOrder = sortOrder
+      }
     case .lifecycle(.didStart):
-      return environment.repository.publisher()
-        .eraseToEffect()
-        .map(AppAction.appsUpdated)
-    case .lifecycle(.openURL(let url)):
+      return .merge(
+        environment.repository.publisher()
+          .receive(on: environment.mainQueue)
+          .eraseToEffect()
+          .map(AppAction.appsUpdated),
+        environment.settings.$sortOrder.publisher()
+          .removeDuplicates()
+          .receive(on: environment.mainQueue)
+          .eraseToEffect()
+          .map(AppAction.sortOrderUpdated)
+      )
+    case let .lifecycle(.openURL(url)):
       guard let urlScheme = URLScheme(rawValue: url) else {
         return .none
       }
