@@ -16,6 +16,7 @@ enum AppListAction {
   case addApps([URL])
   case addAppsResponse(Result<[App], Error>)
   case appDetails(AppDetailsAction)
+  case removeAppsAtIndexes(IndexSet)
   case removeApps([App.ID])
   case setSortOrder(SortOrder)
   case setSortOrderSheet(isPresented: Bool)
@@ -83,6 +84,10 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
         .receive(on: environment.mainQueue)
         .catchToEffect()
         .map(AppListAction.addAppsResponse)
+    case .removeAppsAtIndexes(let indexes):
+      let apps = state.apps.sorted(by: state.sortOrder)
+      let ids = indexes.map { apps[$0].id }
+      return Effect(value: .removeApps(ids))
     case .removeApps(let ids):
       state.apps.removeAll(where: { ids.contains($0.id) })
       return .none
@@ -129,7 +134,7 @@ struct AppListView: View {
             ForEachStore(
               self.store.scope(state: \.sortedApps, action: AppListAction.app),
               content: ConnectedAppRow.init
-            ).onDelete { viewStore.send(.removeApps($0)) }
+            ).onDelete { viewStore.send(.removeAppsAtIndexes($0)) }
           }
           SortOrderSelector(store: self.store.scope(state: \.isSortOrderSheetPresented))
         }.navigationBarTitle("Wishlist")
