@@ -18,7 +18,6 @@
 		943047742460FC4900EEDBBF /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 943047732460FC4900EEDBBF /* ComposableArchitecture */; };
 		943047752460FC4900EEDBBF /* ComposableArchitecture in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 943047732460FC4900EEDBBF /* ComposableArchitecture */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9432BAC024355C20001CCCD9 /* URLDropDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */; };
-		943F70582461538F007425BA /* Prelude.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F70572461538F007425BA /* Prelude.swift */; };
 		943F705A2462328A007425BA /* URLScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F70592462328A007425BA /* URLScheme.swift */; };
 		94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
@@ -119,7 +118,6 @@
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
 		9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLDropDelegate.swift; sourceTree = "<group>"; };
-		943F70572461538F007425BA /* Prelude.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prelude.swift; sourceTree = "<group>"; };
 		943F70592462328A007425BA /* URLScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLScheme.swift; sourceTree = "<group>"; };
 		94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
@@ -216,7 +214,6 @@
 			isa = PBXGroup;
 			children = (
 				9486FAB4243066AC00EE2334 /* Dictionary.swift */,
-				943F70572461538F007425BA /* Prelude.swift */,
 				94B79B7D2466BE94005E5066 /* ComposableArchitecture.swift */,
 			);
 			path = Extensions;
@@ -471,7 +468,6 @@
 				94C8D0852435756300D9C077 /* UTI.swift in Sources */,
 				94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */,
 				942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */,
-				943F70582461538F007425BA /* Prelude.swift in Sources */,
 				948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */,
 				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,
 				94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */,
