@@ -51,6 +51,7 @@
 		94C7B1532330F13F008181D1 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* SettingsStore.swift */; };
 		94C8D0852435756300D9C077 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8D0842435756300D9C077 /* UTI.swift */; };
 		94C8D0892435F1B200D9C077 /* UserDefaults in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		94EE92C92467D3C8001E3155 /* AddApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EE92C82467D3C8001E3155 /* AddApps.swift */; };
 		94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */; };
 		94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */; };
 		94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D2231BA2BC00EC1190 /* AppListView.swift */; };
@@ -144,6 +145,7 @@
 		94C28BE2246526320013B41F /* URLSchemeHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSchemeHandling.swift; sourceTree = "<group>"; };
 		94C7B1522330F13F008181D1 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		94C8D0842435756300D9C077 /* UTI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTI.swift; sourceTree = "<group>"; };
+		94EE92C82467D3C8001E3155 /* AddApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddApps.swift; sourceTree = "<group>"; };
 		94FA20CB231BA2BC00EC1190 /* Wishlist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wishlist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 				9415B3602465349800F76965 /* BackgroundTasks.swift */,
 				94C28BE2246526320013B41F /* URLSchemeHandling.swift */,
 				94B79B7B2466BDC0005E5066 /* AppUpdateHandling.swift */,
+				94EE92C82467D3C8001E3155 /* AddApps.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -463,6 +466,7 @@
 				94C28BE3246526320013B41F /* URLSchemeHandling.swift in Sources */,
 				948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */,
 				94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */,
+				94EE92C92467D3C8001E3155 /* AddApps.swift in Sources */,
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
 				94C8D0852435756300D9C077 /* UTI.swift in Sources */,
 				94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */,

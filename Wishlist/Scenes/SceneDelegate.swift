@@ -194,7 +194,8 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
         try? environment.repository.add(updatedApps)
         environment.settings.lastUpdateDate = date
       }
-    case let .appList(.addAppsResponse(.success(apps))), let .urlScheme(.addAppsResponse(.success(apps))):
+    case let .appList(.addApps(.addAppsResponse(.success(apps)))),
+         let .urlScheme(.addApps(.addAppsResponse(.success(apps)))):
       return .fireAndForget {
         try? environment.repository.add(apps)
       }
@@ -215,7 +216,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
     action: /AppAction.appList,
     environment: { environment in
       AppListEnvironment(
-        loadApps: pipe(AppStore.extractIDs, environment.loadApps),
+        loadApps: environment.loadApps,
         openURL: environment.openURL,
         mainQueue: environment.mainQueue
       )

@@ -8,23 +8,22 @@ import WishlistData
 struct AppListState: Equatable {
   var apps: [App]
   var sortOrder: SortOrder
-  var displayedAppDetailsID: Int? = nil
+  var displayedAppDetailsID: App.ID? = nil
   var isSortOrderSheetPresented: Bool = false
 }
 
 enum AppListAction {
-  case addApps([URL])
-  case addAppsResponse(Result<[App], Error>)
-  case appDetails(AppDetailsAction)
   case removeAppsAtIndexes(IndexSet)
   case removeApps([App.ID])
   case setSortOrder(SortOrder)
   case setSortOrderSheet(isPresented: Bool)
   case app(id: App.ID, action: AppSummaryAction)
+  case appDetails(AppDetailsAction)
+  case addApps(AddAppsAction)
 }
 
 struct AppListEnvironment {
-  var loadApps: ([URL]) -> AnyPublisher<[App], Error>
+  var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
   var openURL: (URL) -> Void
   var mainQueue: AnySchedulerOf<DispatchQueue>
 }
@@ -65,6 +64,11 @@ private extension AppListState {
     }
     set {}
   }
+
+  var addAppsState: AddAppsState {
+    get { .init(apps: apps) }
+    set { apps = newValue.apps }
+  }
 }
 
 let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.combine(
@@ -73,17 +77,6 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
     case .setSortOrderSheet(let isPresented):
       state.isSortOrderSheetPresented = isPresented
       return .none
-    case .addAppsResponse(let result):
-      guard case .success(let apps) = result, !apps.isEmpty else {
-        return .none
-      }
-      state.apps.append(contentsOf: apps)
-      return .none
-    case .addApps(let urls):
-      return environment.loadApps(urls)
-        .receive(on: environment.mainQueue)
-        .catchToEffect()
-        .map(AppListAction.addAppsResponse)
     case .removeAppsAtIndexes(let indexes):
       let apps = state.apps.sorted(by: state.sortOrder)
       let ids = indexes.map { apps[$0].id }
@@ -110,7 +103,7 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
       return .fireAndForget {
         environment.openURL(url)
       }
-    case .appDetails, .app:
+    case .appDetails, .app, .addApps:
       return .none
     }
   },
@@ -118,6 +111,13 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
     state: \.appDetailsState,
     action: /AppListAction.appDetails,
     environment: { AppDetailsEnvironment(openURL: $0.openURL) }
+  ),
+  addAppsReducer.pullback(
+    state: \.addAppsState,
+    action: /AppListAction.addApps,
+    environment: {
+      AddAppsEnvironment(loadApps: $0.loadApps, mainQueue: $0.mainQueue)
+    }
   )
 )
 
@@ -139,7 +139,7 @@ struct AppListView: View {
           SortOrderSelector(store: self.store.scope(state: \.isSortOrderSheetPresented))
         }.navigationBarTitle("Wishlist")
       }.onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
-        viewStore.send(.addApps(urls))
+        viewStore.send(.addApps(.addAppsFromURLs(urls)))
       })
     }
   }
