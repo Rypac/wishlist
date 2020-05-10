@@ -6,7 +6,6 @@ import WishlistData
 struct URLSchemeState: Equatable {
   var apps: [App]
   var viewingAppDetails: App.ID?
-  var loadingApps: Bool = false
 }
 
 enum URLSchemeAction {

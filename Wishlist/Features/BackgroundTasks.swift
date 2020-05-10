@@ -31,11 +31,12 @@ struct BackgroundTaskEnvironment {
 let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAction, BackgroundTaskEnvironment>.strict { state, action in
   switch action {
   case .registerTasks:
-    let updateAppsTask = state.updateAppsTask
+    let task = state.updateAppsTask
     return { environment in
-      environment.registerTask(updateAppsTask)
+      environment.registerTask(task)
         .map { .handleAppUpdateTask($0 as! BGAppRefreshTask) }
     }
+
   case .scheduleAppUpdateTask:
     let task = state.updateAppsTask
     return { environment in
@@ -45,9 +46,10 @@ let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAction, B
         try? environment.submitTask(request)
       }
     }
+
   case let .handleAppUpdateTask(task):
     return { environment in
-      .concatenate(
+      .merge(
         Effect(value: .scheduleAppUpdateTask),
         .async { _ in
           let apps = environment.fetchApps()

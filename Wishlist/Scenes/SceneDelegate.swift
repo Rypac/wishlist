@@ -3,7 +3,6 @@ import ComposableArchitecture
 import SwiftUI
 import UIKit
 import WishlistData
-import WishlistFoundation
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -73,12 +72,11 @@ struct AppState: Equatable {
   var lastUpdateDate: Date?
   var appUpdateFrequency: TimeInterval
   var viewingAppDetails: App.ID? = nil
-  var isLoadingAppsFromURLScheme: Bool = false
   var isSortOrderSheetPresented: Bool = false
   var isUpdateInProgress: Bool = false
 }
 
-extension AppState {
+private extension AppState {
   var appListState: AppListState {
     get {
       AppListState(
@@ -100,14 +98,12 @@ extension AppState {
     get {
       URLSchemeState(
         apps: apps,
-        viewingAppDetails: viewingAppDetails,
-        loadingApps: isLoadingAppsFromURLScheme
+        viewingAppDetails: viewingAppDetails
       )
     }
     set {
       apps = newValue.apps
       viewingAppDetails = newValue.viewingAppDetails
-      isLoadingAppsFromURLScheme = newValue.loadingApps
     }
   }
 

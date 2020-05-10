@@ -3,8 +3,6 @@ import ComposableArchitecture
 import Foundation
 import WishlistData
 
-typealias AppLookup = ([App.ID]) -> AnyPublisher<[App], Error>
-
 struct AppUpdateState: Equatable {
   var apps: [App]
   var lastUpdateDate: Date?
@@ -19,7 +17,7 @@ enum AppUpdateAction {
 }
 
 struct AppUpdateEnvironment {
-  var lookupApps: AppLookup
+  var lookupApps: ([App.ID]) -> AnyPublisher<[App], Error>
   var mainQueue: AnySchedulerOf<DispatchQueue>
   var now: () -> Date
 }
@@ -62,7 +60,7 @@ let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, AppUpdateEnviron
   }
 }
 
-func checkForUpdates(apps: [App], lookup: AppLookup) -> AnyPublisher<[App], Never> {
+func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Error>) -> AnyPublisher<[App], Never> {
   lookup(apps.map(\.id))
     .map { latestApps in
       latestApps.reduce(into: []) { result, latestApp in

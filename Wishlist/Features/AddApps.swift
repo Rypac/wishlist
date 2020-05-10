@@ -29,9 +29,9 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, AddAppsEnvironm
 
     return { environment in
       environment.loadApps(Array(ids))
-      .receive(on: environment.mainQueue)
-      .catchToEffect()
-      .map(AddAppsAction.addAppsResponse)
+        .receive(on: environment.mainQueue)
+        .catchToEffect()
+        .map(AddAppsAction.addAppsResponse)
     }
 
   case let .addAppsFromURLs(urls):
