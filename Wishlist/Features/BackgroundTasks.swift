@@ -28,42 +28,35 @@ struct BackgroundTaskEnvironment {
   var now: () -> Date
 }
 
-let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAction, BackgroundTaskEnvironment>.strict { state, action in
+let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAction, BackgroundTaskEnvironment> { state, action, environment in
   switch action {
   case .registerTasks:
-    let task = state.updateAppsTask
-    return { environment in
-      environment.registerTask(task)
-        .map { .handleAppUpdateTask($0 as! BGAppRefreshTask) }
-    }
+    return environment.registerTask(state.updateAppsTask)
+      .map { .handleAppUpdateTask($0 as! BGAppRefreshTask) }
 
   case .scheduleAppUpdateTask:
     let task = state.updateAppsTask
-    return { environment in
-      .fireAndForget {
-        let request = BGAppRefreshTaskRequest(identifier: task.id)
-        request.earliestBeginDate = environment.now().addingTimeInterval(task.frequency)
-        try? environment.submitTask(request)
-      }
+    return .fireAndForget {
+      let request = BGAppRefreshTaskRequest(identifier: task.id)
+      request.earliestBeginDate = environment.now().addingTimeInterval(task.frequency)
+      try? environment.submitTask(request)
     }
 
   case let .handleAppUpdateTask(task):
-    return { environment in
-      .merge(
-        Effect(value: .scheduleAppUpdateTask),
-        .async { _ in
-          let apps = environment.fetchApps()
-          let cancellable = environment.checkForUpdates(apps)
-            .receive(on: environment.mainQueue)
-            .sink(receiveCompletion: { _ in }) { newApps in
-              environment.saveUpdatedApps(newApps)
-            }
-          task.expirationHandler = {
-            cancellable.cancel()
+    return .merge(
+      Effect(value: .scheduleAppUpdateTask),
+      .async { _ in
+        let apps = environment.fetchApps()
+        let cancellable = environment.checkForUpdates(apps)
+          .receive(on: environment.mainQueue)
+          .sink(receiveCompletion: { _ in }) { newApps in
+            environment.saveUpdatedApps(newApps)
           }
-          return cancellable
+        task.expirationHandler = {
+          cancellable.cancel()
         }
-      )
-    }
+        return cancellable
+      }
+    )
   }
 }

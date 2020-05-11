@@ -19,31 +19,27 @@ public struct AddAppsEnvironment {
   public var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, AddAppsEnvironment>.strict { state, action in
+public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, AddAppsEnvironment> { state, action, environment in
   switch action {
   case let .addApps(ids):
     let ids = Set(ids).subtracting(state.apps.map(\.id))
     if ids.isEmpty {
-      return { _ in .none }
+      return .none
     }
 
-    return { environment in
-      environment.loadApps(Array(ids))
-        .receive(on: environment.mainQueue)
-        .catchToEffect()
-        .map(AddAppsAction.addAppsResponse)
-    }
+    return environment.loadApps(Array(ids))
+      .receive(on: environment.mainQueue)
+      .catchToEffect()
+      .map(AddAppsAction.addAppsResponse)
 
   case let .addAppsFromURLs(urls):
     let ids = AppStore.extractIDs(from: urls)
-    return { _ in
-      ids.isEmpty ? .none : Effect(value: .addApps(ids))
-    }
+    return ids.isEmpty ? .none : Effect(value: .addApps(ids))
 
   case let .addAppsResponse(result):
     if case let .success(apps) = result, !apps.isEmpty {
       state.apps.append(contentsOf: apps)
     }
-    return { _ in .none }
+    return .none
   }
 }

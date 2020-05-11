@@ -12,7 +12,6 @@ struct AppUpdateState: Equatable {
 
 enum AppUpdateAction {
   case checkForUpdates
-  case startUpdate
   case receivedUpdates([App], at: Date)
 }
 
@@ -22,41 +21,36 @@ struct AppUpdateEnvironment {
   var now: () -> Date
 }
 
-let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, AppUpdateEnvironment>.strict { state, action in
+let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, AppUpdateEnvironment> { state, action, environment in
   switch action {
   case .checkForUpdates:
-    if state.apps.isEmpty {
-      return { _ in .none }
+    guard state.shouldCheckForUpdates(now: environment.now()) else {
+      return .none
     }
 
-    guard let lastUpdateDate = state.lastUpdateDate else {
-      return { _ in Effect(value: .startUpdate) }
-    }
-
-    let updateFrequency = state.updateFrequency
-    return { environment in
-      let timeSinceLastUpdate = environment.now().timeIntervalSince(lastUpdateDate)
-      guard timeSinceLastUpdate > TimeInterval(updateFrequency) else {
-        return .none
-      }
-      return Effect(value: .startUpdate)
-    }
-
-  case .startUpdate:
-    let apps = state.apps
     state.isUpdateInProgress = true
-    return { environment in
-      checkForUpdates(apps: apps, lookup: environment.lookupApps)
-        .receive(on: environment.mainQueue)
-        .eraseToEffect()
-        .map { .receivedUpdates($0, at: environment.now()) }
-    }
+    return checkForUpdates(apps: state.apps, lookup: environment.lookupApps)
+      .receive(on: environment.mainQueue)
+      .eraseToEffect()
+      .map { .receivedUpdates($0, at: environment.now()) }
 
   case let .receivedUpdates(updatedApps, at: date):
     state.isUpdateInProgress = false
     state.apps.append(contentsOf: updatedApps)
     state.lastUpdateDate = date
-    return { _ in .none }
+    return .none
+  }
+}
+
+private extension AppUpdateState {
+  func shouldCheckForUpdates(now: Date) -> Bool {
+    if isUpdateInProgress || apps.isEmpty {
+      return false
+    }
+    guard let lastUpdateDate = lastUpdateDate else {
+      return true
+    }
+    return now.timeIntervalSince(lastUpdateDate) > TimeInterval(updateFrequency)
   }
 }
 

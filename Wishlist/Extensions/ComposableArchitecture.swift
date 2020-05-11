@@ -1,16 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
 
-extension Reducer {
-  public static func strict(
-    _ reducer: @escaping (inout State, Action) -> (Environment) -> Effect<Action, Never>
-  ) -> Reducer {
-    Reducer { state, action, environment in
-      reducer(&state, action)(environment)
-    }
-  }
-}
-
 extension Store {
   public var stateless: Store<Void, Action> {
     scope(state: { _ in () })
