@@ -32,7 +32,7 @@ struct SettingsView: View {
     WithViewStore(store) { viewStore in
       NavigationView {
         Form {
-          Section(header: Text("Display")) {
+          Section(header: Text("Appearance")) {
             Picker("Theme", selection: viewStore.binding(get: \.theme, send: SettingsAction.setTheme)) {
               ForEach(Theme.allCases, id: \.self) { theme in
                 Text(theme.title).tag(theme)

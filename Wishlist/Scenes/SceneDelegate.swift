@@ -28,7 +28,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         scheduleBackgroundTasks: {
           appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask))
         },
-        applyTheme: { [weak self] theme in
+        setTheme: { [weak self] theme in
+          appDelegate.settings.theme = theme
           self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
         },
         now: Date.init
@@ -159,6 +160,7 @@ enum AppAction {
   case urlScheme(URLSchemeAction)
   case lifecycle(AppLifecycleEvent)
   case updates(AppUpdateAction)
+  case settings(SettingsAction)
 }
 
 struct AppEnvironment {
@@ -168,7 +170,7 @@ struct AppEnvironment {
   let openURL: (URL) -> Void
   let settings: SettingsStore
   let scheduleBackgroundTasks: () -> Void
-  let applyTheme: (Theme) -> Void
+  let setTheme: (Theme) -> Void
   let now: () -> Date
 }
 
@@ -189,14 +191,11 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
           .receive(on: environment.mainQueue)
           .eraseToEffect()
           .map { .appList(.setSortOrder($0)) },
-        .async { _ in
-          environment.settings.$theme.publisher()
-            .removeDuplicates()
-            .receive(on: environment.mainQueue)
-            .sink { theme in
-              environment.applyTheme(theme)
-            }
-        }
+        environment.settings.$theme.publisher()
+          .removeDuplicates()
+          .receive(on: environment.mainQueue)
+          .eraseToEffect()
+          .map { .settings(.setTheme($0)) }
       )
     case let .lifecycle(.openURL(url)):
       guard let urlScheme = URLScheme(rawValue: url) else {
@@ -227,7 +226,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
       return .fireAndForget {
         environment.settings.sortOrder = sortOrder
       }
-    case .urlScheme, .appList, .updates:
+    case .urlScheme, .appList, .updates, .settings:
       return .none
     }
   },
@@ -238,7 +237,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
       AppListEnvironment(
         loadApps: environment.loadApps,
         openURL: environment.openURL,
-        saveTheme: { environment.settings.theme = $0 },
+        saveTheme: environment.setTheme,
         mainQueue: environment.mainQueue
       )
     }
@@ -262,6 +261,13 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
         mainQueue: environment.mainQueue,
         now: environment.now
       )
+    }
+  ),
+  settingsReducer.pullback(
+    state: \.settingsState,
+    action: /AppAction.settings,
+    environment: { environment in
+      SettingsEnvironment(saveTheme: environment.setTheme)
     }
   )
 )
