@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		94151ED22469049700CBD2BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED12469049700CBD2BE /* SettingsView.swift */; };
+		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
 		9415B3612465349800F76965 /* BackgroundTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9415B3602465349800F76965 /* BackgroundTasks.swift */; };
 		942833AA24334A1700A8921E /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; };
 		942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -112,6 +114,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		94151ED12469049700CBD2BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		94151ED32469379E00CBD2BE /* UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
 		9415B3602465349800F76965 /* BackgroundTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTasks.swift; sourceTree = "<group>"; };
 		94173E48243D5D9400984DED /* WishlistData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistData; sourceTree = "<group>"; };
 		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
@@ -215,6 +219,7 @@
 			children = (
 				9486FAB4243066AC00EE2334 /* Dictionary.swift */,
 				94B79B7D2466BE94005E5066 /* ComposableArchitecture.swift */,
+				94151ED32469379E00CBD2BE /* UIKit.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -264,8 +269,9 @@
 		94C28BE1246526260013B41F /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */,
 				94FA20D2231BA2BC00EC1190 /* AppListView.swift */,
+				945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */,
+				94151ED12469049700CBD2BE /* SettingsView.swift */,
 				9415B3602465349800F76965 /* BackgroundTasks.swift */,
 				94C28BE2246526320013B41F /* URLSchemeHandling.swift */,
 				94B79B7B2466BDC0005E5066 /* AppUpdateHandling.swift */,
@@ -457,6 +463,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94151ED42469379E00CBD2BE /* UIKit.swift in Sources */,
 				94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */,
 				9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */,
 				94B79B7E2466BE94005E5066 /* ComposableArchitecture.swift in Sources */,
@@ -475,6 +482,7 @@
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
 				945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */,
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
+				94151ED22469049700CBD2BE /* SettingsView.swift in Sources */,
 				94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */,
 				948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */,
 				9415B3612465349800F76965 /* BackgroundTasks.swift in Sources */,

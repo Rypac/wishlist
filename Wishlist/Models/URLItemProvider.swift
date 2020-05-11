@@ -1,5 +1,4 @@
 import Foundation
-import WishlistData
 
 final class URLItemProvider: NSObject, Encodable, NSItemProviderWriting {
   let url: URL
@@ -36,13 +35,6 @@ final class URLItemProvider: NSObject, Encodable, NSItemProviderWriting {
       completionHandler(nil, nil)
     }
     return nil
-  }
-}
-
-extension NSItemProvider {
-  convenience init(app: App) {
-    self.init(object: URLItemProvider(url: app.url, title: app.title))
-    self.suggestedName = app.title
   }
 }
 

@@ -8,7 +8,9 @@ import WishlistData
 struct AppListState: Equatable {
   var apps: [App]
   var sortOrder: SortOrder
+  var theme: Theme
   var displayedAppDetailsID: App.ID? = nil
+  var isSettingsSheetPresented: Bool = false
   var isSortOrderSheetPresented: Bool = false
 }
 
@@ -17,18 +19,21 @@ enum AppListAction {
   case removeApps([App.ID])
   case setSortOrder(SortOrder)
   case setSortOrderSheet(isPresented: Bool)
-  case app(id: App.ID, action: AppSummaryAction)
+  case setSettingsSheet(isPresented: Bool)
+  case app(id: App.ID, action: AppListRowAction)
   case appDetails(AppDetailsAction)
+  case settings(SettingsAction)
   case addApps(AddAppsAction)
 }
 
 struct AppListEnvironment {
   var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
   var openURL: (URL) -> Void
+  var saveTheme: (Theme) -> Void
   var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-struct AppSummaryState: Identifiable, Equatable {
+struct AppListRowState: Identifiable, Equatable {
   var id: App.ID { app.id }
   var app: App
   var sortOrder: SortOrder
@@ -39,18 +44,19 @@ struct AppSummaryState: Identifiable, Equatable {
   }
 }
 
-enum AppSummaryAction {
+enum AppListRowAction {
   case selected(Bool)
+  case remove
   case openInNewWindow
   case viewInAppStore
   case viewDetails(AppDetailsAction)
 }
 
 private extension AppListState {
-  var sortedApps: IdentifiedArrayOf<AppSummaryState> {
+  var sortedApps: IdentifiedArrayOf<AppListRowState> {
     IdentifiedArray(
       apps.sorted(by: sortOrder).map {
-        AppSummaryState(app: $0, sortOrder: sortOrder, isSelected: $0.id == displayedAppDetailsID)
+        AppListRowState(app: $0, sortOrder: sortOrder, isSelected: $0.id == displayedAppDetailsID)
       }
     )
   }
@@ -69,6 +75,11 @@ private extension AppListState {
     get { .init(apps: apps) }
     set { apps = newValue.apps }
   }
+
+  var settingsState: SettingsState {
+    get { .init(theme: theme) }
+    set { theme = newValue.theme }
+  }
 }
 
 let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.combine(
@@ -76,6 +87,9 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
     switch action {
     case .setSortOrderSheet(let isPresented):
       state.isSortOrderSheetPresented = isPresented
+      return .none
+    case let .setSettingsSheet(isPresented):
+      state.isSettingsSheetPresented = isPresented
       return .none
     case .removeAppsAtIndexes(let indexes):
       let apps = state.apps.sorted(by: state.sortOrder)
@@ -103,20 +117,31 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
       return .fireAndForget {
         environment.openURL(url)
       }
-    case .appDetails, .app, .addApps:
+    case let .app(id, .remove):
+      return Effect(value: .removeApps([id]))
+    case .appDetails, .app, .addApps, .settings:
       return .none
     }
   },
   appDetailsReducer.optional.pullback(
     state: \.appDetailsState,
     action: /AppListAction.appDetails,
-    environment: { AppDetailsEnvironment(openURL: $0.openURL) }
+    environment: {
+      AppDetailsEnvironment(openURL: $0.openURL)
+    }
   ),
   addAppsReducer.pullback(
     state: \.addAppsState,
     action: /AppListAction.addApps,
     environment: {
       AddAppsEnvironment(loadApps: $0.loadApps, mainQueue: $0.mainQueue)
+    }
+  ),
+  settingsReducer.pullback(
+    state: \.settingsState,
+    action: /AppListAction.settings,
+    environment: { environment in
+      SettingsEnvironment(saveTheme: environment.saveTheme)
     }
   )
 )
@@ -127,31 +152,30 @@ struct AppListView: View {
   let store: Store<AppListState, AppListAction>
 
   var body: some View {
-    WithViewStore(store.stateless) { viewStore in
+    WithViewStore(store.scope(state: \.theme)) { viewStore in
       NavigationView {
         ZStack {
           List {
             ForEachStore(
               self.store.scope(state: \.sortedApps, action: AppListAction.app),
-              content: ConnectedAppRow.init
+              content: AppListRow.init
             ).onDelete { viewStore.send(.removeAppsAtIndexes($0)) }
           }
-          SortOrderSelector(store: self.store.scope(state: \.isSortOrderSheetPresented))
-        }.navigationBarTitle("Wishlist")
-      }.onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
-        viewStore.send(.addApps(.addAppsFromURLs(urls)))
-      })
-    }
-  }
-}
-
-private struct SortOrderSelector: View {
-  let store: Store<Bool, AppListAction>
-
-  var body: some View {
-    WithViewStore(store) { viewStore in
-      EmptyView()
+          SettingsSheet(store: self.store)
+          SortOrderSheet(store: self.store.scope(state: \.isSortOrderSheetPresented))
+        }
+        .navigationBarTitle("Wishlist")
         .navigationBarItems(
+          leading: Button(action: {
+            viewStore.send(.setSettingsSheet(isPresented: true))
+          }) {
+            HStack {
+              Image.settings
+                .imageScale(.large)
+                .accessibility(label: Text("Settings"))
+            }
+            .frame(width: 24, height: 24)
+          }.hoverEffect(),
           trailing: Button(action: {
             viewStore.send(.setSortOrderSheet(isPresented: true))
           }) {
@@ -163,6 +187,39 @@ private struct SortOrderSelector: View {
             .frame(width: 24, height: 24)
           }.hoverEffect()
         )
+      }.onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
+        viewStore.send(.addApps(.addAppsFromURLs(urls)))
+      })
+    }
+  }
+}
+
+private struct SettingsSheet: View {
+  let store: Store<AppListState, AppListAction>
+
+  var body: some View {
+    WithViewStore(store.scope(state: \.isSettingsSheetPresented)) { viewStore in
+      Color.clear
+        .sheet(
+          isPresented: viewStore.binding(send: AppListAction.setSettingsSheet)
+        ) {
+          SettingsView(
+            store: self.store.scope(
+              state: \.settingsState,
+              action: AppListAction.settings
+            )
+          )
+        }
+    }
+  }
+}
+
+private struct SortOrderSheet: View {
+  let store: Store<Bool, AppListAction>
+
+  var body: some View {
+    WithViewStore(store) { viewStore in
+      Color.clear
         .actionSheet(
           isPresented: viewStore.binding(send: AppListAction.setSortOrderSheet)
         ) {
@@ -178,17 +235,17 @@ private struct SortOrderSelector: View {
   }
 }
 
-private extension AppSummaryState {
-  var view: ConnectedAppRow.ViewState {
+private extension AppListRowState {
+  var view: AppListRow.ViewState {
     .init(url: app.url, isSelected: isSelected)
   }
 
-  var contentView: ConnectedAppRow.ContentViewState {
+  var contentView: AppListRow.ContentViewState {
     .init(app: app, sortOrder: sortOrder)
   }
 }
 
-private struct ConnectedAppRow: View {
+private struct AppListRow: View {
   struct ViewState: Equatable {
     let url: URL
     let isSelected: Bool
@@ -199,7 +256,7 @@ private struct ConnectedAppRow: View {
     let sortOrder: SortOrder
   }
 
-  let store: Store<AppSummaryState, AppSummaryAction>
+  let store: Store<AppListRowState, AppListRowAction>
 
   @State private var showShareSheet = false
 
@@ -207,9 +264,9 @@ private struct ConnectedAppRow: View {
     WithViewStore(store.scope(state: \.view)) { viewStore in
       NavigationLink(
         destination: ConnectedAppDetailsView(
-          store: self.store.scope(state: \.detailsState, action: AppSummaryAction.viewDetails)
+          store: self.store.scope(state: \.detailsState, action: AppListRowAction.viewDetails)
         ),
-        isActive: viewStore.binding(get: \.isSelected, send: AppSummaryAction.selected)
+        isActive: viewStore.binding(get: \.isSelected, send: AppListRowAction.selected)
       ) {
         WithViewStore(self.store.scope(state: \.contentView).actionless) { viewStore in
           AppRow(app: viewStore.app, sortOrder: viewStore.sortOrder)
@@ -227,6 +284,10 @@ private struct ConnectedAppRow: View {
             Button(action: { self.showShareSheet = true }) {
               Text("Share")
               Image.share
+            }
+            Button(action: { viewStore.send(.remove) }) {
+              Text("Remove")
+              Image.trash
             }
           }
           .sheet(isPresented: self.$showShareSheet) {
@@ -270,10 +331,19 @@ private struct AppRow: View {
 }
 
 private extension Image {
+  static var settings: Image { Image(systemName: "slider.horizontal.3") }
   static var sort: Image { Image(systemName: "arrow.up.arrow.down") }
   static var share: Image { Image(systemName: "square.and.arrow.up") }
   static var store: Image { Image(systemName: "bag") }
+  static var trash: Image { Image(systemName: "trash") }
   static var window: Image { Image(systemName: "square.grid.2x2") }
+}
+
+extension NSItemProvider {
+  convenience init(app: App) {
+    self.init(object: URLItemProvider(url: app.url, title: app.title))
+    self.suggestedName = app.title
+  }
 }
 
 private extension SortOrder {

@@ -15,6 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         apps: (try? appDelegate.appRepository.fetchAll()) ?? [],
         sortOrder: appDelegate.settings.sortOrder,
         lastUpdateDate: appDelegate.settings.lastUpdateDate,
+        theme: appDelegate.settings.theme,
         appUpdateFrequency: 15 * 60
       ),
       reducer: appReducer,
@@ -24,7 +25,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         loadApps: appDelegate.appStore.lookup,
         openURL: { UIApplication.shared.open($0) },
         settings: appDelegate.settings,
-        scheduleBackgroundTasks: { appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask)) },
+        scheduleBackgroundTasks: {
+          appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask))
+        },
+        applyTheme: { [weak self] theme in
+          self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
+        },
         now: Date.init
       )
     )
@@ -70,8 +76,10 @@ struct AppState: Equatable {
   var apps: [App]
   var sortOrder: SortOrder
   var lastUpdateDate: Date?
+  var theme: Theme
   var appUpdateFrequency: TimeInterval
   var viewingAppDetails: App.ID? = nil
+  var isSettingsSheetPresented: Bool = false
   var isSortOrderSheetPresented: Bool = false
   var isUpdateInProgress: Bool = false
 }
@@ -82,13 +90,17 @@ private extension AppState {
       AppListState(
         apps: apps,
         sortOrder: sortOrder,
+        theme: theme,
         displayedAppDetailsID: viewingAppDetails,
+        isSettingsSheetPresented: isSettingsSheetPresented,
         isSortOrderSheetPresented: isSortOrderSheetPresented
       )
     }
     set {
       apps = newValue.apps
       sortOrder = newValue.sortOrder
+      theme = newValue.theme
+      isSettingsSheetPresented = newValue.isSettingsSheetPresented
       isSortOrderSheetPresented = newValue.isSortOrderSheetPresented
       viewingAppDetails = newValue.displayedAppDetailsID
     }
@@ -123,6 +135,15 @@ private extension AppState {
       isUpdateInProgress = newValue.isUpdateInProgress
     }
   }
+
+  var settingsState: SettingsState {
+    get {
+      SettingsState(theme: theme)
+    }
+    set {
+      theme = newValue.theme
+    }
+  }
 }
 
 enum AppLifecycleEvent {
@@ -147,6 +168,7 @@ struct AppEnvironment {
   let openURL: (URL) -> Void
   let settings: SettingsStore
   let scheduleBackgroundTasks: () -> Void
+  let applyTheme: (Theme) -> Void
   let now: () -> Date
 }
 
@@ -166,7 +188,15 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
           .removeDuplicates()
           .receive(on: environment.mainQueue)
           .eraseToEffect()
-          .map { .appList(.setSortOrder($0)) }
+          .map { .appList(.setSortOrder($0)) },
+        .async { _ in
+          environment.settings.$theme.publisher()
+            .removeDuplicates()
+            .receive(on: environment.mainQueue)
+            .sink { theme in
+              environment.applyTheme(theme)
+            }
+        }
       )
     case let .lifecycle(.openURL(url)):
       guard let urlScheme = URLScheme(rawValue: url) else {
@@ -208,6 +238,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
       AppListEnvironment(
         loadApps: environment.loadApps,
         openURL: environment.openURL,
+        saveTheme: { environment.settings.theme = $0 },
         mainQueue: environment.mainQueue
       )
     }
