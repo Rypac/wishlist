@@ -1,25 +1,14 @@
 import SwiftUI
 
-struct DeviceVisibilityModifier: ViewModifier {
-  struct Device: OptionSet {
-    let rawValue: Int
+public struct DeviceVisibilityModifier: ViewModifier {
+  private let devices: Set<UIUserInterfaceIdiom>
 
-    static let iPhone = Device(rawValue: 1 << 0)
-    static let iPad = Device(rawValue: 1 << 1)
-    static let tv = Device(rawValue: 1 << 2)
-    static let carPlay = Device(rawValue: 1 << 3)
-
-    static let any: Device = [.iPhone, .iPad, .tv, .carPlay]
+  public init(devices: Set<UIUserInterfaceIdiom>) {
+    self.devices = devices
   }
 
-  let device: Device
-
-  init(device: Device) {
-    self.device = device
-  }
-
-  func body(content: Content) -> some View {
-    if device.contains(UIDevice.current.userInterfaceIdiom.device) {
+  public func body(content: Content) -> some View {
+    if devices.contains(UIDevice.current.userInterfaceIdiom) {
       return ViewBuilder.buildEither(first: content) as _ConditionalContent<Content, EmptyView>
     } else {
       return ViewBuilder.buildEither(second: EmptyView()) as _ConditionalContent<Content, EmptyView>
@@ -27,21 +16,12 @@ struct DeviceVisibilityModifier: ViewModifier {
   }
 }
 
-extension View {
-  func visible(on device: DeviceVisibilityModifier.Device) -> some View {
-    modifier(DeviceVisibilityModifier(device: device))
+public extension View {
+  func visible(on devices: UIUserInterfaceIdiom...) -> some View {
+    modifier(DeviceVisibilityModifier(devices: Set(devices)))
   }
-}
 
-private extension UIUserInterfaceIdiom {
-  var device: DeviceVisibilityModifier.Device {
-    switch self {
-    case .phone: return .iPhone
-    case .pad: return .iPad
-    case .tv: return .tv
-    case .carPlay: return .carPlay
-    case .unspecified: return .any
-    default: return .any
-    }
+  func visible(on devices: Set<UIUserInterfaceIdiom>) -> some View {
+    modifier(DeviceVisibilityModifier(devices: devices))
   }
 }

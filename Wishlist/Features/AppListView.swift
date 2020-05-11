@@ -219,7 +219,7 @@ private struct ConnectedAppRow: View {
             Button(action: { viewStore.send(.openInNewWindow) }) {
               Text("Open in New Window")
               Image.window
-            }.visible(on: .iPad)
+            }.visible(on: .pad)
             Button(action: { viewStore.send(.viewInAppStore) }) {
               Text("View in App Store")
               Image.store
