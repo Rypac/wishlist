@@ -3,8 +3,6 @@ import ComposableArchitecture
 import SwiftUI
 import WishlistData
 
-// MARK: - Composable Architecture
-
 struct AppListState: Equatable {
   var apps: [App]
   var sortOrder: SortOrder
@@ -85,31 +83,38 @@ private extension AppListState {
 let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.combine(
   Reducer { state, action, environment in
     switch action {
-    case .setSortOrderSheet(let isPresented):
+    case let .setSortOrderSheet(isPresented):
       state.isSortOrderSheetPresented = isPresented
       return .none
+
     case let .setSettingsSheet(isPresented):
       state.isSettingsSheetPresented = isPresented
       return .none
-    case .removeAppsAtIndexes(let indexes):
+
+    case let .removeAppsAtIndexes(indexes):
       let apps = state.apps.sorted(by: state.sortOrder)
       let ids = indexes.map { apps[$0].id }
       return Effect(value: .removeApps(ids))
-    case .removeApps(let ids):
+
+    case let .removeApps(ids):
       state.apps.removeAll(where: { ids.contains($0.id) })
       return .none
-    case .setSortOrder(let sortOrder):
+
+    case let .setSortOrder(sortOrder):
       state.sortOrder = sortOrder
       return .none
+
     case let .app(id, .selected(selected)):
       state.displayedAppDetailsID = selected ? id : nil
       return .none
+
     case let .app(id, .openInNewWindow):
       return .fireAndForget {
         let userActivity = NSUserActivity(activityType: ActivityIdentifier.details.rawValue)
         userActivity.userInfo = [ActivityIdentifier.UserInfoKey.id.rawValue: id]
         UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil)
       }
+
     case let .app(id, .viewInAppStore):
       guard let url = state.apps.first(where: { $0.id == id })?.url else {
         return .none
@@ -117,8 +122,10 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
       return .fireAndForget {
         environment.openURL(url)
       }
+
     case let .app(id, .remove):
       return Effect(value: .removeApps([id]))
+
     case .appDetails, .app, .addApps, .settings:
       return .none
     }
@@ -146,7 +153,7 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
   )
 )
 
-// MARK: - View
+// MARK: - List
 
 struct AppListView: View {
   let store: Store<AppListState, AppListAction>
@@ -158,7 +165,7 @@ struct AppListView: View {
           List {
             ForEachStore(
               self.store.scope(state: \.sortedApps, action: AppListAction.app),
-              content: AppListRow.init
+              content: ConnectedAppRow.init
             ).onDelete { viewStore.send(.removeAppsAtIndexes($0)) }
           }
           SettingsSheet(store: self.store)
@@ -235,25 +242,37 @@ private struct SortOrderSheet: View {
   }
 }
 
+// MARK: - Row
+
 private extension AppListRowState {
-  var view: AppListRow.ViewState {
-    .init(url: app.url, isSelected: isSelected)
+  var view: ConnectedAppRow.ViewState {
+    .init(
+      title: app.title,
+      url: app.url,
+      isSelected: isSelected
+    )
   }
 
-  var contentView: AppListRow.ContentViewState {
-    .init(app: app, sortOrder: sortOrder)
+  var contentView: ConnectedAppRow.ContentViewState {
+    .init(
+      title: app.title,
+      details: sortOrder == .updated ? .updated(app.updateDate) : .price(app.price.formatted),
+      icon: app.icon.medium
+    )
   }
 }
 
-private struct AppListRow: View {
+private struct ConnectedAppRow: View {
   struct ViewState: Equatable {
+    let title: String
     let url: URL
     let isSelected: Bool
   }
 
   struct ContentViewState: Equatable {
-    let app: App
-    let sortOrder: SortOrder
+    let title: String
+    let details: AppRow.Details
+    let icon: URL
   }
 
   let store: Store<AppListRowState, AppListRowAction>
@@ -269,9 +288,11 @@ private struct AppListRow: View {
         isActive: viewStore.binding(get: \.isSelected, send: AppListRowAction.selected)
       ) {
         WithViewStore(self.store.scope(state: \.contentView).actionless) { viewStore in
-          AppRow(app: viewStore.app, sortOrder: viewStore.sortOrder)
-            .onDrag { NSItemProvider(app: viewStore.app) }
+          AppRow(title: viewStore.title, details: viewStore.details, icon: viewStore.icon)
         }
+          .onDrag {
+            NSItemProvider(url: viewStore.url, title: viewStore.title)
+          }
           .contextMenu {
             Button(action: { viewStore.send(.openInNewWindow) }) {
               Text("Open in New Window")
@@ -303,15 +324,21 @@ private struct AppListRow: View {
 }
 
 private struct AppRow: View {
+  enum Details: Equatable {
+    case price(String)
+    case updated(Date)
+  }
+
   @Environment(\.updateDateFormatter) private var dateFormatter
 
-  let app: App
-  let sortOrder: SortOrder
+  let title: String
+  let details: Details
+  let icon: URL
 
   var body: some View {
     HStack {
-      AppIcon(app.icon.medium, width: 50)
-      Text(app.title)
+      AppIcon(icon, width: 50)
+      Text(title)
         .fontWeight(.medium)
         .layoutPriority(1)
       Spacer()
@@ -323,12 +350,14 @@ private struct AppRow: View {
   }
 
   private var appDetails: String {
-    if sortOrder == .updated {
-      return dateFormatter.string(from: app.updateDate)
+    switch details {
+    case let .price(price): return price
+    case let .updated(date): return dateFormatter.string(from: date)
     }
-    return app.price.formatted
   }
 }
+
+// MARK: - Extensions
 
 private extension Image {
   static var settings: Image { Image(systemName: "slider.horizontal.3") }
@@ -340,9 +369,9 @@ private extension Image {
 }
 
 extension NSItemProvider {
-  convenience init(app: App) {
-    self.init(object: URLItemProvider(url: app.url, title: app.title))
-    self.suggestedName = app.title
+  convenience init(url: URL, title: String) {
+    self.init(object: URLItemProvider(url: url, title: title))
+    self.suggestedName = title
   }
 }
 
