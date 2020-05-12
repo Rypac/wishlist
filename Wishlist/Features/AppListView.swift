@@ -249,16 +249,10 @@ private extension AppListRowState {
   var view: ConnectedAppRow.ViewState {
     .init(
       title: app.title,
+      details: sortOrder == .updated ? .updated(app.updateDate) : .price(app.price.formatted),
+      icon: app.icon.medium,
       url: app.url,
       isSelected: isSelected
-    )
-  }
-
-  var contentView: ConnectedAppRow.ContentViewState {
-    .init(
-      title: app.title,
-      details: sortOrder == .updated ? .updated(app.updateDate) : .price(app.price.formatted),
-      icon: app.icon.medium
     )
   }
 }
@@ -266,14 +260,10 @@ private extension AppListRowState {
 private struct ConnectedAppRow: View {
   struct ViewState: Equatable {
     let title: String
-    let url: URL
-    let isSelected: Bool
-  }
-
-  struct ContentViewState: Equatable {
-    let title: String
     let details: AppRow.Details
     let icon: URL
+    let url: URL
+    let isSelected: Bool
   }
 
   let store: Store<AppListRowState, AppListRowAction>
@@ -288,9 +278,7 @@ private struct ConnectedAppRow: View {
         ),
         isActive: viewStore.binding(get: \.isSelected, send: AppListRowAction.selected)
       ) {
-        WithViewStore(self.store.scope(state: \.contentView).actionless) { viewStore in
-          AppRow(title: viewStore.title, details: viewStore.details, icon: viewStore.icon)
-        }
+        AppRow(title: viewStore.title, details: viewStore.details, icon: viewStore.icon)
           .onDrag {
             NSItemProvider(url: viewStore.url, title: viewStore.title)
           }
