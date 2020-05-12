@@ -1,44 +1,7 @@
 import ComposableArchitecture
 import Combine
 import Foundation
-
-typealias PublisherState<T: Equatable> = T
-
-enum PublisherAction<T> {
-  case subscribe
-  case receivedValue(T)
-}
-
-struct PublisherEnvironment<T> {
-  var publisher: AnyPublisher<T, Never>
-  var perform: (T) -> Void
-}
-
-extension PublisherEnvironment {
-  init(publisher: AnyPublisher<T, Never>) {
-    self.init(publisher: publisher, perform: { _ in })
-  }
-}
-
-func publisherReducer<T>() -> Reducer<PublisherState<T>, PublisherAction<T>, SystemEnvironment<PublisherEnvironment<T>>> {
-  Reducer { state, action, environment in
-    switch action {
-    case .subscribe:
-      return environment.publisher
-        .removeDuplicates()
-        .receive(on: environment.mainQueue())
-        .eraseToEffect()
-        .map(PublisherAction.receivedValue)
-
-    case let .receivedValue(value):
-      state = value
-      return .fireAndForget {
-        environment.perform(value)
-      }
-    }
-  }
-}
-
+import WishlistCore
 import WishlistModel
 
 struct ProcessUpdateState: Equatable {

@@ -3,23 +3,39 @@ import ComposableArchitecture
 import Foundation
 import WishlistModel
 
-struct AppUpdateState: Equatable {
-  var apps: [App]
-  var lastUpdateDate: Date?
-  var updateFrequency: TimeInterval
-  var isUpdateInProgress: Bool
+public struct AppUpdateState: Equatable {
+  public var apps: [App]
+  public var lastUpdateDate: Date?
+  public var updateFrequency: TimeInterval
+  public var isUpdateInProgress: Bool
+
+  public init(
+    apps: [App],
+    lastUpdateDate: Date?,
+    updateFrequency: TimeInterval,
+    isUpdateInProgress: Bool
+  ) {
+    self.apps = apps
+    self.lastUpdateDate = lastUpdateDate
+    self.updateFrequency = updateFrequency
+    self.isUpdateInProgress = isUpdateInProgress
+  }
 }
 
-enum AppUpdateAction {
+public enum AppUpdateAction {
   case checkForUpdates
   case receivedUpdates([App], at: Date)
 }
 
-struct AppUpdateEnvironment {
-  var lookupApps: ([App.ID]) -> AnyPublisher<[App], Error>
+public struct AppUpdateEnvironment {
+  public var lookupApps: ([App.ID]) -> AnyPublisher<[App], Error>
+
+  public init(lookupApps: @escaping ([App.ID]) -> AnyPublisher<[App], Error>) {
+    self.lookupApps = lookupApps
+  }
 }
 
-let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnvironment<AppUpdateEnvironment>> { state, action, environment in
+public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnvironment<AppUpdateEnvironment>> { state, action, environment in
   switch action {
   case .checkForUpdates:
     guard state.shouldCheckForUpdates(now: environment.now()) else {
@@ -57,7 +73,7 @@ private extension AppUpdateState {
   }
 }
 
-func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Error>) -> AnyPublisher<[App], Never> {
+public func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Error>) -> AnyPublisher<[App], Never> {
   lookup(apps.map(\.id))
     .map { latestApps in
       latestApps.reduce(into: []) { updatedApps, latestApp in

@@ -2,6 +2,7 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import UIKit
+import WishlistCore
 import WishlistModel
 
 class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {

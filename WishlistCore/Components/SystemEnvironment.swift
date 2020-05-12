@@ -17,7 +17,11 @@ public struct SystemEnvironment<Environment> {
   public func map<NewEnvironment>(
     _ transform: (Environment) -> NewEnvironment
   ) -> SystemEnvironment<NewEnvironment> {
-    .init(environment: transform(environment), now: now, mainQueue: mainQueue)
+    SystemEnvironment<NewEnvironment>(
+      environment: transform(environment),
+      now: now,
+      mainQueue: mainQueue
+    )
   }
 }
 

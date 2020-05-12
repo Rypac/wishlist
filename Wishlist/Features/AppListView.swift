@@ -1,6 +1,7 @@
 import Combine
 import ComposableArchitecture
 import SwiftUI
+import WishlistCore
 import WishlistModel
 
 struct AppListState: Equatable {

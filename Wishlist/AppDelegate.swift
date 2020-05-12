@@ -3,6 +3,7 @@ import Combine
 import ComposableArchitecture
 import CoreData
 import UIKit
+import WishlistCore
 import WishlistServices
 import WishlistModel
 

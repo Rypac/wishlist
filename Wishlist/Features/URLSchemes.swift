@@ -1,6 +1,7 @@
 import Combine
 import ComposableArchitecture
 import Foundation
+import WishlistCore
 import WishlistModel
 
 struct URLSchemeState: Equatable {

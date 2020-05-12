@@ -10,12 +10,7 @@
 		94151ED22469049700CBD2BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED12469049700CBD2BE /* SettingsView.swift */; };
 		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
 		94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */; };
-		94151ED8246A207600CBD2BE /* SystemEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED7246A207600CBD2BE /* SystemEnvironment.swift */; };
 		9415B3612465349800F76965 /* BackgroundTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9415B3602465349800F76965 /* BackgroundTasks.swift */; };
-		942833AA24334A1700A8921E /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; };
-		942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		942833AD24334A2400A8921E /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 942833AC24334A2400A8921E /* WishlistServices */; };
-		942833AE24334A2400A8921E /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 942833AC24334A2400A8921E /* WishlistServices */; };
 		9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */; };
@@ -24,16 +19,9 @@
 		94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */; };
-		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
 		945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* URLItemProvider.swift */; };
-		945F2F43246A3083008F6D5A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 945F2F42246A3083008F6D5A /* ComposableArchitecture */; };
 		94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94629D36244682070072C271 /* DeviceVisibilityModifier.swift */; };
 		94629D3A24468B890072C271 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 94629D3924468B890072C271 /* SDWebImageSwiftUI */; };
-		9482DE42246AAF5B000C2A24 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 9482DE41246AAF5B000C2A24 /* WishlistModel */; };
-		9482DE43246AAF5B000C2A24 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9482DE41246AAF5B000C2A24 /* WishlistModel */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		9482DE45246AAF61000C2A24 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 9482DE44246AAF61000C2A24 /* WishlistModel */; };
-		9482DE46246AAF61000C2A24 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9482DE44246AAF61000C2A24 /* WishlistModel */; };
-		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
 		948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */; };
@@ -43,17 +31,40 @@
 		9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9494DA0F24319285003A7992 /* MainInterface.storyboard */; };
 		9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9494DA0924319285003A7992 /* Add to Wishlist.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		949C700E2434644900009960 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
-		94B015E8243D90DB00BB4E7C /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015E7243D90DB00BB4E7C /* WishlistFoundation */; };
-		94B015E9243D90DB00BB4E7C /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015E7243D90DB00BB4E7C /* WishlistFoundation */; };
-		94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015ED243D90E800BB4E7C /* WishlistFoundation */; };
-		94B015EF243D90E800BB4E7C /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015ED243D90E800BB4E7C /* WishlistFoundation */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		94B79B7C2466BDC0005E5066 /* AppUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B79B7B2466BDC0005E5066 /* AppUpdates.swift */; };
-		94B79B7E2466BE94005E5066 /* ComposableArchitecture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B79B7D2466BE94005E5066 /* ComposableArchitecture.swift */; };
 		94C28BE3246526320013B41F /* URLSchemes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C28BE2246526320013B41F /* URLSchemes.swift */; };
 		94C7B1532330F13F008181D1 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* Settings.swift */; };
 		94C8D0852435756300D9C077 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8D0842435756300D9C077 /* UTI.swift */; };
-		94C8D0892435F1B200D9C077 /* UserDefaults in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		94EE92C92467D3C8001E3155 /* AddApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EE92C82467D3C8001E3155 /* AddApps.swift */; };
+		94E07615246ABE380005FE18 /* WishlistLibraries.h in Headers */ = {isa = PBXBuildFile; fileRef = 94E07613246ABE380005FE18 /* WishlistLibraries.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		94E07618246ABE380005FE18 /* WishlistLibraries.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07611246ABE380005FE18 /* WishlistLibraries.framework */; };
+		94E07619246ABE380005FE18 /* WishlistLibraries.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07611246ABE380005FE18 /* WishlistLibraries.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		94E0761E246ABE3D0005FE18 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0761D246ABE3D0005FE18 /* ComposableArchitecture */; };
+		94E07620246ABE580005FE18 /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0761F246ABE580005FE18 /* WishlistFoundation */; };
+		94E07621246ABE580005FE18 /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E0761F246ABE580005FE18 /* WishlistFoundation */; };
+		94E07623246ABE580005FE18 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 94E07622246ABE580005FE18 /* WishlistModel */; };
+		94E07624246ABE580005FE18 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E07622246ABE580005FE18 /* WishlistModel */; };
+		94E07626246ABE660005FE18 /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 94E07625246ABE660005FE18 /* WishlistServices */; };
+		94E07627246ABE660005FE18 /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E07625246ABE660005FE18 /* WishlistServices */; };
+		94E07629246ABE900005FE18 /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 94E07628246ABE900005FE18 /* UserDefaults */; };
+		94E0762A246ABE900005FE18 /* UserDefaults in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E07628246ABE900005FE18 /* UserDefaults */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		94E0762C246ABE900005FE18 /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0762B246ABE900005FE18 /* WishlistFoundation */; };
+		94E0762D246ABE900005FE18 /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E0762B246ABE900005FE18 /* WishlistFoundation */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		94E0762F246ABE900005FE18 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0762E246ABE900005FE18 /* WishlistModel */; };
+		94E07630246ABE900005FE18 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E0762E246ABE900005FE18 /* WishlistModel */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		94E07632246ABE900005FE18 /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 94E07631246ABE900005FE18 /* WishlistServices */; };
+		94E07633246ABE900005FE18 /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E07631246ABE900005FE18 /* WishlistServices */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		94E07640246ABEB10005FE18 /* WishlistCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07639246ABEB10005FE18 /* WishlistCore.framework */; };
+		94E07641246ABEB10005FE18 /* WishlistCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07639246ABEB10005FE18 /* WishlistCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		94E07646246ABECD0005FE18 /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 94E07645246ABECD0005FE18 /* UserDefaults */; };
+		94E07647246ABECD0005FE18 /* UserDefaults in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E07645246ABECD0005FE18 /* UserDefaults */; };
+		94E07649246ABECD0005FE18 /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94E07648246ABECD0005FE18 /* WishlistFoundation */; };
+		94E0764A246ABECD0005FE18 /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E07648246ABECD0005FE18 /* WishlistFoundation */; };
+		94E0764C246ABECD0005FE18 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0764B246ABECD0005FE18 /* WishlistModel */; };
+		94E0764D246ABECD0005FE18 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E0764B246ABECD0005FE18 /* WishlistModel */; };
+		94E07651246ABED80005FE18 /* WishlistLibraries.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07611246ABE380005FE18 /* WishlistLibraries.framework */; };
+		94E07657246ABEF60005FE18 /* AddAppsReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E07656246ABEF60005FE18 /* AddAppsReducer.swift */; };
+		94E0765C246AC0A50005FE18 /* SystemEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E0765B246AC0A50005FE18 /* SystemEnvironment.swift */; };
+		94E0765E246AC2250005FE18 /* UpdateAppsReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E0765D246AC2250005FE18 /* UpdateAppsReducer.swift */; };
+		94E07660246AC2ED0005FE18 /* PublisherReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E0765F246AC2ED0005FE18 /* PublisherReducer.swift */; };
 		94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */; };
 		94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */; };
 		94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D2231BA2BC00EC1190 /* AppListView.swift */; };
@@ -70,6 +81,27 @@
 			remoteGlobalIDString = 9494DA0824319285003A7992;
 			remoteInfo = ActionExtension;
 		};
+		94E07616246ABE380005FE18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94FA20C3231BA2BC00EC1190 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 94E07610246ABE380005FE18;
+			remoteInfo = WishlistLibraries;
+		};
+		94E0763E246ABEB10005FE18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94FA20C3231BA2BC00EC1190 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 94E07638246ABEB10005FE18;
+			remoteInfo = WishlistCore;
+		};
+		94E07653246ABED80005FE18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94FA20C3231BA2BC00EC1190 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 94E07610246ABE380005FE18;
+			remoteInfo = WishlistLibraries;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -79,9 +111,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				9482DE46246AAF61000C2A24 /* WishlistModel in Embed Frameworks */,
-				942833AE24334A2400A8921E /* WishlistServices in Embed Frameworks */,
-				94B015E9243D90DB00BB4E7C /* WishlistFoundation in Embed Frameworks */,
+				94E07627246ABE660005FE18 /* WishlistServices in Embed Frameworks */,
+				94E07621246ABE580005FE18 /* WishlistFoundation in Embed Frameworks */,
+				94E07624246ABE580005FE18 /* WishlistModel in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -92,10 +124,12 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				94B015EF243D90E800BB4E7C /* WishlistFoundation in Embed Frameworks */,
-				9482DE43246AAF5B000C2A24 /* WishlistModel in Embed Frameworks */,
-				94C8D0892435F1B200D9C077 /* UserDefaults in Embed Frameworks */,
-				942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */,
+				94E07619246ABE380005FE18 /* WishlistLibraries.framework in Embed Frameworks */,
+				94E07630246ABE900005FE18 /* WishlistModel in Embed Frameworks */,
+				94E07633246ABE900005FE18 /* WishlistServices in Embed Frameworks */,
+				94E0762A246ABE900005FE18 /* UserDefaults in Embed Frameworks */,
+				94E07641246ABEB10005FE18 /* WishlistCore.framework in Embed Frameworks */,
+				94E0762D246ABE900005FE18 /* WishlistFoundation in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -111,13 +145,25 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		94E07650246ABECD0005FE18 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				94E0764D246ABECD0005FE18 /* WishlistModel in Embed Frameworks */,
+				94E0764A246ABECD0005FE18 /* WishlistFoundation in Embed Frameworks */,
+				94E07647246ABECD0005FE18 /* UserDefaults in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		94151ED12469049700CBD2BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		94151ED32469379E00CBD2BE /* UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
 		94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessUpdates.swift; sourceTree = "<group>"; };
-		94151ED7246A207600CBD2BE /* SystemEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEnvironment.swift; sourceTree = "<group>"; };
 		9415B3602465349800F76965 /* BackgroundTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTasks.swift; sourceTree = "<group>"; };
 		94173E48243D5D9400984DED /* WishlistModel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistModel; sourceTree = "<group>"; };
 		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
@@ -133,7 +179,6 @@
 		94629D36244682070072C271 /* DeviceVisibilityModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceVisibilityModifier.swift; sourceTree = "<group>"; };
 		94637EB02431A211005EF584 /* Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wishlist.entitlements; sourceTree = "<group>"; };
 		94637EB12431A33C005EF584 /* Add to Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Add to Wishlist.entitlements"; sourceTree = "<group>"; };
-		9486FAB4243066AC00EE2334 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsDelegate.swift; sourceTree = "<group>"; };
 		948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIdentifier.swift; sourceTree = "<group>"; };
 		948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneConfigurationNames.swift; sourceTree = "<group>"; };
@@ -144,12 +189,18 @@
 		9494DA1024319285003A7992 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		9494DA1224319285003A7992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94B015E3243D6C6F00BB4E7C /* WishlistFoundation */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistFoundation; sourceTree = "<group>"; };
-		94B79B7B2466BDC0005E5066 /* AppUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdates.swift; sourceTree = "<group>"; };
-		94B79B7D2466BE94005E5066 /* ComposableArchitecture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposableArchitecture.swift; sourceTree = "<group>"; };
 		94C28BE2246526320013B41F /* URLSchemes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSchemes.swift; sourceTree = "<group>"; };
 		94C7B1522330F13F008181D1 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		94C8D0842435756300D9C077 /* UTI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTI.swift; sourceTree = "<group>"; };
-		94EE92C82467D3C8001E3155 /* AddApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddApps.swift; sourceTree = "<group>"; };
+		94E07611246ABE380005FE18 /* WishlistLibraries.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WishlistLibraries.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		94E07613246ABE380005FE18 /* WishlistLibraries.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WishlistLibraries.h; sourceTree = "<group>"; };
+		94E07614246ABE380005FE18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		94E07639246ABEB10005FE18 /* WishlistCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WishlistCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		94E0763C246ABEB10005FE18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		94E07656246ABEF60005FE18 /* AddAppsReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAppsReducer.swift; sourceTree = "<group>"; };
+		94E0765B246AC0A50005FE18 /* SystemEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEnvironment.swift; sourceTree = "<group>"; };
+		94E0765D246AC2250005FE18 /* UpdateAppsReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateAppsReducer.swift; sourceTree = "<group>"; };
+		94E0765F246AC2ED0005FE18 /* PublisherReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherReducer.swift; sourceTree = "<group>"; };
 		94FA20CB231BA2BC00EC1190 /* Wishlist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wishlist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -165,10 +216,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94B015E8243D90DB00BB4E7C /* WishlistFoundation in Frameworks */,
-				9482DE45246AAF61000C2A24 /* WishlistModel in Frameworks */,
-				942833AD24334A2400A8921E /* WishlistServices in Frameworks */,
+				94E07623246ABE580005FE18 /* WishlistModel in Frameworks */,
+				94E07620246ABE580005FE18 /* WishlistFoundation in Frameworks */,
 				9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */,
+				94E07626246ABE660005FE18 /* WishlistServices in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94E0760E246ABE380005FE18 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94E0761E246ABE3D0005FE18 /* ComposableArchitecture in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94E07636246ABEB10005FE18 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94E0764C246ABECD0005FE18 /* WishlistModel in Frameworks */,
+				94E07649246ABECD0005FE18 /* WishlistFoundation in Frameworks */,
+				94E07651246ABED80005FE18 /* WishlistLibraries.framework in Frameworks */,
+				94E07646246ABECD0005FE18 /* UserDefaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,12 +247,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				94629D3A24468B890072C271 /* SDWebImageSwiftUI in Frameworks */,
+				94E0762C246ABE900005FE18 /* WishlistFoundation in Frameworks */,
+				94E07640246ABEB10005FE18 /* WishlistCore.framework in Frameworks */,
 				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
-				945F2F43246A3083008F6D5A /* ComposableArchitecture in Frameworks */,
-				9482DE42246AAF5B000C2A24 /* WishlistModel in Frameworks */,
-				94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */,
-				942833AA24334A1700A8921E /* WishlistServices in Frameworks */,
-				945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */,
+				94E0762F246ABE900005FE18 /* WishlistModel in Frameworks */,
+				94E07618246ABE380005FE18 /* WishlistLibraries.framework in Frameworks */,
+				94E07632246ABE900005FE18 /* WishlistServices in Frameworks */,
+				94E07629246ABE900005FE18 /* UserDefaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,9 +290,6 @@
 		9486FAB32430669F00EE2334 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				94B79B7D2466BE94005E5066 /* ComposableArchitecture.swift */,
-				9486FAB4243066AC00EE2334 /* Dictionary.swift */,
-				94151ED7246A207600CBD2BE /* SystemEnvironment.swift */,
 				94151ED32469379E00CBD2BE /* UIKit.swift */,
 			);
 			path = Extensions;
@@ -270,11 +338,46 @@
 				94151ED12469049700CBD2BE /* SettingsView.swift */,
 				9415B3602465349800F76965 /* BackgroundTasks.swift */,
 				94C28BE2246526320013B41F /* URLSchemes.swift */,
-				94B79B7B2466BDC0005E5066 /* AppUpdates.swift */,
-				94EE92C82467D3C8001E3155 /* AddApps.swift */,
 				94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		94E07612246ABE380005FE18 /* WishlistLibraries */ = {
+			isa = PBXGroup;
+			children = (
+				94E07613246ABE380005FE18 /* WishlistLibraries.h */,
+				94E07614246ABE380005FE18 /* Info.plist */,
+			);
+			path = WishlistLibraries;
+			sourceTree = "<group>";
+		};
+		94E0763A246ABEB10005FE18 /* WishlistCore */ = {
+			isa = PBXGroup;
+			children = (
+				94E07658246AC0560005FE18 /* Components */,
+				94E07655246ABEE90005FE18 /* Features */,
+				94E0763C246ABEB10005FE18 /* Info.plist */,
+			);
+			path = WishlistCore;
+			sourceTree = "<group>";
+		};
+		94E07655246ABEE90005FE18 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				94E07656246ABEF60005FE18 /* AddAppsReducer.swift */,
+				94E0765D246AC2250005FE18 /* UpdateAppsReducer.swift */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		94E07658246AC0560005FE18 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				94E0765F246AC2ED0005FE18 /* PublisherReducer.swift */,
+				94E0765B246AC0A50005FE18 /* SystemEnvironment.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		94FA20C2231BA2BC00EC1190 = {
@@ -285,6 +388,8 @@
 				942833A8243348FF00A8921E /* WishlistServices */,
 				945CB45E23530B2F00DF3ABF /* UserDefaults */,
 				94FA20CD231BA2BC00EC1190 /* Wishlist */,
+				94E0763A246ABEB10005FE18 /* WishlistCore */,
+				94E07612246ABE380005FE18 /* WishlistLibraries */,
 				9494DA0A24319285003A7992 /* ActionExtension */,
 				94FA20CC231BA2BC00EC1190 /* Products */,
 				945CB45F23530B5E00DF3ABF /* Frameworks */,
@@ -297,6 +402,8 @@
 			children = (
 				94FA20CB231BA2BC00EC1190 /* Wishlist.app */,
 				9494DA0924319285003A7992 /* Add to Wishlist.appex */,
+				94E07611246ABE380005FE18 /* WishlistLibraries.framework */,
+				94E07639246ABEB10005FE18 /* WishlistCore.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -330,6 +437,24 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		94E0760C246ABE380005FE18 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94E07615246ABE380005FE18 /* WishlistLibraries.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94E07634246ABEB10005FE18 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		9494DA0824319285003A7992 /* ActionExtension */ = {
 			isa = PBXNativeTarget;
@@ -346,13 +471,59 @@
 			);
 			name = ActionExtension;
 			packageProductDependencies = (
-				942833AC24334A2400A8921E /* WishlistServices */,
-				94B015E7243D90DB00BB4E7C /* WishlistFoundation */,
-				9482DE44246AAF61000C2A24 /* WishlistModel */,
+				94E0761F246ABE580005FE18 /* WishlistFoundation */,
+				94E07622246ABE580005FE18 /* WishlistModel */,
+				94E07625246ABE660005FE18 /* WishlistServices */,
 			);
 			productName = ActionExtension;
 			productReference = 9494DA0924319285003A7992 /* Add to Wishlist.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		94E07610246ABE380005FE18 /* WishlistLibraries */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94E0761C246ABE380005FE18 /* Build configuration list for PBXNativeTarget "WishlistLibraries" */;
+			buildPhases = (
+				94E0760C246ABE380005FE18 /* Headers */,
+				94E0760D246ABE380005FE18 /* Sources */,
+				94E0760E246ABE380005FE18 /* Frameworks */,
+				94E0760F246ABE380005FE18 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WishlistLibraries;
+			packageProductDependencies = (
+				94E0761D246ABE3D0005FE18 /* ComposableArchitecture */,
+			);
+			productName = WishlistLibraries;
+			productReference = 94E07611246ABE380005FE18 /* WishlistLibraries.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		94E07638246ABEB10005FE18 /* WishlistCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94E07642246ABEB10005FE18 /* Build configuration list for PBXNativeTarget "WishlistCore" */;
+			buildPhases = (
+				94E07634246ABEB10005FE18 /* Headers */,
+				94E07635246ABEB10005FE18 /* Sources */,
+				94E07636246ABEB10005FE18 /* Frameworks */,
+				94E07637246ABEB10005FE18 /* Resources */,
+				94E07650246ABECD0005FE18 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				94E07654246ABED80005FE18 /* PBXTargetDependency */,
+			);
+			name = WishlistCore;
+			packageProductDependencies = (
+				94E07645246ABECD0005FE18 /* UserDefaults */,
+				94E07648246ABECD0005FE18 /* WishlistFoundation */,
+				94E0764B246ABECD0005FE18 /* WishlistModel */,
+			);
+			productName = WishlistCore;
+			productReference = 94E07639246ABEB10005FE18 /* WishlistCore.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 		94FA20CA231BA2BC00EC1190 /* Wishlist */ = {
 			isa = PBXNativeTarget;
@@ -368,15 +539,16 @@
 			);
 			dependencies = (
 				9494DA1424319285003A7992 /* PBXTargetDependency */,
+				94E07617246ABE380005FE18 /* PBXTargetDependency */,
+				94E0763F246ABEB10005FE18 /* PBXTargetDependency */,
 			);
 			name = Wishlist;
 			packageProductDependencies = (
-				945CB46023530B5E00DF3ABF /* UserDefaults */,
-				942833A924334A1700A8921E /* WishlistServices */,
-				94B015ED243D90E800BB4E7C /* WishlistFoundation */,
 				94629D3924468B890072C271 /* SDWebImageSwiftUI */,
-				945F2F42246A3083008F6D5A /* ComposableArchitecture */,
-				9482DE41246AAF5B000C2A24 /* WishlistModel */,
+				94E07628246ABE900005FE18 /* UserDefaults */,
+				94E0762B246ABE900005FE18 /* WishlistFoundation */,
+				94E0762E246ABE900005FE18 /* WishlistModel */,
+				94E07631246ABE900005FE18 /* WishlistServices */,
 			);
 			productName = Wishlist;
 			productReference = 94FA20CB231BA2BC00EC1190 /* Wishlist.app */;
@@ -394,6 +566,13 @@
 				TargetAttributes = {
 					9494DA0824319285003A7992 = {
 						CreatedOnToolsVersion = 11.4;
+					};
+					94E07610246ABE380005FE18 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
+					94E07638246ABEB10005FE18 = {
+						CreatedOnToolsVersion = 11.4.1;
+						LastSwiftMigration = 1140;
 					};
 					94FA20CA231BA2BC00EC1190 = {
 						CreatedOnToolsVersion = 11.0;
@@ -419,6 +598,8 @@
 			targets = (
 				94FA20CA231BA2BC00EC1190 /* Wishlist */,
 				9494DA0824319285003A7992 /* ActionExtension */,
+				94E07638246ABEB10005FE18 /* WishlistCore */,
+				94E07610246ABE380005FE18 /* WishlistLibraries */,
 			);
 		};
 /* End PBXProject section */
@@ -430,6 +611,20 @@
 			files = (
 				9494DA0C24319285003A7992 /* Media.xcassets in Resources */,
 				9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94E0760F246ABE380005FE18 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94E07637246ABEB10005FE18 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -455,6 +650,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		94E0760D246ABE380005FE18 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94E07635246ABEB10005FE18 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94E07657246ABEF60005FE18 /* AddAppsReducer.swift in Sources */,
+				94E07660246AC2ED0005FE18 /* PublisherReducer.swift in Sources */,
+				94E0765C246AC0A50005FE18 /* SystemEnvironment.swift in Sources */,
+				94E0765E246AC2250005FE18 /* UpdateAppsReducer.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		94FA20C7231BA2BC00EC1190 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -462,13 +675,9 @@
 				94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */,
 				94151ED42469379E00CBD2BE /* UIKit.swift in Sources */,
 				94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */,
-				9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */,
-				94B79B7E2466BE94005E5066 /* ComposableArchitecture.swift in Sources */,
 				94C28BE3246526320013B41F /* URLSchemes.swift in Sources */,
 				948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */,
 				94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */,
-				94151ED8246A207600CBD2BE /* SystemEnvironment.swift in Sources */,
-				94EE92C92467D3C8001E3155 /* AddApps.swift in Sources */,
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
 				94C8D0852435756300D9C077 /* UTI.swift in Sources */,
 				94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */,
@@ -476,7 +685,6 @@
 				948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */,
 				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,
 				94C7B1532330F13F008181D1 /* Settings.swift in Sources */,
-				94B79B7C2466BDC0005E5066 /* AppUpdates.swift in Sources */,
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
 				945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */,
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
@@ -496,6 +704,21 @@
 			isa = PBXTargetDependency;
 			target = 9494DA0824319285003A7992 /* ActionExtension */;
 			targetProxy = 9494DA1324319285003A7992 /* PBXContainerItemProxy */;
+		};
+		94E07617246ABE380005FE18 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 94E07610246ABE380005FE18 /* WishlistLibraries */;
+			targetProxy = 94E07616246ABE380005FE18 /* PBXContainerItemProxy */;
+		};
+		94E0763F246ABEB10005FE18 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 94E07638246ABEB10005FE18 /* WishlistCore */;
+			targetProxy = 94E0763E246ABEB10005FE18 /* PBXContainerItemProxy */;
+		};
+		94E07654246ABED80005FE18 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 94E07610246ABE380005FE18 /* WishlistLibraries */;
+			targetProxy = 94E07653246ABED80005FE18 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -558,6 +781,117 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		94E0761A246ABE380005FE18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 8PMW33R44A;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = WishlistLibraries/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistLibraries;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		94E0761B246ABE380005FE18 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 8PMW33R44A;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = WishlistLibraries/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistLibraries;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		94E07643246ABEB10005FE18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 8PMW33R44A;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = WishlistCore/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistCore;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		94E07644246ABEB10005FE18 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 8PMW33R44A;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = WishlistCore/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistCore;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -733,6 +1067,24 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		94E0761C246ABE380005FE18 /* Build configuration list for PBXNativeTarget "WishlistLibraries" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94E0761A246ABE380005FE18 /* Debug */,
+				94E0761B246ABE380005FE18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		94E07642246ABEB10005FE18 /* Build configuration list for PBXNativeTarget "WishlistCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94E07643246ABEB10005FE18 /* Debug */,
+				94E07644246ABEB10005FE18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		94FA20C6231BA2BC00EC1190 /* Build configuration list for PBXProject "Wishlist" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -773,43 +1125,55 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		942833A924334A1700A8921E /* WishlistServices */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WishlistServices;
-		};
-		942833AC24334A2400A8921E /* WishlistServices */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WishlistServices;
-		};
-		945CB46023530B5E00DF3ABF /* UserDefaults */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = UserDefaults;
-		};
-		945F2F42246A3083008F6D5A /* ComposableArchitecture */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 943047722460FC4900EEDBBF /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
-			productName = ComposableArchitecture;
-		};
 		94629D3924468B890072C271 /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
 		};
-		9482DE41246AAF5B000C2A24 /* WishlistModel */ = {
+		94E0761D246ABE3D0005FE18 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = WishlistModel;
+			package = 943047722460FC4900EEDBBF /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
-		9482DE44246AAF61000C2A24 /* WishlistModel */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WishlistModel;
-		};
-		94B015E7243D90DB00BB4E7C /* WishlistFoundation */ = {
+		94E0761F246ABE580005FE18 /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WishlistFoundation;
 		};
-		94B015ED243D90E800BB4E7C /* WishlistFoundation */ = {
+		94E07622246ABE580005FE18 /* WishlistModel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistModel;
+		};
+		94E07625246ABE660005FE18 /* WishlistServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistServices;
+		};
+		94E07628246ABE900005FE18 /* UserDefaults */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UserDefaults;
+		};
+		94E0762B246ABE900005FE18 /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WishlistFoundation;
+		};
+		94E0762E246ABE900005FE18 /* WishlistModel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistModel;
+		};
+		94E07631246ABE900005FE18 /* WishlistServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistServices;
+		};
+		94E07645246ABECD0005FE18 /* UserDefaults */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UserDefaults;
+		};
+		94E07648246ABECD0005FE18 /* WishlistFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistFoundation;
+		};
+		94E0764B246ABECD0005FE18 /* WishlistModel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistModel;
 		};
 /* End XCSwiftPackageProductDependency section */
 
