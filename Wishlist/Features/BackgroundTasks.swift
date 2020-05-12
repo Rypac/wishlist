@@ -48,7 +48,6 @@ let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAction, B
       .async { _ in
         let apps = environment.fetchApps()
         let cancellable = environment.checkForUpdates(apps)
-          .receive(on: environment.mainQueue)
           .sink(receiveCompletion: { _ in }) { newApps in
             environment.saveUpdatedApps(newApps)
           }
