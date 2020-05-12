@@ -176,7 +176,7 @@ enum AppAction {
 
 struct AppEnvironment {
   var repository: AppRepository
-  var settings: SettingsStore
+  var settings: Settings
   var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
   var openURL: (URL) -> Void
   var scheduleBackgroundTasks: () -> Void

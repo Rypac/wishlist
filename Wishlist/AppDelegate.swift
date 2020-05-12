@@ -9,7 +9,7 @@ import WishlistData
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-  let settings = SettingsStore()
+  let settings = Settings()
 
   private(set) lazy var persistentContainer: NSPersistentContainer = {
     let container = NSPersistentCloudKitContainer(name: "DataModel")

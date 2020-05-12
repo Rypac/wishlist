@@ -1,5 +1,4 @@
 import Combine
-import Foundation
 
 public protocol AppRepository {
   func publisher() -> AnyPublisher<[App], Never>

@@ -1,8 +1,11 @@
 import Foundation
 import UserDefaults
-import WishlistData
 
-extension SortOrder: UserDefaultsSerializable {}
+enum SortOrder: String, CaseIterable, UserDefaultsSerializable {
+  case title
+  case price
+  case updated
+}
 
 enum Theme: String, CaseIterable, UserDefaultsSerializable {
   case system
@@ -10,7 +13,7 @@ enum Theme: String, CaseIterable, UserDefaultsSerializable {
   case dark
 }
 
-final class SettingsStore {
+final class Settings {
   @UserDefault(key: "sortOrder", defaultValue: .price)
   var sortOrder: SortOrder
 

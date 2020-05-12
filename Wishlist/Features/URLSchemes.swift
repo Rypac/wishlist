@@ -54,7 +54,7 @@ let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironmen
 
 private extension URLSchemeState {
   var addAppsState: AddAppsState {
-    get { .init(apps: apps) }
+    get { AddAppsState(apps: apps) }
     set { apps = newValue.apps }
   }
 }

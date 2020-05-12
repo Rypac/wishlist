@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 public struct DeviceVisibilityModifier: ViewModifier {
   private let devices: Set<UIUserInterfaceIdiom>
