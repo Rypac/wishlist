@@ -44,7 +44,7 @@ struct SettingsView: View {
         .navigationBarItems(trailing: Button("Close") {
           self.presentationMode.wrappedValue.dismiss()
         })
-      }
+      }.navigationViewStyle(StackNavigationViewStyle())
     }
   }
 }
