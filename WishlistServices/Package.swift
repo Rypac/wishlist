@@ -18,13 +18,12 @@ let package = Package(
   ],
   dependencies: [
     .package(path: "../WishlistFoundation"),
-    .package(path: "../WishlistData"),
-    .package(path: "../UserDefaults")
+    .package(path: "../WishlistData")
   ],
   targets: [
     .target(
       name: "WishlistServices",
-      dependencies: ["WishlistFoundation", "WishlistData", "UserDefaults"]
+      dependencies: ["WishlistFoundation", "WishlistData"]
     ),
     .testTarget(
       name: "WishlistServicesTests",
