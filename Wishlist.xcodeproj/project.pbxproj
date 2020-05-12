@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		94151ED22469049700CBD2BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED12469049700CBD2BE /* SettingsView.swift */; };
 		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
+		94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */; };
+		94151ED8246A207600CBD2BE /* SystemEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED7246A207600CBD2BE /* SystemEnvironment.swift */; };
 		9415B3612465349800F76965 /* BackgroundTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9415B3602465349800F76965 /* BackgroundTasks.swift */; };
 		942833AA24334A1700A8921E /* WishlistServices in Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; };
 		942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 942833A924334A1700A8921E /* WishlistServices */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -116,6 +118,8 @@
 /* Begin PBXFileReference section */
 		94151ED12469049700CBD2BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		94151ED32469379E00CBD2BE /* UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
+		94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessUpdates.swift; sourceTree = "<group>"; };
+		94151ED7246A207600CBD2BE /* SystemEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEnvironment.swift; sourceTree = "<group>"; };
 		9415B3602465349800F76965 /* BackgroundTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTasks.swift; sourceTree = "<group>"; };
 		94173E48243D5D9400984DED /* WishlistData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistData; sourceTree = "<group>"; };
 		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
@@ -217,8 +221,9 @@
 		9486FAB32430669F00EE2334 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				9486FAB4243066AC00EE2334 /* Dictionary.swift */,
 				94B79B7D2466BE94005E5066 /* ComposableArchitecture.swift */,
+				9486FAB4243066AC00EE2334 /* Dictionary.swift */,
+				94151ED7246A207600CBD2BE /* SystemEnvironment.swift */,
 				94151ED32469379E00CBD2BE /* UIKit.swift */,
 			);
 			path = Extensions;
@@ -276,6 +281,7 @@
 				94C28BE2246526320013B41F /* URLSchemeHandling.swift */,
 				94B79B7B2466BDC0005E5066 /* AppUpdateHandling.swift */,
 				94EE92C82467D3C8001E3155 /* AddApps.swift */,
+				94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -463,6 +469,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */,
 				94151ED42469379E00CBD2BE /* UIKit.swift in Sources */,
 				94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */,
 				9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */,
@@ -470,6 +477,7 @@
 				94C28BE3246526320013B41F /* URLSchemeHandling.swift in Sources */,
 				948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */,
 				94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */,
+				94151ED8246A207600CBD2BE /* SystemEnvironment.swift in Sources */,
 				94EE92C92467D3C8001E3155 /* AddApps.swift in Sources */,
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
 				94C8D0852435756300D9C077 /* UTI.swift in Sources */,

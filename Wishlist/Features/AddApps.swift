@@ -16,10 +16,9 @@ public enum AddAppsAction {
 
 public struct AddAppsEnvironment {
   public var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
-  public var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, AddAppsEnvironment> { state, action, environment in
+public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironment<AddAppsEnvironment>> { state, action, environment in
   switch action {
   case let .addApps(ids):
     let ids = Set(ids).subtracting(state.apps.map(\.id))
@@ -28,7 +27,7 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, AddAppsEnvironm
     }
 
     return environment.loadApps(Array(ids))
-      .receive(on: environment.mainQueue)
+      .receive(on: environment.mainQueue())
       .catchToEffect()
       .map(AddAppsAction.addAppsResponse)
 

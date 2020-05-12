@@ -28,7 +28,6 @@ struct AppListEnvironment {
   var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
   var openURL: (URL) -> Void
   var saveTheme: (Theme) -> Void
-  var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
 struct AppListRowState: Identifiable, Equatable {
@@ -80,7 +79,7 @@ private extension AppListState {
   }
 }
 
-let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.combine(
+let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppListEnvironment>>.combine(
   Reducer { state, action, environment in
     switch action {
     case let .setSortOrderSheet(isPresented):
@@ -140,15 +139,17 @@ let appListReducer = Reducer<AppListState, AppListAction, AppListEnvironment>.co
   addAppsReducer.pullback(
     state: \.addAppsState,
     action: /AppListAction.addApps,
-    environment: {
-      AddAppsEnvironment(loadApps: $0.loadApps, mainQueue: $0.mainQueue)
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AddAppsEnvironment(loadApps: $0.loadApps)
+      }
     }
   ),
   settingsReducer.pullback(
     state: \.settingsState,
     action: /AppListAction.settings,
-    environment: { environment in
-      SettingsEnvironment(saveTheme: environment.saveTheme)
+    environment: {
+      SettingsEnvironment(saveTheme: $0.saveTheme)
     }
   )
 )

@@ -7,7 +7,7 @@ struct AppUpdateState: Equatable {
   var apps: [App]
   var lastUpdateDate: Date?
   var updateFrequency: TimeInterval
-  var isUpdateInProgress: Bool = false
+  var isUpdateInProgress: Bool
 }
 
 enum AppUpdateAction {
@@ -17,11 +17,9 @@ enum AppUpdateAction {
 
 struct AppUpdateEnvironment {
   var lookupApps: ([App.ID]) -> AnyPublisher<[App], Error>
-  var mainQueue: AnySchedulerOf<DispatchQueue>
-  var now: () -> Date
 }
 
-let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, AppUpdateEnvironment> { state, action, environment in
+let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnvironment<AppUpdateEnvironment>> { state, action, environment in
   switch action {
   case .checkForUpdates:
     guard state.shouldCheckForUpdates(now: environment.now()) else {
@@ -30,14 +28,19 @@ let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, AppUpdateEnviron
 
     state.isUpdateInProgress = true
     return checkForUpdates(apps: state.apps, lookup: environment.lookupApps)
-      .receive(on: environment.mainQueue)
+      .receive(on: environment.mainQueue())
       .eraseToEffect()
       .map { .receivedUpdates($0, at: environment.now()) }
 
   case let .receivedUpdates(updatedApps, at: date):
     state.isUpdateInProgress = false
-    state.apps.append(contentsOf: updatedApps)
     state.lastUpdateDate = date
+
+    state.apps.removeAll(where: { app in
+      updatedApps.contains { $0.id == app.id }
+    })
+    state.apps.append(contentsOf: updatedApps)
+
     return .none
   }
 }
@@ -57,12 +60,12 @@ private extension AppUpdateState {
 func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Error>) -> AnyPublisher<[App], Never> {
   lookup(apps.map(\.id))
     .map { latestApps in
-      latestApps.reduce(into: []) { result, latestApp in
+      latestApps.reduce(into: []) { updatedApps, latestApp in
         guard let app = apps.first(where: { $0.id == latestApp.id }) else {
           return
         }
         if latestApp.isUpdated(from: app) {
-          result.append(latestApp)
+          updatedApps.append(latestApp)
         }
       }
     }

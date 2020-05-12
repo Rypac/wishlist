@@ -15,10 +15,9 @@ enum URLSchemeAction {
 
 struct URLSchemeEnvironment {
   let loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
-  let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, URLSchemeEnvironment>.combine(
+let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironment<URLSchemeEnvironment>>.combine(
   Reducer { state, action, environment in
     switch action {
     case let .handleURLScheme(.addApps(ids)):
@@ -45,8 +44,10 @@ let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, URLSchemeEnviron
   addAppsReducer.pullback(
     state: \.addAppsState,
     action: /URLSchemeAction.addApps,
-    environment: {
-      AddAppsEnvironment(loadApps: $0.loadApps, mainQueue: $0.mainQueue)
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AddAppsEnvironment(loadApps: $0.loadApps)
+      }
     }
   )
 )

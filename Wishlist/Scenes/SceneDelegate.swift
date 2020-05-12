@@ -19,20 +19,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         appUpdateFrequency: 15 * 60
       ),
       reducer: appReducer,
-      environment: AppEnvironment(
-        repository: appDelegate.appRepository,
-        mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
-        loadApps: appDelegate.appStore.lookup,
-        openURL: { UIApplication.shared.open($0) },
-        settings: appDelegate.settings,
-        scheduleBackgroundTasks: {
-          appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask))
-        },
-        setTheme: { [weak self] theme in
-          appDelegate.settings.theme = theme
-          self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
-        },
-        now: Date.init
+      environment: .live(
+        environment: AppEnvironment(
+          repository: appDelegate.appRepository,
+          settings: appDelegate.settings,
+          loadApps: appDelegate.appStore.lookup,
+          openURL: { UIApplication.shared.open($0) },
+          scheduleBackgroundTasks: {
+            appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask))
+          },
+          setTheme: { [weak self] theme in
+            appDelegate.settings.theme = theme
+            self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
+          }
+        )
       )
     )
   }()
@@ -145,6 +145,17 @@ private extension AppState {
       theme = newValue.theme
     }
   }
+
+  var processUpdateState: ProcessUpdateState {
+    get {
+      ProcessUpdateState(apps: apps, sortOrder: sortOrder, theme: theme)
+    }
+    set {
+      apps = newValue.apps
+      sortOrder = newValue.sortOrder
+      theme = newValue.theme
+    }
+  }
 }
 
 enum AppLifecycleEvent {
@@ -155,48 +166,28 @@ enum AppLifecycleEvent {
 }
 
 enum AppAction {
-  case appsUpdated([App])
   case appList(AppListAction)
   case urlScheme(URLSchemeAction)
   case lifecycle(AppLifecycleEvent)
   case updates(AppUpdateAction)
   case settings(SettingsAction)
+  case processUpdates(ProcessUpdateAction)
 }
 
 struct AppEnvironment {
-  let repository: AppRepository
-  let mainQueue: AnySchedulerOf<DispatchQueue>
-  let loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
-  let openURL: (URL) -> Void
-  let settings: SettingsStore
-  let scheduleBackgroundTasks: () -> Void
-  let setTheme: (Theme) -> Void
-  let now: () -> Date
+  var repository: AppRepository
+  var settings: SettingsStore
+  var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
+  var openURL: (URL) -> Void
+  var scheduleBackgroundTasks: () -> Void
+  var setTheme: (Theme) -> Void
 }
 
-let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
+let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>.combine(
   Reducer { state, action, environment in
     switch action {
-    case .appsUpdated(let apps):
-      state.apps = apps
-      return .none
     case .lifecycle(.didStart):
-      return .merge(
-        environment.repository.publisher()
-          .receive(on: environment.mainQueue)
-          .eraseToEffect()
-          .map(AppAction.appsUpdated),
-        environment.settings.$sortOrder.publisher()
-          .removeDuplicates()
-          .receive(on: environment.mainQueue)
-          .eraseToEffect()
-          .map { .appList(.setSortOrder($0)) },
-        environment.settings.$theme.publisher()
-          .removeDuplicates()
-          .receive(on: environment.mainQueue)
-          .eraseToEffect()
-          .map { .settings(.setTheme($0)) }
-      )
+      return Effect(value: .processUpdates(.subscribe))
     case let .lifecycle(.openURL(url)):
       guard let urlScheme = URLScheme(rawValue: url) else {
         return .none
@@ -226,48 +217,66 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
       return .fireAndForget {
         environment.settings.sortOrder = sortOrder
       }
-    case .urlScheme, .appList, .updates, .settings:
+    case .urlScheme, .appList, .updates, .settings, .processUpdates:
       return .none
     }
   },
   appListReducer.pullback(
     state: \.appListState,
     action: /AppAction.appList,
-    environment: { environment in
-      AppListEnvironment(
-        loadApps: environment.loadApps,
-        openURL: environment.openURL,
-        saveTheme: environment.setTheme,
-        mainQueue: environment.mainQueue
-      )
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AppListEnvironment(
+          loadApps: $0.loadApps,
+          openURL: $0.openURL,
+          saveTheme: $0.setTheme
+        )
+      }
     }
   ),
   urlSchemeReducer.pullback(
     state: \.urlSchemeState,
     action: /AppAction.urlScheme,
-    environment: { environment in
-      URLSchemeEnvironment(
-        loadApps: environment.loadApps,
-        mainQueue: environment.mainQueue
-      )
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        URLSchemeEnvironment(loadApps: $0.loadApps)
+      }
     }
   ),
   appUpdateReducer.pullback(
     state: \.appUpdateState,
     action: /AppAction.updates,
-    environment: { environment in
-      AppUpdateEnvironment(
-        lookupApps: environment.loadApps,
-        mainQueue: environment.mainQueue,
-        now: environment.now
-      )
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AppUpdateEnvironment(lookupApps: $0.loadApps)
+      }
     }
   ),
   settingsReducer.pullback(
     state: \.settingsState,
     action: /AppAction.settings,
-    environment: { environment in
-      SettingsEnvironment(saveTheme: environment.setTheme)
+    environment: { systemEnvironment in
+      SettingsEnvironment(saveTheme: systemEnvironment.setTheme)
+    }
+  ),
+  processUpdateReducer.pullback(
+    state: \.processUpdateState,
+    action: /AppAction.processUpdates,
+    environment: { systemEnvironment in
+      systemEnvironment.map { environment in
+        ProcessUpdateEnvironment(
+          apps: PublisherEnvironment(
+            publisher: environment.repository.publisher()
+          ),
+          sortOrder: PublisherEnvironment(
+            publisher: environment.settings.$sortOrder.publisher(initialValue: .skip).eraseToAnyPublisher()
+          ),
+          theme: PublisherEnvironment(
+            publisher: environment.settings.$theme.publisher(initialValue: .skip).eraseToAnyPublisher(),
+            perform: environment.setTheme
+          )
+        )
+      }
     }
   )
 )
