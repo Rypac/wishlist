@@ -27,10 +27,12 @@
 		945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 945CB46023530B5E00DF3ABF /* UserDefaults */; };
 		945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* URLItemProvider.swift */; };
 		945F2F43246A3083008F6D5A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 945F2F42246A3083008F6D5A /* ComposableArchitecture */; };
-		946017A1243D99E00065E384 /* WishlistData in Frameworks */ = {isa = PBXBuildFile; productRef = 946017A0243D99E00065E384 /* WishlistData */; };
-		946017A2243D99E00065E384 /* WishlistData in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 946017A0243D99E00065E384 /* WishlistData */; };
 		94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94629D36244682070072C271 /* DeviceVisibilityModifier.swift */; };
 		94629D3A24468B890072C271 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 94629D3924468B890072C271 /* SDWebImageSwiftUI */; };
+		9482DE42246AAF5B000C2A24 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 9482DE41246AAF5B000C2A24 /* WishlistModel */; };
+		9482DE43246AAF5B000C2A24 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9482DE41246AAF5B000C2A24 /* WishlistModel */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9482DE45246AAF61000C2A24 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 9482DE44246AAF61000C2A24 /* WishlistModel */; };
+		9482DE46246AAF61000C2A24 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 9482DE44246AAF61000C2A24 /* WishlistModel */; };
 		9486FAB5243066AC00EE2334 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9486FAB4243066AC00EE2334 /* Dictionary.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
@@ -43,8 +45,6 @@
 		949C700E2434644900009960 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		94B015E8243D90DB00BB4E7C /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015E7243D90DB00BB4E7C /* WishlistFoundation */; };
 		94B015E9243D90DB00BB4E7C /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015E7243D90DB00BB4E7C /* WishlistFoundation */; };
-		94B015EB243D90E800BB4E7C /* WishlistData in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015EA243D90E800BB4E7C /* WishlistData */; };
-		94B015EC243D90E800BB4E7C /* WishlistData in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015EA243D90E800BB4E7C /* WishlistData */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94B015ED243D90E800BB4E7C /* WishlistFoundation */; };
 		94B015EF243D90E800BB4E7C /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94B015ED243D90E800BB4E7C /* WishlistFoundation */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		94B79B7C2466BDC0005E5066 /* AppUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B79B7B2466BDC0005E5066 /* AppUpdates.swift */; };
@@ -79,7 +79,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				946017A2243D99E00065E384 /* WishlistData in Embed Frameworks */,
+				9482DE46246AAF61000C2A24 /* WishlistModel in Embed Frameworks */,
 				942833AE24334A2400A8921E /* WishlistServices in Embed Frameworks */,
 				94B015E9243D90DB00BB4E7C /* WishlistFoundation in Embed Frameworks */,
 			);
@@ -93,7 +93,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				94B015EF243D90E800BB4E7C /* WishlistFoundation in Embed Frameworks */,
-				94B015EC243D90E800BB4E7C /* WishlistData in Embed Frameworks */,
+				9482DE43246AAF5B000C2A24 /* WishlistModel in Embed Frameworks */,
 				94C8D0892435F1B200D9C077 /* UserDefaults in Embed Frameworks */,
 				942833AB24334A1700A8921E /* WishlistServices in Embed Frameworks */,
 			);
@@ -119,7 +119,7 @@
 		94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessUpdates.swift; sourceTree = "<group>"; };
 		94151ED7246A207600CBD2BE /* SystemEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEnvironment.swift; sourceTree = "<group>"; };
 		9415B3602465349800F76965 /* BackgroundTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTasks.swift; sourceTree = "<group>"; };
-		94173E48243D5D9400984DED /* WishlistData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistData; sourceTree = "<group>"; };
+		94173E48243D5D9400984DED /* WishlistModel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistModel; sourceTree = "<group>"; };
 		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
@@ -166,7 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				94B015E8243D90DB00BB4E7C /* WishlistFoundation in Frameworks */,
-				946017A1243D99E00065E384 /* WishlistData in Frameworks */,
+				9482DE45246AAF61000C2A24 /* WishlistModel in Frameworks */,
 				942833AD24334A2400A8921E /* WishlistServices in Frameworks */,
 				9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */,
 			);
@@ -179,7 +179,7 @@
 				94629D3A24468B890072C271 /* SDWebImageSwiftUI in Frameworks */,
 				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
 				945F2F43246A3083008F6D5A /* ComposableArchitecture in Frameworks */,
-				94B015EB243D90E800BB4E7C /* WishlistData in Frameworks */,
+				9482DE42246AAF5B000C2A24 /* WishlistModel in Frameworks */,
 				94B015EE243D90E800BB4E7C /* WishlistFoundation in Frameworks */,
 				942833AA24334A1700A8921E /* WishlistServices in Frameworks */,
 				945CB46123530B5E00DF3ABF /* UserDefaults in Frameworks */,
@@ -281,7 +281,7 @@
 			isa = PBXGroup;
 			children = (
 				94B015E3243D6C6F00BB4E7C /* WishlistFoundation */,
-				94173E48243D5D9400984DED /* WishlistData */,
+				94173E48243D5D9400984DED /* WishlistModel */,
 				942833A8243348FF00A8921E /* WishlistServices */,
 				945CB45E23530B2F00DF3ABF /* UserDefaults */,
 				94FA20CD231BA2BC00EC1190 /* Wishlist */,
@@ -348,7 +348,7 @@
 			packageProductDependencies = (
 				942833AC24334A2400A8921E /* WishlistServices */,
 				94B015E7243D90DB00BB4E7C /* WishlistFoundation */,
-				946017A0243D99E00065E384 /* WishlistData */,
+				9482DE44246AAF61000C2A24 /* WishlistModel */,
 			);
 			productName = ActionExtension;
 			productReference = 9494DA0924319285003A7992 /* Add to Wishlist.appex */;
@@ -373,10 +373,10 @@
 			packageProductDependencies = (
 				945CB46023530B5E00DF3ABF /* UserDefaults */,
 				942833A924334A1700A8921E /* WishlistServices */,
-				94B015EA243D90E800BB4E7C /* WishlistData */,
 				94B015ED243D90E800BB4E7C /* WishlistFoundation */,
 				94629D3924468B890072C271 /* SDWebImageSwiftUI */,
 				945F2F42246A3083008F6D5A /* ComposableArchitecture */,
+				9482DE41246AAF5B000C2A24 /* WishlistModel */,
 			);
 			productName = Wishlist;
 			productReference = 94FA20CB231BA2BC00EC1190 /* Wishlist.app */;
@@ -790,22 +790,22 @@
 			package = 943047722460FC4900EEDBBF /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
 		};
-		946017A0243D99E00065E384 /* WishlistData */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WishlistData;
-		};
 		94629D3924468B890072C271 /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
 		};
+		9482DE41246AAF5B000C2A24 /* WishlistModel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistModel;
+		};
+		9482DE44246AAF61000C2A24 /* WishlistModel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistModel;
+		};
 		94B015E7243D90DB00BB4E7C /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WishlistFoundation;
-		};
-		94B015EA243D90E800BB4E7C /* WishlistData */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WishlistData;
 		};
 		94B015ED243D90E800BB4E7C /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;

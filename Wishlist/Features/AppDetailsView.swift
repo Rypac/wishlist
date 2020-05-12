@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
-import WishlistData
+import WishlistModel
 
 struct AppDetailsState: Equatable {
   var app: App

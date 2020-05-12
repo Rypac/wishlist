@@ -4,7 +4,7 @@ import ComposableArchitecture
 import CoreData
 import UIKit
 import WishlistServices
-import WishlistData
+import WishlistModel
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

@@ -4,15 +4,16 @@
 import PackageDescription
 
 let package = Package(
-  name: "WishlistData",
+  name: "WishlistModel",
   platforms: [
-    .iOS(.v13)
+    .iOS(.v13),
+    .macOS(.v10_15)
   ],
   products: [
     .library(
-      name: "WishlistData",
+      name: "WishlistModel",
       type: .dynamic,
-      targets: ["WishlistData"]
+      targets: ["WishlistModel"]
     )
   ],
   dependencies: [
@@ -20,12 +21,12 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "WishlistData",
+      name: "WishlistModel",
       dependencies: ["WishlistFoundation"]
     ),
     .testTarget(
-      name: "WishlistDataTests",
-      dependencies: ["WishlistData"]
+      name: "WishlistModelTests",
+      dependencies: ["WishlistModel"]
     )
   ]
 )

@@ -1,7 +1,7 @@
 import BackgroundTasks
 import Combine
 import ComposableArchitecture
-import WishlistData
+import WishlistModel
 
 struct BackgroundTask: Identifiable, Equatable {
   let id: String

@@ -2,7 +2,7 @@ import Combine
 import CoreData
 import MobileCoreServices
 import UIKit
-import WishlistData
+import WishlistModel
 import WishlistFoundation
 import WishlistServices
 

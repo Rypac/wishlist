@@ -39,7 +39,7 @@ func publisherReducer<T>() -> Reducer<PublisherState<T>, PublisherAction<T>, Sys
   }
 }
 
-import WishlistData
+import WishlistModel
 
 struct ProcessUpdateState: Equatable {
   var apps: [App]

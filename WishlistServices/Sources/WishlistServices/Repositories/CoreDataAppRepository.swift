@@ -1,7 +1,7 @@
 import Combine
 import CoreData
 import WishlistFoundation
-import WishlistData
+import WishlistModel
 
 public class CoreDataAppRepository: AppRepository {
   private let managedContext: NSManagedObjectContext
