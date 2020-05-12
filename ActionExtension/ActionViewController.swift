@@ -1,11 +1,69 @@
 import Combine
+import ComposableArchitecture
 import CoreData
 import MobileCoreServices
 import UIKit
 import WishlistCore
 import WishlistModel
-import WishlistFoundation
 import WishlistServices
+
+enum Status: Equatable {
+  case resting
+  case loading([App.ID])
+  case success([App])
+  case failure
+}
+
+struct ExtensionState: Equatable {
+  var apps: [App]
+  var status: Status
+
+  var addAppsState: AddAppsState {
+    get { AddAppsState(apps: apps) }
+    set { apps = newValue.apps }
+  }
+}
+
+enum ExtensionAction {
+  case addApps(AddAppsAction)
+}
+
+struct ExtensionEnvironment {
+  var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
+  var saveApps: ([App]) -> Void
+}
+
+let extensionReducer = Reducer<ExtensionState, ExtensionAction, SystemEnvironment<ExtensionEnvironment>>.combine(
+  Reducer { state, action, environment in
+    switch action {
+    case let .addApps(.addApps(ids)):
+      state.status = .loading(ids)
+      return .none
+
+    case let .addApps(.addAppsResponse(.success(apps))):
+      state.status = .success(apps)
+      return .fireAndForget {
+        environment.saveApps(apps)
+      }
+
+    case .addApps(.addAppsResponse(.failure)):
+      state.status = .failure
+      return .none
+
+    case .addApps:
+      return .none
+    }
+  },
+  addAppsReducer.pullback(
+    state: \.addAppsState,
+    action: /ExtensionAction.addApps,
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AddAppsEnvironment(loadApps: $0.loadApps)
+      }
+    }
+  )
+)
 
 class ActionViewController: UIViewController {
 
@@ -27,8 +85,22 @@ class ActionViewController: UIViewController {
     return container
   }()
 
-  private let lookupService: AppLookupService = AppStoreService()
-  private lazy var repository: AppRepository = CoreDataAppRepository(context: persistentContainer.viewContext)
+  private lazy var store: Store<ExtensionState, ExtensionAction> = {
+    let appStore = AppStoreService()
+    let repository = CoreDataAppRepository(context: persistentContainer.viewContext)
+    let apps = (try? repository.fetchAll()) ?? []
+    return Store(
+      initialState: ExtensionState(apps: apps, status: .resting),
+      reducer: extensionReducer,
+      environment: .live(
+        environment: ExtensionEnvironment(
+          loadApps: appStore.lookup(ids:),
+          saveApps: { try? repository.add($0) }
+        )
+      )
+    )
+  }()
+  private lazy var viewStore: ViewStore<ExtensionState, ExtensionAction> = ViewStore(store)
 
   private var cancellables = Set<AnyCancellable>()
 
@@ -43,33 +115,42 @@ class ActionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let appIDs = extensionContext!.loadURLs()
-      .map(AppStore.extractIDs)
-      .buffer(size: 1, prefetch: .keepFull, whenFull: .dropOldest)
-
-    appIDs
-      .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { _ in }) { [weak self] ids in
-        if !ids.isEmpty {
-          self?.statusLabel.text = "Adding \(ids.count) apps…"
-        } else {
-          self?.statusLabel.text = "No apps to add."
+    viewStore.publisher
+      .map { state in
+        switch state.status {
+        case let .loading(ids) where ids.isEmpty:
+          return "No apps to add"
+        case let .loading(ids):
+          return "Adding \(ids.count) apps to Wishlist…"
+        case let .success(apps) where apps.isEmpty:
+          return "No apps added to Wishlist"
+        case let .success(apps):
+          return "Added to Wishlist:\n\n" + apps.map(\.title).joined(separator: "\n")
+        case .failure:
+          return "Failed to add apps to Wishlist"
+        case .resting:
+          return ""
         }
+      }
+      .assign(to: \.text, on: statusLabel)
+      .store(in: &cancellables)
+
+    viewStore.publisher
+      .filter { state in
+        guard case .success = state.status else {
+          return false
+        }
+        return true
+      }
+      .delay(for: .seconds(1.5), scheduler: DispatchQueue.main)
+      .sink { [weak self] _ in
+        self?.done()
       }
       .store(in: &cancellables)
 
-    appIDs
-      .flatMap { [lookupService] ids in
-        lookupService.lookup(ids: ids)
-      }
-      .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { _ in }) { [weak self] apps in
-        do {
-          try self?.repository.add(apps)
-        } catch {
-          print("Failed to save apps")
-        }
-        self?.done()
+    extensionContext!.loadURLs()
+      .sink(receiveCompletion: { _ in }) { [weak self] urls in
+        self?.viewStore.send(.addApps(.addAppsFromURLs(urls)))
       }
       .store(in: &cancellables)
   }

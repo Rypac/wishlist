@@ -39,7 +39,7 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
       .map(AddAppsAction.addAppsResponse)
 
   case let .addAppsFromURLs(urls):
-    let ids = AppStore.extractIDs(from: urls)
+    let ids = extractAppIDs(from: urls)
     return ids.isEmpty ? .none : Effect(value: .addApps(ids))
 
   case let .addAppsResponse(result):
@@ -50,27 +50,25 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
   }
 }
 
-public enum AppStore {
-  public static func extractIDs(from urls: [URL]) -> [Int] {
-    let idMatch = "id"
-    let appStoreURL = "https?://(?:itunes|apps).apple.com/.*/id(?<\(idMatch)>\\d+)"
-    guard let regex = try? NSRegularExpression(pattern: appStoreURL, options: []) else {
-      return []
+private func extractAppIDs(from urls: [URL]) -> [Int] {
+  let idMatch = "id"
+  let appStoreURL = "https?://(?:itunes|apps).apple.com/.*/id(?<\(idMatch)>\\d+)"
+  guard let regex = try? NSRegularExpression(pattern: appStoreURL, options: []) else {
+    return []
+  }
+
+  return urls.compactMap { url in
+    let url = url.absoluteString
+    let entireRange = NSRange(url.startIndex..<url.endIndex, in: url)
+    guard let match = regex.firstMatch(in: url, options: [], range: entireRange) else {
+      return nil
     }
 
-    return urls.compactMap { url in
-      let url = url.absoluteString
-      let entireRange = NSRange(url.startIndex..<url.endIndex, in: url)
-      guard let match = regex.firstMatch(in: url, options: [], range: entireRange) else {
-        return nil
-      }
-
-      let idRange = match.range(withName: idMatch)
-      guard idRange.location != NSNotFound, let range = Range(idRange, in: url) else {
-        return nil
-      }
-
-      return Int(url[range])
+    let idRange = match.range(withName: idMatch)
+    guard idRange.location != NSNotFound, let range = Range(idRange, in: url) else {
+      return nil
     }
+
+    return Int(url[range])
   }
 }
