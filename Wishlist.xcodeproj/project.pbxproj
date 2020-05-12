@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		94025A64246B4D6200CA3F70 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 94025A63246B4D6200CA3F70 /* ComposableArchitecture */; };
 		94151ED22469049700CBD2BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED12469049700CBD2BE /* SettingsView.swift */; };
 		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
 		94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */; };
@@ -34,10 +35,6 @@
 		94C28BE3246526320013B41F /* URLSchemes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C28BE2246526320013B41F /* URLSchemes.swift */; };
 		94C7B1532330F13F008181D1 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* Settings.swift */; };
 		94C8D0852435756300D9C077 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8D0842435756300D9C077 /* UTI.swift */; };
-		94E07615246ABE380005FE18 /* WishlistLibraries.h in Headers */ = {isa = PBXBuildFile; fileRef = 94E07613246ABE380005FE18 /* WishlistLibraries.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		94E07618246ABE380005FE18 /* WishlistLibraries.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07611246ABE380005FE18 /* WishlistLibraries.framework */; };
-		94E07619246ABE380005FE18 /* WishlistLibraries.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07611246ABE380005FE18 /* WishlistLibraries.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		94E0761E246ABE3D0005FE18 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0761D246ABE3D0005FE18 /* ComposableArchitecture */; };
 		94E07620246ABE580005FE18 /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0761F246ABE580005FE18 /* WishlistFoundation */; };
 		94E07621246ABE580005FE18 /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E0761F246ABE580005FE18 /* WishlistFoundation */; };
 		94E07623246ABE580005FE18 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 94E07622246ABE580005FE18 /* WishlistModel */; };
@@ -60,11 +57,11 @@
 		94E0764A246ABECD0005FE18 /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E07648246ABECD0005FE18 /* WishlistFoundation */; };
 		94E0764C246ABECD0005FE18 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0764B246ABECD0005FE18 /* WishlistModel */; };
 		94E0764D246ABECD0005FE18 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E0764B246ABECD0005FE18 /* WishlistModel */; };
-		94E07651246ABED80005FE18 /* WishlistLibraries.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07611246ABE380005FE18 /* WishlistLibraries.framework */; };
 		94E07657246ABEF60005FE18 /* AddAppsReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E07656246ABEF60005FE18 /* AddAppsReducer.swift */; };
 		94E0765C246AC0A50005FE18 /* SystemEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E0765B246AC0A50005FE18 /* SystemEnvironment.swift */; };
 		94E0765E246AC2250005FE18 /* UpdateAppsReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E0765D246AC2250005FE18 /* UpdateAppsReducer.swift */; };
 		94E07660246AC2ED0005FE18 /* PublisherReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E0765F246AC2ED0005FE18 /* PublisherReducer.swift */; };
+		94E07661246AC7570005FE18 /* WishlistCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07639246ABEB10005FE18 /* WishlistCore.framework */; };
 		94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */; };
 		94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */; };
 		94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D2231BA2BC00EC1190 /* AppListView.swift */; };
@@ -81,13 +78,6 @@
 			remoteGlobalIDString = 9494DA0824319285003A7992;
 			remoteInfo = ActionExtension;
 		};
-		94E07616246ABE380005FE18 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 94FA20C3231BA2BC00EC1190 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 94E07610246ABE380005FE18;
-			remoteInfo = WishlistLibraries;
-		};
 		94E0763E246ABEB10005FE18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 94FA20C3231BA2BC00EC1190 /* Project object */;
@@ -95,12 +85,12 @@
 			remoteGlobalIDString = 94E07638246ABEB10005FE18;
 			remoteInfo = WishlistCore;
 		};
-		94E07653246ABED80005FE18 /* PBXContainerItemProxy */ = {
+		94E07663246AC7570005FE18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 94FA20C3231BA2BC00EC1190 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 94E07610246ABE380005FE18;
-			remoteInfo = WishlistLibraries;
+			remoteGlobalIDString = 94E07638246ABEB10005FE18;
+			remoteInfo = WishlistCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -124,7 +114,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				94E07619246ABE380005FE18 /* WishlistLibraries.framework in Embed Frameworks */,
 				94E07630246ABE900005FE18 /* WishlistModel in Embed Frameworks */,
 				94E07633246ABE900005FE18 /* WishlistServices in Embed Frameworks */,
 				94E0762A246ABE900005FE18 /* UserDefaults in Embed Frameworks */,
@@ -192,9 +181,6 @@
 		94C28BE2246526320013B41F /* URLSchemes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSchemes.swift; sourceTree = "<group>"; };
 		94C7B1522330F13F008181D1 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		94C8D0842435756300D9C077 /* UTI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTI.swift; sourceTree = "<group>"; };
-		94E07611246ABE380005FE18 /* WishlistLibraries.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WishlistLibraries.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		94E07613246ABE380005FE18 /* WishlistLibraries.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WishlistLibraries.h; sourceTree = "<group>"; };
-		94E07614246ABE380005FE18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94E07639246ABEB10005FE18 /* WishlistCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WishlistCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		94E0763C246ABEB10005FE18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94E07656246ABEF60005FE18 /* AddAppsReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAppsReducer.swift; sourceTree = "<group>"; };
@@ -217,17 +203,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				94E07623246ABE580005FE18 /* WishlistModel in Frameworks */,
+				94E07661246AC7570005FE18 /* WishlistCore.framework in Frameworks */,
 				94E07620246ABE580005FE18 /* WishlistFoundation in Frameworks */,
 				9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */,
 				94E07626246ABE660005FE18 /* WishlistServices in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		94E0760E246ABE380005FE18 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				94E0761E246ABE3D0005FE18 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,7 +216,7 @@
 			files = (
 				94E0764C246ABECD0005FE18 /* WishlistModel in Frameworks */,
 				94E07649246ABECD0005FE18 /* WishlistFoundation in Frameworks */,
-				94E07651246ABED80005FE18 /* WishlistLibraries.framework in Frameworks */,
+				94025A64246B4D6200CA3F70 /* ComposableArchitecture in Frameworks */,
 				94E07646246ABECD0005FE18 /* UserDefaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -251,7 +230,6 @@
 				94E07640246ABEB10005FE18 /* WishlistCore.framework in Frameworks */,
 				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
 				94E0762F246ABE900005FE18 /* WishlistModel in Frameworks */,
-				94E07618246ABE380005FE18 /* WishlistLibraries.framework in Frameworks */,
 				94E07632246ABE900005FE18 /* WishlistServices in Frameworks */,
 				94E07629246ABE900005FE18 /* UserDefaults in Frameworks */,
 			);
@@ -343,15 +321,6 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
-		94E07612246ABE380005FE18 /* WishlistLibraries */ = {
-			isa = PBXGroup;
-			children = (
-				94E07613246ABE380005FE18 /* WishlistLibraries.h */,
-				94E07614246ABE380005FE18 /* Info.plist */,
-			);
-			path = WishlistLibraries;
-			sourceTree = "<group>";
-		};
 		94E0763A246ABEB10005FE18 /* WishlistCore */ = {
 			isa = PBXGroup;
 			children = (
@@ -389,7 +358,6 @@
 				945CB45E23530B2F00DF3ABF /* UserDefaults */,
 				94FA20CD231BA2BC00EC1190 /* Wishlist */,
 				94E0763A246ABEB10005FE18 /* WishlistCore */,
-				94E07612246ABE380005FE18 /* WishlistLibraries */,
 				9494DA0A24319285003A7992 /* ActionExtension */,
 				94FA20CC231BA2BC00EC1190 /* Products */,
 				945CB45F23530B5E00DF3ABF /* Frameworks */,
@@ -402,7 +370,6 @@
 			children = (
 				94FA20CB231BA2BC00EC1190 /* Wishlist.app */,
 				9494DA0924319285003A7992 /* Add to Wishlist.appex */,
-				94E07611246ABE380005FE18 /* WishlistLibraries.framework */,
 				94E07639246ABEB10005FE18 /* WishlistCore.framework */,
 			);
 			name = Products;
@@ -438,14 +405,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		94E0760C246ABE380005FE18 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				94E07615246ABE380005FE18 /* WishlistLibraries.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		94E07634246ABEB10005FE18 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -468,6 +427,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				94E07664246AC7570005FE18 /* PBXTargetDependency */,
 			);
 			name = ActionExtension;
 			packageProductDependencies = (
@@ -478,27 +438,6 @@
 			productName = ActionExtension;
 			productReference = 9494DA0924319285003A7992 /* Add to Wishlist.appex */;
 			productType = "com.apple.product-type.app-extension";
-		};
-		94E07610246ABE380005FE18 /* WishlistLibraries */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 94E0761C246ABE380005FE18 /* Build configuration list for PBXNativeTarget "WishlistLibraries" */;
-			buildPhases = (
-				94E0760C246ABE380005FE18 /* Headers */,
-				94E0760D246ABE380005FE18 /* Sources */,
-				94E0760E246ABE380005FE18 /* Frameworks */,
-				94E0760F246ABE380005FE18 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = WishlistLibraries;
-			packageProductDependencies = (
-				94E0761D246ABE3D0005FE18 /* ComposableArchitecture */,
-			);
-			productName = WishlistLibraries;
-			productReference = 94E07611246ABE380005FE18 /* WishlistLibraries.framework */;
-			productType = "com.apple.product-type.framework";
 		};
 		94E07638246ABEB10005FE18 /* WishlistCore */ = {
 			isa = PBXNativeTarget;
@@ -513,13 +452,13 @@
 			buildRules = (
 			);
 			dependencies = (
-				94E07654246ABED80005FE18 /* PBXTargetDependency */,
 			);
 			name = WishlistCore;
 			packageProductDependencies = (
 				94E07645246ABECD0005FE18 /* UserDefaults */,
 				94E07648246ABECD0005FE18 /* WishlistFoundation */,
 				94E0764B246ABECD0005FE18 /* WishlistModel */,
+				94025A63246B4D6200CA3F70 /* ComposableArchitecture */,
 			);
 			productName = WishlistCore;
 			productReference = 94E07639246ABEB10005FE18 /* WishlistCore.framework */;
@@ -539,7 +478,6 @@
 			);
 			dependencies = (
 				9494DA1424319285003A7992 /* PBXTargetDependency */,
-				94E07617246ABE380005FE18 /* PBXTargetDependency */,
 				94E0763F246ABEB10005FE18 /* PBXTargetDependency */,
 			);
 			name = Wishlist;
@@ -566,9 +504,6 @@
 				TargetAttributes = {
 					9494DA0824319285003A7992 = {
 						CreatedOnToolsVersion = 11.4;
-					};
-					94E07610246ABE380005FE18 = {
-						CreatedOnToolsVersion = 11.4.1;
 					};
 					94E07638246ABEB10005FE18 = {
 						CreatedOnToolsVersion = 11.4.1;
@@ -599,7 +534,6 @@
 				94FA20CA231BA2BC00EC1190 /* Wishlist */,
 				9494DA0824319285003A7992 /* ActionExtension */,
 				94E07638246ABEB10005FE18 /* WishlistCore */,
-				94E07610246ABE380005FE18 /* WishlistLibraries */,
 			);
 		};
 /* End PBXProject section */
@@ -611,13 +545,6 @@
 			files = (
 				9494DA0C24319285003A7992 /* Media.xcassets in Resources */,
 				9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		94E0760F246ABE380005FE18 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -647,13 +574,6 @@
 			files = (
 				9494DA0E24319285003A7992 /* ActionViewController.swift in Sources */,
 				949C700E2434644900009960 /* DataModel.xcdatamodeld in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		94E0760D246ABE380005FE18 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -705,20 +625,15 @@
 			target = 9494DA0824319285003A7992 /* ActionExtension */;
 			targetProxy = 9494DA1324319285003A7992 /* PBXContainerItemProxy */;
 		};
-		94E07617246ABE380005FE18 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 94E07610246ABE380005FE18 /* WishlistLibraries */;
-			targetProxy = 94E07616246ABE380005FE18 /* PBXContainerItemProxy */;
-		};
 		94E0763F246ABEB10005FE18 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 94E07638246ABEB10005FE18 /* WishlistCore */;
 			targetProxy = 94E0763E246ABEB10005FE18 /* PBXContainerItemProxy */;
 		};
-		94E07654246ABED80005FE18 /* PBXTargetDependency */ = {
+		94E07664246AC7570005FE18 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 94E07610246ABE380005FE18 /* WishlistLibraries */;
-			targetProxy = 94E07653246ABED80005FE18 /* PBXContainerItemProxy */;
+			target = 94E07638246ABEB10005FE18 /* WishlistCore */;
+			targetProxy = 94E07663246AC7570005FE18 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -781,60 +696,6 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		94E0761A246ABE380005FE18 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 8PMW33R44A;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = WishlistLibraries/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistLibraries;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		94E0761B246ABE380005FE18 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 8PMW33R44A;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = WishlistLibraries/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistLibraries;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -1067,15 +928,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		94E0761C246ABE380005FE18 /* Build configuration list for PBXNativeTarget "WishlistLibraries" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				94E0761A246ABE380005FE18 /* Debug */,
-				94E0761B246ABE380005FE18 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		94E07642246ABEB10005FE18 /* Build configuration list for PBXNativeTarget "WishlistCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1125,15 +977,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		94025A63246B4D6200CA3F70 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 943047722460FC4900EEDBBF /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
 		94629D3924468B890072C271 /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
-		};
-		94E0761D246ABE3D0005FE18 /* ComposableArchitecture */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 943047722460FC4900EEDBBF /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
-			productName = ComposableArchitecture;
 		};
 		94E0761F246ABE580005FE18 /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
