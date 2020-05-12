@@ -51,6 +51,10 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
       viewStore.send(.subscibeToThemeChanges)
     }
   }
+
+  func sceneWillEnterForeground(_ scene: UIScene) {
+    viewStore.send(.willBecomeActive)
+  }
 }
 
 private struct AppDetailsNavigationView: View {
@@ -78,6 +82,7 @@ struct AppDetailsSceneState: Equatable {
 
 enum AppDetailsSceneAction {
   case subscibeToThemeChanges
+  case willBecomeActive
   case themeChanged(PublisherAction<Theme>)
   case closeDetails
 }
@@ -93,10 +98,18 @@ let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction
     switch action {
     case .subscibeToThemeChanges:
       return Effect(value: .themeChanged(.subscribe))
+
     case .closeDetails:
       return .fireAndForget {
         environment.terminate()
       }
+
+    case .willBecomeActive:
+      let theme = state.theme
+      return .fireAndForget {
+        environment.applyTheme(theme)
+      }
+
     case .themeChanged:
       return .none
     }

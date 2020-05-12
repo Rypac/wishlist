@@ -31,10 +31,6 @@ func publisherReducer<T>() -> Reducer<PublisherState<T>, PublisherAction<T>, Sys
         .map(PublisherAction.receivedValue)
 
     case let .receivedValue(value):
-      guard value != state else {
-        return .none
-      }
-
       state = value
       return .fireAndForget {
         environment.perform(value)

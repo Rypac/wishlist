@@ -56,6 +56,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
 
+  func sceneWillEnterForeground(_ scene: UIScene) {
+    viewStore.send(.lifecycle(.willEnterForground))
+  }
+
   func sceneDidBecomeActive(_ scene: UIScene) {
     viewStore.send(.lifecycle(.didBecomeActive))
   }
@@ -162,6 +166,7 @@ enum AppLifecycleEvent {
   case didStart
   case didBecomeActive
   case didEnterBackground
+  case willEnterForground
   case openURL(URL)
 }
 
@@ -195,6 +200,11 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
     case .lifecycle(.didBecomeActive):
       return Effect(value: .updates(.checkForUpdates))
+    case .lifecycle(.willEnterForground):
+      let theme = state.theme
+      return .fireAndForget {
+        environment.setTheme(theme)
+      }
     case .lifecycle(.didEnterBackground):
       return .fireAndForget {
         environment.scheduleBackgroundTasks()
