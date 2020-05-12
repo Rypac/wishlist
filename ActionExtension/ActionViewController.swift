@@ -1,28 +1,10 @@
-import UIKit
 import Combine
 import CoreData
 import MobileCoreServices
+import UIKit
 import WishlistData
 import WishlistFoundation
 import WishlistServices
-
-final class Wishlist {
-  let repository: AppRepository
-  let lookupService: AppLookupService
-
-  init(repository: AppRepository, lookupService: AppLookupService) {
-    self.repository = repository
-    self.lookupService = lookupService
-  }
-
-  func addApps(ids: [App.ID]) -> AnyPublisher<Void, Error> {
-    lookupService.lookup(ids: ids)
-      .tryMap { [repository] apps in
-        try repository.add(apps)
-      }
-      .eraseToAnyPublisher()
-  }
-}
 
 class ActionViewController: UIViewController {
 
@@ -44,7 +26,8 @@ class ActionViewController: UIViewController {
     return container
   }()
 
-  private lazy var wishlist = Wishlist(repository: CoreDataAppRepository(context: persistentContainer.viewContext), lookupService: AppStoreService())
+  private let lookupService: AppLookupService = AppStoreService()
+  private lazy var repository: AppRepository = CoreDataAppRepository(context: persistentContainer.viewContext)
 
   private var cancellables = Set<AnyCancellable>()
 
@@ -75,11 +58,16 @@ class ActionViewController: UIViewController {
       .store(in: &cancellables)
 
     appIDs
-      .flatMap { [wishlist] ids in
-        wishlist.addApps(ids: ids)
+      .flatMap { [lookupService] ids in
+        lookupService.lookup(ids: ids)
       }
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { _ in }) { [weak self] in
+      .sink(receiveCompletion: { _ in }) { [weak self] apps in
+        do {
+          try self?.repository.add(apps)
+        } catch {
+          print("Failed to save apps")
+        }
         self?.done()
       }
       .store(in: &cancellables)
