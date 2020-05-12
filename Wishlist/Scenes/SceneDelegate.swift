@@ -272,7 +272,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
             publisher: environment.settings.$sortOrder.publisher(initialValue: .skip).eraseToAnyPublisher()
           ),
           theme: PublisherEnvironment(
-            publisher: environment.settings.$theme.publisher(initialValue: .skip).eraseToAnyPublisher(),
+            publisher: environment.settings.$theme.publisher().eraseToAnyPublisher(),
             perform: environment.setTheme
           )
         )
