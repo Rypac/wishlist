@@ -10,8 +10,6 @@ import WishlistModel
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-  let settings = Settings()
-
   private(set) lazy var persistentContainer: NSPersistentContainer = {
     let container = NSPersistentCloudKitContainer(name: "DataModel")
 
@@ -30,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return container
   }()
 
+  let settings = Settings()
   let appStore: AppLookupService = AppStoreService()
   private(set) lazy var appRepository: AppRepository = CoreDataAppRepository(context: persistentContainer.viewContext)
 
@@ -41,14 +40,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         )
       ),
       reducer: appDelegateReducer,
-      environment: AppDelegateEnvironment(
-        registerTask: BGTaskScheduler.shared.register,
-        submitTask: BGTaskScheduler.shared.submit,
-        fetchApps: { (try? self.appRepository.fetchAll()) ?? [] },
-        checkForUpdates: { apps in checkForUpdates(apps: apps, lookup: self.appStore.lookup) },
-        saveUpdatedApps: { try? self.appRepository.add($0) },
-        mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
-        now: Date.init
+      environment: .live(
+        environment: BackgroundTaskEnvironment(
+          registerTask: BGTaskScheduler.shared.register,
+          submitTask: BGTaskScheduler.shared.submit,
+          fetchApps: { (try? self.appRepository.fetchAll()) ?? [] },
+          lookupApps: self.appStore.lookup,
+          saveUpdatedApps: { try? self.appRepository.add($0) }
+        )
       )
     )
   }()
@@ -87,23 +86,10 @@ enum AppDelegateAction {
   case backgroundTask(BackgroundTaskAction)
 }
 
-typealias AppDelegateEnvironment = BackgroundTaskEnvironment
+typealias AppDelegateEnvironment = SystemEnvironment<BackgroundTaskEnvironment>
 
 let appDelegateReducer = backgroundTaskReducer.pullback(
   state: \AppDelegateState.backgroundTaskState,
   action: /AppDelegateAction.backgroundTask,
   environment: { (environment: AppDelegateEnvironment) in environment }
 )
-
-// MARK: - Background Tasks
-
-extension BGTaskScheduler {
-  func register(task: BackgroundTask) -> Effect<BGTask, Never> {
-    .async { subscriber in
-      BGTaskScheduler.shared.register(forTaskWithIdentifier: task.id, using: nil) { task in
-        subscriber.send(task)
-      }
-      return AnyCancellable {}
-    }
-  }
-}

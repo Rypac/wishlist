@@ -24,7 +24,7 @@ public struct AppUpdateState: Equatable {
 
 public enum AppUpdateAction {
   case checkForUpdates
-  case receivedUpdates([App], at: Date)
+  case receivedUpdates(Result<[App], Error>, at: Date)
 }
 
 public struct AppUpdateEnvironment {
@@ -45,10 +45,10 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
     state.isUpdateInProgress = true
     return checkForUpdates(apps: state.apps, lookup: environment.lookupApps)
       .receive(on: environment.mainQueue())
-      .eraseToEffect()
+      .catchToEffect()
       .map { .receivedUpdates($0, at: environment.now()) }
 
-  case let .receivedUpdates(updatedApps, at: date):
+  case let .receivedUpdates(.success(updatedApps), at: date):
     state.isUpdateInProgress = false
     state.lastUpdateDate = date
 
@@ -57,6 +57,10 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
     })
     state.apps.append(contentsOf: updatedApps)
 
+    return .none
+
+  case let .receivedUpdates(.failure(error), at: _):
+    state.isUpdateInProgress = false
     return .none
   }
 }
@@ -73,7 +77,7 @@ private extension AppUpdateState {
   }
 }
 
-public func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Error>) -> AnyPublisher<[App], Never> {
+func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Error>) -> AnyPublisher<[App], Error> {
   lookup(apps.map(\.id))
     .map { latestApps in
       latestApps.reduce(into: []) { updatedApps, latestApp in
@@ -85,7 +89,6 @@ public func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App
         }
       }
     }
-    .replaceError(with: [])
     .eraseToAnyPublisher()
 }
 

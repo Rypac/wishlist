@@ -210,7 +210,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       return .fireAndForget {
         environment.scheduleBackgroundTasks()
       }
-    case let .updates(.receivedUpdates(updatedApps, at: date)):
+    case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
       return .fireAndForget {
         try? environment.repository.add(updatedApps)
         environment.settings.lastUpdateDate = date

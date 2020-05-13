@@ -11,11 +11,12 @@
 		94151ED22469049700CBD2BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED12469049700CBD2BE /* SettingsView.swift */; };
 		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
 		94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */; };
-		9415B3612465349800F76965 /* BackgroundTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9415B3602465349800F76965 /* BackgroundTasks.swift */; };
 		9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */; };
 		9432BAC024355C20001CCCD9 /* URLDropDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */; };
+		943881B4246B9D31009A60F7 /* BackgroundTaskReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943881B3246B9D31009A60F7 /* BackgroundTaskReducer.swift */; };
+		943881B6246BA3F4009A60F7 /* BGTaskScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943881B5246BA3F4009A60F7 /* BGTaskScheduler.swift */; };
 		943F705A2462328A007425BA /* URLScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F70592462328A007425BA /* URLScheme.swift */; };
 		94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
@@ -176,12 +177,13 @@
 		94151ED12469049700CBD2BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		94151ED32469379E00CBD2BE /* UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
 		94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessUpdates.swift; sourceTree = "<group>"; };
-		9415B3602465349800F76965 /* BackgroundTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTasks.swift; sourceTree = "<group>"; };
 		94173E48243D5D9400984DED /* WishlistModel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistModel; sourceTree = "<group>"; };
 		942833A8243348FF00A8921E /* WishlistServices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WishlistServices; sourceTree = "<group>"; };
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
 		9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLDropDelegate.swift; sourceTree = "<group>"; };
+		943881B3246B9D31009A60F7 /* BackgroundTaskReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskReducer.swift; sourceTree = "<group>"; };
+		943881B5246BA3F4009A60F7 /* BGTaskScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGTaskScheduler.swift; sourceTree = "<group>"; };
 		943F70592462328A007425BA /* URLScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLScheme.swift; sourceTree = "<group>"; };
 		94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 			isa = PBXGroup;
 			children = (
 				94151ED32469379E00CBD2BE /* UIKit.swift */,
+				943881B5246BA3F4009A60F7 /* BGTaskScheduler.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -350,7 +353,6 @@
 				94FA20D2231BA2BC00EC1190 /* AppListView.swift */,
 				945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */,
 				94151ED12469049700CBD2BE /* SettingsView.swift */,
-				9415B3602465349800F76965 /* BackgroundTasks.swift */,
 				94C28BE2246526320013B41F /* URLSchemes.swift */,
 				94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */,
 			);
@@ -407,6 +409,7 @@
 			children = (
 				94E07656246ABEF60005FE18 /* AddAppsReducer.swift */,
 				94E0765D246AC2250005FE18 /* UpdateAppsReducer.swift */,
+				943881B3246B9D31009A60F7 /* BackgroundTaskReducer.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -696,6 +699,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				943881B4246B9D31009A60F7 /* BackgroundTaskReducer.swift in Sources */,
 				94E07657246ABEF60005FE18 /* AddAppsReducer.swift in Sources */,
 				94E07660246AC2ED0005FE18 /* PublisherReducer.swift in Sources */,
 				94E0765C246AC0A50005FE18 /* SystemEnvironment.swift in Sources */,
@@ -719,6 +723,7 @@
 				942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */,
 				948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */,
 				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,
+				943881B6246BA3F4009A60F7 /* BGTaskScheduler.swift in Sources */,
 				94C7B1532330F13F008181D1 /* Settings.swift in Sources */,
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
 				945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */,
@@ -726,7 +731,6 @@
 				94151ED22469049700CBD2BE /* SettingsView.swift in Sources */,
 				94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */,
 				948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */,
-				9415B3612465349800F76965 /* BackgroundTasks.swift in Sources */,
 				9432BAC024355C20001CCCD9 /* URLDropDelegate.swift in Sources */,
 				943F705A2462328A007425BA /* URLScheme.swift in Sources */,
 			);
