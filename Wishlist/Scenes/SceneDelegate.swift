@@ -49,7 +49,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       )
       self.window = window
       window.makeKeyAndVisible()
-      viewStore.send(.lifecycle(.didStart))
+      viewStore.send(.lifecycle(.willConnect))
     }
 
     if let urlContext = connectionOptions.urlContexts.first {
@@ -163,18 +163,10 @@ private extension AppState {
   }
 }
 
-enum AppLifecycleEvent {
-  case didStart
-  case didBecomeActive
-  case didEnterBackground
-  case willEnterForground
-  case openURL(URL)
-}
-
 enum AppAction {
   case appList(AppListAction)
   case urlScheme(URLSchemeAction)
-  case lifecycle(AppLifecycleEvent)
+  case lifecycle(SceneLifecycleEvent)
   case updates(AppUpdateAction)
   case settings(SettingsAction)
   case processUpdates(ProcessUpdateAction)
@@ -192,7 +184,7 @@ struct AppEnvironment {
 let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>.combine(
   Reducer { state, action, environment in
     switch action {
-    case .lifecycle(.didStart):
+    case .lifecycle(.willConnect):
       return Effect(value: .processUpdates(.subscribe))
     case let .lifecycle(.openURL(url)):
       guard let urlScheme = URLScheme(rawValue: url) else {
@@ -228,7 +220,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       return .fireAndForget {
         environment.settings.sortOrder = sortOrder
       }
-    case .urlScheme, .appList, .updates, .settings, .processUpdates:
+    case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:
       return .none
     }
   },

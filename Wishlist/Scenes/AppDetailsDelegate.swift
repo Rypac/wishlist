@@ -49,12 +49,12 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
       self.session = session
       window.makeKeyAndVisible()
 
-      viewStore.send(.subscibeToThemeChanges)
+      viewStore.send(.lifecycle(.willConnect))
     }
   }
 
   func sceneWillEnterForeground(_ scene: UIScene) {
-    viewStore.send(.willBecomeActive)
+    viewStore.send(.lifecycle(.willEnterForground))
   }
 }
 
@@ -82,8 +82,7 @@ struct AppDetailsSceneState: Equatable {
 }
 
 enum AppDetailsSceneAction {
-  case subscibeToThemeChanges
-  case willBecomeActive
+  case lifecycle(SceneLifecycleEvent)
   case themeChanged(PublisherAction<Theme>)
   case closeDetails
 }
@@ -97,21 +96,21 @@ struct AppDetailsSceneEnvironment {
 let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction, SystemEnvironment<AppDetailsSceneEnvironment>>.combine(
   Reducer { state, action, environment in
     switch action {
-    case .subscibeToThemeChanges:
+    case .lifecycle(.willConnect):
       return Effect(value: .themeChanged(.subscribe))
+
+    case .lifecycle(.willEnterForground):
+      let theme = state.theme
+      return .fireAndForget {
+        environment.applyTheme(theme)
+      }
 
     case .closeDetails:
       return .fireAndForget {
         environment.terminate()
       }
 
-    case .willBecomeActive:
-      let theme = state.theme
-      return .fireAndForget {
-        environment.applyTheme(theme)
-      }
-
-    case .themeChanged:
+    case .lifecycle, .themeChanged:
       return .none
     }
   },

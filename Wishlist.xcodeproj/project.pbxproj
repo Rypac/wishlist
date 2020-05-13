@@ -17,6 +17,7 @@
 		9432BAC024355C20001CCCD9 /* URLDropDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */; };
 		943881B4246B9D31009A60F7 /* BackgroundTaskReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943881B3246B9D31009A60F7 /* BackgroundTaskReducer.swift */; };
 		943881B6246BA3F4009A60F7 /* BGTaskScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943881B5246BA3F4009A60F7 /* BGTaskScheduler.swift */; };
+		943881B8246BB3FF009A60F7 /* SceneLifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943881B7246BB3FF009A60F7 /* SceneLifecycle.swift */; };
 		943F705A2462328A007425BA /* URLScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F70592462328A007425BA /* URLScheme.swift */; };
 		94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
@@ -184,6 +185,7 @@
 		9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLDropDelegate.swift; sourceTree = "<group>"; };
 		943881B3246B9D31009A60F7 /* BackgroundTaskReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskReducer.swift; sourceTree = "<group>"; };
 		943881B5246BA3F4009A60F7 /* BGTaskScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGTaskScheduler.swift; sourceTree = "<group>"; };
+		943881B7246BB3FF009A60F7 /* SceneLifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneLifecycle.swift; sourceTree = "<group>"; };
 		943F70592462328A007425BA /* URLScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLScheme.swift; sourceTree = "<group>"; };
 		94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
@@ -315,6 +317,7 @@
 		948890C024304D1A00E3E5FA /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				943881B7246BB3FF009A60F7 /* SceneLifecycle.swift */,
 				948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */,
 				948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */,
 				94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */,
@@ -728,6 +731,7 @@
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,
 				945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */,
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
+				943881B8246BB3FF009A60F7 /* SceneLifecycle.swift in Sources */,
 				94151ED22469049700CBD2BE /* SettingsView.swift in Sources */,
 				94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */,
 				948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */,
