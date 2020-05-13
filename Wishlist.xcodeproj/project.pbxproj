@@ -35,6 +35,11 @@
 		94C28BE3246526320013B41F /* URLSchemes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C28BE2246526320013B41F /* URLSchemes.swift */; };
 		94C7B1532330F13F008181D1 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* Settings.swift */; };
 		94C8D0852435756300D9C077 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8D0842435756300D9C077 /* UTI.swift */; };
+		94D8B296246B6C19003BD5E9 /* WishlistCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07639246ABEB10005FE18 /* WishlistCore.framework */; };
+		94D8B29F246B6CEB003BD5E9 /* AddAppsReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D8B29E246B6CEB003BD5E9 /* AddAppsReducerTests.swift */; };
+		94D8B2A6246B80BB003BD5E9 /* SystemEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D8B2A5246B80BB003BD5E9 /* SystemEnvironment.swift */; };
+		94D8B2AA246B8449003BD5E9 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 94D8B2A9246B8449003BD5E9 /* WishlistModel */; };
+		94D8B2AB246B8449003BD5E9 /* WishlistModel in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94D8B2A9246B8449003BD5E9 /* WishlistModel */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		94E07620246ABE580005FE18 /* WishlistFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 94E0761F246ABE580005FE18 /* WishlistFoundation */; };
 		94E07621246ABE580005FE18 /* WishlistFoundation in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 94E0761F246ABE580005FE18 /* WishlistFoundation */; };
 		94E07623246ABE580005FE18 /* WishlistModel in Frameworks */ = {isa = PBXBuildFile; productRef = 94E07622246ABE580005FE18 /* WishlistModel */; };
@@ -77,6 +82,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 9494DA0824319285003A7992;
 			remoteInfo = ActionExtension;
+		};
+		94D8B297246B6C19003BD5E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94FA20C3231BA2BC00EC1190 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 94E07638246ABEB10005FE18;
+			remoteInfo = WishlistCore;
 		};
 		94E0763E246ABEB10005FE18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -134,6 +146,17 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		94D8B2A2246B7D79003BD5E9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				94D8B2AB246B8449003BD5E9 /* WishlistModel in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		94E07650246ABECD0005FE18 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -181,6 +204,10 @@
 		94C28BE2246526320013B41F /* URLSchemes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSchemes.swift; sourceTree = "<group>"; };
 		94C7B1522330F13F008181D1 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		94C8D0842435756300D9C077 /* UTI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTI.swift; sourceTree = "<group>"; };
+		94D8B291246B6C19003BD5E9 /* WishlistCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WishlistCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		94D8B295246B6C19003BD5E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		94D8B29E246B6CEB003BD5E9 /* AddAppsReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAppsReducerTests.swift; sourceTree = "<group>"; };
+		94D8B2A5246B80BB003BD5E9 /* SystemEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEnvironment.swift; sourceTree = "<group>"; };
 		94E07639246ABEB10005FE18 /* WishlistCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WishlistCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		94E0763C246ABEB10005FE18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94E07656246ABEF60005FE18 /* AddAppsReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAppsReducer.swift; sourceTree = "<group>"; };
@@ -207,6 +234,15 @@
 				94E07620246ABE580005FE18 /* WishlistFoundation in Frameworks */,
 				9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */,
 				94E07626246ABE660005FE18 /* WishlistServices in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94D8B28E246B6C19003BD5E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94D8B296246B6C19003BD5E9 /* WishlistCore.framework in Frameworks */,
+				94D8B2AA246B8449003BD5E9 /* WishlistModel in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,12 +357,47 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
-		94E0763A246ABEB10005FE18 /* WishlistCore */ = {
+		94D8B292246B6C19003BD5E9 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				94D8B29D246B6CCF003BD5E9 /* Features */,
+				94D8B2A4246B80A8003BD5E9 /* Helpers */,
+				94D8B295246B6C19003BD5E9 /* Info.plist */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		94D8B29C246B6C9B003BD5E9 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				94E07658246AC0560005FE18 /* Components */,
 				94E07655246ABEE90005FE18 /* Features */,
 				94E0763C246ABEB10005FE18 /* Info.plist */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		94D8B29D246B6CCF003BD5E9 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				94D8B29E246B6CEB003BD5E9 /* AddAppsReducerTests.swift */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		94D8B2A4246B80A8003BD5E9 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				94D8B2A5246B80BB003BD5E9 /* SystemEnvironment.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		94E0763A246ABEB10005FE18 /* WishlistCore */ = {
+			isa = PBXGroup;
+			children = (
+				94D8B29C246B6C9B003BD5E9 /* Sources */,
+				94D8B292246B6C19003BD5E9 /* Tests */,
 			);
 			path = WishlistCore;
 			sourceTree = "<group>";
@@ -371,6 +442,7 @@
 				94FA20CB231BA2BC00EC1190 /* Wishlist.app */,
 				9494DA0924319285003A7992 /* Add to Wishlist.appex */,
 				94E07639246ABEB10005FE18 /* WishlistCore.framework */,
+				94D8B291246B6C19003BD5E9 /* WishlistCoreTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -439,6 +511,29 @@
 			productReference = 9494DA0924319285003A7992 /* Add to Wishlist.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		94D8B290246B6C19003BD5E9 /* WishlistCoreTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94D8B29B246B6C19003BD5E9 /* Build configuration list for PBXNativeTarget "WishlistCoreTests" */;
+			buildPhases = (
+				94D8B28D246B6C19003BD5E9 /* Sources */,
+				94D8B28E246B6C19003BD5E9 /* Frameworks */,
+				94D8B28F246B6C19003BD5E9 /* Resources */,
+				94D8B2A2246B7D79003BD5E9 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				94D8B2A8246B842A003BD5E9 /* PBXTargetDependency */,
+				94D8B298246B6C19003BD5E9 /* PBXTargetDependency */,
+			);
+			name = WishlistCoreTests;
+			packageProductDependencies = (
+				94D8B2A9246B8449003BD5E9 /* WishlistModel */,
+			);
+			productName = WishlistCoreTests;
+			productReference = 94D8B291246B6C19003BD5E9 /* WishlistCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		94E07638246ABEB10005FE18 /* WishlistCore */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 94E07642246ABEB10005FE18 /* Build configuration list for PBXNativeTarget "WishlistCore" */;
@@ -505,6 +600,9 @@
 					9494DA0824319285003A7992 = {
 						CreatedOnToolsVersion = 11.4;
 					};
+					94D8B290246B6C19003BD5E9 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
 					94E07638246ABEB10005FE18 = {
 						CreatedOnToolsVersion = 11.4.1;
 						LastSwiftMigration = 1140;
@@ -534,6 +632,7 @@
 				94FA20CA231BA2BC00EC1190 /* Wishlist */,
 				9494DA0824319285003A7992 /* ActionExtension */,
 				94E07638246ABEB10005FE18 /* WishlistCore */,
+				94D8B290246B6C19003BD5E9 /* WishlistCoreTests */,
 			);
 		};
 /* End PBXProject section */
@@ -545,6 +644,13 @@
 			files = (
 				9494DA0C24319285003A7992 /* Media.xcassets in Resources */,
 				9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94D8B28F246B6C19003BD5E9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,6 +680,15 @@
 			files = (
 				9494DA0E24319285003A7992 /* ActionViewController.swift in Sources */,
 				949C700E2434644900009960 /* DataModel.xcdatamodeld in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		94D8B28D246B6C19003BD5E9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94D8B2A6246B80BB003BD5E9 /* SystemEnvironment.swift in Sources */,
+				94D8B29F246B6CEB003BD5E9 /* AddAppsReducerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -624,6 +739,15 @@
 			isa = PBXTargetDependency;
 			target = 9494DA0824319285003A7992 /* ActionExtension */;
 			targetProxy = 9494DA1324319285003A7992 /* PBXContainerItemProxy */;
+		};
+		94D8B298246B6C19003BD5E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 94E07638246ABEB10005FE18 /* WishlistCore */;
+			targetProxy = 94D8B297246B6C19003BD5E9 /* PBXContainerItemProxy */;
+		};
+		94D8B2A8246B842A003BD5E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 94D8B2A7246B842A003BD5E9 /* WishlistModel */;
 		};
 		94E0763F246ABEB10005FE18 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -699,9 +823,46 @@
 			};
 			name = Release;
 		};
+		94D8B299246B6C19003BD5E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8PMW33R44A;
+				INFOPLIST_FILE = WishlistCore/Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistCoreTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		94D8B29A246B6C19003BD5E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8PMW33R44A;
+				INFOPLIST_FILE = WishlistCore/Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistCoreTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		94E07643246ABEB10005FE18 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -710,7 +871,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = WishlistCore/Info.plist;
+				INFOPLIST_FILE = WishlistCore/Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -731,6 +892,7 @@
 		94E07644246ABEB10005FE18 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -739,7 +901,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = WishlistCore/Info.plist;
+				INFOPLIST_FILE = WishlistCore/Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -928,6 +1090,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		94D8B29B246B6C19003BD5E9 /* Build configuration list for PBXNativeTarget "WishlistCoreTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94D8B299246B6C19003BD5E9 /* Debug */,
+				94D8B29A246B6C19003BD5E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		94E07642246ABEB10005FE18 /* Build configuration list for PBXNativeTarget "WishlistCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -986,6 +1157,14 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 94629D3824468B890072C271 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		94D8B2A7246B842A003BD5E9 /* WishlistModel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistModel;
+		};
+		94D8B2A9246B8449003BD5E9 /* WishlistModel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WishlistModel;
 		};
 		94E0761F246ABE580005FE18 /* WishlistFoundation */ = {
 			isa = XCSwiftPackageProductDependency;

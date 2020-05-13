@@ -27,7 +27,7 @@ let package = Package(
     ),
     .testTarget(
       name: "WishlistServicesTests",
-      dependencies: ["WishlistServices"]
+      dependencies: ["WishlistServices", "WishlistFoundation", "WishlistModel"]
     )
   ]
 )

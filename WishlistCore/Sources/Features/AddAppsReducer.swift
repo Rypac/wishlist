@@ -3,6 +3,8 @@ import ComposableArchitecture
 import Foundation
 import WishlistModel
 
+public struct AddAppsError: Error, Equatable {}
+
 public struct AddAppsState: Equatable {
   public var apps: [App]
 
@@ -11,10 +13,10 @@ public struct AddAppsState: Equatable {
   }
 }
 
-public enum AddAppsAction {
+public enum AddAppsAction: Equatable {
   case addApps([App.ID])
   case addAppsFromURLs([URL])
-  case addAppsResponse(Result<[App], Error>)
+  case addAppsResponse(Result<[App], AddAppsError>)
 }
 
 public struct AddAppsEnvironment {
@@ -35,6 +37,7 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
 
     return environment.loadApps(Array(ids))
       .receive(on: environment.mainQueue())
+      .mapError { _ in AddAppsError() }
       .catchToEffect()
       .map(AddAppsAction.addAppsResponse)
 
