@@ -160,7 +160,7 @@ private extension VersionEntity {
     fetchRequest.predicate = NSPredicate(format: "app.id = %@", NSNumber(value: id))
     fetchRequest.fetchLimit = 1
     fetchRequest.sortDescriptors = [
-      NSSortDescriptor(key: "date", ascending: true)
+      NSSortDescriptor(key: "date", ascending: false)
     ]
     return fetchRequest
   }
@@ -172,7 +172,7 @@ private extension PriceEntity {
     fetchRequest.predicate = NSPredicate(format: "app.id = %@", NSNumber(value: id))
     fetchRequest.fetchLimit = 1
     fetchRequest.sortDescriptors = [
-      NSSortDescriptor(key: "date", ascending: true)
+      NSSortDescriptor(key: "date", ascending: false)
     ]
     return fetchRequest
   }
