@@ -42,7 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       reducer: appDelegateReducer,
       environment: .live(
         environment: BackgroundTaskEnvironment(
-          registerTask: BGTaskScheduler.shared.register,
           submitTask: BGTaskScheduler.shared.submit,
           fetchApps: { (try? self.appRepository.fetchAll()) ?? [] },
           lookupApps: self.appStore.lookup,
@@ -55,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     settings.register()
-    viewStore.send(.backgroundTask(.registerTasks))
+    registerBackgroundTasks()
 
     return true
   }
@@ -73,6 +72,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     return activity.sceneConfiguration
+  }
+
+  // MARK: - Background Tasks
+
+  private func registerBackgroundTasks() {
+    let updateTask = viewStore.backgroundTaskState.updateAppsTask
+    let registeredTask = BGTaskScheduler.shared.register(forTaskWithIdentifier: updateTask.id, using: nil) { task in
+      self.handleAppUpdateTask(task as! BGAppRefreshTask)
+    }
+    if !registeredTask {
+      viewStore.send(.backgroundTask(.failedToRegisterTask(updateTask)))
+    }
+  }
+
+  private func handleAppUpdateTask(_ task: BGAppRefreshTask) {
+    viewStore.send(.backgroundTask(.handleAppUpdateTask(task)))
   }
 }
 

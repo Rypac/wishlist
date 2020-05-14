@@ -22,27 +22,23 @@ public struct BackgroundTaskState: Equatable {
 }
 
 public enum BackgroundTaskAction {
-  case registerTasks
   case scheduleAppUpdateTask
   case handleAppUpdateTask(BGAppRefreshTask)
   case failedToRegisterTask(BackgroundTask)
 }
 
 public struct BackgroundTaskEnvironment {
-  public var registerTask: (BackgroundTask) -> AnyPublisher<BGTask, Error>
   public var submitTask: (BGTaskRequest) throws -> Void
   public var fetchApps: () -> [App]
   public var lookupApps: ([App.ID]) -> AnyPublisher<[App], Error>
   public var saveUpdatedApps: ([App]) -> Void
 
   public init(
-    registerTask: @escaping (BackgroundTask) -> AnyPublisher<BGTask, Error>,
     submitTask: @escaping (BGTaskRequest) throws -> Void,
     fetchApps: @escaping () -> [App],
     lookupApps: @escaping ([App.ID]) -> AnyPublisher<[App], Error>,
     saveUpdatedApps: @escaping ([App]) -> Void
   ) {
-    self.registerTask = registerTask
     self.submitTask = submitTask
     self.fetchApps = fetchApps
     self.lookupApps = lookupApps
@@ -52,13 +48,6 @@ public struct BackgroundTaskEnvironment {
 
 public let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAction, SystemEnvironment<BackgroundTaskEnvironment>> { state, action, environment in
   switch action {
-  case .registerTasks:
-    let updateAppsTask = state.updateAppsTask
-    return environment.registerTask(updateAppsTask)
-      .map { .handleAppUpdateTask($0 as! BGAppRefreshTask) }
-      .catch { _ in Just(.failedToRegisterTask(updateAppsTask)) }
-      .eraseToEffect()
-
   case .scheduleAppUpdateTask:
     let task = state.updateAppsTask
     return .fireAndForget {
@@ -83,7 +72,9 @@ public let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAc
       }
     )
 
-  case .failedToRegisterTask:
-    return .none
+  case let .failedToRegisterTask(task):
+    return .fireAndForget {
+      print("Failed to register task: \(task.id)")
+    }
   }
 }
