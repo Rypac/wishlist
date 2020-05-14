@@ -16,16 +16,34 @@
         <attribute name="updateDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" optional="YES" attributeType="URI"/>
         <attribute name="version" optional="YES" attributeType="String"/>
+        <relationship name="prices" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PriceEntity" inverseName="app" inverseEntity="PriceEntity"/>
+        <relationship name="versions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VersionEntity" inverseName="app" inverseEntity="VersionEntity"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="PriceEntity" representedClassName="WishlistServices.PriceEntity" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="formatted" optional="YES" attributeType="String"/>
+        <attribute name="value" optional="YES" attributeType="Double" usesScalarValueType="YES"/>
+        <relationship name="app" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="prices" inverseEntity="AppEntity"/>
+    </entity>
+    <entity name="VersionEntity" representedClassName="WishlistServices.VersionEntity" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="version" optional="YES" attributeType="String"/>
+        <relationship name="app" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="versions" inverseEntity="AppEntity"/>
+    </entity>
     <configuration name="Cloud" usedWithCloudKit="YES">
         <memberEntity name="AppEntity"/>
+        <memberEntity name="VersionEntity"/>
+        <memberEntity name="PriceEntity"/>
     </configuration>
     <elements>
-        <element name="AppEntity" positionX="-1286.890625" positionY="-916.20703125" width="117.296875" height="268"/>
+        <element name="AppEntity" positionX="-1534.515625" positionY="-1032.13671875" width="117.296875" height="298"/>
+        <element name="PriceEntity" positionX="-1100.89453125" positionY="-1097.08203125" width="128" height="103"/>
+        <element name="VersionEntity" positionX="-1029.08203125" positionY="-714.23828125" width="128" height="103"/>
     </elements>
 </model>
