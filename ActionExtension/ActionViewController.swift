@@ -4,7 +4,7 @@ import CoreData
 import MobileCoreServices
 import UIKit
 import WishlistCore
-import WishlistModel
+import WishlistFoundation
 import WishlistServices
 
 enum Status: Equatable {

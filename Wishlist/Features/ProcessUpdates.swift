@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Combine
 import Foundation
 import WishlistCore
-import WishlistModel
+import WishlistFoundation
 
 struct ProcessUpdateState: Equatable {
   var apps: [App]

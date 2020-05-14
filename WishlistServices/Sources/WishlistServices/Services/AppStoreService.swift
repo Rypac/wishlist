@@ -1,6 +1,6 @@
 import Foundation
 import Combine
-import WishlistModel
+import WishlistFoundation
 
 public final class AppStoreService: AppLookupService {
   private let session: URLSession

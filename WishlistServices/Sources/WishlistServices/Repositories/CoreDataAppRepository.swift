@@ -1,7 +1,6 @@
 import Combine
 import CoreData
 import WishlistFoundation
-import WishlistModel
 
 public class CoreDataAppRepository: AppRepository {
   private let managedContext: NSManagedObjectContext
@@ -193,21 +192,6 @@ private extension App {
       releaseDate: entity.releaseDate,
       updateDate: entity.updateDate,
       releaseNotes: entity.releaseNotes
-    )
-  }
-}
-
-private extension AppSummary {
-  init(entity: AppEntity) {
-    self.init(
-      id: entity.id.intValue,
-      title: entity.title,
-      url: entity.url,
-      icon: entity.iconMediumURL,
-      version: entity.version,
-      updateDate: entity.updateDate,
-      price: entity.price,
-      formattedPrice: entity.formattedPrice
     )
   }
 }

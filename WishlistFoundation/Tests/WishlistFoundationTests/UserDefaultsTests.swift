@@ -1,5 +1,5 @@
 import XCTest
-@testable import UserDefaults
+@testable import WishlistFoundation
 
 final class UserDefaultsTests: XCTestCase {
   private var userDefaults: UserDefaults!

@@ -1,5 +1,5 @@
 import CoreData
-import WishlistModel
+import WishlistFoundation
 
 public final class VersionEntity: NSManagedObject {
   @NSManaged var date: Date

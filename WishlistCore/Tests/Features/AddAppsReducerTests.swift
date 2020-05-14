@@ -2,7 +2,7 @@ import Combine
 import ComposableArchitecture
 import Foundation
 import WishlistCore
-import WishlistModel
+import WishlistFoundation
 import XCTest
 
 class AddAppsReducerTests: XCTestCase {

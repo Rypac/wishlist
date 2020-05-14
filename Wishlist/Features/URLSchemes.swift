@@ -2,7 +2,7 @@ import Combine
 import ComposableArchitecture
 import Foundation
 import WishlistCore
-import WishlistModel
+import WishlistFoundation
 
 struct URLSchemeState: Equatable {
   var apps: [App]

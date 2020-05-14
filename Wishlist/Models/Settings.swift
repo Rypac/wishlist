@@ -1,5 +1,5 @@
 import Foundation
-import UserDefaults
+import WishlistFoundation
 
 enum SortOrder: String, CaseIterable, UserDefaultsSerializable {
   case title

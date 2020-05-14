@@ -2,7 +2,7 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import WishlistCore
-import WishlistModel
+import WishlistFoundation
 
 struct AppListState: Equatable {
   var apps: [App]

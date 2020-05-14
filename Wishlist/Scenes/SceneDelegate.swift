@@ -2,8 +2,8 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import UIKit
-import WishlistModel
 import WishlistCore
+import WishlistFoundation
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 

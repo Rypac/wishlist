@@ -17,17 +17,16 @@ let package = Package(
     )
   ],
   dependencies: [
-    .package(path: "../WishlistFoundation"),
-    .package(path: "../WishlistModel")
+    .package(path: "../WishlistFoundation")
   ],
   targets: [
     .target(
       name: "WishlistServices",
-      dependencies: ["WishlistFoundation", "WishlistModel"]
+      dependencies: ["WishlistFoundation"]
     ),
     .testTarget(
       name: "WishlistServicesTests",
-      dependencies: ["WishlistServices", "WishlistFoundation", "WishlistModel"]
+      dependencies: ["WishlistServices", "WishlistFoundation"]
     )
   ]
 )

@@ -1,7 +1,7 @@
 import Combine
 import ComposableArchitecture
 import Foundation
-import WishlistModel
+import WishlistFoundation
 
 public struct AddAppsError: Error, Equatable {}
 

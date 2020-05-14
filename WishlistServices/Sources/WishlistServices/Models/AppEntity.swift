@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-import WishlistModel
+import WishlistFoundation
 
 public final class AppEntity: NSManagedObject {
   @NSManaged var id: NSNumber

@@ -3,7 +3,7 @@ import ComposableArchitecture
 import SwiftUI
 import UIKit
 import WishlistCore
-import WishlistModel
+import WishlistFoundation
 
 class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
 

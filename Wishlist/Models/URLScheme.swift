@@ -1,5 +1,5 @@
 import Foundation
-import WishlistModel
+import WishlistFoundation
 
 enum URLScheme {
   case addApps(ids: [App.ID])
