@@ -59,7 +59,7 @@ public let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAc
   case let .handleAppUpdateTask(task):
     return .merge(
       Effect(value: .scheduleAppUpdateTask),
-      .async { _ in
+      .run { _ in
         let apps = environment.fetchApps()
         let cancellable = checkForUpdates(apps: apps, lookup: environment.lookupApps)
           .sink(receiveCompletion: { _ in }) { newApps in
