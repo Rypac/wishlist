@@ -30,12 +30,7 @@ public struct AddAppsEnvironment {
 public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironment<AddAppsEnvironment>> { state, action, environment in
   switch action {
   case let .addApps(ids):
-    let ids = Set(ids).subtracting(state.apps.map(\.id))
-    if ids.isEmpty {
-      return .none
-    }
-
-    return environment.loadApps(Array(ids))
+    return environment.loadApps(ids)
       .receive(on: environment.mainQueue())
       .mapError { _ in AddAppsError() }
       .catchToEffect()
@@ -45,10 +40,14 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
     let ids = extractAppIDs(from: urls)
     return ids.isEmpty ? .none : Effect(value: .addApps(ids))
 
-  case let .addAppsResponse(result):
-    if case let .success(apps) = result, !apps.isEmpty {
-      state.apps.append(contentsOf: apps)
-    }
+  case let .addAppsResponse(.success(apps)) where !apps.isEmpty:
+    state.apps.removeAll(where: { app in
+      apps.contains { $0.id == app.id }
+    })
+    state.apps.append(contentsOf: apps)
+    return .none
+
+  case .addAppsResponse:
     return .none
   }
 }
