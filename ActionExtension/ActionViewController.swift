@@ -132,6 +132,7 @@ class ActionViewController: UIViewController {
           return ""
         }
       }
+      .receive(on: DispatchQueue.main)
       .assign(to: \.text, on: statusLabel)
       .store(in: &cancellables)
 
@@ -143,12 +144,14 @@ class ActionViewController: UIViewController {
         return true
       }
       .delay(for: .seconds(1.5), scheduler: DispatchQueue.main)
+      .receive(on: DispatchQueue.main)
       .sink { [weak self] _ in
         self?.done()
       }
       .store(in: &cancellables)
 
     extensionContext!.loadURLs()
+      .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { _ in }) { [weak self] urls in
         self?.viewStore.send(.addApps(.addAppsFromURLs(urls)))
       }
