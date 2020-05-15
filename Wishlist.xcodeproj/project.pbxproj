@@ -406,8 +406,8 @@
 			children = (
 				94B015E3243D6C6F00BB4E7C /* WishlistFoundation */,
 				942833A8243348FF00A8921E /* WishlistServices */,
-				94FA20CD231BA2BC00EC1190 /* Wishlist */,
 				94E0763A246ABEB10005FE18 /* WishlistCore */,
+				94FA20CD231BA2BC00EC1190 /* Wishlist */,
 				9494DA0A24319285003A7992 /* ActionExtension */,
 				94FA20CC231BA2BC00EC1190 /* Products */,
 				945CB45F23530B5E00DF3ABF /* Frameworks */,
