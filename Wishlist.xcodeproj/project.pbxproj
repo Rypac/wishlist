@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		94025A64246B4D6200CA3F70 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 94025A63246B4D6200CA3F70 /* ComposableArchitecture */; };
+		94145A71246E3E3C00B24E25 /* BackgroundTaskReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94145A70246E3E3C00B24E25 /* BackgroundTaskReducerTests.swift */; };
 		94151ED22469049700CBD2BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED12469049700CBD2BE /* SettingsView.swift */; };
 		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
 		94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */; };
@@ -160,6 +161,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		94145A70246E3E3C00B24E25 /* BackgroundTaskReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskReducerTests.swift; sourceTree = "<group>"; };
 		94151ED12469049700CBD2BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		94151ED32469379E00CBD2BE /* UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
 		94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessUpdates.swift; sourceTree = "<group>"; };
@@ -363,6 +365,7 @@
 			isa = PBXGroup;
 			children = (
 				94D8B29E246B6CEB003BD5E9 /* AddAppsReducerTests.swift */,
+				94145A70246E3E3C00B24E25 /* BackgroundTaskReducerTests.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -664,6 +667,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94145A71246E3E3C00B24E25 /* BackgroundTaskReducerTests.swift in Sources */,
 				94D8B2A6246B80BB003BD5E9 /* SystemEnvironment.swift in Sources */,
 				94D8B29F246B6CEB003BD5E9 /* AddAppsReducerTests.swift in Sources */,
 				949FA559246E98A400F01A5B /* AppMocks.swift in Sources */,

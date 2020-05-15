@@ -3,7 +3,13 @@ import Combine
 import ComposableArchitecture
 import WishlistFoundation
 
-public struct BackgroundTask: Identifiable, Equatable {
+public protocol BackgroundTask: AnyObject {
+  var identifier: String { get }
+  var expirationHandler: (() -> Void)? { get set }
+  func setTaskCompleted(success: Bool)
+}
+
+public struct BackgroundTaskConfiguration: Identifiable, Equatable {
   public let id: String
   public var frequency: TimeInterval
 
@@ -14,17 +20,17 @@ public struct BackgroundTask: Identifiable, Equatable {
 }
 
 public struct BackgroundTaskState: Equatable {
-  public var updateAppsTask: BackgroundTask
+  public var updateAppsTask: BackgroundTaskConfiguration
 
-  public init(updateAppsTask: BackgroundTask) {
+  public init(updateAppsTask: BackgroundTaskConfiguration) {
     self.updateAppsTask = updateAppsTask
   }
 }
 
 public enum BackgroundTaskAction {
   case scheduleAppUpdateTask
-  case handleAppUpdateTask(BGAppRefreshTask)
-  case failedToRegisterTask(BackgroundTask)
+  case handleAppUpdateTask(BackgroundTask)
+  case failedToRegisterTask(BackgroundTaskConfiguration)
 }
 
 public struct BackgroundTaskEnvironment {
@@ -59,12 +65,22 @@ public let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAc
   case let .handleAppUpdateTask(task):
     return .merge(
       Effect(value: .scheduleAppUpdateTask),
-      .run { _ in
+      .run { subscriber in
         let apps = environment.fetchApps()
         let cancellable = checkForUpdates(apps: apps, lookup: environment.lookupApps)
-          .sink(receiveCompletion: { _ in }) { newApps in
-            environment.saveUpdatedApps(newApps)
-          }
+          .sink(
+            receiveCompletion: { result in
+              if case .finished = result {
+                task.setTaskCompleted(success: true)
+              } else {
+                task.setTaskCompleted(success: false)
+              }
+              subscriber.send(completion: .finished)
+            },
+            receiveValue: { newApps in
+              environment.saveUpdatedApps(newApps)
+            }
+          )
         task.expirationHandler = {
           cancellable.cancel()
         }

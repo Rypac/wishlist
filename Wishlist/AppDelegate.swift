@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     Store(
       initialState: AppDelegateState(
         backgroundTaskState: BackgroundTaskState(
-          updateAppsTask: BackgroundTask(id: "org.rypac.Wishlist.refresh", frequency: 30 * 60)
+          updateAppsTask: BackgroundTaskConfiguration(id: "org.rypac.Wishlist.refresh", frequency: 30 * 60)
         )
       ),
       reducer: appDelegateReducer,
@@ -90,6 +90,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     viewStore.send(.backgroundTask(.handleAppUpdateTask(task)))
   }
 }
+
+extension BGTask: BackgroundTask {}
 
 // MARK: - Composable Architecture
 
