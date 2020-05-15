@@ -7,10 +7,12 @@ struct SettingsState: Equatable {
 
 enum SettingsAction {
   case setTheme(Theme)
+  case viewSourceCode
 }
 
 struct SettingsEnvironment {
   var saveTheme: (Theme) -> Void
+  var openURL: (URL) -> Void
 }
 
 let settingsReducer = Reducer<SettingsState, SettingsAction, SettingsEnvironment> { state, action, environment in
@@ -19,6 +21,11 @@ let settingsReducer = Reducer<SettingsState, SettingsAction, SettingsEnvironment
     state.theme = theme
     return .fireAndForget {
       environment.saveTheme(theme)
+    }
+
+  case .viewSourceCode:
+    return .fireAndForget {
+      environment.openURL(URL(string: "https://github.com/Rypac/wishlist")!)
     }
   }
 }
@@ -38,6 +45,11 @@ struct SettingsView: View {
                 Text(theme.title).tag(theme)
               }
             }.pickerStyle(SegmentedPickerStyle())
+          }
+          Section(header: Text("About")) {
+            Button("Source Code") {
+              viewStore.send(.viewSourceCode)
+            }
           }
         }
         .navigationBarTitle("Settings")

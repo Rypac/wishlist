@@ -186,40 +186,49 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
     switch action {
     case .lifecycle(.willConnect):
       return Effect(value: .processUpdates(.subscribe))
+
     case let .lifecycle(.openURL(url)):
       guard let urlScheme = URLScheme(rawValue: url) else {
         return .none
       }
       return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
+
     case .lifecycle(.didBecomeActive):
       return Effect(value: .updates(.checkForUpdates))
+
     case .lifecycle(.willEnterForground):
       let theme = state.theme
       return .fireAndForget {
         environment.setTheme(theme)
       }
+
     case .lifecycle(.didEnterBackground):
       return .fireAndForget {
         environment.scheduleBackgroundTasks()
       }
+
     case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
       return .fireAndForget {
         try? environment.repository.add(updatedApps)
         environment.settings.lastUpdateDate = date
       }
+
     case let .appList(.addApps(.addAppsResponse(.success(apps)))),
          let .urlScheme(.addApps(.addAppsResponse(.success(apps)))):
       return .fireAndForget {
         try? environment.repository.add(apps)
       }
+
     case let .appList(.removeApps(ids)):
       return .fireAndForget {
         try? environment.repository.delete(ids: ids)
       }
+
     case let .appList(.setSortOrder(sortOrder)):
       return .fireAndForget {
         environment.settings.sortOrder = sortOrder
       }
+
     case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:
       return .none
     }
@@ -259,7 +268,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
     state: \.settingsState,
     action: /AppAction.settings,
     environment: { systemEnvironment in
-      SettingsEnvironment(saveTheme: systemEnvironment.setTheme)
+      SettingsEnvironment(saveTheme: systemEnvironment.setTheme, openURL: systemEnvironment.openURL)
     }
   ),
   processUpdateReducer.pullback(

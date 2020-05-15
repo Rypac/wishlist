@@ -150,7 +150,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     state: \.settingsState,
     action: /AppListAction.settings,
     environment: {
-      SettingsEnvironment(saveTheme: $0.saveTheme)
+      SettingsEnvironment(saveTheme: $0.saveTheme, openURL: $0.openURL)
     }
   )
 )
