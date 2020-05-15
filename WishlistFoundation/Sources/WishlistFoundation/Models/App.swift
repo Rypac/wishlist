@@ -2,9 +2,9 @@ import Foundation
 
 public struct App: Identifiable, Equatable {
   public struct Icon: Equatable {
-    public let small: URL
-    public let medium: URL
-    public let large: URL
+    public var small: URL
+    public var medium: URL
+    public var large: URL
 
     public init(small: URL, medium: URL, large: URL) {
       self.small = small
@@ -14,8 +14,8 @@ public struct App: Identifiable, Equatable {
   }
 
   public struct Price: Equatable {
-    public let value: Double
-    public let formatted: String
+    public var value: Double
+    public var formatted: String
 
     public init(value: Double, formatted: String) {
       self.value = value
@@ -24,17 +24,17 @@ public struct App: Identifiable, Equatable {
   }
 
   public let id: Int
-  public let title: String
-  public let seller: String
-  public let description: String
-  public let url: URL
-  public let icon: Icon
-  public let price: Price
-  public let bundleID: String
-  public let version: String
-  public let releaseDate: Date
-  public let updateDate: Date
-  public let releaseNotes: String?
+  public var title: String
+  public var seller: String
+  public var description: String
+  public var url: URL
+  public var icon: Icon
+  public var price: Price
+  public var bundleID: String
+  public var version: String
+  public var releaseDate: Date
+  public var updateDate: Date
+  public var releaseNotes: String?
 
   public init(
     id: Int,
