@@ -28,14 +28,6 @@ public class CoreDataAppRepository: AppRepository {
   }
 
   public func add(_ apps: [App]) throws {
-    try upsert(apps)
-  }
-
-  public func update(_ apps: [App]) throws {
-    try upsert(apps)
-  }
-
-  private func upsert(_ apps: [App]) throws {
     managedContext.perform { [managedContext] in
       let ids = apps.map { NSNumber(value: $0.id) }
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)

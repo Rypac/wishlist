@@ -6,8 +6,6 @@ public protocol AppRepository {
   func fetch(id: App.ID) throws -> App?
   func add(_ app: App) throws
   func add(_ apps: [App]) throws
-  func update(_ app: App) throws
-  func update(_ apps: [App]) throws
   func delete(id: App.ID) throws
   func delete(ids: [App.ID]) throws
 }
@@ -19,10 +17,6 @@ public extension AppRepository {
 
   func add(_ app: App) throws {
     try add([app])
-  }
-
-  func update(_ app: App) throws {
-    try update([app])
   }
 
   func delete(id: App.ID) throws {
