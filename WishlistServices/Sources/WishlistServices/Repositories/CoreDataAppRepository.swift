@@ -32,6 +32,7 @@ public class CoreDataAppRepository: AppRepository {
       let ids = apps.map { NSNumber(value: $0.id) }
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
       fetchRequest.predicate = NSPredicate(format: "id in %@", ids)
+      fetchRequest.fetchLimit = apps.count
 
       guard let existingApps = try? managedContext.fetch(fetchRequest) else {
         return
