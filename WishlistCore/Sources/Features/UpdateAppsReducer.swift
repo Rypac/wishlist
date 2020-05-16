@@ -22,9 +22,11 @@ public struct AppUpdateState: Equatable {
   }
 }
 
-public enum AppUpdateAction {
+public struct UpdateAppsError: Error, Equatable {}
+
+public enum AppUpdateAction: Equatable {
   case checkForUpdates
-  case receivedUpdates(Result<[App], Error>, at: Date)
+  case receivedUpdates(Result<[App], UpdateAppsError>, at: Date)
 }
 
 public struct AppUpdateEnvironment {
@@ -45,6 +47,7 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
     state.isUpdateInProgress = true
     return checkForUpdates(apps: state.apps, lookup: environment.lookupApps)
       .receive(on: environment.mainQueue())
+      .mapError { _ in UpdateAppsError() }
       .catchToEffect()
       .map { .receivedUpdates($0, at: environment.now()) }
 
@@ -73,7 +76,7 @@ private extension AppUpdateState {
     guard let lastUpdateDate = lastUpdateDate else {
       return true
     }
-    return now.timeIntervalSince(lastUpdateDate) > TimeInterval(updateFrequency)
+    return now.timeIntervalSince(lastUpdateDate) >= TimeInterval(updateFrequency)
   }
 }
 
