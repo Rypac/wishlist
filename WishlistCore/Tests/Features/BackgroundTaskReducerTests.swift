@@ -59,9 +59,8 @@ class BackgroundTaskReducerTests: XCTestCase {
     updatedThings.version = "3.12.4"
     updatedThings.updateDate = now
 
-    var lookupAppsSucceeds = true
-    var appsToUpdate = [App.ID]()
-    var updatedApps = [App]()
+    var appsToUpdate: [App.ID]?
+    var updatedApps: [App]?
 
     let testStore = TestStore(
       initialState: BackgroundTaskState(
@@ -75,11 +74,7 @@ class BackgroundTaskReducerTests: XCTestCase {
           lookupApps: { ids in
             appsToUpdate = ids
             return Future { subscriber in
-              if lookupAppsSucceeds {
-                subscriber(.success([updatedThings]))
-              } else {
-                subscriber(.failure(FetchAppsError()))
-              }
+              subscriber(.success([updatedThings]))
             }.eraseToAnyPublisher()
           },
           saveUpdatedApps: { updatedApps = $0 }
@@ -90,7 +85,7 @@ class BackgroundTaskReducerTests: XCTestCase {
     let refreshTask = TestBackgroundTask(identifier: "refresh-task")
 
     testStore.assert(
-      // Trigger success flow where apps are updated successfully
+      // Success flow
       .send(.handleAppUpdateTask(refreshTask)),
       .receive(.scheduleAppUpdateTask),
       .do { self.scheduler.advance(by: 1) },
@@ -103,14 +98,20 @@ class BackgroundTaskReducerTests: XCTestCase {
 
       // Reset test assertions
       .do {
-        lookupAppsSucceeds = false
-        refreshTask.taskCompletedResult = nil
-        refreshTask.expirationHandler = nil
-        appsToUpdate = []
-        updatedApps = []
+        refreshTask.reset()
+        appsToUpdate = nil
+        updatedApps = nil
+      },
+      .environment { update in
+        update.lookupApps = { ids in
+          appsToUpdate = ids
+          return Future { subscriber in
+            subscriber(.failure(FetchAppsError()))
+          }.eraseToAnyPublisher()
+        }
       },
 
-      // Trigger error flow where apps fail to be updated
+      // Failure to lookup apps flow
       .send(.handleAppUpdateTask(refreshTask)),
       .receive(.scheduleAppUpdateTask),
       .do { self.scheduler.advance(by: 1) },
@@ -118,7 +119,7 @@ class BackgroundTaskReducerTests: XCTestCase {
         XCTAssertNotNil(refreshTask.expirationHandler)
         XCTAssertEqual(refreshTask.taskCompletedResult, false)
         XCTAssertEqual(appsToUpdate, apps.map(\.id))
-        XCTAssertEqual(updatedApps, [])
+        XCTAssertEqual(updatedApps, nil)
       }
     )
   }
@@ -137,6 +138,11 @@ private final class TestBackgroundTask: BackgroundTask {
 
   func setTaskCompleted(success: Bool) {
     taskCompletedResult = success
+  }
+
+  func reset() {
+    taskCompletedResult = nil
+    expirationHandler = nil
   }
 }
 
