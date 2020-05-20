@@ -43,7 +43,9 @@ struct AppDetailsView: View {
       .navigationBarTitle("Details", displayMode: .inline)
       .navigationBarItems(
         trailing: Button(action: { self.showShareSheet = true }) {
-          Image.share.imageScale(.large)
+          Image.share
+            .imageScale(.large)
+            .frame(width: 24, height: 24)
         }.hoverEffect()
       )
       .sheet(isPresented: $showShareSheet) {
@@ -99,10 +101,9 @@ private struct ViewInAppStoreButton: View {
         .fontWeight(.bold)
         .foregroundColor(.white)
         .padding([.leading, .trailing], 20)
-        .padding([.top, .bottom], 6)
-        .background(Color.blue)
-        .cornerRadius(.infinity)
-    }.hoverEffect()
+        .padding([.top, .bottom], 8)
+        .background(Capsule().fill(Color.blue))
+    }.hoverEffect(.lift)
   }
 }
 
