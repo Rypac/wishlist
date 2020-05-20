@@ -5,6 +5,7 @@ public final class PriceEntity: NSManagedObject {
   @NSManaged var date: Date
   @NSManaged var value: Double
   @NSManaged var formatted: String
+  @NSManaged var app: AppEntity
 
   static var entityName: String { "PriceEntity" }
 }
