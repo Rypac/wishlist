@@ -4,8 +4,10 @@ import WishlistFoundation
 public final class VersionEntity: NSManagedObject {
   @NSManaged var date: Date
   @NSManaged var version: String
-  @NSManaged var notes: String?
+  @NSManaged var releaseNotes: String?
   @NSManaged var app: AppEntity
+  @NSManaged var currentVersionOfApp: AppEntity?
+  @NSManaged var previousVersionOfApp: AppEntity?
 
   static var entityName: String { "VersionEntity" }
 }
@@ -14,6 +16,6 @@ extension VersionEntity {
   func update(app: App) {
     self.date = app.updateDate
     self.version = app.version
-    self.notes = app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines)
+    self.releaseNotes = app.releaseNotes
   }
 }

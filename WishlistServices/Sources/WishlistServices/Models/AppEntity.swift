@@ -3,21 +3,20 @@ import CoreData
 import WishlistFoundation
 
 public final class AppEntity: NSManagedObject {
-  @NSManaged var id: NSNumber
+  @NSManaged var identifier: NSNumber
   @NSManaged var title: String
   @NSManaged var seller: String
-  @NSManaged var appDescription: String
+  @NSManaged var storeDescription: String
   @NSManaged var url: URL
   @NSManaged var iconSmallURL: URL
   @NSManaged var iconMediumURL: URL
   @NSManaged var iconLargeURL: URL
   @NSManaged var bundleID: String
   @NSManaged var releaseDate: Date
-  @NSManaged var price: Double
-  @NSManaged var formattedPrice: String
-  @NSManaged var version: String
-  @NSManaged var updateDate: Date
-  @NSManaged var releaseNotes: String?
+  @NSManaged var currentPrice: PriceEntity
+  @NSManaged var previousPrice: PriceEntity?
+  @NSManaged var currentVersion: VersionEntity
+  @NSManaged var previousVersion: VersionEntity?
   @NSManaged var versions: Set<VersionEntity>
   @NSManaged var prices: Set<PriceEntity>
 
@@ -26,28 +25,27 @@ public final class AppEntity: NSManagedObject {
 
 extension AppEntity {
   func update(app: App) {
-    id = NSNumber(value: app.id)
-    title = app.title.trimmingCharacters(in: .whitespaces)
+    identifier = NSNumber(value: app.id)
+    title = app.title
     seller = app.seller
-    appDescription = app.description.trimmingCharacters(in: .whitespacesAndNewlines)
+    storeDescription = app.description
     url = app.url
     iconSmallURL = app.icon.small
     iconMediumURL = app.icon.medium
     iconLargeURL = app.icon.large
     bundleID = app.bundleID
     releaseDate = app.releaseDate
-    price = app.price.value
-    formattedPrice = app.price.formatted
-    version = app.version
-    updateDate = app.updateDate
-    releaseNotes = app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
   func add(version: VersionEntity) {
+    previousVersion = currentVersion
+    currentVersion = version
     mutableSetValue(forKey: "versions").add(version)
   }
 
   func add(price: PriceEntity) {
+    previousPrice = currentPrice
+    currentPrice = price
     mutableSetValue(forKey: "prices").add(price)
   }
 }

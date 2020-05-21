@@ -84,9 +84,9 @@ private extension App {
   init(app: LookupResponse.App) {
     self.init(
       id: app.id,
-      title: app.title,
-      seller: app.seller,
-      description: app.description,
+      title: app.title.trimmingCharacters(in: .whitespacesAndNewlines),
+      seller: app.seller.trimmingCharacters(in: .whitespacesAndNewlines),
+      description: app.description.trimmingCharacters(in: .whitespacesAndNewlines),
       url: app.url,
       icon: Icon(small: app.iconSmallURL, medium: app.iconMediumURL, large: app.iconLargeURL),
       price: Price(value: app.price, formatted: app.formattedPrice),
@@ -94,7 +94,7 @@ private extension App {
       version: app.version,
       releaseDate: app.releaseDate,
       updateDate: app.updateDate,
-      releaseNotes: app.releaseNotes
+      releaseNotes: app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines)
     )
   }
 }
