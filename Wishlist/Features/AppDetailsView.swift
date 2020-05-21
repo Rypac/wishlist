@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WishlistCore
 import WishlistFoundation
 
 struct AppDetailsState: Equatable {
@@ -7,15 +8,23 @@ struct AppDetailsState: Equatable {
 }
 
 enum AppDetailsAction {
+  case onAppear
   case openInAppStore(URL)
 }
 
 struct AppDetailsEnvironment {
   var openURL: (URL) -> Void
+  var recordDetailsViewed: (App.ID, Date) -> Void
 }
 
-let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, AppDetailsEnvironment> { state, action, environment in
+let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>> { state, action, environment in
   switch action {
+  case .onAppear:
+    let id = state.app.id
+    return .fireAndForget {
+      environment.recordDetailsViewed(id, environment.now())
+    }
+
   case let .openInAppStore(url):
     return .fireAndForget {
       environment.openURL(url)
@@ -29,6 +38,9 @@ struct ConnectedAppDetailsView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       AppDetailsView(app: viewStore.app)
+        .onAppear {
+          viewStore.send(.onAppear)
+        }
     }
   }
 }

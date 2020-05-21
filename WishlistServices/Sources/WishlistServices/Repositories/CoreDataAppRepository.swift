@@ -52,6 +52,9 @@ public class CoreDataAppRepository: AppRepository {
   }
 
   private func insert(_ app: App, at date: Date) {
+    let interaction = InteractionEntity(context: managedContext)
+    interaction.firstAdded = date
+
     let currentPrice = PriceEntity(context: managedContext)
     currentPrice.update(app: app, at: date)
 
@@ -62,6 +65,7 @@ public class CoreDataAppRepository: AppRepository {
     appEntity.update(app: app)
     appEntity.add(version: currentVersion)
     appEntity.add(price: currentPrice)
+    appEntity.interaction = interaction
   }
 
   private func update(_ existingApp: AppEntity, with app: App, at date: Date) {
@@ -77,6 +81,21 @@ public class CoreDataAppRepository: AppRepository {
       let latestPrice = PriceEntity(context: managedContext)
       latestPrice.update(app: app, at: date)
       existingApp.add(price: latestPrice)
+    }
+  }
+
+  public func viewedApp(id: App.ID, at date: Date) throws {
+    managedContext.perform { [managedContext] in
+      let fetchRequest = NSFetchRequest<InteractionEntity>(entityName: InteractionEntity.entityName)
+      fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id))
+      fetchRequest.fetchLimit = 1
+
+      if let interaction = try? managedContext.fetch(fetchRequest).first {
+        interaction.lastViewed = date
+        interaction.viewCount += 1
+      }
+
+      try? managedContext.saveIfNeeded()
     }
   }
 
@@ -115,7 +134,7 @@ private extension AppEntity {
   static func fetchAllRequest() -> NSFetchRequest<AppEntity> {
     let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
     fetchRequest.relationshipKeyPathsForPrefetching = [
-      "currentPrice", "previousPrice", "currentVersion", "previousVersion"
+      "currentPrice", "previousPrice", "currentVersion", "previousVersion", "interaction"
     ]
     fetchRequest.sortDescriptors = [
       NSSortDescriptor(key: "title", ascending: true)
@@ -148,7 +167,8 @@ private extension App {
       version: entity.currentVersion.version,
       releaseDate: entity.releaseDate,
       updateDate: entity.currentVersion.date,
-      releaseNotes: entity.currentVersion.releaseNotes
+      releaseNotes: entity.currentVersion.releaseNotes,
+      lastViewed: entity.interaction.lastViewed
     )
   }
 }

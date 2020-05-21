@@ -35,6 +35,7 @@ public struct App: Identifiable, Equatable {
   public var releaseDate: Date
   public var updateDate: Date
   public var releaseNotes: String?
+  public var lastViewed: Date?
 
   public init(
     id: Int,
@@ -48,7 +49,8 @@ public struct App: Identifiable, Equatable {
     version: String,
     releaseDate: Date,
     updateDate: Date,
-    releaseNotes: String?
+    releaseNotes: String?,
+    lastViewed: Date?
   ) {
     self.id = id
     self.title = title
@@ -62,5 +64,6 @@ public struct App: Identifiable, Equatable {
     self.releaseDate = releaseDate
     self.updateDate = updateDate
     self.releaseNotes = releaseNotes
+    self.lastViewed = lastViewed
   }
 }

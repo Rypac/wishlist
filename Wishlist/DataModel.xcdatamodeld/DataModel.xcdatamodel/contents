@@ -13,6 +13,7 @@
         <attribute name="url" optional="YES" attributeType="URI"/>
         <relationship name="currentPrice" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PriceEntity" inverseName="currentPriceOfApp" inverseEntity="PriceEntity"/>
         <relationship name="currentVersion" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VersionEntity" inverseName="currentVersionOfApp" inverseEntity="VersionEntity"/>
+        <relationship name="interaction" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="InteractionEntity" inverseName="app" inverseEntity="InteractionEntity"/>
         <relationship name="previousPrice" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PriceEntity" inverseName="previousPriceOfApp" inverseEntity="PriceEntity"/>
         <relationship name="previousVersion" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VersionEntity" inverseName="previousVersionOfApp" inverseEntity="VersionEntity"/>
         <relationship name="prices" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PriceEntity" inverseName="app" inverseEntity="PriceEntity"/>
@@ -22,6 +23,12 @@
                 <constraint value="identifier"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
+    </entity>
+    <entity name="InteractionEntity" representedClassName="WishlistServices.InteractionEntity" syncable="YES">
+        <attribute name="firstAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastViewed" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="viewCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="app" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="interaction" inverseEntity="AppEntity"/>
     </entity>
     <entity name="PriceEntity" representedClassName="WishlistServices.PriceEntity" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -43,10 +50,12 @@
         <memberEntity name="AppEntity"/>
         <memberEntity name="VersionEntity"/>
         <memberEntity name="PriceEntity"/>
+        <memberEntity name="InteractionEntity"/>
     </configuration>
     <elements>
-        <element name="AppEntity" positionX="-1534.515625" positionY="-1032.13671875" width="117.296875" height="283"/>
+        <element name="AppEntity" positionX="-1534.515625" positionY="-1032.13671875" width="117.296875" height="298"/>
         <element name="PriceEntity" positionX="-1100.89453125" positionY="-1097.08203125" width="128" height="133"/>
-        <element name="VersionEntity" positionX="-1029.08203125" positionY="-714.23828125" width="128" height="133"/>
+        <element name="VersionEntity" positionX="-1100.5234375" positionY="-714.09375" width="128" height="133"/>
+        <element name="InteractionEntity" positionX="-1101.32421875" positionY="-896.984375" width="128" height="103"/>
     </elements>
 </model>

@@ -94,7 +94,8 @@ private extension App {
       version: app.version,
       releaseDate: app.releaseDate,
       updateDate: app.updateDate,
-      releaseNotes: app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines)
+      releaseNotes: app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines),
+      lastViewed: nil
     )
   }
 }

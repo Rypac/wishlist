@@ -5,7 +5,7 @@ import WishlistCore
 import WishlistFoundation
 
 struct AppListState: Equatable {
-  var apps: [App]
+  var apps: IdentifiedArrayOf<App>
   var sortOrder: SortOrder
   var theme: Theme
   var displayedAppDetailsID: App.ID? = nil
@@ -29,6 +29,7 @@ struct AppListEnvironment {
   var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
   var openURL: (URL) -> Void
   var saveTheme: (Theme) -> Void
+  var recordDetailsViewed: (App.ID, Date) -> Void
 }
 
 struct AppListRowState: Identifiable, Equatable {
@@ -70,8 +71,8 @@ private extension AppListState {
   }
 
   var addAppsState: AddAppsState {
-    get { .init(apps: apps) }
-    set { apps = newValue.apps }
+    get { .init(apps: apps.elements) }
+    set { apps = IdentifiedArrayOf(newValue.apps) }
   }
 
   var settingsState: SettingsState {
@@ -126,15 +127,29 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     case let .app(id, .remove):
       return Effect(value: .removeApps([id]))
 
-    case .appDetails, .app, .addApps, .settings:
+    case let .app(id: _, action: .viewDetails(details)):
+      return Effect(value: .appDetails(details))
+
+    case .appDetails(.onAppear):
+      if let id = state.displayedAppDetailsID {
+        state.apps[id: id]?.lastViewed = environment.now()
+      }
+      return .none
+
+    case .appDetails, .addApps, .settings:
       return .none
     }
   },
   appDetailsReducer.optional.pullback(
     state: \.appDetailsState,
     action: /AppListAction.appDetails,
-    environment: {
-      AppDetailsEnvironment(openURL: $0.openURL)
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AppDetailsEnvironment(
+          openURL: $0.openURL,
+          recordDetailsViewed: $0.recordDetailsViewed
+        )
+      }
     }
   ),
   addAppsReducer.pullback(
@@ -248,9 +263,9 @@ private struct SortOrderSheet: View {
 
 private extension AppListRowState {
   var view: ConnectedAppRow.ViewState {
-    .init(
+    ConnectedAppRow.ViewState(
       title: app.title,
-      details: sortOrder == .updated ? .updated(app.updateDate) : .price(app.price.formatted),
+      details: AppRow.Details(sortOrder: sortOrder, app: app),
       icon: app.icon.medium,
       url: app.url,
       isSelected: isSelected
@@ -316,7 +331,7 @@ private struct ConnectedAppRow: View {
 private struct AppRow: View {
   enum Details: Equatable {
     case price(String)
-    case updated(Date)
+    case updated(Date, seen: Bool)
   }
 
   @Environment(\.updateDateFormatter) private var dateFormatter
@@ -332,17 +347,48 @@ private struct AppRow: View {
         .fontWeight(.medium)
         .layoutPriority(1)
       Spacer()
-      Text(appDetails)
-        .lineLimit(1)
-        .multilineTextAlignment(.trailing)
-        .layoutPriority(1)
+      ZStack(alignment: .topTrailing) {
+        Text(appDetails)
+          .lineLimit(1)
+          .multilineTextAlignment(.trailing)
+
+        if details.hasUnviewedUpdate {
+          Circle()
+            .foregroundColor(.blue)
+            .frame(width: 15, height: 15)
+            .offset(x: 8, y: -14)
+        }
+      }.layoutPriority(1)
     }
   }
 
   private var appDetails: String {
     switch details {
     case let .price(price): return price
-    case let .updated(date): return dateFormatter.string(from: date)
+    case let .updated(date, _): return dateFormatter.string(from: date)
+    }
+  }
+}
+
+private extension AppRow.Details {
+  init(sortOrder: SortOrder, app: App) {
+    switch sortOrder {
+    case .updated:
+      if let lastViewed = app.lastViewed {
+        self = .updated(app.updateDate, seen: lastViewed >= app.updateDate)
+      } else {
+        self = .updated(app.updateDate, seen: true)
+      }
+
+    case .price, .title:
+      self = .price(app.price.formatted)
+    }
+  }
+
+  var hasUnviewedUpdate: Bool {
+    switch self {
+    case let .updated(_, seen): return !seen
+    case .price: return false
     }
   }
 }
@@ -375,7 +421,7 @@ private extension SortOrder {
   }
 }
 
-extension Array where Element == App {
+extension Collection where Element == App {
   func sorted(by order: SortOrder) -> [App] {
     sorted {
       switch order {

@@ -94,7 +94,7 @@ private extension AppState {
   var appListState: AppListState {
     get {
       AppListState(
-        apps: apps,
+        apps: IdentifiedArrayOf(apps),
         sortOrder: sortOrder,
         theme: theme,
         displayedAppDetailsID: viewingAppDetails,
@@ -103,7 +103,7 @@ private extension AppState {
       )
     }
     set {
-      apps = newValue.apps
+      apps = newValue.apps.elements
       sortOrder = newValue.sortOrder
       theme = newValue.theme
       isSettingsSheetPresented = newValue.isSettingsSheetPresented
@@ -241,7 +241,10 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
         AppListEnvironment(
           loadApps: $0.loadApps,
           openURL: $0.openURL,
-          saveTheme: $0.setTheme
+          saveTheme: $0.setTheme,
+          recordDetailsViewed: { id, date in
+            try? systemEnvironment.repository.viewedApp(id: id, at: date)
+          }
         )
       }
     }

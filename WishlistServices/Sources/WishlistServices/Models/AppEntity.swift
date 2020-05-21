@@ -13,6 +13,7 @@ public final class AppEntity: NSManagedObject {
   @NSManaged var iconLargeURL: URL
   @NSManaged var bundleID: String
   @NSManaged var releaseDate: Date
+  @NSManaged var interaction: InteractionEntity
   @NSManaged var currentPrice: PriceEntity
   @NSManaged var previousPrice: PriceEntity?
   @NSManaged var currentVersion: VersionEntity

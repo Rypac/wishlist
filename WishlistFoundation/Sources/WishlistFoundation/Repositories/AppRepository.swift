@@ -1,4 +1,5 @@
 import Combine
+import Foundation
 
 public protocol AppRepository {
   func publisher() -> AnyPublisher<[App], Never>
@@ -8,6 +9,7 @@ public protocol AppRepository {
   func add(_ apps: [App]) throws
   func delete(id: App.ID) throws
   func delete(ids: [App.ID]) throws
+  func viewedApp(id: App.ID, at date: Date) throws
 }
 
 public extension AppRepository {
