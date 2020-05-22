@@ -2,133 +2,168 @@ import Combine
 import CoreData
 import WishlistFoundation
 
-public class CoreDataAppRepository: AppRepository {
-  private let managedContext: NSManagedObjectContext
+public final class CoreDataAppRepository: AppRepository {
+  private let container: NSPersistentContainer
 
-  public init(context: NSManagedObjectContext) {
-    managedContext = context
-    managedContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-    managedContext.automaticallyMergesChangesFromParent = true
+  public init(container: NSPersistentContainer) {
+    self.container = container
+
+    let viewContext = container.viewContext
+    viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+    viewContext.automaticallyMergesChangesFromParent = true
   }
 
   public func publisher() -> AnyPublisher<[App], Never> {
-    NSFetchRequestPublisher(request: AppEntity.fetchAllRequest(), context: managedContext, refresh: .didSaveManagedObjectContextExternally)
+    NSFetchRequestPublisher(request: AppEntity.fetchAllRequest(), context: container.viewContext, refresh: .didSaveManagedObjectContextExternally)
       .map { $0.map(App.init) }
       .eraseToAnyPublisher()
   }
 
   public func fetchAll() throws -> [App] {
     let fetchRequest = AppEntity.fetchAllRequest()
-    return try managedContext.fetch(fetchRequest).map(App.init)
+    return try container.viewContext.performAndFetch(fetchRequest).map(App.init)
   }
 
   public func fetch(id: App.ID) throws -> App? {
     let fetchRequest = AppEntity.fetchRequest(id: id)
-    return try managedContext.fetch(fetchRequest).first.flatMap(App.init)
+    return try container.viewContext.performAndFetch(fetchRequest).first.flatMap(App.init)
   }
 
   public func add(_ apps: [App]) throws {
-    managedContext.perform { [managedContext] in
+    container.performBackgroundTask { context in
       let ids = apps.map { NSNumber(value: $0.id) }
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
       fetchRequest.predicate = NSPredicate(format: "identifier in %@", ids)
       fetchRequest.relationshipKeyPathsForPrefetching = ["currentPrice", "currentVersion"]
       fetchRequest.fetchLimit = ids.count
 
-      guard let existingApps = try? managedContext.fetch(fetchRequest) else {
+      guard let existingApps = try? context.fetch(fetchRequest) else {
         return
       }
 
-      apps.forEach { [weak self] app in
+      apps.forEach { app in
         if let existingApp = existingApps.first(where: { $0.identifier.intValue == app.id }) {
-          self?.update(existingApp, with: app, at: Date())
+          context.update(existingApp, with: app, at: Date())
         } else {
-          self?.insert(app, at: Date())
+          context.insert(app, at: Date())
         }
       }
 
-      try? managedContext.saveIfNeeded()
+      try? context.saveIfNeeded()
     }
   }
 
-  private func insert(_ app: App, at date: Date) {
-    let interaction = InteractionEntity(context: managedContext)
+  public func viewedApp(id: App.ID, at date: Date) throws {
+    container.performBackgroundTask { context in
+      let fetchRequest = NSFetchRequest<InteractionEntity>(entityName: InteractionEntity.entityName)
+      fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id))
+      fetchRequest.fetchLimit = 1
+
+      if let interaction = try? context.fetch(fetchRequest).first {
+        interaction.lastViewed = date
+        interaction.viewCount += 1
+      }
+
+      try? context.saveIfNeeded()
+    }
+  }
+
+  public func delete(ids: [App.ID]) throws {
+    container.performBackgroundTask { context in
+      let ids = ids.map(NSNumber.init)
+      let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
+      fetchRequest.predicate = NSPredicate(format: "identifier in %@", ids)
+      fetchRequest.fetchLimit = ids.count
+
+      guard let existingApps = try? context.fetch(fetchRequest) else {
+        return
+      }
+
+      existingApps.forEach { existingApp in
+        context.delete(existingApp)
+      }
+
+      try? context.saveIfNeeded()
+    }
+  }
+}
+
+// MARK: - Extensions
+
+private extension NSManagedObjectContext {
+  func performAndFetch<T>(_ request: NSFetchRequest<T>) throws -> [T] where T: NSFetchRequestResult {
+    try performAndWaitThrows {
+      try self.fetch(request)
+    }
+  }
+
+  func saveIfNeeded() throws {
+    guard hasChanges else {
+      return
+    }
+
+    try performAndWaitThrows {
+      try self.save()
+    }
+
+    DarwinNotificationCenter.shared.postNotification(.didSaveManagedObjectContextLocally)
+  }
+
+  private func performAndWaitThrows<T>(_ block: () throws -> T) throws -> T {
+    var result: Result<T, Error>?
+    performAndWait {
+      do {
+        result = .success(try block())
+      } catch {
+        result = .failure(error)
+      }
+    }
+
+    switch result! {
+    case let .success(value): return value
+    case let .failure(error): throw error
+    }
+  }
+}
+
+// MARK: - Upsert
+
+private extension NSManagedObjectContext {
+  func insert(_ app: App, at date: Date) {
+    let interaction = InteractionEntity(context: self)
     interaction.firstAdded = date
 
-    let currentPrice = PriceEntity(context: managedContext)
+    let currentPrice = PriceEntity(context: self)
     currentPrice.update(app: app, at: date)
 
-    let currentVersion = VersionEntity(context: managedContext)
+    let currentVersion = VersionEntity(context: self)
     currentVersion.update(app: app)
 
-    let appEntity = AppEntity(context: managedContext)
+    let appEntity = AppEntity(context: self)
     appEntity.update(app: app)
     appEntity.add(version: currentVersion)
     appEntity.add(price: currentPrice)
     appEntity.interaction = interaction
   }
 
-  private func update(_ existingApp: AppEntity, with app: App, at date: Date) {
+  func update(_ existingApp: AppEntity, with app: App, at date: Date) {
     existingApp.update(app: app)
 
     if app.updateDate > existingApp.currentVersion.date {
-      let latestVersion = VersionEntity(context: managedContext)
+      let latestVersion = VersionEntity(context: self)
       latestVersion.update(app: app)
       existingApp.add(version: latestVersion)
     }
 
     if app.price.value != existingApp.currentPrice.value {
-      let latestPrice = PriceEntity(context: managedContext)
+      let latestPrice = PriceEntity(context: self)
       latestPrice.update(app: app, at: date)
       existingApp.add(price: latestPrice)
     }
   }
-
-  public func viewedApp(id: App.ID, at date: Date) throws {
-    managedContext.perform { [managedContext] in
-      let fetchRequest = NSFetchRequest<InteractionEntity>(entityName: InteractionEntity.entityName)
-      fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id))
-      fetchRequest.fetchLimit = 1
-
-      if let interaction = try? managedContext.fetch(fetchRequest).first {
-        interaction.lastViewed = date
-        interaction.viewCount += 1
-      }
-
-      try? managedContext.saveIfNeeded()
-    }
-  }
-
-  public func delete(ids: [App.ID]) throws {
-    managedContext.perform { [managedContext] in
-      let ids = ids.map(NSNumber.init)
-      let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
-      fetchRequest.predicate = NSPredicate(format: "identifier in %@", ids)
-      fetchRequest.fetchLimit = ids.count
-
-      guard let existingApps = try? managedContext.fetch(fetchRequest) else {
-        return
-      }
-
-      existingApps.forEach { existingApp in
-        managedContext.delete(existingApp)
-      }
-
-      try? managedContext.saveIfNeeded()
-    }
-  }
 }
 
-private extension NSManagedObjectContext {
-  func saveIfNeeded() throws {
-    guard hasChanges else {
-      return
-    }
-
-    try save()
-    DarwinNotificationCenter.shared.postNotification(.didSaveManagedObjectContextLocally)
-  }
-}
+// MARK: - Fetch Requests
 
 private extension AppEntity {
   static func fetchAllRequest() -> NSFetchRequest<AppEntity> {

@@ -87,7 +87,7 @@ class ActionViewController: UIViewController {
 
   private lazy var store: Store<ExtensionState, ExtensionAction> = {
     let appStore = AppStoreService()
-    let repository = CoreDataAppRepository(context: persistentContainer.viewContext)
+    let repository = CoreDataAppRepository(container: persistentContainer)
     let apps = (try? repository.fetchAll()) ?? []
     return Store(
       initialState: ExtensionState(apps: apps, status: .resting),

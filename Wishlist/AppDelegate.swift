@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   let settings = Settings()
   let appStore: AppLookupService = AppStoreService()
-  private(set) lazy var appRepository: AppRepository = CoreDataAppRepository(context: persistentContainer.viewContext)
+  private(set) lazy var appRepository: AppRepository = CoreDataAppRepository(container: persistentContainer)
 
   private lazy var store: Store<AppDelegateState, AppDelegateAction> = {
     Store(
