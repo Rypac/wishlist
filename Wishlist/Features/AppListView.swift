@@ -328,12 +328,16 @@ private struct ConnectedAppRow: View {
 }
 
 private struct AppRow: View {
-  enum Details: Equatable {
-    case price(String)
-    case updated(Date, seen: Bool)
+  enum PriceChange {
+    case same
+    case decrease
+    case increase
   }
 
-  @Environment(\.updateDateFormatter) private var dateFormatter
+  enum Details: Equatable {
+    case price(String, change: PriceChange)
+    case updated(Date, seen: Bool)
+  }
 
   let title: String
   let details: Details
@@ -346,25 +350,70 @@ private struct AppRow: View {
         .fontWeight(.medium)
         .layoutPriority(1)
       Spacer()
-      ZStack(alignment: .topTrailing) {
-        Text(appDetails)
-          .lineLimit(1)
-          .multilineTextAlignment(.trailing)
-
-        if details.hasUnviewedUpdate {
-          Circle()
-            .foregroundColor(.blue)
-            .frame(width: 15, height: 15)
-            .offset(x: 8, y: -14)
-        }
-      }.layoutPriority(1)
+      appDetailsView()
+        .layoutPriority(1)
     }
   }
 
-  private var appDetails: String {
+  private func appDetailsView() -> some View {
     switch details {
-    case let .price(price): return price
-    case let .updated(date, _): return dateFormatter.string(from: date)
+    case let .price(price, change):
+      return ViewBuilder.buildEither(first:
+        AppPriceDetails(price: price, change: change)
+      ) as _ConditionalContent<AppPriceDetails, AppUpdateDetails>
+    case let .updated(date, seen):
+      return ViewBuilder.buildEither(second:
+        AppUpdateDetails(date: date, seen: seen)
+      ) as _ConditionalContent<AppPriceDetails, AppUpdateDetails>
+    }
+  }
+}
+
+private struct AppPriceDetails: View {
+  let price: String
+  let change: AppRow.PriceChange
+
+  var body: some View {
+    HStack {
+      if change == .increase {
+        Image.priceIncrease
+      } else if change == .decrease {
+        Image.priceDecrease
+      }
+      Text(price)
+        .lineLimit(1)
+        .multilineTextAlignment(.trailing)
+    }
+      .foregroundColor(color)
+  }
+
+  private var color: Color {
+    switch change {
+    case .same: return .primary
+    case .decrease: return .green
+    case .increase: return .red
+    }
+  }
+}
+
+private struct AppUpdateDetails: View {
+  let date: Date
+  let seen: Bool
+
+  @Environment(\.updateDateFormatter) private var dateFormatter
+
+  var body: some View {
+    ZStack(alignment: .topTrailing) {
+      Text(dateFormatter.string(from: date))
+        .lineLimit(1)
+        .multilineTextAlignment(.trailing)
+
+      if !seen {
+        Circle()
+          .foregroundColor(.blue)
+          .frame(width: 15, height: 15)
+          .offset(x: 8, y: -14)
+      }
     }
   }
 }
@@ -380,15 +429,21 @@ private extension AppRow.Details {
       }
 
     case .price, .title:
-      self = .price(app.price.current.formatted)
+      self = .price(app.price.current.formatted, change: app.priceChange)
     }
   }
+}
 
-  var hasUnviewedUpdate: Bool {
-    switch self {
-    case let .updated(_, seen): return !seen
-    case .price: return false
+private extension App {
+  var priceChange: AppRow.PriceChange {
+    guard let previousPrice = price.previous else {
+      return .same
     }
+
+    if price.current == previousPrice {
+      return .same
+    }
+    return price.current > previousPrice ? .increase : .decrease
   }
 }
 
@@ -401,6 +456,8 @@ private extension Image {
   static var store: Image { Image(systemName: "bag") }
   static var trash: Image { Image(systemName: "trash") }
   static var window: Image { Image(systemName: "square.grid.2x2") }
+  static var priceIncrease: Image { Image(systemName: "arrow.up") }
+  static var priceDecrease: Image { Image(systemName: "arrow.down") }
 }
 
 extension NSItemProvider {
