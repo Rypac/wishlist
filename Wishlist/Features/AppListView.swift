@@ -62,12 +62,17 @@ private extension AppListState {
 
   var appDetailsState: AppDetailsState? {
     get {
-      guard let id = displayedAppDetailsID, let app = apps.first(where: { $0.id == id }) else {
+      guard let id = displayedAppDetailsID, let app = apps[id: id] else {
         return nil
       }
       return AppDetailsState(app: app)
     }
-    set {}
+    set {
+      guard let app = newValue?.app else {
+        return
+      }
+      apps[id: app.id] = app
+    }
   }
 
   var addAppsState: AddAppsState {
@@ -117,7 +122,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       }
 
     case let .app(id, .viewInAppStore):
-      guard let url = state.apps.first(where: { $0.id == id })?.url else {
+      guard let url = state.apps[id: id]?.url else {
         return .none
       }
       return .fireAndForget {
@@ -129,12 +134,6 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
 
     case let .app(id: _, action: .viewDetails(details)):
       return Effect(value: .appDetails(details))
-
-    case .appDetails(.onAppear):
-      if let id = state.displayedAppDetailsID {
-        state.apps[id: id]?.lastViewed = environment.now()
-      }
-      return .none
 
     case .appDetails, .addApps, .settings:
       return .none

@@ -21,8 +21,10 @@ let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnviron
   switch action {
   case .onAppear:
     let id = state.app.id
+    let now = environment.now()
+    state.app.lastViewed = now
     return .fireAndForget {
-      environment.recordDetailsViewed(id, environment.now())
+      environment.recordDetailsViewed(id, now)
     }
 
   case let .openInAppStore(url):
