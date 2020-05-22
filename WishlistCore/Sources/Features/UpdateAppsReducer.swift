@@ -55,10 +55,11 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
     state.isUpdateInProgress = false
     state.lastUpdateDate = date
 
-    state.apps.removeAll(where: { app in
-      updatedApps.contains { $0.id == app.id }
-    })
-    state.apps.append(contentsOf: updatedApps)
+    updatedApps.forEach { app in
+      if let index = state.apps.firstIndex(where: { $0.id == app.id }) {
+        state.apps[index].applyUpdate(app)
+      }
+    }
 
     return .none
 
@@ -97,20 +98,18 @@ func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Erro
 
 private extension App {
   func isUpdated(from app: App) -> Bool {
-    if updateDate > app.updateDate {
+    if version.current > app.version.current {
       return true
     }
 
-    guard updateDate == app.updateDate else {
+    guard version.current == app.version.current else {
       return false
     }
 
-    return title != app.title
+    return price != app.price
+      || title != app.title
       || description != app.description
-      || price != app.price
-      || url != app.url
       || icon != app.icon
-      || version != app.version
-      || releaseNotes != app.releaseNotes
+      || url != app.url
   }
 }

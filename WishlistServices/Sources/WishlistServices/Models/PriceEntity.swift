@@ -15,7 +15,7 @@ public final class PriceEntity: NSManagedObject {
 extension PriceEntity {
   func update(app: App, at date: Date) {
     self.date = date
-    self.value = app.price.value
-    self.formatted = app.price.formatted
+    self.value = app.price.current.value
+    self.formatted = app.price.current.formatted
   }
 }

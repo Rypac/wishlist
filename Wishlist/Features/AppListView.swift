@@ -374,13 +374,13 @@ private extension AppRow.Details {
     switch sortOrder {
     case .updated:
       if let lastViewed = app.lastViewed {
-        self = .updated(app.updateDate, seen: lastViewed >= app.updateDate)
+        self = .updated(app.version.current.date, seen: lastViewed > app.version.current.date)
       } else {
-        self = .updated(app.updateDate, seen: true)
+        self = .updated(app.version.current.date, seen: app.firstAdded > app.version.current.date)
       }
 
     case .price, .title:
-      self = .price(app.price.formatted)
+      self = .price(app.price.current.formatted)
     }
   }
 
@@ -425,8 +425,8 @@ extension Collection where Element == App {
     sorted {
       switch order {
       case .title: return $0.title < $1.title
-      case .price: return $0.price.value < $1.price.value
-      case .updated: return $0.updateDate > $1.updateDate
+      case .price: return $0.price.current < $1.price.current
+      case .updated: return $0.version.current > $1.version.current
       }
     }
   }

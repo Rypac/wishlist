@@ -96,7 +96,7 @@ private struct AppHeading: View {
         Text(app.seller)
           .font(.headline)
         HStack {
-          Text(app.price.formatted)
+          Text(app.price.current.formatted)
           Spacer()
           ViewInAppStoreButton(url: app.url)
         }.padding(.top, 8)
@@ -142,18 +142,18 @@ private struct ReleaseNotes: View {
 
   var body: some View {
     Group {
-      if app.releaseNotes != nil {
+      if app.version.current.notes != nil {
         Divider()
         HStack {
           Text("Release Notes")
             .bold()
             .layoutPriority(2)
           Spacer()
-          Text("Updated: \(dateFormatter.string(from: app.updateDate))")
+          Text("Updated: \(dateFormatter.string(from: app.version.current.date))")
             .multilineTextAlignment(.trailing)
             .layoutPriority(1)
         }
-        Text(app.releaseNotes!)
+        Text(app.version.current.notes!)
           .expandable(initialLineLimit: 3)
       } else {
         EmptyView()

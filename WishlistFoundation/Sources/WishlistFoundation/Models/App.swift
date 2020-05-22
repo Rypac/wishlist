@@ -1,40 +1,17 @@
 import Foundation
 
 public struct App: Identifiable, Equatable {
-  public struct Icon: Equatable {
-    public var small: URL
-    public var medium: URL
-    public var large: URL
-
-    public init(small: URL, medium: URL, large: URL) {
-      self.small = small
-      self.medium = medium
-      self.large = large
-    }
-  }
-
-  public struct Price: Equatable {
-    public var value: Double
-    public var formatted: String
-
-    public init(value: Double, formatted: String) {
-      self.value = value
-      self.formatted = formatted
-    }
-  }
-
   public let id: Int
   public var title: String
   public var seller: String
   public var description: String
   public var url: URL
   public var icon: Icon
-  public var price: Price
   public var bundleID: String
-  public var version: String
   public var releaseDate: Date
-  public var updateDate: Date
-  public var releaseNotes: String?
+  public var price: Tracked<Price>
+  public var version: Tracked<Version>
+  public let firstAdded: Date
   public var lastViewed: Date?
 
   public init(
@@ -44,12 +21,11 @@ public struct App: Identifiable, Equatable {
     description: String,
     url: URL,
     icon: Icon,
-    price: Price,
     bundleID: String,
-    version: String,
     releaseDate: Date,
-    updateDate: Date,
-    releaseNotes: String?,
+    price: Tracked<Price>,
+    version: Tracked<Version>,
+    firstAdded: Date,
     lastViewed: Date?
   ) {
     self.id = id
@@ -58,12 +34,31 @@ public struct App: Identifiable, Equatable {
     self.description = description
     self.url = url
     self.icon = icon
-    self.price = price
     self.bundleID = bundleID
-    self.version = version
     self.releaseDate = releaseDate
-    self.updateDate = updateDate
-    self.releaseNotes = releaseNotes
+    self.price = price
+    self.version = version
+    self.firstAdded = firstAdded
     self.lastViewed = lastViewed
+  }
+}
+
+extension App: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(id)
+  }
+}
+
+public extension App {
+  mutating func applyUpdate(_ app: App) {
+    title = app.title
+    seller = app.seller
+    description = app.description
+    url = app.url
+    icon = app.icon
+    bundleID = app.bundleID
+    releaseDate = app.releaseDate
+    price = Tracked(current: app.price.current, previous: price.current)
+    version = Tracked(current: app.version.current, previous: version.current)
   }
 }

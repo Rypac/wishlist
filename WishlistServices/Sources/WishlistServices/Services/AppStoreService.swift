@@ -89,12 +89,11 @@ private extension App {
       description: app.description.trimmingCharacters(in: .whitespacesAndNewlines),
       url: app.url,
       icon: Icon(small: app.iconSmallURL, medium: app.iconMediumURL, large: app.iconLargeURL),
-      price: Price(value: app.price, formatted: app.formattedPrice),
       bundleID: app.bundleID,
-      version: app.version,
       releaseDate: app.releaseDate,
-      updateDate: app.updateDate,
-      releaseNotes: app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines),
+      price: Tracked(current: Price(value: app.price, formatted: app.formattedPrice)),
+      version: Tracked(current: Version(name: app.version, date: app.updateDate, notes: app.releaseNotes)),
+      firstAdded: Date(), // TODO: This shouldn't be needed here.
       lastViewed: nil
     )
   }

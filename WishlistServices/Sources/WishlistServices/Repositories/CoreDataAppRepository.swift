@@ -149,13 +149,13 @@ private extension NSManagedObjectContext {
   func update(_ existingApp: AppEntity, with app: App, at date: Date) {
     existingApp.update(app: app)
 
-    if app.updateDate > existingApp.currentVersion.date {
+    if app.version.current.date > existingApp.currentVersion.date {
       let latestVersion = VersionEntity(context: self)
       latestVersion.update(app: app)
       existingApp.add(version: latestVersion)
     }
 
-    if app.price.value != existingApp.currentPrice.value {
+    if app.price.current.value != existingApp.currentPrice.value {
       let latestPrice = PriceEntity(context: self)
       latestPrice.update(app: app, at: date)
       existingApp.add(price: latestPrice)
@@ -189,7 +189,7 @@ private extension AppEntity {
 }
 
 private extension App {
-  init(entity: AppEntity) {
+  init(_ entity: AppEntity) {
     self.init(
       id: entity.identifier.intValue,
       title: entity.title,
@@ -197,13 +197,30 @@ private extension App {
       description: entity.storeDescription,
       url: entity.url,
       icon: Icon(small: entity.iconSmallURL, medium: entity.iconMediumURL, large: entity.iconLargeURL),
-      price: Price(value: entity.currentPrice.value, formatted: entity.currentPrice.formatted),
       bundleID: entity.bundleID,
-      version: entity.currentVersion.version,
       releaseDate: entity.releaseDate,
-      updateDate: entity.currentVersion.date,
-      releaseNotes: entity.currentVersion.releaseNotes,
+      price: Tracked(
+        current: Price(entity.currentPrice),
+        previous: entity.previousPrice.map(Price.init)
+      ),
+      version: Tracked(
+        current: Version(entity.currentVersion),
+        previous: entity.previousVersion.map(Version.init)
+      ),
+      firstAdded: entity.interaction.firstAdded,
       lastViewed: entity.interaction.lastViewed
     )
+  }
+}
+
+private extension Version {
+  init(_ entity: VersionEntity) {
+    self.init(name: entity.version, date: entity.date, notes: entity.releaseNotes)
+  }
+}
+
+private extension Price {
+  init(_ entity: PriceEntity) {
+    self.init(value: entity.value, formatted: entity.formatted)
   }
 }
