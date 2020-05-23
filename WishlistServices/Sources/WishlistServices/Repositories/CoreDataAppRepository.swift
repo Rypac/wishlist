@@ -25,13 +25,13 @@ public final class CoreDataAppRepository: AppRepository {
   }
 
   public func fetch(id: App.ID) throws -> App? {
-    let fetchRequest = AppEntity.fetchRequest(id: id)
+    let fetchRequest = AppEntity.fetchRequest(id: id.rawValue)
     return try container.viewContext.performAndFetch(fetchRequest).first.flatMap(App.init)
   }
 
-  public func add(_ apps: [App]) throws {
+  public func add(_ apps: [AppSnapshot]) throws {
     container.performBackgroundTask { context in
-      let ids = apps.map { NSNumber(value: $0.id) }
+      let ids = apps.map { NSNumber(value: $0.id.rawValue) }
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
       fetchRequest.predicate = NSPredicate(format: "identifier in %@", ids)
       fetchRequest.relationshipKeyPathsForPrefetching = ["currentPrice", "currentVersion"]
@@ -42,7 +42,7 @@ public final class CoreDataAppRepository: AppRepository {
       }
 
       apps.forEach { app in
-        if let existingApp = existingApps.first(where: { $0.identifier.intValue == app.id }) {
+        if let existingApp = existingApps.first(where: { $0.identifier.intValue == app.id.rawValue }) {
           context.update(existingApp, with: app, at: Date())
         } else {
           context.insert(app, at: Date())
@@ -56,7 +56,7 @@ public final class CoreDataAppRepository: AppRepository {
   public func viewedApp(id: App.ID, at date: Date) throws {
     container.performBackgroundTask { context in
       let fetchRequest = NSFetchRequest<InteractionEntity>(entityName: InteractionEntity.entityName)
-      fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id))
+      fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
       fetchRequest.fetchLimit = 1
 
       if let interaction = try? context.fetch(fetchRequest).first {
@@ -129,7 +129,7 @@ private extension NSManagedObjectContext {
 // MARK: - Upsert
 
 private extension NSManagedObjectContext {
-  func insert(_ app: App, at date: Date) {
+  func insert(_ app: AppSnapshot, at date: Date) {
     let interaction = InteractionEntity(context: self)
     interaction.firstAdded = date
 
@@ -146,16 +146,16 @@ private extension NSManagedObjectContext {
     appEntity.interaction = interaction
   }
 
-  func update(_ existingApp: AppEntity, with app: App, at date: Date) {
+  func update(_ existingApp: AppEntity, with app: AppSnapshot, at date: Date) {
     existingApp.update(app: app)
 
-    if app.version.current.date > existingApp.currentVersion.date {
+    if app.updateDate > existingApp.currentVersion.date {
       let latestVersion = VersionEntity(context: self)
       latestVersion.update(app: app)
       existingApp.add(version: latestVersion)
     }
 
-    if app.price.current.value != existingApp.currentPrice.value {
+    if app.price != existingApp.currentPrice.value {
       let latestPrice = PriceEntity(context: self)
       latestPrice.update(app: app, at: date)
       existingApp.add(price: latestPrice)
@@ -191,7 +191,7 @@ private extension AppEntity {
 private extension App {
   init(_ entity: AppEntity) {
     self.init(
-      id: entity.identifier.intValue,
+      id: AppID(rawValue: entity.identifier.intValue),
       title: entity.title,
       seller: entity.seller,
       description: entity.storeDescription,

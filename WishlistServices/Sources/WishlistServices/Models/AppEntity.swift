@@ -25,8 +25,8 @@ public final class AppEntity: NSManagedObject {
 }
 
 extension AppEntity {
-  func update(app: App) {
-    identifier = NSNumber(value: app.id)
+  func update(app: AppSnapshot) {
+    identifier = NSNumber(value: app.id.rawValue)
     title = app.title
     seller = app.seller
     storeDescription = app.description

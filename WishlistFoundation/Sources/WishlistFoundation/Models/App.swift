@@ -1,7 +1,9 @@
 import Foundation
 
 public struct App: Identifiable, Equatable {
-  public let id: Int
+  public typealias ID = AppID
+
+  public let id: ID
   public var title: String
   public var seller: String
   public var description: String
@@ -15,7 +17,7 @@ public struct App: Identifiable, Equatable {
   public var lastViewed: Date?
 
   public init(
-    id: Int,
+    id: ID,
     title: String,
     seller: String,
     description: String,
@@ -50,7 +52,7 @@ extension App: Hashable {
 }
 
 public extension App {
-  mutating func applyUpdate(_ app: App) {
+  mutating func applyUpdate(_ app: AppSnapshot) {
     title = app.title
     seller = app.seller
     description = app.description
@@ -58,7 +60,19 @@ public extension App {
     icon = app.icon
     bundleID = app.bundleID
     releaseDate = app.releaseDate
-    price = Tracked(current: app.price.current, previous: price.current)
-    version = Tracked(current: app.version.current, previous: version.current)
+
+    if app.price != price.current.value {
+      price = Tracked(
+        current: Price(value: app.price, formatted: app.formattedPrice),
+        previous: price.current
+      )
+    }
+
+    if app.updateDate > version.current.date {
+      version = Tracked(
+        current: Version(name: app.version, date: app.updateDate, notes: app.releaseNotes),
+        previous: version.current
+      )
+    }
   }
 }

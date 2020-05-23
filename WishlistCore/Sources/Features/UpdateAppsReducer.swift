@@ -26,13 +26,13 @@ public struct UpdateAppsError: Error, Equatable {}
 
 public enum AppUpdateAction: Equatable {
   case checkForUpdates
-  case receivedUpdates(Result<[App], UpdateAppsError>, at: Date)
+  case receivedUpdates(Result<[AppSnapshot], UpdateAppsError>, at: Date)
 }
 
 public struct AppUpdateEnvironment {
-  public var lookupApps: ([App.ID]) -> AnyPublisher<[App], Error>
+  public var lookupApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
 
-  public init(lookupApps: @escaping ([App.ID]) -> AnyPublisher<[App], Error>) {
+  public init(lookupApps: @escaping ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>) {
     self.lookupApps = lookupApps
   }
 }
@@ -74,14 +74,16 @@ private extension AppUpdateState {
     if isUpdateInProgress || apps.isEmpty {
       return false
     }
+
     guard let lastUpdateDate = lastUpdateDate else {
       return true
     }
+
     return now.timeIntervalSince(lastUpdateDate) >= TimeInterval(updateFrequency)
   }
 }
 
-func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Error>) -> AnyPublisher<[App], Error> {
+func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>) -> AnyPublisher<[AppSnapshot], Error> {
   lookup(apps.map(\.id))
     .map { latestApps in
       latestApps.reduce(into: []) { updatedApps, latestApp in
@@ -96,17 +98,17 @@ func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[App], Erro
     .eraseToAnyPublisher()
 }
 
-private extension App {
+private extension AppSnapshot {
   func isUpdated(from app: App) -> Bool {
-    if version.current > app.version.current {
+    if updateDate > app.version.current.date {
       return true
     }
 
-    guard version.current == app.version.current else {
+    guard updateDate == app.version.current.date else {
       return false
     }
 
-    return price != app.price
+    return price != app.price.current.value
       || title != app.title
       || description != app.description
       || icon != app.icon

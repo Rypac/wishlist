@@ -51,16 +51,16 @@ class BackgroundTaskReducerTests: XCTestCase {
   }
 
   func testHandleUpdateTaskSchedulesAnotherUpdateTaskAndSavesSuccessResultToEnvironment() throws {
-    let bear = App.bear
-    let things = App.things
+    let bear = App(.bear, firstAdded: now)
+    let things = App(.things, firstAdded: now)
     let apps = [bear, things]
 
-    var updatedThings = things
+    var updatedThings = AppSnapshot.things
     updatedThings.version = "3.12.4"
     updatedThings.updateDate = now
 
     var appsToUpdate: [App.ID]?
-    var updatedApps: [App]?
+    var updatedApps: [AppSnapshot]?
 
     let testStore = TestStore(
       initialState: BackgroundTaskState(

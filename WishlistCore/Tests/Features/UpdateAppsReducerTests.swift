@@ -18,9 +18,12 @@ class UpdateAppsReducerTests: XCTestCase {
   }()
 
   func testNoUpdateIsAttemptedWhenWithinLastUpdateThreshold() throws {
+    let bear = App(.bear, firstAdded: now)
+    let things = App(.things, firstAdded: now)
+
     let testStore = TestStore(
       initialState: AppUpdateState(
-        apps: [.bear, .things],
+        apps: [bear, things],
         lastUpdateDate: now,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -66,12 +69,19 @@ class UpdateAppsReducerTests: XCTestCase {
   func testUpdateIsAttemptedWhenOutsideLastUpdateThreshold() throws {
     let updateFrequency = TimeInterval(10)
 
-    var updatedThings = App.things
+    let bear = App(.bear, firstAdded: now)
+    let things = App(.things, firstAdded: now)
+
+    var updatedThings = AppSnapshot.things
+    updatedThings.version = "4.0.0"
     updatedThings.updateDate = now
+
+    var expectedThingsUpdate = things
+    expectedThingsUpdate.applyUpdate(updatedThings)
 
     let testStore = TestStore(
       initialState: AppUpdateState(
-        apps: [App.bear, .things],
+        apps: [bear, things],
         lastUpdateDate: now,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -102,7 +112,7 @@ class UpdateAppsReducerTests: XCTestCase {
       .receive(.receivedUpdates(.success([updatedThings]), at: someFutureDate)) {
         $0.isUpdateInProgress = false
         $0.lastUpdateDate = someFutureDate
-        $0.apps = [.bear, updatedThings]
+        $0.apps = [bear, expectedThingsUpdate]
       }
     )
   }

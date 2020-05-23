@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         sortOrder: appDelegate.settings.sortOrder,
         lastUpdateDate: appDelegate.settings.lastUpdateDate,
         theme: appDelegate.settings.theme,
-        appUpdateFrequency: 15 * 60
+        appUpdateFrequency: 5 * 60
       ),
       reducer: appReducer,
       environment: .live(
@@ -175,7 +175,7 @@ enum AppAction {
 struct AppEnvironment {
   var repository: AppRepository
   var settings: Settings
-  var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
+  var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
   var openURL: (URL) -> Void
   var scheduleBackgroundTasks: () -> Void
   var setTheme: (Theme) -> Void

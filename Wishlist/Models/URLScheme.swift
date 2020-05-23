@@ -18,12 +18,12 @@ extension URLScheme: RawRepresentable {
     case .addApps(let ids):
       urlComponents.host = "add"
       urlComponents.queryItems = [
-        URLQueryItem(name: "id", value: ids.map(String.init).joined(separator: ","))
+        URLQueryItem(name: "id", value: ids.map { String($0.rawValue) }.joined(separator: ","))
       ]
     case .viewApp(let id):
       urlComponents.host = "view"
       urlComponents.queryItems = [
-        URLQueryItem(name: "id", value: String(id))
+        URLQueryItem(name: "id", value: String(id.rawValue))
       ]
     case .export:
       urlComponents.host = "export"
@@ -47,12 +47,15 @@ extension URLScheme: RawRepresentable {
       guard !ids.isEmpty else {
         return nil
       }
-      self = .addApps(ids: ids)
+      self = .addApps(ids: ids.map(AppID.init(rawValue:)))
     case "view":
-      guard let appID = components.queryItems?.first(where: { $0.name == "id" })?.value, let id = Int(appID, radix: 10) else {
+      guard
+        let appID = components.queryItems?.first(where: { $0.name == "id" })?.value,
+        let id = Int(appID, radix: 10)
+      else {
         return nil
       }
-      self = .viewApp(id: id)
+      self = .viewApp(id: AppID(rawValue: id))
     case "export":
       self = .export
     case "deleteAll":

@@ -14,7 +14,7 @@ public final class AppStoreService: AppLookupService {
     self.session = session
   }
 
-  public func lookup(ids: [App.ID]) -> AnyPublisher<[App], Error> {
+  public func lookup(ids: [App.ID]) -> AnyPublisher<[AppSnapshot], Error> {
     if ids.isEmpty {
       return Result.Publisher([]).eraseToAnyPublisher()
     }
@@ -23,7 +23,7 @@ public final class AppStoreService: AppLookupService {
 
     // Randomise order of query items to decrease chance of stale API cache.
     urlComponents.queryItems = [
-      URLQueryItem(name: "id", value: ids.shuffled().map(String.init).joined(separator: ",")),
+      URLQueryItem(name: "id", value: ids.shuffled().map { String($0.rawValue) }.joined(separator: ",")),
       URLQueryItem(name: "country", value: "au"),
       URLQueryItem(name: "media", value: "software"),
       URLQueryItem(name: "limit", value: String(ids.count))
@@ -33,7 +33,7 @@ public final class AppStoreService: AppLookupService {
 
     return session.dataTaskPublisher(for: request)
       .tryMap { [decoder] data, _ in
-        try decoder.decode(LookupResponse.self, from: data).results.map(App.init)
+        try decoder.decode(LookupResponse.self, from: data).results.map(AppSnapshot.init)
       }
       .eraseToAnyPublisher()
   }
@@ -44,7 +44,7 @@ private struct LookupResponse: Decodable {
   let results: [App]
 
   struct App: Identifiable, Codable {
-    let id: Int
+    let id: AppID
     let title: String
     let seller: String
     let description: String
@@ -80,7 +80,7 @@ private struct LookupResponse: Decodable {
   }
 }
 
-private extension App {
+private extension AppSnapshot {
   init(app: LookupResponse.App) {
     self.init(
       id: app.id,
@@ -89,12 +89,13 @@ private extension App {
       description: app.description.trimmingCharacters(in: .whitespacesAndNewlines),
       url: app.url,
       icon: Icon(small: app.iconSmallURL, medium: app.iconMediumURL, large: app.iconLargeURL),
+      price: app.price,
+      formattedPrice: app.formattedPrice,
       bundleID: app.bundleID,
+      version: app.version,
       releaseDate: app.releaseDate,
-      price: Tracked(current: Price(value: app.price, formatted: app.formattedPrice)),
-      version: Tracked(current: Version(name: app.version, date: app.updateDate, notes: app.releaseNotes)),
-      firstAdded: Date(), // TODO: This shouldn't be needed here.
-      lastViewed: nil
+      updateDate: app.updateDate,
+      releaseNotes: app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines)
     )
   }
 }

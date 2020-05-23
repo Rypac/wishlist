@@ -15,7 +15,7 @@ enum URLSchemeAction {
 }
 
 struct URLSchemeEnvironment {
-  let loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
+  let loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
 }
 
 let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironment<URLSchemeEnvironment>>.combine(

@@ -26,7 +26,7 @@ enum AppListAction {
 }
 
 struct AppListEnvironment {
-  var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
+  var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
   var openURL: (URL) -> Void
   var saveTheme: (Theme) -> Void
   var recordDetailsViewed: (App.ID, Date) -> Void

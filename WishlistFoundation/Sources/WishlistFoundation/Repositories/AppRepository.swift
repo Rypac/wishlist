@@ -5,8 +5,8 @@ public protocol AppRepository {
   func publisher() -> AnyPublisher<[App], Never>
   func fetchAll() throws -> [App]
   func fetch(id: App.ID) throws -> App?
-  func add(_ app: App) throws
-  func add(_ apps: [App]) throws
+  func add(_ app: AppSnapshot) throws
+  func add(_ apps: [AppSnapshot]) throws
   func delete(id: App.ID) throws
   func delete(ids: [App.ID]) throws
   func viewedApp(id: App.ID, at date: Date) throws
@@ -17,7 +17,7 @@ public extension AppRepository {
     try fetchAll().first { $0.id == id }
   }
 
-  func add(_ app: App) throws {
+  func add(_ app: AppSnapshot) throws {
     try add([app])
   }
 

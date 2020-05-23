@@ -10,7 +10,7 @@ import WishlistServices
 enum Status: Equatable {
   case resting
   case loading([App.ID])
-  case success([App])
+  case success([AppSnapshot])
   case failure
 }
 
@@ -29,8 +29,8 @@ enum ExtensionAction {
 }
 
 struct ExtensionEnvironment {
-  var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
-  var saveApps: ([App]) -> Void
+  var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  var saveApps: ([AppSnapshot]) -> Void
 }
 
 let extensionReducer = Reducer<ExtensionState, ExtensionAction, SystemEnvironment<ExtensionEnvironment>>.combine(

@@ -16,13 +16,13 @@ public struct AddAppsState: Equatable {
 public enum AddAppsAction: Equatable {
   case addApps([App.ID])
   case addAppsFromURLs([URL])
-  case addAppsResponse(Result<[App], AddAppsError>)
+  case addAppsResponse(Result<[AppSnapshot], AddAppsError>)
 }
 
 public struct AddAppsEnvironment {
-  public var loadApps: ([App.ID]) -> AnyPublisher<[App], Error>
+  public var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
 
-  public init(loadApps: @escaping ([App.ID]) -> AnyPublisher<[App], Error>) {
+  public init(loadApps: @escaping ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>) {
     self.loadApps = loadApps
   }
 }
@@ -40,11 +40,12 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
     let ids = extractAppIDs(from: urls)
     return ids.isEmpty ? .none : Effect(value: .addApps(ids))
 
-  case let .addAppsResponse(.success(apps)) where !apps.isEmpty:
-    state.apps.removeAll(where: { app in
-      apps.contains { $0.id == app.id }
-    })
-    state.apps.append(contentsOf: apps)
+  case let .addAppsResponse(.success(apps)):
+    apps.forEach { app in
+      if let index = state.apps.firstIndex(where: { $0.id == app.id }) {
+        state.apps[index].applyUpdate(app)
+      }
+    }
     return .none
 
   case .addAppsResponse:
@@ -52,7 +53,7 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
   }
 }
 
-private func extractAppIDs(from urls: [URL]) -> [Int] {
+private func extractAppIDs(from urls: [URL]) -> [App.ID] {
   let idMatch = "id"
   let appStoreURL = "https?://(?:itunes|apps).apple.com/.*/id(?<\(idMatch)>\\d+)"
   guard let regex = try? NSRegularExpression(pattern: appStoreURL, options: []) else {
@@ -71,6 +72,6 @@ private func extractAppIDs(from urls: [URL]) -> [Int] {
       return nil
     }
 
-    return Int(url[range])
+    return Int(url[range]).map(AppID.init(rawValue:))
   }
 }
