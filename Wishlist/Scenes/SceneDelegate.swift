@@ -144,15 +144,6 @@ private extension AppState {
     }
   }
 
-  var settingsState: SettingsState {
-    get {
-      SettingsState(theme: theme)
-    }
-    set {
-      theme = newValue.theme
-    }
-  }
-
   var processUpdateState: ProcessUpdateState {
     get {
       ProcessUpdateState(apps: apps, sortOrder: sortOrder, theme: theme)
@@ -271,13 +262,6 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       systemEnvironment.map {
         AppUpdateEnvironment(lookupApps: $0.loadApps)
       }
-    }
-  ),
-  settingsReducer.pullback(
-    state: \.settingsState,
-    action: /AppAction.settings,
-    environment: { systemEnvironment in
-      SettingsEnvironment(saveTheme: systemEnvironment.setTheme, openURL: systemEnvironment.openURL)
     }
   ),
   processUpdateReducer.pullback(
