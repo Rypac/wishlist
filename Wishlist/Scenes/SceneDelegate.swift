@@ -84,7 +84,7 @@ struct AppState: Equatable {
   var lastUpdateDate: Date?
   var theme: Theme
   var appUpdateFrequency: TimeInterval
-  var viewingAppDetails: App.ID? = nil
+  var viewingAppDetails: AppDetailsContent? = nil
   var isSettingsSheetPresented: Bool = false
   var isSortOrderSheetPresented: Bool = false
   var isUpdateInProgress: Bool = false
@@ -97,7 +97,7 @@ private extension AppState {
         apps: IdentifiedArrayOf(apps),
         sortOrder: sortOrder,
         theme: theme,
-        displayedAppDetailsID: viewingAppDetails,
+        displayedAppDetails: viewingAppDetails,
         isSettingsSheetPresented: isSettingsSheetPresented,
         isSortOrderSheetPresented: isSortOrderSheetPresented
       )
@@ -108,7 +108,7 @@ private extension AppState {
       theme = newValue.theme
       isSettingsSheetPresented = newValue.isSettingsSheetPresented
       isSortOrderSheetPresented = newValue.isSortOrderSheetPresented
-      viewingAppDetails = newValue.displayedAppDetailsID
+      viewingAppDetails = newValue.displayedAppDetails
     }
   }
 
@@ -116,12 +116,14 @@ private extension AppState {
     get {
       URLSchemeState(
         apps: apps,
-        viewingAppDetails: viewingAppDetails
+        viewingAppDetails: viewingAppDetails?.id
       )
     }
     set {
       apps = newValue.apps
-      viewingAppDetails = newValue.viewingAppDetails
+      viewingAppDetails = newValue.viewingAppDetails.map {
+        AppDetailsContent(id: $0, versions: nil, showVersionHistory: false)
+      }
     }
   }
 
@@ -240,6 +242,10 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       systemEnvironment.map {
         AppListEnvironment(
           loadApps: $0.loadApps,
+          versionHistory: { id in
+            let versions = try? systemEnvironment.repository.versionHistory(id: id)
+            return versions ?? []
+          },
           openURL: $0.openURL,
           saveTheme: $0.setTheme,
           recordDetailsViewed: { id, date in

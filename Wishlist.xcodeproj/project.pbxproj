@@ -25,6 +25,8 @@
 		945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* URLItemProvider.swift */; };
 		94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94629D36244682070072C271 /* DeviceVisibilityModifier.swift */; };
 		94629D3A24468B890072C271 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 94629D3924468B890072C271 /* SDWebImageSwiftUI */; };
+		947E5A842478EED000EAE43D /* VersionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E5A832478EED000EAE43D /* VersionHistoryView.swift */; };
+		947E5A8624790AA400EAE43D /* ExpandableTextModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E5A8524790AA400EAE43D /* ExpandableTextModifier.swift */; };
 		948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */; };
 		948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */; };
 		948890C624304E0500E3E5FA /* SceneConfigurationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */; };
@@ -180,6 +182,8 @@
 		94629D36244682070072C271 /* DeviceVisibilityModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceVisibilityModifier.swift; sourceTree = "<group>"; };
 		94637EB02431A211005EF584 /* Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wishlist.entitlements; sourceTree = "<group>"; };
 		94637EB12431A33C005EF584 /* Add to Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Add to Wishlist.entitlements"; sourceTree = "<group>"; };
+		947E5A832478EED000EAE43D /* VersionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionHistoryView.swift; sourceTree = "<group>"; };
+		947E5A8524790AA400EAE43D /* ExpandableTextModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableTextModifier.swift; sourceTree = "<group>"; };
 		948890C124304D3000E3E5FA /* AppDetailsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsDelegate.swift; sourceTree = "<group>"; };
 		948890C324304DDB00E3E5FA /* ActivityIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIdentifier.swift; sourceTree = "<group>"; };
 		948890C524304E0500E3E5FA /* SceneConfigurationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneConfigurationNames.swift; sourceTree = "<group>"; };
@@ -283,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				94629D36244682070072C271 /* DeviceVisibilityModifier.swift */,
+				947E5A8524790AA400EAE43D /* ExpandableTextModifier.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -339,6 +344,7 @@
 				94151ED12469049700CBD2BE /* SettingsView.swift */,
 				94C28BE2246526320013B41F /* URLSchemes.swift */,
 				94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */,
+				947E5A832478EED000EAE43D /* VersionHistoryView.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -697,9 +703,11 @@
 				94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */,
 				94151ED42469379E00CBD2BE /* UIKit.swift in Sources */,
 				94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */,
+				947E5A842478EED000EAE43D /* VersionHistoryView.swift in Sources */,
 				94C28BE3246526320013B41F /* URLSchemes.swift in Sources */,
 				948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */,
 				94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */,
+				947E5A8624790AA400EAE43D /* ExpandableTextModifier.swift in Sources */,
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
 				94C8D0852435756300D9C077 /* UTI.swift in Sources */,
 				94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */,

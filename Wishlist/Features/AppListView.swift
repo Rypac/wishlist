@@ -4,11 +4,17 @@ import SwiftUI
 import WishlistCore
 import WishlistFoundation
 
+struct AppDetailsContent: Equatable {
+  let id: App.ID
+  var versions: [Version]?
+  var showVersionHistory: Bool
+}
+
 struct AppListState: Equatable {
   var apps: IdentifiedArrayOf<App>
   var sortOrder: SortOrder
   var theme: Theme
-  var displayedAppDetailsID: App.ID? = nil
+  var displayedAppDetails: AppDetailsContent?
   var isSettingsSheetPresented: Bool = false
   var isSortOrderSheetPresented: Bool = false
 }
@@ -27,19 +33,30 @@ enum AppListAction {
 
 struct AppListEnvironment {
   var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  var versionHistory: (App.ID) -> [Version]
   var openURL: (URL) -> Void
   var saveTheme: (Theme) -> Void
   var recordDetailsViewed: (App.ID, Date) -> Void
 }
 
-struct AppListRowState: Identifiable, Equatable {
+struct AppListRowState: Identifiable {
   var id: App.ID { app.id }
   var app: App
   var sortOrder: SortOrder
-  var isSelected: Bool
+  var details: AppDetailsContent?
+  var isSelected: Bool { id == details?.id }
 
-  var detailsState: AppDetailsState {
-    AppDetailsState(app: app)
+  var detailsState: AppDetailsState? {
+    guard isSelected else {
+      return nil
+    }
+    return AppDetailsState(app: app, versions: details?.versions, showVersionHistory: details?.showVersionHistory == true)
+  }
+}
+
+extension AppListRowState: Equatable {
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.isSelected == rhs.isSelected && lhs.sortOrder == rhs.sortOrder && lhs.app == rhs.app
   }
 }
 
@@ -48,40 +65,42 @@ enum AppListRowAction {
   case remove
   case openInNewWindow
   case viewInAppStore
-  case viewDetails(AppDetailsAction)
+  case details(AppDetailsAction)
 }
 
 private extension AppListState {
   var sortedApps: IdentifiedArrayOf<AppListRowState> {
     IdentifiedArray(
       apps.sorted(by: sortOrder).map {
-        AppListRowState(app: $0, sortOrder: sortOrder, isSelected: $0.id == displayedAppDetailsID)
+        AppListRowState(app: $0, sortOrder: sortOrder, details: displayedAppDetails)
       }
     )
   }
 
   var appDetailsState: AppDetailsState? {
     get {
-      guard let id = displayedAppDetailsID, let app = apps[id: id] else {
+      guard let details = displayedAppDetails, let app = apps[id: details.id] else {
         return nil
       }
-      return AppDetailsState(app: app)
+      return AppDetailsState(app: app, versions: details.versions, showVersionHistory: details.showVersionHistory)
     }
     set {
-      guard let app = newValue?.app else {
+      guard let newValue = newValue else {
         return
       }
-      apps[id: app.id] = app
+      apps[id: newValue.app.id] = newValue.app
+      displayedAppDetails?.versions = newValue.versions
+      displayedAppDetails?.showVersionHistory = newValue.showVersionHistory
     }
   }
 
   var addAppsState: AddAppsState {
-    get { .init(apps: apps.elements) }
+    get { AddAppsState(apps: apps.elements) }
     set { apps = IdentifiedArrayOf(newValue.apps) }
   }
 
   var settingsState: SettingsState {
-    get { .init(theme: theme) }
+    get { SettingsState(theme: theme) }
     set { theme = newValue.theme }
   }
 }
@@ -110,8 +129,16 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       state.sortOrder = sortOrder
       return .none
 
-    case let .app(id, .selected(selected)):
-      state.displayedAppDetailsID = selected ? id : nil
+    case let .app(id, .selected(true)):
+      let now = environment.now()
+      state.displayedAppDetails = .init(id: id, versions: nil, showVersionHistory: false)
+      state.apps[id: id]?.lastViewed = now
+      return .fireAndForget {
+        environment.recordDetailsViewed(id, now)
+      }
+
+    case .app(_, .selected(false)):
+      state.displayedAppDetails = nil
       return .none
 
     case let .app(id, .openInNewWindow):
@@ -132,7 +159,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     case let .app(id, .remove):
       return Effect(value: .removeApps([id]))
 
-    case let .app(id: _, action: .viewDetails(details)):
+    case let .app(id: _, action: .details(details)):
       return Effect(value: .appDetails(details))
 
     case .appDetails, .addApps, .settings:
@@ -144,10 +171,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     action: /AppListAction.appDetails,
     environment: { systemEnvironment in
       systemEnvironment.map {
-        AppDetailsEnvironment(
-          openURL: $0.openURL,
-          recordDetailsViewed: $0.recordDetailsViewed
-        )
+        AppDetailsEnvironment(openURL: $0.openURL, versionHistory: $0.versionHistory)
       }
     }
   ),
@@ -175,14 +199,16 @@ struct AppListView: View {
   let store: Store<AppListState, AppListAction>
 
   var body: some View {
-    WithViewStore(store.scope(state: \.theme)) { viewStore in
+    WithViewStore(store.stateless) { viewStore in
       NavigationView {
         ZStack {
           List {
             ForEachStore(
               self.store.scope(state: \.sortedApps, action: AppListAction.app),
               content: ConnectedAppRow.init
-            ).onDelete { viewStore.send(.removeAppsAtIndexes($0)) }
+            ).onDelete {
+              viewStore.send(.removeAppsAtIndexes($0))
+            }
           }
           SettingsSheet(store: self.store)
           SortOrderSheet(store: self.store.scope(state: \.isSortOrderSheetPresented))
@@ -210,9 +236,11 @@ struct AppListView: View {
             .frame(width: 24, height: 24)
           }.hoverEffect()
         )
-      }.onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
-        viewStore.send(.addApps(.addAppsFromURLs(urls)))
-      })
+      }
+        .onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
+          viewStore.send(.addApps(.addAppsFromURLs(urls)))
+        })
+        .navigationViewStyle(StackNavigationViewStyle())
     }
   }
 }
@@ -288,8 +316,9 @@ private struct ConnectedAppRow: View {
   var body: some View {
     WithViewStore(store.scope(state: \.view)) { viewStore in
       NavigationLink(
-        destination: ConnectedAppDetailsView(
-          store: self.store.scope(state: \.detailsState, action: AppListRowAction.viewDetails)
+        destination: IfLetStore(
+          self.store.scope(state: \.detailsState, action: AppListRowAction.details),
+          then: ConnectedAppDetailsView.init
         ),
         isActive: viewStore.binding(get: \.isSelected, send: AppListRowAction.selected)
       ) {

@@ -5,111 +5,159 @@ import WishlistFoundation
 
 struct AppDetailsState: Equatable {
   var app: App
+  var versions: [Version]?
+  var showVersionHistory: Bool
 }
 
 enum AppDetailsAction {
-  case onAppear
   case openInAppStore(URL)
+  case showVersionHistory(Bool)
+  case versionHistory(VersionHistoryAction)
 }
 
 struct AppDetailsEnvironment {
   var openURL: (URL) -> Void
-  var recordDetailsViewed: (App.ID, Date) -> Void
+  var versionHistory: (App.ID) -> [Version]
 }
 
-let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>> { state, action, environment in
-  switch action {
-  case .onAppear:
-    let id = state.app.id
-    let now = environment.now()
-    state.app.lastViewed = now
-    return .fireAndForget {
-      environment.recordDetailsViewed(id, now)
-    }
+let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>>.combine(
+  Reducer { state, action, environment in
+    switch action {
+    case let .showVersionHistory(show):
+      state.showVersionHistory = show
+      if show, state.versions == nil {
+        state.versions = environment.versionHistory(state.app.id)
+      }
+      return .none
 
-  case let .openInAppStore(url):
-    return .fireAndForget {
-      environment.openURL(url)
+    case let .openInAppStore(url):
+      return .fireAndForget {
+        environment.openURL(url)
+      }
+
+    case .versionHistory:
+      return .none
     }
-  }
-}
+  },
+  versionHistoryReducer.pullback(
+    state: \.versionHistoryState,
+    action: /AppDetailsAction.versionHistory,
+    environment: { systemEnvironment in
+      systemEnvironment.map { _ in
+        VersionHistoryEnvironment()
+      }
+    }
+  )
+)
 
 struct ConnectedAppDetailsView: View {
   var store: Store<AppDetailsState, AppDetailsAction>
 
+  @State private var showShareSheet = false
+
   var body: some View {
-    WithViewStore(store) { viewStore in
-      AppDetailsView(app: viewStore.app)
-        .onAppear {
-          viewStore.send(.onAppear)
+    WithViewStore(store.scope(state: \.app.url)) { viewStore in
+      AppDetailsContentView(store: self.store)
+        .navigationBarTitle("Details", displayMode: .inline)
+        .navigationBarItems(
+          trailing: Button(action: { self.showShareSheet = true }) {
+            Image.share
+              .imageScale(.large)
+              .frame(width: 24, height: 24)
+          }.hoverEffect()
+        )
+        .sheet(isPresented: self.$showShareSheet) {
+          ActivityView(showing: self.$showShareSheet, activityItems: [viewStore.state], applicationActivities: nil)
         }
     }
   }
 }
 
-struct AppDetailsView: View {
-  @State private var showShareSheet = false
+private extension AppDetailsState {
+  var versionHistoryState: VersionHistoryState {
+    get { VersionHistoryState(versions: versions ?? []) }
+    set { versions = newValue.versions }
+  }
 
-  let app: App
+  var headingState: AppHeading.ViewState {
+    .init(
+      title: app.title,
+      seller: app.seller,
+      price: app.price.current.formatted,
+      icon: app.icon.large,
+      url: app.url
+    )
+  }
 
-  var body: some View {
-    AppDetailsContentView(app: app)
-      .navigationBarTitle("Details", displayMode: .inline)
-      .navigationBarItems(
-        trailing: Button(action: { self.showShareSheet = true }) {
-          Image.share
-            .imageScale(.large)
-            .frame(width: 24, height: 24)
-        }.hoverEffect()
-      )
-      .sheet(isPresented: $showShareSheet) {
-        ActivityView(showing: self.$showShareSheet, activityItems: [self.app.url], applicationActivities: nil)
-      }
+  var contentViewState: AppDetailsContentView.ViewState {
+    .init(description: app.description)
   }
 }
 
 struct AppDetailsContentView: View {
-  let app: App
+  struct ViewState: Equatable {
+    let description: String
+  }
+
+  let store: Store<AppDetailsState, AppDetailsAction>
 
   var body: some View {
-    ScrollView(.vertical) {
-      VStack(alignment: .leading, spacing: 16) {
-        AppHeading(app: app)
-        ReleaseNotes(app: app)
-        AppDescription(app: app)
+    WithViewStore(store.scope(state: \.contentViewState)) { viewStore in
+      ScrollView(.vertical) {
+        VStack(alignment: .leading, spacing: 16) {
+          AppHeading(store: self.store.scope(state: \.headingState))
+          ReleaseNotes(store: self.store)
+          AppDescription(description: viewStore.description)
+        }
+        .padding()
       }
-      .padding()
     }
   }
 }
 
 private struct AppHeading: View {
-  let app: App
+  struct ViewState: Equatable {
+    let title: String
+    let seller: String
+    let price: String
+    let icon: URL
+    let url: URL
+  }
+
+  let store: Store<ViewState, AppDetailsAction>
 
   var body: some View {
-    HStack(alignment: .top, spacing: 16) {
-      AppIcon(app.icon.large, width: 100)
-      VStack(alignment: .leading) {
-        Text(app.title)
-          .font(Font.title.bold())
-          .fixedSize(horizontal: false, vertical: true)
-        Text(app.seller)
-          .font(.headline)
-        HStack {
-          Text(app.price.current.formatted)
-          Spacer()
-          ViewInAppStoreButton(url: app.url)
-        }.padding(.top, 8)
+    WithViewStore(store) { viewStore in
+      HStack(alignment: .top, spacing: 16) {
+        AppIcon(viewStore.icon, width: 100)
+        VStack(alignment: .leading) {
+          Text(viewStore.title)
+            .font(Font.title.bold())
+            .fixedSize(horizontal: false, vertical: true)
+          Text(viewStore.seller)
+            .font(.headline)
+          HStack {
+            Text(viewStore.price)
+            Spacer()
+            ViewInAppStoreButton {
+              viewStore.send(.openInAppStore(viewStore.url))
+            }
+          }.padding(.top, 8)
+        }
       }
     }
   }
 }
 
 private struct ViewInAppStoreButton: View {
-  let url: URL
+  let action: () -> Void
+
+  init(_ action: @escaping () -> Void) {
+    self.action = action
+  }
 
   var body: some View {
-    Button(action: { UIApplication.shared.open(self.url) }) {
+    Button(action: action) {
       Text("VIEW")
         .font(.subheadline)
         .fontWeight(.bold)
@@ -122,87 +170,75 @@ private struct ViewInAppStoreButton: View {
 }
 
 private struct AppDescription: View {
-  let app: App
+  let description: String
 
   var body: some View {
     Group {
       Divider()
       Text("Description")
         .bold()
-      Text(app.description)
+      Text(description)
         .expandable(initialLineLimit: 3)
     }
   }
 }
 
+private extension AppDetailsState {
+  var releaseNotesViewState: ReleaseNotes.ViewState {
+    .init(version: app.version.current, showHistory: showVersionHistory)
+  }
+}
+
 private struct ReleaseNotes: View {
+  struct ViewState: Equatable {
+    let version: Version
+    let showHistory: Bool
+  }
+
   @Environment(\.updateDateFormatter) private var dateFormatter
 
-  let app: App
+  let store: Store<AppDetailsState, AppDetailsAction>
 
   var body: some View {
-    Group {
-      if app.version.current.notes != nil {
-        Divider()
-        HStack {
-          Text("Release Notes")
-            .bold()
-            .layoutPriority(2)
-          Spacer()
-          Text("Updated: \(dateFormatter.string(from: app.version.current.date))")
-            .multilineTextAlignment(.trailing)
-            .layoutPriority(1)
+    WithViewStore(store.scope(state: \.releaseNotesViewState)) { viewStore in
+      Group {
+        if viewStore.version.notes != nil {
+          Divider()
+          VStack(spacing: 8) {
+            HStack {
+              Text("Release Notes")
+                .bold()
+              Spacer(minLength: 0)
+              NavigationLink(
+                destination: VersionHistoryView(
+                  store: self.store.scope(
+                    state: \.versionHistoryState,
+                    action: AppDetailsAction.versionHistory
+                  )
+                ),
+                isActive: viewStore.binding(get: \.showHistory, send: AppDetailsAction.showVersionHistory)
+              ) {
+                Text("Version History")
+              }
+            }
+            HStack {
+              Text(viewStore.version.name)
+                .font(.callout)
+                .foregroundColor(.secondary)
+              Spacer(minLength: 0)
+              Text(self.dateFormatter.string(from: viewStore.version.date))
+                .font(.callout)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.trailing)
+            }
+          }
+          Text(viewStore.version.notes!)
+            .expandable(initialLineLimit: 3)
+        } else {
+          EmptyView()
         }
-        Text(app.version.current.notes!)
-          .expandable(initialLineLimit: 3)
-      } else {
-        EmptyView()
       }
     }
-  }
-}
-
-struct ExpandableTextModifier: ViewModifier {
-  @State private var expanded = false
-
-  let initialLineLimit: Int
-  let expandedLineLimit: Int?
-
-  init(initialLineLimit: Int, expandedLineLimit: Int? = nil) {
-    self.initialLineLimit = initialLineLimit
-    self.expandedLineLimit = expandedLineLimit
-  }
-
-  func body(content: Content) -> some View {
-    ZStack(alignment: .bottomTrailing) {
-      HStack {
-        content
-          .lineLimit(expanded ? expandedLineLimit : initialLineLimit)
-        Spacer(minLength: 0)
-      }
-      if !expanded {
-        Button("more") {
-          self.expanded.toggle()
-        }
-          .padding(.leading, 20)
-          .background(
-            LinearGradient(
-              gradient: Gradient(stops: [
-                Gradient.Stop(color: Color(.systemBackground).opacity(0), location: 0),
-                Gradient.Stop(color: Color(.systemBackground), location: 0.25)
-              ]),
-              startPoint: .leading,
-              endPoint: .trailing
-            )
-          )
-      }
-    }
-  }
-}
-
-extension View {
-  func expandable(initialLineLimit: Int, expandedLineLimit: Int? = nil) -> some View {
-    modifier(ExpandableTextModifier(initialLineLimit: initialLineLimit, expandedLineLimit: expandedLineLimit))
   }
 }
 

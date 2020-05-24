@@ -21,6 +21,7 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
           applyTheme: { [weak self] theme in
             self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
           },
+          openURL: { UIApplication.shared.open($0) },
           terminate: { [weak self] in
             if let session = self?.session {
               UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
@@ -65,7 +66,7 @@ private struct AppDetailsNavigationView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       NavigationView {
-        AppDetailsContentView(app: self.app)
+        AppDetailsContentView(store: self.store.scope(state: { AppDetailsState(app: self.app, showVersionHistory: false) }, action: AppDetailsSceneAction.details))
           .navigationBarTitle("Details", displayMode: .inline)
           .navigationBarItems(
             trailing: Button("Close") {
@@ -82,6 +83,7 @@ struct AppDetailsSceneState: Equatable {
 }
 
 enum AppDetailsSceneAction {
+  case details(AppDetailsAction)
   case lifecycle(SceneLifecycleEvent)
   case themeChanged(PublisherAction<Theme>)
   case closeDetails
@@ -90,6 +92,7 @@ enum AppDetailsSceneAction {
 struct AppDetailsSceneEnvironment {
   var theme: AnyPublisher<Theme, Never>
   var applyTheme: (Theme) -> Void
+  var openURL: (URL) -> Void
   var terminate: () -> Void
 }
 
@@ -110,7 +113,12 @@ let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction
         environment.terminate()
       }
 
-    case .lifecycle, .themeChanged:
+    case let .details(.openInAppStore(url)):
+      return .fireAndForget {
+        environment.openURL(url)
+      }
+
+    case .lifecycle, .themeChanged, .details:
       return .none
     }
   },

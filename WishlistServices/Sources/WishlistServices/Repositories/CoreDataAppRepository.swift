@@ -29,6 +29,11 @@ public final class CoreDataAppRepository: AppRepository {
     return try container.viewContext.performAndFetch(fetchRequest).first.flatMap(App.init)
   }
 
+  public func versionHistory(id: App.ID) throws -> [Version] {
+    let fetchRequest = VersionEntity.fetchAll(id: id.rawValue)
+    return try container.viewContext.performAndFetch(fetchRequest).map(Version.init)
+  }
+
   public func add(_ apps: [AppSnapshot]) throws {
     container.performBackgroundTask { context in
       let ids = apps.map { NSNumber(value: $0.id.rawValue) }
@@ -184,6 +189,17 @@ private extension AppEntity {
       "currentPrice", "previousPrice", "currentVersion", "previousVersion"
     ]
     fetchRequest.fetchLimit = 1
+    return fetchRequest
+  }
+}
+
+private extension VersionEntity {
+  static func fetchAll(id: Int) -> NSFetchRequest<VersionEntity> {
+    let fetchRequest = NSFetchRequest<VersionEntity>(entityName: VersionEntity.entityName)
+    fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id))
+    fetchRequest.sortDescriptors = [
+      NSSortDescriptor(key: "date", ascending: false)
+    ]
     return fetchRequest
   }
 }
