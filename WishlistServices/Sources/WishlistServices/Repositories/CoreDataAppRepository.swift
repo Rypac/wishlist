@@ -25,12 +25,12 @@ public final class CoreDataAppRepository: AppRepository {
   }
 
   public func fetch(id: App.ID) throws -> App? {
-    let fetchRequest = AppEntity.fetchRequest(id: id.rawValue)
+    let fetchRequest = AppEntity.fetchRequest(id: id)
     return try container.viewContext.performAndFetch(fetchRequest).first.flatMap(App.init)
   }
 
   public func versionHistory(id: App.ID) throws -> [Version] {
-    let fetchRequest = VersionEntity.fetchAll(id: id.rawValue)
+    let fetchRequest = VersionEntity.fetchAll(id: id)
     return try container.viewContext.performAndFetch(fetchRequest).map(Version.init)
   }
 
@@ -75,7 +75,7 @@ public final class CoreDataAppRepository: AppRepository {
 
   public func delete(ids: [App.ID]) throws {
     container.performBackgroundTask { context in
-      let ids = ids.map(NSNumber.init)
+      let ids = ids.map { NSNumber(value: $0.rawValue) }
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
       fetchRequest.predicate = NSPredicate(format: "identifier in %@", ids)
       fetchRequest.fetchLimit = ids.count
@@ -182,9 +182,9 @@ private extension AppEntity {
     return fetchRequest
   }
 
-  static func fetchRequest(id: Int) -> NSFetchRequest<AppEntity> {
+  static func fetchRequest(id: App.ID) -> NSFetchRequest<AppEntity> {
     let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
-    fetchRequest.predicate = NSPredicate(format: "identifier = %@", NSNumber(value: id))
+    fetchRequest.predicate = NSPredicate(format: "identifier = %@", NSNumber(value: id.rawValue))
     fetchRequest.relationshipKeyPathsForPrefetching = [
       "currentPrice", "previousPrice", "currentVersion", "previousVersion"
     ]
@@ -194,9 +194,9 @@ private extension AppEntity {
 }
 
 private extension VersionEntity {
-  static func fetchAll(id: Int) -> NSFetchRequest<VersionEntity> {
+  static func fetchAll(id: App.ID) -> NSFetchRequest<VersionEntity> {
     let fetchRequest = NSFetchRequest<VersionEntity>(entityName: VersionEntity.entityName)
-    fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id))
+    fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
     fetchRequest.sortDescriptors = [
       NSSortDescriptor(key: "date", ascending: false)
     ]
