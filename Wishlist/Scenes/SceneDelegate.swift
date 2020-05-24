@@ -30,7 +30,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask))
           },
           setTheme: { [weak self] theme in
-            appDelegate.settings.theme = theme
             self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
           }
         )
@@ -238,7 +237,9 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
             return versions ?? []
           },
           openURL: $0.openURL,
-          saveTheme: $0.setTheme,
+          saveTheme: { theme in
+            systemEnvironment.settings.theme = theme
+          },
           recordDetailsViewed: { id, date in
             try? systemEnvironment.repository.viewedApp(id: id, at: date)
           }
@@ -277,7 +278,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
             publisher: environment.settings.$sortOrder.publisher(initialValue: .skip).eraseToAnyPublisher()
           ),
           theme: PublisherEnvironment(
-            publisher: environment.settings.$theme.publisher().eraseToAnyPublisher(),
+            publisher: environment.settings.$theme.publisher(initialValue: .skip).eraseToAnyPublisher(),
             perform: environment.setTheme
           )
         )
