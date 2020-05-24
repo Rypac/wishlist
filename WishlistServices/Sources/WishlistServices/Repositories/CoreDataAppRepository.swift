@@ -155,9 +155,13 @@ private extension NSManagedObjectContext {
     existingApp.update(app: app)
 
     if app.updateDate > existingApp.currentVersion.date {
-      let latestVersion = VersionEntity(context: self)
-      latestVersion.update(app: app)
-      existingApp.add(version: latestVersion)
+      if app.version == existingApp.currentVersion.version {
+        existingApp.currentVersion.update(app: app)
+      } else {
+        let latestVersion = VersionEntity(context: self)
+        latestVersion.update(app: app)
+        existingApp.add(version: latestVersion)
+      }
     }
 
     if app.price != existingApp.currentPrice.value {

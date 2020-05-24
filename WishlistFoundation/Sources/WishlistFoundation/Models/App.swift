@@ -69,9 +69,11 @@ public extension App {
     }
 
     if app.updateDate > version.current.date {
+      // If the update has the same name as the current version, use the previous version instead.
+      let previousVersion = app.version == version.current.name ? version.previous : version.current
       version = Tracked(
         current: Version(name: app.version, date: app.updateDate, notes: app.releaseNotes),
-        previous: version.current
+        previous: previousVersion
       )
     }
   }
