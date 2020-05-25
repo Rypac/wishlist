@@ -29,7 +29,7 @@ struct VersionHistoryView: View {
   var body: some View {
     WithViewStore(store.scope(state: \.versions)) { viewStore in
       List(viewStore.state, id: \.date) { version in
-        VStack {
+        VStack(spacing: 8) {
           HStack {
             Text(version.name)
               .fontWeight(.medium)
@@ -41,7 +41,7 @@ struct VersionHistoryView: View {
             Text(version.notes!)
               .expandable(initialLineLimit: 3)
           }
-        }
+        }.padding([.top, .bottom], 4)
       }.navigationBarTitle("Version History")
     }
   }

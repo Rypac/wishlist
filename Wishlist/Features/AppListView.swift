@@ -4,6 +4,8 @@ import SwiftUI
 import WishlistCore
 import WishlistFoundation
 
+// MARK: - Composable Architecture
+
 struct AppDetailsContent: Equatable {
   let id: App.ID
   var versions: [Version]?
@@ -33,31 +35,11 @@ enum AppListAction {
 
 struct AppListEnvironment {
   var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  var deleteApps: ([App.ID]) -> Void
   var versionHistory: (App.ID) -> [Version]
   var openURL: (URL) -> Void
   var saveTheme: (Theme) -> Void
   var recordDetailsViewed: (App.ID, Date) -> Void
-}
-
-struct AppListRowState: Identifiable {
-  var id: App.ID { app.id }
-  var app: App
-  var sortOrder: SortOrder
-  var details: AppDetailsContent?
-  var isSelected: Bool { id == details?.id }
-
-  var detailsState: AppDetailsState? {
-    guard isSelected else {
-      return nil
-    }
-    return AppDetailsState(app: app, versions: details?.versions, showVersionHistory: details?.showVersionHistory == true)
-  }
-}
-
-extension AppListRowState: Equatable {
-  static func == (lhs: Self, rhs: Self) -> Bool {
-    lhs.isSelected == rhs.isSelected && lhs.sortOrder == rhs.sortOrder && lhs.app == rhs.app
-  }
 }
 
 enum AppListRowAction {
@@ -65,18 +47,9 @@ enum AppListRowAction {
   case remove
   case openInNewWindow
   case viewInAppStore
-  case details(AppDetailsAction)
 }
 
 private extension AppListState {
-  var sortedApps: IdentifiedArrayOf<AppListRowState> {
-    IdentifiedArray(
-      apps.sorted(by: sortOrder).map {
-        AppListRowState(app: $0, sortOrder: sortOrder, details: displayedAppDetails)
-      }
-    )
-  }
-
   var appDetailsState: AppDetailsState? {
     get {
       guard let details = displayedAppDetails, let app = apps[id: details.id] else {
@@ -123,7 +96,9 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
 
     case let .removeApps(ids):
       state.apps.removeAll(where: { ids.contains($0.id) })
-      return .none
+      return .fireAndForget {
+        environment.deleteApps(ids)
+      }
 
     case let .setSortOrder(sortOrder):
       state.sortOrder = sortOrder
@@ -159,9 +134,6 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     case let .app(id, .remove):
       return Effect(value: .removeApps([id]))
 
-    case let .app(id: _, action: .details(details)):
-      return Effect(value: .appDetails(details))
-
     case .appDetails, .addApps, .settings:
       return .none
     }
@@ -195,23 +167,57 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
 
 // MARK: - List
 
+private extension AppListState {
+  var view: AppListView.ViewState {
+    AppListView.ViewState(
+      isSortOrderSheetPresented: isSortOrderSheetPresented,
+      isSettingsSheetPresented: isSettingsSheetPresented
+    )
+  }
+
+  var sortedApps: IdentifiedArrayOf<ConnectedAppRow.ViewState> {
+    IdentifiedArray(
+      apps.sorted(by: sortOrder).map { app in
+        ConnectedAppRow.ViewState(
+          id: app.id,
+          isSelected: app.id == displayedAppDetails?.id,
+          title: app.title,
+          details: AppRow.Details(sortOrder: sortOrder, app: app),
+          icon: app.icon.medium,
+          url: app.url
+        )
+      }
+    )
+  }
+}
+
 struct AppListView: View {
+  struct ViewState: Equatable {
+    var isSortOrderSheetPresented: Bool
+    var isSettingsSheetPresented: Bool
+  }
+
   let store: Store<AppListState, AppListAction>
 
   var body: some View {
-    WithViewStore(store.stateless) { viewStore in
+    WithViewStore(store.scope(state: \.view)) { viewStore in
       NavigationView {
-        ZStack {
-          List {
-            ForEachStore(
-              self.store.scope(state: \.sortedApps, action: AppListAction.app),
-              content: ConnectedAppRow.init
-            ).onDelete {
-              viewStore.send(.removeAppsAtIndexes($0))
+        List {
+          ForEachStore(self.store.scope(state: \.sortedApps, action: AppListAction.app)) { store in
+            WithViewStore(store.scope(state: \.isSelected)) { viewStore in
+              NavigationLink(
+                destination: IfLetStore(
+                  self.store.scope(state: \.appDetailsState, action: AppListAction.appDetails),
+                  then: ConnectedAppDetailsView.init
+                ),
+                isActive: viewStore.binding(send: AppListRowAction.selected)
+              ) {
+                ConnectedAppRow(store: store)
+              }
             }
+          }.onDelete {
+            viewStore.send(.removeAppsAtIndexes($0))
           }
-          SettingsSheet(store: self.store)
-          SortOrderSheet(store: self.store.scope(state: \.isSortOrderSheetPresented))
         }
         .navigationBarTitle("Wishlist")
         .navigationBarItems(
@@ -236,43 +242,11 @@ struct AppListView: View {
             .frame(width: 24, height: 24)
           }.hoverEffect()
         )
-      }
-        .onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
-          viewStore.send(.addApps(.addAppsFromURLs(urls)))
-        })
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
-  }
-}
-
-private struct SettingsSheet: View {
-  let store: Store<AppListState, AppListAction>
-
-  var body: some View {
-    WithViewStore(store.scope(state: \.isSettingsSheetPresented)) { viewStore in
-      Color.clear
-        .sheet(
-          isPresented: viewStore.binding(send: AppListAction.setSettingsSheet)
-        ) {
-          SettingsView(
-            store: self.store.scope(
-              state: \.settingsState,
-              action: AppListAction.settings
-            )
-          )
-        }
-    }
-  }
-}
-
-private struct SortOrderSheet: View {
-  let store: Store<Bool, AppListAction>
-
-  var body: some View {
-    WithViewStore(store) { viewStore in
-      Color.clear
         .actionSheet(
-          isPresented: viewStore.binding(send: AppListAction.setSortOrderSheet)
+          isPresented: viewStore.binding(
+            get: \.isSortOrderSheetPresented,
+            send: AppListAction.setSortOrderSheet
+          )
         ) {
           var buttons = SortOrder.allCases.map { sortOrder in
             Alert.Button.default(Text(sortOrder.title)) {
@@ -282,76 +256,75 @@ private struct SortOrderSheet: View {
           buttons.append(.cancel())
           return ActionSheet(title: Text("Sort By"), buttons: buttons)
         }
+        .sheet(
+          isPresented: viewStore.binding(
+            get: \.isSettingsSheetPresented,
+            send: AppListAction.setSettingsSheet
+          )
+        ) {
+          SettingsView(
+            store: self.store.scope(
+              state: \.settingsState,
+              action: AppListAction.settings
+            )
+          )
+        }
+      }
+      .onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
+        viewStore.send(.addApps(.addAppsFromURLs(urls)))
+      })
+      .navigationViewStyle(StackNavigationViewStyle())
     }
   }
 }
 
 // MARK: - Row
 
-private extension AppListRowState {
-  var view: ConnectedAppRow.ViewState {
-    ConnectedAppRow.ViewState(
-      title: app.title,
-      details: AppRow.Details(sortOrder: sortOrder, app: app),
-      icon: app.icon.medium,
-      url: app.url,
-      isSelected: isSelected
-    )
-  }
-}
-
 private struct ConnectedAppRow: View {
-  struct ViewState: Equatable {
+  struct ViewState: Identifiable, Equatable {
+    let id: App.ID
+    let isSelected: Bool
     let title: String
     let details: AppRow.Details
     let icon: URL
     let url: URL
-    let isSelected: Bool
   }
 
-  let store: Store<AppListRowState, AppListRowAction>
+  let store: Store<ViewState, AppListRowAction>
 
   @State private var showShareSheet = false
 
   var body: some View {
-    WithViewStore(store.scope(state: \.view)) { viewStore in
-      NavigationLink(
-        destination: IfLetStore(
-          self.store.scope(state: \.detailsState, action: AppListRowAction.details),
-          then: ConnectedAppDetailsView.init
-        ),
-        isActive: viewStore.binding(get: \.isSelected, send: AppListRowAction.selected)
-      ) {
-        AppRow(title: viewStore.title, details: viewStore.details, icon: viewStore.icon)
-          .onDrag {
-            NSItemProvider(url: viewStore.url, title: viewStore.title)
+    WithViewStore(store) { viewStore in
+      AppRow(title: viewStore.title, details: viewStore.details, icon: viewStore.icon)
+        .onDrag {
+          NSItemProvider(url: viewStore.url, title: viewStore.title)
+        }
+        .contextMenu {
+          Button(action: { viewStore.send(.openInNewWindow) }) {
+            Text("Open in New Window")
+            Image.window
+          }.visible(on: .pad)
+          Button(action: { viewStore.send(.viewInAppStore) }) {
+            Text("View in App Store")
+            Image.store
           }
-          .contextMenu {
-            Button(action: { viewStore.send(.openInNewWindow) }) {
-              Text("Open in New Window")
-              Image.window
-            }.visible(on: .pad)
-            Button(action: { viewStore.send(.viewInAppStore) }) {
-              Text("View in App Store")
-              Image.store
-            }
-            Button(action: { self.showShareSheet = true }) {
-              Text("Share")
-              Image.share
-            }
-            Button(action: { viewStore.send(.remove) }) {
-              Text("Remove")
-              Image.trash
-            }
+          Button(action: { self.showShareSheet = true }) {
+            Text("Share")
+            Image.share
           }
-          .sheet(isPresented: self.$showShareSheet) {
-            ActivityView(
-              showing: self.$showShareSheet,
-              activityItems: [viewStore.url],
-              applicationActivities: nil
-            )
+          Button(action: { viewStore.send(.remove) }) {
+            Text("Remove")
+            Image.trash
           }
-      }
+        }
+        .sheet(isPresented: self.$showShareSheet) {
+          ActivityView(
+            showing: self.$showShareSheet,
+            activityItems: [viewStore.url],
+            applicationActivities: nil
+          )
+        }
     }
   }
 }

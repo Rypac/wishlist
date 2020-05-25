@@ -211,11 +211,6 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
         try? environment.repository.add(apps)
       }
 
-    case let .appList(.removeApps(ids)):
-      return .fireAndForget {
-        try? environment.repository.delete(ids: ids)
-      }
-
     case let .appList(.setSortOrder(sortOrder)):
       return .fireAndForget {
         environment.settings.sortOrder = sortOrder
@@ -232,9 +227,11 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       systemEnvironment.map {
         AppListEnvironment(
           loadApps: $0.loadApps,
+          deleteApps: { ids in
+            try? systemEnvironment.repository.delete(ids: ids)
+          },
           versionHistory: { id in
-            let versions = try? systemEnvironment.repository.versionHistory(id: id)
-            return versions ?? []
+            (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
           },
           openURL: $0.openURL,
           saveTheme: { theme in
