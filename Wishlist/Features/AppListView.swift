@@ -232,7 +232,7 @@ struct AppListView: View {
             .frame(width: 24, height: 24)
           }.hoverEffect(),
           trailing: Button(action: {
-            withAnimation {
+            withAnimation(.interactiveSpring(response: 0.25)) {
               viewStore.send(.setSortOrderSheet(isPresented: true))
             }
           }) {
@@ -249,7 +249,7 @@ struct AppListView: View {
         isPresented: viewStore.binding(
           get: \.isSortOrderSheetPresented,
           send: AppListAction.setSortOrderSheet
-        )
+        ).animation(.interactiveSpring(response: 0.5))
       ) {
         WithViewStore(self.store.scope(state: \.sortOrder)) { viewStore in
           VStack(alignment: .leading) {

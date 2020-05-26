@@ -16,7 +16,7 @@ struct BottomSheetView<Content: View>: View {
       VStack(spacing: 0) {
         HStack {
           Spacer()
-          Button(action: { withAnimation { self.isPresented.toggle() } }) {
+          Button(action: { self.isPresented.toggle() }) {
             Image(systemName: "xmark.circle.fill")
               .padding()
           }.hoverEffect()
@@ -28,8 +28,6 @@ struct BottomSheetView<Content: View>: View {
       .background(Color(.secondarySystemBackground))
       .cornerRadius(16)
       .frame(height: geometry.size.height, alignment: .bottom)
-      .transition(.slide)
-      .animation(.interactiveSpring())
     }
   }
 }
@@ -67,8 +65,17 @@ extension View {
     ZStack {
       self
       if isPresented.wrappedValue {
-        Color.black.opacity(0.4).edgesIgnoringSafeArea(.all)
+        Color.black
+          .opacity(0.5)
+          .transition(.opacity)
+          .edgesIgnoringSafeArea(.all)
+          .onTapGesture {
+            isPresented.wrappedValue.toggle()
+          }
+          .zIndex(4)
         BottomSheetView(isPresented: isPresented, content: content)
+          .transition(.move(edge: .bottom))
+          .zIndex(5)
       }
     }
   }
