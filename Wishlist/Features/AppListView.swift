@@ -232,7 +232,9 @@ struct AppListView: View {
             .frame(width: 24, height: 24)
           }.hoverEffect(),
           trailing: Button(action: {
-            viewStore.send(.setSortOrderSheet(isPresented: true))
+            withAnimation {
+              viewStore.send(.setSortOrderSheet(isPresented: true))
+            }
           }) {
             HStack {
               Image.sort
@@ -242,33 +244,37 @@ struct AppListView: View {
             .frame(width: 24, height: 24)
           }.hoverEffect()
         )
-        .actionSheet(
-          isPresented: viewStore.binding(
-            get: \.isSortOrderSheetPresented,
-            send: AppListAction.setSortOrderSheet
-          )
-        ) {
-          var buttons = SortOrder.allCases.map { sortOrder in
-            Alert.Button.default(Text(sortOrder.title)) {
-              viewStore.send(.setSortOrder(sortOrder))
-            }
+      }
+      .bottomSheet(
+        isPresented: viewStore.binding(
+          get: \.isSortOrderSheetPresented,
+          send: AppListAction.setSortOrderSheet
+        )
+      ) {
+        WithViewStore(self.store.scope(state: \.sortOrder)) { viewStore in
+          VStack(alignment: .leading) {
+            Text("Sort By")
+            Picker("Sort By", selection: viewStore.binding(send: AppListAction.setSortOrder)) {
+              ForEach(SortOrder.allCases, id: \.self) { sortOrder in
+                Text(sortOrder.title).tag(sortOrder)
+              }
+            }.pickerStyle(SegmentedPickerStyle())
           }
-          buttons.append(.cancel())
-          return ActionSheet(title: Text("Sort By"), buttons: buttons)
+          .padding([.bottom, .horizontal])
         }
-        .sheet(
-          isPresented: viewStore.binding(
-            get: \.isSettingsSheetPresented,
-            send: AppListAction.setSettingsSheet
+      }
+      .sheet(
+        isPresented: viewStore.binding(
+          get: \.isSettingsSheetPresented,
+          send: AppListAction.setSettingsSheet
+        )
+      ) {
+        SettingsView(
+          store: self.store.scope(
+            state: \.settingsState,
+            action: AppListAction.settings
           )
-        ) {
-          SettingsView(
-            store: self.store.scope(
-              state: \.settingsState,
-              action: AppListAction.settings
-            )
-          )
-        }
+        )
       }
       .onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
         viewStore.send(.addApps(.addAppsFromURLs(urls)))
@@ -474,7 +480,7 @@ private extension SortOrder {
     switch self {
     case .price: return "Price"
     case .title: return "Title"
-    case .updated: return "Recently Updated"
+    case .updated: return "Updated"
     }
   }
 }
