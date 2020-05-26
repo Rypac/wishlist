@@ -8,17 +8,12 @@ struct VersionHistoryState: Equatable {
   var versions: [Version]
 }
 
-enum VersionHistoryAction {
-  case onAppear
-}
+enum VersionHistoryAction {}
 
 struct VersionHistoryEnvironment {}
 
 let versionHistoryReducer = Reducer<VersionHistoryState, VersionHistoryAction, SystemEnvironment<VersionHistoryEnvironment>> { state, action, environment in
-  switch action {
-  case .onAppear:
-    return .none
-  }
+  .none
 }
 
 struct VersionHistoryView: View {
@@ -32,17 +27,21 @@ struct VersionHistoryView: View {
         VStack(spacing: 8) {
           HStack {
             Text(version.name)
-              .fontWeight(.medium)
-            Spacer(minLength: 0)
+              .font(.callout)
+              .bold()
+            Spacer()
             Text(self.dateFormatter.string(from: version.date))
+              .font(.callout)
               .foregroundColor(.secondary)
           }
           if version.notes != nil {
             Text(version.notes!)
               .expandable(initialLineLimit: 3)
           }
-        }.padding([.top, .bottom], 4)
-      }.navigationBarTitle("Version History")
+        }
+        .padding([.top, .bottom], 4)
+      }
+      .navigationBarTitle("Version History")
     }
   }
 }
