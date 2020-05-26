@@ -14,7 +14,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     return Store(
       initialState: AppState(
         apps: (try? appDelegate.appRepository.fetchAll()) ?? [],
-        sortOrder: appDelegate.settings.sortOrder,
+        sortOrderState: SortOrderState(
+          sortOrder: appDelegate.settings.sortOrder,
+          sortUpdatesByMostRecent: true,
+          sortPriceLowToHigh: true,
+          sortTitleAToZ: true
+        ),
         lastUpdateDate: appDelegate.settings.lastUpdateDate,
         theme: appDelegate.settings.theme,
         appUpdateFrequency: 5 * 60
@@ -79,7 +84,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 struct AppState: Equatable {
   var apps: [App]
-  var sortOrder: SortOrder
+  var sortOrderState: SortOrderState
   var lastUpdateDate: Date?
   var theme: Theme
   var appUpdateFrequency: TimeInterval
@@ -94,7 +99,7 @@ private extension AppState {
     get {
       AppListState(
         apps: IdentifiedArrayOf(apps),
-        sortOrder: sortOrder,
+        sortOrderState: sortOrderState,
         theme: theme,
         displayedAppDetails: viewingAppDetails,
         isSettingsSheetPresented: isSettingsSheetPresented,
@@ -103,7 +108,7 @@ private extension AppState {
     }
     set {
       apps = newValue.apps.elements
-      sortOrder = newValue.sortOrder
+      sortOrderState = newValue.sortOrderState
       theme = newValue.theme
       isSettingsSheetPresented = newValue.isSettingsSheetPresented
       isSortOrderSheetPresented = newValue.isSortOrderSheetPresented
@@ -145,11 +150,11 @@ private extension AppState {
 
   var processUpdateState: ProcessUpdateState {
     get {
-      ProcessUpdateState(apps: apps, sortOrder: sortOrder, theme: theme)
+      ProcessUpdateState(apps: apps, sortOrder: sortOrderState.sortOrder, theme: theme)
     }
     set {
       apps = newValue.apps
-      sortOrder = newValue.sortOrder
+      sortOrderState.sortOrder = newValue.sortOrder
       theme = newValue.theme
     }
   }
@@ -211,7 +216,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
         try? environment.repository.add(apps)
       }
 
-    case let .appList(.setSortOrder(sortOrder)):
+    case let .appList(.sort(.setSortOrder(sortOrder))):
       return .fireAndForget {
         environment.settings.sortOrder = sortOrder
       }

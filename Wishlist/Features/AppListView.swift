@@ -12,9 +12,15 @@ struct AppDetailsContent: Equatable {
   var showVersionHistory: Bool
 }
 
+enum AppSorting: Equatable {
+  case updated(mostRecent: Bool)
+  case price(lowToHigh: Bool)
+  case title(aToZ: Bool)
+}
+
 struct AppListState: Equatable {
   var apps: IdentifiedArrayOf<App>
-  var sortOrder: SortOrder
+  var sortOrderState: SortOrderState
   var theme: Theme
   var displayedAppDetails: AppDetailsContent?
   var isSettingsSheetPresented: Bool = false
@@ -24,9 +30,9 @@ struct AppListState: Equatable {
 enum AppListAction {
   case removeAppsAtIndexes(IndexSet)
   case removeApps([App.ID])
-  case setSortOrder(SortOrder)
   case setSortOrderSheet(isPresented: Bool)
   case setSettingsSheet(isPresented: Bool)
+  case sort(SortOrderAction)
   case app(id: App.ID, action: AppListRowAction)
   case appDetails(AppDetailsAction)
   case settings(SettingsAction)
@@ -90,7 +96,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       return .none
 
     case let .removeAppsAtIndexes(indexes):
-      let apps = state.apps.sorted(by: state.sortOrder)
+      let apps = state.apps.sorted(by: state.appSortOrder)
       let ids = indexes.map { apps[$0].id }
       return Effect(value: .removeApps(ids))
 
@@ -99,10 +105,6 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       return .fireAndForget {
         environment.deleteApps(ids)
       }
-
-    case let .setSortOrder(sortOrder):
-      state.sortOrder = sortOrder
-      return .none
 
     case let .app(id, .selected(true)):
       let now = environment.now()
@@ -134,7 +136,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     case let .app(id, .remove):
       return Effect(value: .removeApps([id]))
 
-    case .appDetails, .addApps, .settings:
+    case .appDetails, .addApps, .settings, .sort:
       return .none
     }
   },
@@ -162,6 +164,11 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     environment: {
       SettingsEnvironment(saveTheme: $0.saveTheme, openURL: $0.openURL)
     }
+  ),
+  sortOrderReducer.pullback(
+    state: \.sortOrderState,
+    action: /AppListAction.sort,
+    environment: { _ in SortOrderEnvironment() }
   )
 )
 
@@ -175,14 +182,22 @@ private extension AppListState {
     )
   }
 
+  var appSortOrder: AppSorting {
+    switch sortOrderState.sortOrder {
+    case .updated: return .updated(mostRecent: sortOrderState.sortUpdatesByMostRecent)
+    case .price: return .price(lowToHigh: sortOrderState.sortPriceLowToHigh)
+    case .title: return .title(aToZ: sortOrderState.sortTitleAToZ)
+    }
+  }
+
   var sortedApps: IdentifiedArrayOf<ConnectedAppRow.ViewState> {
     IdentifiedArray(
-      apps.sorted(by: sortOrder).map { app in
+      apps.sorted(by: appSortOrder).map { app in
         ConnectedAppRow.ViewState(
           id: app.id,
           isSelected: app.id == displayedAppDetails?.id,
           title: app.title,
-          details: AppRow.Details(sortOrder: sortOrder, app: app),
+          details: AppRow.Details(sortOrder: sortOrderState.sortOrder, app: app),
           icon: app.icon.medium,
           url: app.url
         )
@@ -251,17 +266,8 @@ struct AppListView: View {
           send: AppListAction.setSortOrderSheet
         ).animation(.interactiveSpring(response: 0.5))
       ) {
-        WithViewStore(self.store.scope(state: \.sortOrder)) { viewStore in
-          VStack(alignment: .leading) {
-            Text("Sort By")
-            Picker("Sort By", selection: viewStore.binding(send: AppListAction.setSortOrder)) {
-              ForEach(SortOrder.allCases, id: \.self) { sortOrder in
-                Text(sortOrder.title).tag(sortOrder)
-              }
-            }.pickerStyle(SegmentedPickerStyle())
-          }
+        SortOrderView(store: self.store.scope(state: \.sortOrderState, action: AppListAction.sort))
           .padding([.bottom, .horizontal])
-        }
       }
       .sheet(
         isPresented: viewStore.binding(
@@ -475,23 +481,16 @@ extension NSItemProvider {
   }
 }
 
-private extension SortOrder {
-  var title: String {
-    switch self {
-    case .price: return "Price"
-    case .title: return "Title"
-    case .updated: return "Updated"
-    }
-  }
-}
-
 extension Collection where Element == App {
-  func sorted(by order: SortOrder) -> [App] {
+  func sorted(by order: AppSorting) -> [App] {
     sorted {
       switch order {
-      case .title: return $0.title < $1.title
-      case .price: return $0.price.current < $1.price.current
-      case .updated: return $0.version.current > $1.version.current
+      case let .title(aToZ):
+        return aToZ ? $0.title < $1.title : $0.title > $1.title
+      case let .price(lowToHigh):
+        return lowToHigh ? $0.price.current < $1.price.current : $0.price.current > $1.price.current
+      case let .updated(recently):
+        return recently ? $0.version.current > $1.version.current : $0.version.current < $1.version.current
       }
     }
   }

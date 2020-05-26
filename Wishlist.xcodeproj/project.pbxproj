@@ -64,6 +64,7 @@
 		94E0765E246AC2250005FE18 /* UpdateAppsReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E0765D246AC2250005FE18 /* UpdateAppsReducer.swift */; };
 		94E07660246AC2ED0005FE18 /* PublisherReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E0765F246AC2ED0005FE18 /* PublisherReducer.swift */; };
 		94E07661246AC7570005FE18 /* WishlistCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E07639246ABEB10005FE18 /* WishlistCore.framework */; };
+		94E4081D247D0E12007EEABE /* SortOrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E4081C247D0E12007EEABE /* SortOrderView.swift */; };
 		94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */; };
 		94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */; };
 		94FA20D3231BA2BC00EC1190 /* AppListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA20D2231BA2BC00EC1190 /* AppListView.swift */; };
@@ -211,6 +212,7 @@
 		94E0765B246AC0A50005FE18 /* SystemEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemEnvironment.swift; sourceTree = "<group>"; };
 		94E0765D246AC2250005FE18 /* UpdateAppsReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateAppsReducer.swift; sourceTree = "<group>"; };
 		94E0765F246AC2ED0005FE18 /* PublisherReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherReducer.swift; sourceTree = "<group>"; };
+		94E4081C247D0E12007EEABE /* SortOrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOrderView.swift; sourceTree = "<group>"; };
 		94FA20CB231BA2BC00EC1190 /* Wishlist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wishlist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94FA20CE231BA2BC00EC1190 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		94FA20D0231BA2BC00EC1190 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 			children = (
 				94FA20D2231BA2BC00EC1190 /* AppListView.swift */,
 				945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */,
+				94E4081C247D0E12007EEABE /* SortOrderView.swift */,
 				94151ED12469049700CBD2BE /* SettingsView.swift */,
 				94C28BE2246526320013B41F /* URLSchemes.swift */,
 				94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */,
@@ -706,6 +709,7 @@
 				94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */,
 				94151ED42469379E00CBD2BE /* UIKit.swift in Sources */,
 				94FA20CF231BA2BC00EC1190 /* AppDelegate.swift in Sources */,
+				94E4081D247D0E12007EEABE /* SortOrderView.swift in Sources */,
 				947E5A842478EED000EAE43D /* VersionHistoryView.swift in Sources */,
 				94C28BE3246526320013B41F /* URLSchemes.swift in Sources */,
 				948890C424304DDB00E3E5FA /* ActivityIdentifier.swift in Sources */,
