@@ -39,7 +39,7 @@ struct VersionHistoryView: View {
               .expandable(initialLineLimit: 3)
           }
         }
-        .padding([.top, .bottom], 4)
+        .padding(.vertical, 8)
       }
       .navigationBarTitle("Version History")
     }
