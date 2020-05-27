@@ -218,11 +218,6 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
         try? environment.repository.add(apps)
       }
 
-    case let .appList(.sort(.setSortOrder(sortOrder))):
-      return .fireAndForget {
-        environment.settings.sortOrder = sortOrder
-      }
-
     case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:
       return .none
     }
@@ -241,6 +236,9 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
             (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
           },
           openURL: $0.openURL,
+          saveSortOrder: { sortOrder in
+            systemEnvironment.settings.sortOrder = sortOrder
+          },
           saveTheme: { theme in
             systemEnvironment.settings.theme = theme
           },

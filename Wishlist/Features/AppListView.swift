@@ -44,6 +44,7 @@ struct AppListEnvironment {
   var deleteApps: ([App.ID]) -> Void
   var versionHistory: (App.ID) -> [Version]
   var openURL: (URL) -> Void
+  var saveSortOrder: (SortOrder) -> Void
   var saveTheme: (Theme) -> Void
   var recordDetailsViewed: (App.ID, Date) -> Void
 }
@@ -168,7 +169,9 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
   sortOrderReducer.pullback(
     state: \.sortOrderState,
     action: /AppListAction.sort,
-    environment: { _ in SortOrderEnvironment() }
+    environment: {
+      SortOrderEnvironment(saveSortOrder: $0.saveSortOrder)
+    }
   )
 )
 

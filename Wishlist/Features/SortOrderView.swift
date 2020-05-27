@@ -48,13 +48,17 @@ enum SortOrderAction {
   case configureUpdate(ConfigureUpdate)
 }
 
-struct SortOrderEnvironment {}
+struct SortOrderEnvironment {
+  var saveSortOrder: (SortOrder) -> Void
+}
 
 let sortOrderReducer = Reducer<SortOrderState, SortOrderAction, SortOrderEnvironment> { state, action, environment in
   switch action {
   case let .setSortOrder(sortOrder):
     state.sortOrder = sortOrder
-    return .none
+    return .fireAndForget {
+      environment.saveSortOrder(sortOrder)
+    }
 
   case let .configurePrice(.sortLowToHigh(lowToHigh)):
     state.configuration.price.sortLowToHigh = lowToHigh
@@ -106,7 +110,7 @@ struct SortOrderView: View {
         ),
         then: UpdatesSortOrderView.init
       )
-    }
+    }.padding(.bottom)
   }
 }
 
@@ -131,18 +135,19 @@ private struct PriceSortOrderView: View {
   let store: Store<SortOrder.Configuration.Price, SortOrderAction.ConfigurePrice>
 
   var body: some View {
-    VStack(alignment: .leading) {
-      Text("Price From")
-      WithViewStore(store.scope(state: \.sortLowToHigh)) { viewStore in
-        Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigurePrice.sortLowToHigh)) {
-          ForEach([true, false], id: \.self) { lowToHigh in
-            Text(lowToHigh ? "Low to High" : "High to Low").tag(lowToHigh)
-          }
-        }.pickerStyle(SegmentedPickerStyle())
+    Group {
+      VStack(alignment: .leading) {
+        Text("Price From")
+        WithViewStore(store.scope(state: \.sortLowToHigh)) { viewStore in
+          Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigurePrice.sortLowToHigh)) {
+            Text("Low to High").tag(true)
+            Text("High to Low").tag(false)
+          }.pickerStyle(SegmentedPickerStyle())
+        }
       }
       WithViewStore(store.scope(state: \.includeFree)) { viewStore in
         Toggle(isOn: viewStore.binding(send: SortOrderAction.ConfigurePrice.includeFree)) {
-          Text("Include Free")
+          Text("Include Free Apps")
         }
       }
     }
@@ -157,9 +162,8 @@ private struct TitleSortOrderView: View {
       Text("Title From")
       WithViewStore(store.scope(state: \.sortAToZ)) { viewStore in
         Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigureTitle.sortAToZ)) {
-          ForEach([true, false], id: \.self) { aToZ in
-            Text(aToZ ? "A to Z" : "Z to A").tag(aToZ)
-          }
+          Text("A to Z").tag(true)
+          Text("Z to A").tag(false)
         }.pickerStyle(SegmentedPickerStyle())
       }
     }
@@ -174,9 +178,8 @@ private struct UpdatesSortOrderView: View {
       Text("Updates By")
       WithViewStore(store.scope(state: \.sortByMostRecent)) { viewStore in
         Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigureUpdate.sortByMostRecent)) {
-          ForEach([true, false], id: \.self) { mostRecent in
-            Text(mostRecent ? "Most Recent" : "Least Recent").tag(mostRecent)
-          }
+          Text("Most Recent").tag(true)
+          Text("Least Recent").tag(false)
         }.pickerStyle(SegmentedPickerStyle())
       }
     }
