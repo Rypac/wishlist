@@ -184,24 +184,35 @@ private extension AppListState {
 
   var appSortOrder: AppSorting {
     switch sortOrderState.sortOrder {
-    case .updated: return .updated(mostRecent: sortOrderState.sortUpdatesByMostRecent)
-    case .price: return .price(lowToHigh: sortOrderState.sortPriceLowToHigh)
-    case .title: return .title(aToZ: sortOrderState.sortTitleAToZ)
+    case .updated: return .updated(mostRecent: sortOrderState.configuration.update.sortByMostRecent)
+    case .price: return .price(lowToHigh: sortOrderState.configuration.price.sortLowToHigh)
+    case .title: return .title(aToZ: sortOrderState.configuration.title.sortAToZ)
     }
   }
 
   var sortedApps: IdentifiedArrayOf<ConnectedAppRow.ViewState> {
     IdentifiedArray(
-      apps.sorted(by: appSortOrder).map { app in
-        ConnectedAppRow.ViewState(
-          id: app.id,
-          isSelected: app.id == displayedAppDetails?.id,
-          title: app.title,
-          details: AppRow.Details(sortOrder: sortOrderState.sortOrder, app: app),
-          icon: app.icon.medium,
-          url: app.url
-        )
-      }
+      apps
+        .filter { app in
+          guard
+            sortOrderState.sortOrder == .price,
+            !sortOrderState.configuration.price.includeFree
+          else {
+            return true
+          }
+          return app.price.current.value > 0
+        }
+        .sorted(by: appSortOrder)
+        .map { app in
+          ConnectedAppRow.ViewState(
+            id: app.id,
+            isSelected: app.id == displayedAppDetails?.id,
+            title: app.title,
+            details: AppRow.Details(sortOrder: sortOrderState.sortOrder, app: app),
+            icon: app.icon.medium,
+            url: app.url
+          )
+        }
     )
   }
 }

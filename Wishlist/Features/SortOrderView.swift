@@ -2,18 +2,50 @@ import ComposableArchitecture
 import SwiftUI
 import WishlistFoundation
 
+extension SortOrder {
+  struct Configuration: Equatable {
+    struct Price: Equatable {
+      var sortLowToHigh: Bool
+      var includeFree: Bool
+    }
+
+    struct Title: Equatable {
+      var sortAToZ: Bool
+    }
+
+    struct Update: Equatable {
+      var sortByMostRecent: Bool
+    }
+
+    var price: Price
+    var title: Title
+    var update: Update
+  }
+}
+
 struct SortOrderState: Equatable {
   var sortOrder: SortOrder
-  var sortUpdatesByMostRecent: Bool = true
-  var sortPriceLowToHigh: Bool = true
-  var sortTitleAToZ: Bool = true
+  var configuration: SortOrder.Configuration
 }
 
 enum SortOrderAction {
+  enum ConfigurePrice {
+    case sortLowToHigh(Bool)
+    case includeFree(Bool)
+  }
+
+  enum ConfigureTitle {
+    case sortAToZ(Bool)
+  }
+
+  enum ConfigureUpdate {
+    case sortByMostRecent(Bool)
+  }
+
   case setSortOrder(SortOrder)
-  case sortPriceFromLowToHigh(Bool)
-  case sortTitleFromAToZ(Bool)
-  case sortUpdatesByMostRecent(Bool)
+  case configurePrice(ConfigurePrice)
+  case configureTitle(ConfigureTitle)
+  case configureUpdate(ConfigureUpdate)
 }
 
 struct SortOrderEnvironment {}
@@ -24,16 +56,20 @@ let sortOrderReducer = Reducer<SortOrderState, SortOrderAction, SortOrderEnviron
     state.sortOrder = sortOrder
     return .none
 
-  case let .sortPriceFromLowToHigh(lowToHigh):
-    state.sortPriceLowToHigh = lowToHigh
+  case let .configurePrice(.sortLowToHigh(lowToHigh)):
+    state.configuration.price.sortLowToHigh = lowToHigh
     return .none
 
-  case let .sortTitleFromAToZ(atoZ):
-    state.sortTitleAToZ = atoZ
+  case let .configurePrice(.includeFree(includeFree)):
+    state.configuration.price.includeFree = includeFree
     return .none
 
-  case let .sortUpdatesByMostRecent(mostRecent):
-    state.sortUpdatesByMostRecent = mostRecent
+  case let .configureTitle(.sortAToZ(atoZ)):
+    state.configuration.title.sortAToZ = atoZ
+    return .none
+
+  case let .configureUpdate(.sortByMostRecent(mostRecent)):
+    state.configuration.update.sortByMostRecent = mostRecent
     return .none
   }
 }
@@ -51,22 +87,22 @@ struct SortOrderView: View {
       )
       IfLetStore(
         store.scope(
-          state: { $0.sortOrder == .price ? $0.sortPriceLowToHigh : nil },
-          action: SortOrderAction.sortPriceFromLowToHigh
+          state: { $0.sortOrder == .price ? $0.configuration.price : nil },
+          action: SortOrderAction.configurePrice
         ),
         then: PriceSortOrderView.init
       )
       IfLetStore(
         store.scope(
-          state: { $0.sortOrder == .title ? $0.sortTitleAToZ : nil },
-          action: SortOrderAction.sortTitleFromAToZ
+          state: { $0.sortOrder == .title ? $0.configuration.title : nil },
+          action: SortOrderAction.configureTitle
         ),
         then: TitleSortOrderView.init
       )
       IfLetStore(
         store.scope(
-          state: { $0.sortOrder == .updated ? $0.sortUpdatesByMostRecent : nil },
-          action: SortOrderAction.sortUpdatesByMostRecent
+          state: { $0.sortOrder == .updated ? $0.configuration.update : nil },
+          action: SortOrderAction.configureUpdate
         ),
         then: UpdatesSortOrderView.init
       )
@@ -92,30 +128,35 @@ private struct SortOrderSelectionView: View {
 }
 
 private struct PriceSortOrderView: View {
-  let store: Store<Bool, Bool>
+  let store: Store<SortOrder.Configuration.Price, SortOrderAction.ConfigurePrice>
 
   var body: some View {
     VStack(alignment: .leading) {
       Text("Price From")
-      WithViewStore(store) { viewStore in
-        Picker("Options", selection: viewStore.binding(send: { $0 })) {
+      WithViewStore(store.scope(state: \.sortLowToHigh)) { viewStore in
+        Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigurePrice.sortLowToHigh)) {
           ForEach([true, false], id: \.self) { lowToHigh in
             Text(lowToHigh ? "Low to High" : "High to Low").tag(lowToHigh)
           }
         }.pickerStyle(SegmentedPickerStyle())
+      }
+      WithViewStore(store.scope(state: \.includeFree)) { viewStore in
+        Toggle(isOn: viewStore.binding(send: SortOrderAction.ConfigurePrice.includeFree)) {
+          Text("Include Free")
+        }
       }
     }
   }
 }
 
 private struct TitleSortOrderView: View {
-  let store: Store<Bool, Bool>
+  let store: Store<SortOrder.Configuration.Title, SortOrderAction.ConfigureTitle>
 
   var body: some View {
     VStack(alignment: .leading) {
       Text("Title From")
-      WithViewStore(store) { viewStore in
-        Picker("Options", selection: viewStore.binding(send: { $0 })) {
+      WithViewStore(store.scope(state: \.sortAToZ)) { viewStore in
+        Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigureTitle.sortAToZ)) {
           ForEach([true, false], id: \.self) { aToZ in
             Text(aToZ ? "A to Z" : "Z to A").tag(aToZ)
           }
@@ -126,13 +167,13 @@ private struct TitleSortOrderView: View {
 }
 
 private struct UpdatesSortOrderView: View {
-  let store: Store<Bool, Bool>
+  let store: Store<SortOrder.Configuration.Update, SortOrderAction.ConfigureUpdate>
 
   var body: some View {
     VStack(alignment: .leading) {
       Text("Updates By")
-      WithViewStore(store) { viewStore in
-        Picker("Options", selection: viewStore.binding(send: { $0 })) {
+      WithViewStore(store.scope(state: \.sortByMostRecent)) { viewStore in
+        Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigureUpdate.sortByMostRecent)) {
           ForEach([true, false], id: \.self) { mostRecent in
             Text(mostRecent ? "Most Recent" : "Least Recent").tag(mostRecent)
           }

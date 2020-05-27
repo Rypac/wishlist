@@ -16,9 +16,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         apps: (try? appDelegate.appRepository.fetchAll()) ?? [],
         sortOrderState: SortOrderState(
           sortOrder: appDelegate.settings.sortOrder,
-          sortUpdatesByMostRecent: true,
-          sortPriceLowToHigh: true,
-          sortTitleAToZ: true
+          configuration: SortOrder.Configuration(
+            price: .init(sortLowToHigh: true, includeFree: true),
+            title: .init(sortAToZ: true),
+            update: .init(sortByMostRecent: true)
+          )
         ),
         lastUpdateDate: appDelegate.settings.lastUpdateDate,
         theme: appDelegate.settings.theme,

@@ -64,6 +64,7 @@ extension View {
   ) -> some View {
     ZStack {
       self
+        .zIndex(1)
       if isPresented.wrappedValue {
         Color.black
           .opacity(0.5)
@@ -72,10 +73,10 @@ extension View {
           .onTapGesture {
             isPresented.wrappedValue.toggle()
           }
-          .zIndex(4)
+          .zIndex(2)
         BottomSheetView(isPresented: isPresented, content: content)
           .transition(.move(edge: .bottom))
-          .zIndex(5)
+          .zIndex(3)
       }
     }
   }
