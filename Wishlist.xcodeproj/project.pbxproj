@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		94025A64246B4D6200CA3F70 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 94025A63246B4D6200CA3F70 /* ComposableArchitecture */; };
-		9411DD00247CA9B70017244F /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9411DCFF247CA9B70017244F /* BottomSheetView.swift */; };
 		94145A71246E3E3C00B24E25 /* BackgroundTaskReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94145A70246E3E3C00B24E25 /* BackgroundTaskReducerTests.swift */; };
 		94151ED22469049700CBD2BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED12469049700CBD2BE /* SettingsView.swift */; };
 		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
@@ -166,7 +165,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		9411DCFF247CA9B70017244F /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
 		94145A70246E3E3C00B24E25 /* BackgroundTaskReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskReducerTests.swift; sourceTree = "<group>"; };
 		94151ED12469049700CBD2BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		94151ED32469379E00CBD2BE /* UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
@@ -273,7 +271,6 @@
 			children = (
 				94629D31244681720072C271 /* Modifiers */,
 				945B44BB232CC42E00A3B573 /* ActivityView.swift */,
-				9411DCFF247CA9B70017244F /* BottomSheetView.swift */,
 				9489E4DB242D6EAC00C396AD /* AppIcon.swift */,
 				942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */,
 			);
@@ -718,7 +715,6 @@
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
 				94C8D0852435756300D9C077 /* UTI.swift in Sources */,
 				94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */,
-				9411DD00247CA9B70017244F /* BottomSheetView.swift in Sources */,
 				942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */,
 				948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */,
 				9489E4DC242D6EAC00C396AD /* AppIcon.swift in Sources */,

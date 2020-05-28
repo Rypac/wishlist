@@ -250,7 +250,7 @@ struct AppListView: View {
         }
         .navigationBarTitle("Wishlist")
         .navigationBarItems(
-          leading: Button(action: {
+          trailing: Button(action: {
             viewStore.send(.setSettingsSheet(isPresented: true))
           }) {
             HStack {
@@ -259,29 +259,9 @@ struct AppListView: View {
                 .accessibility(label: Text("Settings"))
             }
             .frame(width: 24, height: 24)
-          }.hoverEffect(),
-          trailing: Button(action: {
-            withAnimation(.interactiveSpring(response: 0.25)) {
-              viewStore.send(.setSortOrderSheet(isPresented: true))
-            }
-          }) {
-            HStack {
-              Image.sort
-                .imageScale(.large)
-                .accessibility(label: Text("Sort By"))
-            }
-            .frame(width: 24, height: 24)
           }.hoverEffect()
         )
-      }
-      .bottomSheet(
-        isPresented: viewStore.binding(
-          get: \.isSortOrderSheetPresented,
-          send: AppListAction.setSortOrderSheet
-        ).animation(.interactiveSpring(response: 0.5))
-      ) {
-        SortOrderView(store: self.store.scope(state: \.sortOrderState, action: AppListAction.sort))
-          .padding([.bottom, .horizontal])
+        .sortingSheet(store: self.store.scope(state: \.sortOrderState, action: AppListAction.sort))
       }
       .sheet(
         isPresented: viewStore.binding(
