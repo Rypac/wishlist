@@ -80,59 +80,58 @@ let sortOrderReducer = Reducer<SortOrderState, SortOrderAction, SortOrderEnviron
 
 extension View {
   func sortingSheet(store: Store<SortOrderState, SortOrderAction>) -> some View {
-    VStack {
+    VStack(spacing: 0) {
       self.layoutPriority(1)
-      SortOrderSheetView(store: store)
+      ZStack {
+        Color(.secondarySystemBackground)
+          .edgesIgnoringSafeArea(.bottom)
+        SortOrderSheetView(store: store)
+      }
     }
-    .edgesIgnoringSafeArea(.bottom)
   }
 }
 
 struct SortOrderSheetView: View {
   @State private var isExpanded: Bool = false
-  @State private var childSize: CGSize = .zero
 
   let store: Store<SortOrderState, SortOrderAction>
 
   var body: some View {
-    GeometryReader { geometry in
-      VStack(spacing: 0) {
-        HStack(alignment: .center) {
-          Spacer()
-          WithViewStore(self.store.scope(state: \.sortOrder)) { viewStore in
-            Button(
-              action: {
-                withAnimation(.openCloseSheet) {
-                  self.isExpanded.toggle()
-                }
+    VStack(spacing: 0) {
+      HStack(alignment: .center) {
+        Spacer()
+        WithViewStore(self.store.scope(state: \.sortOrder)) { viewStore in
+          Button(
+            action: {
+              withAnimation(.openCloseSheet) {
+                self.isExpanded.toggle()
               }
-            ) {
+            }
+          ) {
+            Group {
               Text("Sorted by \(viewStore.state.title)")
               Image(systemName: "chevron.up")
                 .rotationEffect(.degrees(self.isExpanded ? 180 : 0))
             }
+              .font(.subheadline)
           }
-          Spacer()
         }
-          .padding(.bottom, 12)
-        if self.isExpanded {
-          SortOrderView(store: self.store)
-            .padding(.vertical, 24)
-            .transition(.move(edge: .bottom))
-        }
+        Spacer()
       }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .modifier(ChildSizeModifier(size: self.$childSize.animation()))
-        .frame(width: geometry.size.width, height: min(geometry.size.height, self.childSize.height), alignment: .bottom)
-        .gesture(
-          DragGesture(minimumDistance: 20).onChanged { change in
-            withAnimation(.openCloseSheet) {
-              self.isExpanded = change.translation.height < 0
-            }
-          }
-        )
+      if self.isExpanded {
+        SortOrderView(store: self.store)
+          .padding(.top, 48)
+          .transition(.move(edge: .bottom))
+      }
     }
+      .padding()
+      .gesture(
+        DragGesture(minimumDistance: 20).onChanged { change in
+          withAnimation(.openCloseSheet) {
+            self.isExpanded = change.translation.height < 0
+          }
+        }
+      )
   }
 }
 
@@ -257,30 +256,5 @@ private extension SortOrder {
     case .title: return "Title"
     case .updated: return "Updated"
     }
-  }
-}
-
-private struct ChildSizeModifier: ViewModifier {
-  struct SizePreferenceKey: PreferenceKey {
-    static var defaultValue: CGSize = .zero
-
-    static func reduce(value _: inout CGSize, nextValue: () -> Value) {
-      _ = nextValue()
-    }
-  }
-
-  @Binding var size: CGSize
-
-  func body(content: Content) -> some View {
-    content
-      .background(
-        GeometryReader { proxy in
-          Color.clear
-            .preference(key: SizePreferenceKey.self, value: proxy.size)
-        }
-      )
-      .onPreferenceChange(SizePreferenceKey.self) { preferences in
-        self.size = preferences
-      }
   }
 }
