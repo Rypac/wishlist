@@ -82,11 +82,7 @@ extension View {
   func sortingSheet(store: Store<SortOrderState, SortOrderAction>) -> some View {
     VStack(spacing: 0) {
       self.layoutPriority(1)
-      ZStack {
-        Color(.secondarySystemBackground)
-          .edgesIgnoringSafeArea(.bottom)
-        SortOrderSheetView(store: store)
-      }
+      SortOrderSheetView(store: store)
     }
   }
 }
@@ -97,41 +93,43 @@ struct SortOrderSheetView: View {
   let store: Store<SortOrderState, SortOrderAction>
 
   var body: some View {
-    VStack(spacing: 0) {
-      HStack(alignment: .center) {
-        Spacer()
-        WithViewStore(self.store.scope(state: \.sortOrder)) { viewStore in
-          Button(
-            action: {
-              withAnimation(.openCloseSheet) {
-                self.isExpanded.toggle()
-              }
-            }
-          ) {
+    ZStack {
+      Color(.secondarySystemBackground)
+        .edgesIgnoringSafeArea(.bottom)
+      VStack(spacing: 0) {
+        Button(action: {
+          withAnimation(.openCloseSheet) {
+            self.isExpanded.toggle()
+          }
+        }) {
+          WithViewStore(store.scope(state: \.sortOrder)) { viewStore in
             Group {
               Text("Sorted by \(viewStore.state.title)")
+                .id(viewStore.state)
               Image(systemName: "chevron.up")
                 .rotationEffect(.degrees(self.isExpanded ? 180 : 0))
             }
               .font(.subheadline)
           }
         }
-        Spacer()
+        if isExpanded {
+          SortOrderView(store: store)
+            .padding(.top, 48)
+            .transition(.move(edge: .bottom))
+        }
       }
-      if self.isExpanded {
-        SortOrderView(store: self.store)
-          .padding(.top, 48)
-          .transition(.move(edge: .bottom))
-      }
+        .padding()
     }
-      .padding()
       .gesture(
         DragGesture(minimumDistance: 20).onChanged { change in
-          withAnimation(.openCloseSheet) {
-            self.isExpanded = change.translation.height < 0
+          if change.translation.height > 0 {
+            withAnimation(.openCloseSheet) {
+              self.isExpanded = false
+            }
           }
         }
       )
+      .animation(.openCloseSheet)
   }
 }
 
