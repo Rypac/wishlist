@@ -185,7 +185,7 @@ private struct AppDescription: View {
 
 private extension AppDetailsState {
   var releaseNotesViewState: ReleaseNotes.ViewState {
-    .init(version: app.version.current, showHistory: showVersionHistory)
+    .init(version: app.version, showHistory: showVersionHistory)
   }
 }
 

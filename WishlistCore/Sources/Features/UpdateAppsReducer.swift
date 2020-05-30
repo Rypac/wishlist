@@ -100,11 +100,11 @@ func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[AppSnapsho
 
 private extension AppSnapshot {
   func isUpdated(from app: App) -> Bool {
-    if updateDate > app.version.current.date {
+    if updateDate > app.version.date {
       return true
     }
 
-    guard updateDate == app.version.current.date else {
+    guard updateDate == app.version.date else {
       return false
     }
 

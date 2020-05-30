@@ -5,6 +5,7 @@ import Foundation
 public struct SystemEnvironment<Environment> {
   public var environment: Environment
   public var now: () -> Date
+  public var uuid: () -> UUID
   public var mainQueue: () -> AnySchedulerOf<DispatchQueue>
 
   public subscript<Dependency>(
@@ -20,6 +21,7 @@ public struct SystemEnvironment<Environment> {
     SystemEnvironment<NewEnvironment>(
       environment: transform(environment),
       now: now,
+      uuid: uuid,
       mainQueue: mainQueue
     )
   }
@@ -30,6 +32,7 @@ public extension SystemEnvironment {
     Self(
       environment: environment,
       now: Date.init,
+      uuid: UUID.init,
       mainQueue: { DispatchQueue.main.eraseToAnyScheduler() }
     )
   }
@@ -38,12 +41,14 @@ public extension SystemEnvironment {
   static func mock(
     environment: Environment,
     now: @escaping () -> Date,
+    uuid: @escaping () -> UUID,
     mainQueue: @escaping () -> AnySchedulerOf<DispatchQueue>
   ) -> Self {
     Self(
       environment: environment,
       now: now,
-      mainQueue: { mainQueue().eraseToAnyScheduler() }
+      uuid: uuid,
+      mainQueue: mainQueue
     )
   }
 #endif

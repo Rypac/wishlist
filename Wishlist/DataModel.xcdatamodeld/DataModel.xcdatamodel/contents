@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19F96" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AppEntity" representedClassName="WishlistServices.AppEntity" syncable="YES">
         <attribute name="bundleID" optional="YES" attributeType="String"/>
+        <attribute name="currentPrice" optional="YES" attributeType="Decimal"/>
+        <attribute name="currentPriceFormatted" optional="YES" attributeType="String"/>
         <attribute name="iconLargeURL" optional="YES" attributeType="URI"/>
         <attribute name="iconMediumURL" optional="YES" attributeType="URI"/>
         <attribute name="iconSmallURL" optional="YES" attributeType="URI"/>
         <attribute name="identifier" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="previousPrice" optional="YES" attributeType="Decimal"/>
+        <attribute name="previousPriceFormatted" optional="YES" attributeType="String"/>
         <attribute name="releaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="releaseNotes" optional="YES" attributeType="String"/>
         <attribute name="seller" optional="YES" attributeType="String"/>
         <attribute name="storeDescription" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="updateDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" optional="YES" attributeType="URI"/>
-        <relationship name="currentPrice" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PriceEntity" inverseName="currentPriceOfApp" inverseEntity="PriceEntity"/>
-        <relationship name="currentVersion" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VersionEntity" inverseName="currentVersionOfApp" inverseEntity="VersionEntity"/>
+        <attribute name="version" optional="YES" attributeType="String"/>
         <relationship name="interaction" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="InteractionEntity" inverseName="app" inverseEntity="InteractionEntity"/>
-        <relationship name="previousPrice" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PriceEntity" inverseName="previousPriceOfApp" inverseEntity="PriceEntity"/>
-        <relationship name="previousVersion" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VersionEntity" inverseName="previousVersionOfApp" inverseEntity="VersionEntity"/>
         <relationship name="prices" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PriceEntity" inverseName="app" inverseEntity="PriceEntity"/>
         <relationship name="versions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VersionEntity" inverseName="app" inverseEntity="VersionEntity"/>
+        <fetchIndex name="byIdentifier">
+            <fetchIndexElement property="identifier" type="Binary" order="ascending"/>
+        </fetchIndex>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="identifier"/>
@@ -35,16 +41,12 @@
         <attribute name="formatted" optional="YES" attributeType="String"/>
         <attribute name="value" optional="YES" attributeType="Double" usesScalarValueType="YES"/>
         <relationship name="app" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="prices" inverseEntity="AppEntity"/>
-        <relationship name="currentPriceOfApp" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="currentPrice" inverseEntity="AppEntity"/>
-        <relationship name="previousPriceOfApp" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="previousPrice" inverseEntity="AppEntity"/>
     </entity>
     <entity name="VersionEntity" representedClassName="WishlistServices.VersionEntity" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="releaseNotes" optional="YES" attributeType="String"/>
         <attribute name="version" optional="YES" attributeType="String"/>
         <relationship name="app" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="versions" inverseEntity="AppEntity"/>
-        <relationship name="currentVersionOfApp" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="currentVersion" inverseEntity="AppEntity"/>
-        <relationship name="previousVersionOfApp" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="previousVersion" inverseEntity="AppEntity"/>
     </entity>
     <configuration name="Cloud" usedWithCloudKit="YES">
         <memberEntity name="AppEntity"/>
@@ -53,9 +55,9 @@
         <memberEntity name="InteractionEntity"/>
     </configuration>
     <elements>
-        <element name="AppEntity" positionX="-1534.515625" positionY="-1032.13671875" width="117.296875" height="298"/>
-        <element name="PriceEntity" positionX="-1100.89453125" positionY="-1097.08203125" width="128" height="133"/>
-        <element name="VersionEntity" positionX="-1100.5234375" positionY="-714.09375" width="128" height="133"/>
+        <element name="AppEntity" positionX="-1534.515625" positionY="-1032.13671875" width="117.296875" height="343"/>
         <element name="InteractionEntity" positionX="-1101.32421875" positionY="-896.984375" width="128" height="103"/>
+        <element name="PriceEntity" positionX="-1100.89453125" positionY="-1097.08203125" width="128" height="103"/>
+        <element name="VersionEntity" positionX="-1100.5234375" positionY="-714.09375" width="128" height="103"/>
     </elements>
 </model>

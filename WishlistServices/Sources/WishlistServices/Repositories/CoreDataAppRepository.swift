@@ -14,24 +14,21 @@ public final class CoreDataAppRepository: AppRepository {
   }
 
   public func publisher() -> AnyPublisher<[App], Never> {
-    NSFetchRequestPublisher(request: AppEntity.fetchAllRequest(), context: container.viewContext, refresh: .didSaveManagedObjectContextExternally)
+    NSFetchRequestPublisher(request: AppEntity.fetchAll(), context: container.viewContext, refresh: .didSaveManagedObjectContextExternally)
       .map { $0.map(App.init) }
       .eraseToAnyPublisher()
   }
 
   public func fetchAll() throws -> [App] {
-    let fetchRequest = AppEntity.fetchAllRequest()
-    return try container.viewContext.performAndFetch(fetchRequest).map(App.init)
+    try container.viewContext.performAndFetch(AppEntity.fetchAll()).map(App.init)
   }
 
   public func fetch(id: App.ID) throws -> App? {
-    let fetchRequest = AppEntity.fetchRequest(id: id)
-    return try container.viewContext.performAndFetch(fetchRequest).first.flatMap(App.init)
+    try container.viewContext.performAndFetch(AppEntity.fetch(id: id)).first.map(App.init)
   }
 
   public func versionHistory(id: App.ID) throws -> [Version] {
-    let fetchRequest = VersionEntity.fetchAll(id: id)
-    return try container.viewContext.performAndFetch(fetchRequest).map(Version.init)
+    try container.viewContext.performAndFetch(VersionEntity.fetchAll(id: id)).map(Version.init)
   }
 
   public func add(_ apps: [AppSnapshot]) throws {
@@ -39,7 +36,6 @@ public final class CoreDataAppRepository: AppRepository {
       let ids = apps.map { NSNumber(value: $0.id.rawValue) }
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
       fetchRequest.predicate = NSPredicate(format: "identifier in %@", ids)
-      fetchRequest.relationshipKeyPathsForPrefetching = ["currentPrice", "currentVersion"]
       fetchRequest.fetchLimit = ids.count
 
       guard let existingApps = try? context.fetch(fetchRequest) else {
@@ -48,7 +44,7 @@ public final class CoreDataAppRepository: AppRepository {
 
       apps.forEach { app in
         if let existingApp = existingApps.first(where: { $0.identifier.intValue == app.id.rawValue }) {
-          context.update(existingApp, with: app, at: Date())
+          try? context.update(existingApp, with: app, at: Date())
         } else {
           context.insert(app, at: Date())
         }
@@ -108,7 +104,7 @@ private extension NSManagedObjectContext {
     }
 
     try performAndWaitThrows {
-      try self.save()
+      try save()
     }
 
     DarwinNotificationCenter.shared.postNotification(.didSaveManagedObjectContextLocally)
@@ -151,12 +147,13 @@ private extension NSManagedObjectContext {
     appEntity.interaction = interaction
   }
 
-  func update(_ existingApp: AppEntity, with app: AppSnapshot, at date: Date) {
+  func update(_ existingApp: AppEntity, with app: AppSnapshot, at date: Date) throws {
     existingApp.update(app: app)
 
-    if app.updateDate > existingApp.currentVersion.date {
-      if app.version == existingApp.currentVersion.version {
-        existingApp.currentVersion.update(app: app)
+    let currentVersion = try performAndFetch(VersionEntity.fetchLatest(id: app.id)).first
+    if let currentVersion = currentVersion, app.updateDate > currentVersion.date {
+      if app.version == currentVersion.version {
+        currentVersion.update(app: app)
       } else {
         let latestVersion = VersionEntity(context: self)
         latestVersion.update(app: app)
@@ -164,7 +161,8 @@ private extension NSManagedObjectContext {
       }
     }
 
-    if app.price != existingApp.currentPrice.value {
+    let currentPrice = try performAndFetch(PriceEntity.fetchLatest(id: app.id)).first
+    if let currentPrice = currentPrice, app.price != currentPrice.value {
       let latestPrice = PriceEntity(context: self)
       latestPrice.update(app: app, at: date)
       existingApp.add(price: latestPrice)
@@ -175,23 +173,19 @@ private extension NSManagedObjectContext {
 // MARK: - Fetch Requests
 
 private extension AppEntity {
-  static func fetchAllRequest() -> NSFetchRequest<AppEntity> {
+  static func fetchAll() -> NSFetchRequest<AppEntity> {
     let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
-    fetchRequest.relationshipKeyPathsForPrefetching = [
-      "currentPrice", "previousPrice", "currentVersion", "previousVersion", "interaction"
-    ]
+    fetchRequest.relationshipKeyPathsForPrefetching = ["interaction"]
     fetchRequest.sortDescriptors = [
       NSSortDescriptor(key: "title", ascending: true)
     ]
     return fetchRequest
   }
 
-  static func fetchRequest(id: App.ID) -> NSFetchRequest<AppEntity> {
+  static func fetch(id: App.ID) -> NSFetchRequest<AppEntity> {
     let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
     fetchRequest.predicate = NSPredicate(format: "identifier = %@", NSNumber(value: id.rawValue))
-    fetchRequest.relationshipKeyPathsForPrefetching = [
-      "currentPrice", "previousPrice", "currentVersion", "previousVersion"
-    ]
+    fetchRequest.relationshipKeyPathsForPrefetching = ["interaction"]
     fetchRequest.fetchLimit = 1
     return fetchRequest
   }
@@ -204,6 +198,37 @@ private extension VersionEntity {
     fetchRequest.sortDescriptors = [
       NSSortDescriptor(key: "date", ascending: false)
     ]
+    return fetchRequest
+  }
+
+  static func fetchLatest(id: App.ID) -> NSFetchRequest<VersionEntity> {
+    let fetchRequest = NSFetchRequest<VersionEntity>(entityName: VersionEntity.entityName)
+    fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
+    fetchRequest.sortDescriptors = [
+      NSSortDescriptor(key: "date", ascending: false)
+    ]
+    fetchRequest.fetchLimit = 1
+    return fetchRequest
+  }
+}
+
+private extension PriceEntity {
+  static func fetchAll(id: App.ID) -> NSFetchRequest<PriceEntity> {
+    let fetchRequest = NSFetchRequest<PriceEntity>(entityName: PriceEntity.entityName)
+    fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
+    fetchRequest.sortDescriptors = [
+      NSSortDescriptor(key: "date", ascending: false)
+    ]
+    return fetchRequest
+  }
+
+  static func fetchLatest(id: App.ID) -> NSFetchRequest<PriceEntity> {
+    let fetchRequest = NSFetchRequest<PriceEntity>(entityName: PriceEntity.entityName)
+    fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
+    fetchRequest.sortDescriptors = [
+      NSSortDescriptor(key: "date", ascending: false)
+    ]
+    fetchRequest.fetchLimit = 1
     return fetchRequest
   }
 }
@@ -219,16 +244,10 @@ private extension App {
       icon: Icon(small: entity.iconSmallURL, medium: entity.iconMediumURL, large: entity.iconLargeURL),
       bundleID: entity.bundleID,
       releaseDate: entity.releaseDate,
-      price: Tracked(
-        current: Price(entity.currentPrice),
-        previous: entity.previousPrice.map(Price.init)
-      ),
-      version: Tracked(
-        current: Version(entity.currentVersion),
-        previous: entity.previousVersion.map(Version.init)
-      ),
-      firstAdded: entity.interaction.firstAdded,
-      lastViewed: entity.interaction.lastViewed
+      price: Tracked(entity),
+      version: Version(entity),
+      firstAdded: entity.interaction?.firstAdded,
+      lastViewed: entity.interaction?.lastViewed
     )
   }
 }
@@ -237,10 +256,30 @@ private extension Version {
   init(_ entity: VersionEntity) {
     self.init(name: entity.version, date: entity.date, notes: entity.releaseNotes)
   }
+
+  init(_ entity: AppEntity) {
+    self.init(name: entity.version, date: entity.updateDate, notes: entity.releaseNotes)
+  }
 }
 
 private extension Price {
   init(_ entity: PriceEntity) {
     self.init(value: entity.value, formatted: entity.formatted)
+  }
+}
+
+private extension Tracked where T == Price {
+  init(_ entity: AppEntity) {
+    let previousPrice: Price?
+    if let value = entity.previousPrice, let formatted = entity.previousPriceFormatted {
+      previousPrice = Price(value: value.doubleValue, formatted: formatted)
+    } else {
+      previousPrice = nil
+    }
+
+    self.init(
+      current: Price(value: entity.currentPrice.doubleValue, formatted: entity.currentPriceFormatted),
+      previous: previousPrice
+    )
   }
 }

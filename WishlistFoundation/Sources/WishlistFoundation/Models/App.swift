@@ -12,8 +12,8 @@ public struct App: Identifiable, Equatable {
   public var bundleID: String
   public var releaseDate: Date
   public var price: Tracked<Price>
-  public var version: Tracked<Version>
-  public let firstAdded: Date
+  public var version: Version
+  public let firstAdded: Date?
   public var lastViewed: Date?
 
   public init(
@@ -26,8 +26,8 @@ public struct App: Identifiable, Equatable {
     bundleID: String,
     releaseDate: Date,
     price: Tracked<Price>,
-    version: Tracked<Version>,
-    firstAdded: Date,
+    version: Version,
+    firstAdded: Date?,
     lastViewed: Date?
   ) {
     self.id = id
@@ -68,13 +68,9 @@ public extension App {
       )
     }
 
-    if app.updateDate > version.current.date {
+    if app.updateDate > version.date {
       // If the update has the same name as the current version, use the previous version instead.
-      let previousVersion = app.version == version.current.name ? version.previous : version.current
-      version = Tracked(
-        current: Version(name: app.version, date: app.updateDate, notes: app.releaseNotes),
-        previous: previousVersion
-      )
+      version = Version(name: app.version, date: app.updateDate, notes: app.releaseNotes)
     }
   }
 }

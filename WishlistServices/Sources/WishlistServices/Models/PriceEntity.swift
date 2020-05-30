@@ -6,8 +6,6 @@ public final class PriceEntity: NSManagedObject {
   @NSManaged var value: Double
   @NSManaged var formatted: String
   @NSManaged var app: AppEntity
-  @NSManaged var currentPriceOfApp: AppEntity?
-  @NSManaged var previousPriceOfApp: AppEntity?
 
   static var entityName: String { "PriceEntity" }
 }

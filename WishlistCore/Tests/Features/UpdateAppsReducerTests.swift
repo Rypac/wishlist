@@ -10,9 +10,11 @@ class UpdateAppsReducerTests: XCTestCase {
 
   let scheduler = DispatchQueue.testScheduler
   let now = Date()
+  let uuid = UUID()
   lazy var systemEnvironment: SystemEnvironment<Void> = {
     .test(
       now: { self.now },
+      uuid: { self.uuid },
       mainQueue: { self.scheduler.eraseToAnyScheduler() }
     )
   }()

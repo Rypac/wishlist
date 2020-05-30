@@ -90,9 +90,9 @@ struct AppState: Equatable {
   var lastUpdateDate: Date?
   var theme: Theme
   var appUpdateFrequency: TimeInterval
+  var appListInternalState: AppListInternalState = AppListInternalState()
   var viewingAppDetails: AppDetailsContent? = nil
-  var isSettingsSheetPresented: Bool = false
-  var isSortOrderSheetPresented: Bool = false
+  var isSettingsPresented: Bool = false
   var isUpdateInProgress: Bool = false
 }
 
@@ -100,18 +100,20 @@ private extension AppState {
   var appListState: AppListState {
     get {
       AppListState(
-        apps: IdentifiedArrayOf(apps),
+        apps: apps,
         sortOrderState: sortOrderState,
         theme: theme,
+        internalState: appListInternalState,
         displayedAppDetails: viewingAppDetails,
-        isSettingsSheetPresented: isSettingsSheetPresented
+        isSettingsPresented: isSettingsPresented
       )
     }
     set {
-      apps = newValue.apps.elements
+      apps = newValue.apps
       sortOrderState = newValue.sortOrderState
       theme = newValue.theme
-      isSettingsSheetPresented = newValue.isSettingsSheetPresented
+      appListInternalState = newValue.internalState
+      isSettingsPresented = newValue.isSettingsPresented
       viewingAppDetails = newValue.displayedAppDetails
     }
   }
@@ -284,5 +286,17 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
         )
       }
     }
-  )
+  ),
+  Reducer { state, action, environment in
+    switch action {
+    case .lifecycle(.willConnect),
+         .processUpdates(.apps(.receivedValue)),
+         .updates(.receivedUpdates(.success, _)),
+         .urlScheme(.addApps(.addAppsResponse(.success))):
+      return Effect(value: .appList(.sortOrderUpdated))
+
+    default:
+      return .none
+    }
+  }
 )

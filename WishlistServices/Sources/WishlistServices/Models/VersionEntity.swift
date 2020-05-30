@@ -6,8 +6,6 @@ public final class VersionEntity: NSManagedObject {
   @NSManaged var version: String
   @NSManaged var releaseNotes: String?
   @NSManaged var app: AppEntity
-  @NSManaged var currentVersionOfApp: AppEntity?
-  @NSManaged var previousVersionOfApp: AppEntity?
 
   static var entityName: String { "VersionEntity" }
 }

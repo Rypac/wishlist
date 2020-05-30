@@ -5,12 +5,14 @@ import WishlistCore
 extension SystemEnvironment where Environment == Void {
   static func test(
     now: @escaping () -> Date,
+    uuid: @escaping () -> UUID,
     mainQueue: @escaping () -> AnySchedulerOf<DispatchQueue>
   ) -> Self {
     .mock(
       environment: (),
       now: now,
-      mainQueue: { mainQueue().eraseToAnyScheduler() }
+      uuid: uuid,
+      mainQueue: mainQueue
     )
   }
 }

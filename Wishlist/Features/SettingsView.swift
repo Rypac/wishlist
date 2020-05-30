@@ -9,6 +9,7 @@ enum SettingsAction {
   case setTheme(Theme)
   case viewLicense(URL)
   case viewSourceCode
+  case deleteAll
 }
 
 struct SettingsEnvironment {
@@ -33,6 +34,9 @@ let settingsReducer = Reducer<SettingsState, SettingsAction, SettingsEnvironment
     return .fireAndForget {
       environment.openURL(URL(string: "https://github.com/Rypac/wishlist")!)
     }
+
+  case .deleteAll:
+    return .none
   }
 }
 
@@ -61,6 +65,11 @@ struct SettingsView: View {
             Button("Source Code") {
               viewStore.send(.viewSourceCode)
             }
+          }
+          Section(header: Text("Danger Zone"), footer: Text("This will remove all apps from your Wishlist and cannot be undone.")) {
+            Button("Delete All") {
+              viewStore.send(.deleteAll)
+            }.foregroundColor(.red)
           }
         }
         .navigationBarTitle("Settings")

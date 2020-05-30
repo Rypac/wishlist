@@ -13,7 +13,7 @@ extension App {
       bundleID: app.bundleID,
       releaseDate: app.releaseDate,
       price: Tracked(current: Price(value: app.price, formatted: app.formattedPrice)),
-      version: Tracked(current: Version(name: app.version, date: app.updateDate, notes: app.releaseNotes)),
+      version: Version(name: app.version, date: app.updateDate, notes: app.releaseNotes),
       firstAdded: firstAdded,
       lastViewed: lastViewed
     )
