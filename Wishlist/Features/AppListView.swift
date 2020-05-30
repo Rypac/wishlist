@@ -24,13 +24,11 @@ struct AppListState: Equatable {
   var theme: Theme
   var displayedAppDetails: AppDetailsContent?
   var isSettingsSheetPresented: Bool = false
-  var isSortOrderSheetPresented: Bool = false
 }
 
 enum AppListAction {
   case removeAppsAtIndexes(IndexSet)
   case removeApps([App.ID])
-  case setSortOrderSheet(isPresented: Bool)
   case setSettingsSheet(isPresented: Bool)
   case sort(SortOrderAction)
   case app(id: App.ID, action: AppListRowAction)
@@ -88,10 +86,6 @@ private extension AppListState {
 let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppListEnvironment>>.combine(
   Reducer { state, action, environment in
     switch action {
-    case let .setSortOrderSheet(isPresented):
-      state.isSortOrderSheetPresented = isPresented
-      return .none
-
     case let .setSettingsSheet(isPresented):
       state.isSettingsSheetPresented = isPresented
       return .none
@@ -179,10 +173,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
 
 private extension AppListState {
   var view: AppListView.ViewState {
-    AppListView.ViewState(
-      isSortOrderSheetPresented: isSortOrderSheetPresented,
-      isSettingsSheetPresented: isSettingsSheetPresented
-    )
+    AppListView.ViewState(isSettingsSheetPresented: isSettingsSheetPresented)
   }
 
   var appSortOrder: AppSorting {
@@ -222,7 +213,6 @@ private extension AppListState {
 
 struct AppListView: View {
   struct ViewState: Equatable {
-    var isSortOrderSheetPresented: Bool
     var isSettingsSheetPresented: Bool
   }
 

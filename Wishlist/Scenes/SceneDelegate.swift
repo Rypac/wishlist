@@ -104,8 +104,7 @@ private extension AppState {
         sortOrderState: sortOrderState,
         theme: theme,
         displayedAppDetails: viewingAppDetails,
-        isSettingsSheetPresented: isSettingsSheetPresented,
-        isSortOrderSheetPresented: isSortOrderSheetPresented
+        isSettingsSheetPresented: isSettingsSheetPresented
       )
     }
     set {
@@ -113,7 +112,6 @@ private extension AppState {
       sortOrderState = newValue.sortOrderState
       theme = newValue.theme
       isSettingsSheetPresented = newValue.isSettingsSheetPresented
-      isSortOrderSheetPresented = newValue.isSortOrderSheetPresented
       viewingAppDetails = newValue.displayedAppDetails
     }
   }

@@ -80,66 +80,78 @@ let sortOrderReducer = Reducer<SortOrderState, SortOrderAction, SortOrderEnviron
 
 extension View {
   func sortingSheet(store: Store<SortOrderState, SortOrderAction>) -> some View {
-    VStack(spacing: 0) {
-      self.layoutPriority(1)
-      SortOrderSheetView(store: store)
-    }
+    modifier(SortOrderSheetModifier(store: store))
   }
 }
 
-struct SortOrderSheetView: View {
-  @State private var isExpanded: Bool = false
-
+private struct SortOrderSheetModifier: ViewModifier {
   let store: Store<SortOrderState, SortOrderAction>
 
-  var body: some View {
-    ZStack {
-      Color(.secondarySystemBackground)
-        .edgesIgnoringSafeArea(.bottom)
+  @State private var isExpanded: Bool = false
+
+  func body(content: Content) -> some View {
+    GeometryReader { geometry in
       VStack(spacing: 0) {
-        Button(action: {
-          withAnimation(.openCloseSheet) {
-            self.isExpanded.toggle()
-          }
-        }) {
-          WithViewStore(store.scope(state: \.sortOrder)) { viewStore in
-            Group {
-              Text("Sorted by \(viewStore.state.title)")
-                .id(viewStore.state)
-              Image(systemName: "chevron.up")
-                .rotationEffect(.degrees(self.isExpanded ? 180 : 0))
+        content
+        Color(.separator)
+          .frame(height: 0.5)
+        WithViewStore(self.store.stateless) { viewStore in
+          ZStack {
+            Color(.secondarySystemBackground)
+              .edgesIgnoringSafeArea(.bottom)
+            VStack(spacing: 0) {
+              SortOrderToolbar(
+                store: self.store.scope(state: \.sortOrder),
+                isExpanded: self.$isExpanded
+              )
+              if self.isExpanded {
+                SortOrderConfigurationView(store: self.store)
+                  .padding(.top, geometry.safeAreaInsets.bottom)
+                  .padding(.bottom)
+                  .transition(.move(edge: .bottom))
+              }
             }
-              .font(.subheadline)
+              .padding(.horizontal)
           }
-        }
-        if isExpanded {
-          SortOrderView(store: store)
-            .padding(.top, 48)
-            .transition(.move(edge: .bottom))
+            .gesture(
+              DragGesture(minimumDistance: 20).onChanged { change in
+                if change.translation.height > 0 {
+                  self.isExpanded = false
+                }
+              }
+            )
+            .fixedSize(horizontal: false, vertical: true)
         }
       }
-        .padding()
+        .animation(.interactiveSpring(response: 0.4))
     }
-      .gesture(
-        DragGesture(minimumDistance: 20).onChanged { change in
-          if change.translation.height > 0 {
-            withAnimation(.openCloseSheet) {
-              self.isExpanded = false
-            }
-          }
+  }
+}
+
+private struct SortOrderToolbar: View {
+  let store: Store<SortOrder, SortOrderAction>
+
+  @Binding var isExpanded: Bool
+
+  var body: some View {
+    Button(action: {
+      self.isExpanded.toggle()
+    }) {
+      WithViewStore(store) { viewStore in
+        Group {
+          Text("Sorted by \(viewStore.title)")
+            .id(viewStore.state)
+          Image(systemName: "chevron.up")
+            .rotationEffect(.degrees(self.isExpanded ? 180 : 0))
         }
-      )
-      .animation(.openCloseSheet)
+          .font(.subheadline)
+      }
+    }
+      .padding(.vertical)
   }
 }
 
-private extension Animation {
-  static var openCloseSheet: Animation {
-    .interactiveSpring(response: 0.4)
-  }
-}
-
-struct SortOrderView: View {
+private struct SortOrderConfigurationView: View {
   let store: Store<SortOrderState, SortOrderAction>
 
   var body: some View {
