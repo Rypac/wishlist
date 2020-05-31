@@ -89,7 +89,7 @@ private extension AppSnapshot {
       description: app.description.trimmingCharacters(in: .whitespacesAndNewlines),
       url: app.url,
       icon: Icon(small: app.iconSmallURL, medium: app.iconMediumURL, large: app.iconLargeURL),
-      price: app.price,
+      price: app.price.round(toDecimalPlaces: 2),
       formattedPrice: app.formattedPrice,
       bundleID: app.bundleID,
       version: app.version,
