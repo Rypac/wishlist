@@ -19,6 +19,15 @@ struct URLSchemeEnvironment {
 }
 
 let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironment<URLSchemeEnvironment>>.combine(
+  addAppsReducer.pullback(
+    state: \.addAppsState,
+    action: /URLSchemeAction.addApps,
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AddAppsEnvironment(loadApps: $0.loadApps)
+      }
+    }
+  ),
   Reducer { state, action, environment in
     switch action {
     case let .handleURLScheme(.addApps(ids)):
@@ -41,16 +50,7 @@ let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironmen
     case .addApps:
       return .none
     }
-  },
-  addAppsReducer.pullback(
-    state: \.addAppsState,
-    action: /URLSchemeAction.addApps,
-    environment: { systemEnvironment in
-      systemEnvironment.map {
-        AddAppsEnvironment(loadApps: $0.loadApps)
-      }
-    }
-  )
+  }
 )
 
 private extension URLSchemeState {

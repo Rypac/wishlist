@@ -24,19 +24,6 @@ struct ProcessUpdateEnvironment {
 }
 
 let processUpdateReducer = Reducer<ProcessUpdateState, ProcessUpdateAction, SystemEnvironment<ProcessUpdateEnvironment>>.combine(
-  Reducer { state, action, environment in
-    switch action {
-    case .subscribe:
-      return .merge(
-        Effect(value: .apps(.subscribe)),
-        Effect(value: .sortOrder(.subscribe)),
-        Effect(value: .theme(.subscribe))
-      )
-
-    case .apps, .sortOrder, .theme:
-      return .none
-    }
-  },
   publisherReducer().pullback(
     state: \.apps,
     action: /ProcessUpdateAction.apps,
@@ -51,5 +38,18 @@ let processUpdateReducer = Reducer<ProcessUpdateState, ProcessUpdateAction, Syst
     state: \.theme,
     action: /ProcessUpdateAction.theme,
     environment: { $0.map(\.theme) }
-  )
+  ),
+  Reducer { state, action, environment in
+    switch action {
+    case .subscribe:
+      return .merge(
+        Effect(value: .apps(.subscribe)),
+        Effect(value: .sortOrder(.subscribe)),
+        Effect(value: .theme(.subscribe))
+      )
+
+    case .apps, .sortOrder, .theme:
+      return .none
+    }
+  }
 )

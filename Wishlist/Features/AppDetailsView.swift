@@ -21,6 +21,15 @@ struct AppDetailsEnvironment {
 }
 
 let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>>.combine(
+  versionHistoryReducer.pullback(
+    state: \.versionHistoryState,
+    action: /AppDetailsAction.versionHistory,
+    environment: { systemEnvironment in
+      systemEnvironment.map { _ in
+        VersionHistoryEnvironment()
+      }
+    }
+  ),
   Reducer { state, action, environment in
     switch action {
     case let .showVersionHistory(show):
@@ -38,16 +47,7 @@ let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnviron
     case .versionHistory:
       return .none
     }
-  },
-  versionHistoryReducer.pullback(
-    state: \.versionHistoryState,
-    action: /AppDetailsAction.versionHistory,
-    environment: { systemEnvironment in
-      systemEnvironment.map { _ in
-        VersionHistoryEnvironment()
-      }
-    }
-  )
+  }
 )
 
 struct ConnectedAppDetailsView: View {

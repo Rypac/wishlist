@@ -181,47 +181,6 @@ struct AppEnvironment {
 }
 
 let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>.combine(
-  Reducer { state, action, environment in
-    switch action {
-    case .lifecycle(.willConnect):
-      return Effect(value: .processUpdates(.subscribe))
-
-    case let .lifecycle(.openURL(url)):
-      guard let urlScheme = URLScheme(rawValue: url) else {
-        return .none
-      }
-      return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
-
-    case .lifecycle(.didBecomeActive):
-      return Effect(value: .updates(.checkForUpdates))
-
-    case .lifecycle(.willEnterForground):
-      let theme = state.theme
-      return .fireAndForget {
-        environment.setTheme(theme)
-      }
-
-    case .lifecycle(.didEnterBackground):
-      return .fireAndForget {
-        environment.scheduleBackgroundTasks()
-      }
-
-    case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
-      return .fireAndForget {
-        try? environment.repository.add(updatedApps)
-        environment.settings.lastUpdateDate = date
-      }
-
-    case let .appList(.addApps(.addAppsResponse(.success(apps)))),
-         let .urlScheme(.addApps(.addAppsResponse(.success(apps)))):
-      return .fireAndForget {
-        try? environment.repository.add(apps)
-      }
-
-    case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:
-      return .none
-    }
-  },
   appListReducer.pullback(
     state: \.appListState,
     action: /AppAction.appList,
@@ -287,6 +246,47 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       }
     }
   ),
+  Reducer { state, action, environment in
+    switch action {
+    case .lifecycle(.willConnect):
+      return Effect(value: .processUpdates(.subscribe))
+
+    case let .lifecycle(.openURL(url)):
+      guard let urlScheme = URLScheme(rawValue: url) else {
+        return .none
+      }
+      return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
+
+    case .lifecycle(.didBecomeActive):
+      return Effect(value: .updates(.checkForUpdates))
+
+    case .lifecycle(.willEnterForground):
+      let theme = state.theme
+      return .fireAndForget {
+        environment.setTheme(theme)
+      }
+
+    case .lifecycle(.didEnterBackground):
+      return .fireAndForget {
+        environment.scheduleBackgroundTasks()
+      }
+
+    case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
+      return .fireAndForget {
+        try? environment.repository.add(updatedApps)
+        environment.settings.lastUpdateDate = date
+      }
+
+    case let .appList(.addApps(.addAppsResponse(.success(apps)))),
+         let .urlScheme(.addApps(.addAppsResponse(.success(apps)))):
+      return .fireAndForget {
+        try? environment.repository.add(apps)
+      }
+
+    case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:
+      return .none
+    }
+  },
   Reducer { state, action, environment in
     switch action {
     case .lifecycle(.willConnect),

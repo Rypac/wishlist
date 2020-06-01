@@ -104,6 +104,38 @@ private extension AppListState {
 }
 
 let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppListEnvironment>>.combine(
+  appDetailsReducer.optional.pullback(
+    state: \.appDetailsState,
+    action: /AppListAction.appDetails,
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AppDetailsEnvironment(openURL: $0.openURL, versionHistory: $0.versionHistory)
+      }
+    }
+  ),
+  addAppsReducer.pullback(
+    state: \.addAppsState,
+    action: /AppListAction.addApps,
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AddAppsEnvironment(loadApps: $0.loadApps)
+      }
+    }
+  ),
+  settingsReducer.pullback(
+    state: \.settingsState,
+    action: /AppListAction.settings,
+    environment: {
+      SettingsEnvironment(saveTheme: $0.saveTheme, openURL: $0.openURL)
+    }
+  ),
+  sortOrderReducer.pullback(
+    state: \.sortOrderState,
+    action: /AppListAction.sort,
+    environment: {
+      SortOrderEnvironment(saveSortOrder: $0.saveSortOrder)
+    }
+  ),
   Reducer { state, action, environment in
     switch action {
     case let .displaySettings(isPresented):
@@ -160,44 +192,6 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       let ids = state.apps.map(\.id)
       return Effect(value: .removeApps(ids))
 
-    case .appDetails, .addApps, .settings, .sort, .sortOrderUpdated:
-      return .none
-    }
-  },
-  appDetailsReducer.optional.pullback(
-    state: \.appDetailsState,
-    action: /AppListAction.appDetails,
-    environment: { systemEnvironment in
-      systemEnvironment.map {
-        AppDetailsEnvironment(openURL: $0.openURL, versionHistory: $0.versionHistory)
-      }
-    }
-  ),
-  addAppsReducer.pullback(
-    state: \.addAppsState,
-    action: /AppListAction.addApps,
-    environment: { systemEnvironment in
-      systemEnvironment.map {
-        AddAppsEnvironment(loadApps: $0.loadApps)
-      }
-    }
-  ),
-  settingsReducer.pullback(
-    state: \.settingsState,
-    action: /AppListAction.settings,
-    environment: {
-      SettingsEnvironment(saveTheme: $0.saveTheme, openURL: $0.openURL)
-    }
-  ),
-  sortOrderReducer.pullback(
-    state: \.sortOrderState,
-    action: /AppListAction.sort,
-    environment: {
-      SortOrderEnvironment(saveSortOrder: $0.saveSortOrder)
-    }
-  ),
-  Reducer { state, action, environment in
-    switch action {
     case .sortOrderUpdated:
       state.internalState.visibleApps = state.apps.applying(state.sortOrderState, displayedApp: state.displayedAppDetails?.id)
       return .none
@@ -207,7 +201,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       return Effect(value: .sortOrderUpdated)
         .debounce(id: DebouceID(), for: .milliseconds(400), scheduler: environment.mainQueue())
 
-    default:
+    case .appDetails, .addApps, .settings:
       return .none
     }
   }
