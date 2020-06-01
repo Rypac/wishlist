@@ -13,7 +13,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     return Store(
       initialState: AppState(
-        apps: (try? appDelegate.appRepository.fetchAll()) ?? [],
+        apps: IdentifiedArrayOf((try? appDelegate.appRepository.fetchAll()) ?? []),
         sortOrderState: SortOrderState(
           sortOrder: appDelegate.settings.sortOrder,
           configuration: SortOrder.Configuration(
@@ -85,7 +85,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 // MARK: - App State
 
 struct AppState: Equatable {
-  var apps: [App]
+  var apps: IdentifiedArrayOf<App>
   var sortOrderState: SortOrderState
   var lastUpdateDate: Date?
   var theme: Theme
@@ -121,12 +121,12 @@ private extension AppState {
   var urlSchemeState: URLSchemeState {
     get {
       URLSchemeState(
-        apps: apps,
+        apps: apps.elements,
         viewingAppDetails: viewingAppDetails?.id
       )
     }
     set {
-      apps = newValue.apps
+      apps = IdentifiedArrayOf(newValue.apps)
       viewingAppDetails = newValue.viewingAppDetails.map {
         AppDetailsContent(id: $0, versions: nil, showVersionHistory: false)
       }
@@ -136,14 +136,14 @@ private extension AppState {
   var appUpdateState: AppUpdateState {
     get {
       AppUpdateState(
-        apps: apps,
+        apps: apps.elements,
         lastUpdateDate: lastUpdateDate,
         updateFrequency: appUpdateFrequency,
         isUpdateInProgress: isUpdateInProgress
       )
     }
     set {
-      apps = newValue.apps
+      apps = IdentifiedArrayOf(newValue.apps)
       lastUpdateDate = newValue.lastUpdateDate
       appUpdateFrequency = newValue.updateFrequency
       isUpdateInProgress = newValue.isUpdateInProgress
@@ -152,10 +152,10 @@ private extension AppState {
 
   var processUpdateState: ProcessUpdateState {
     get {
-      ProcessUpdateState(apps: apps, sortOrder: sortOrderState.sortOrder, theme: theme)
+      ProcessUpdateState(apps: apps.elements, sortOrder: sortOrderState.sortOrder, theme: theme)
     }
     set {
-      apps = newValue.apps
+      apps = IdentifiedArrayOf(newValue.apps)
       sortOrderState.sortOrder = newValue.sortOrder
       theme = newValue.theme
     }

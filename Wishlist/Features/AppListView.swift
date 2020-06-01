@@ -25,19 +25,18 @@ private struct AppSummary: Identifiable, Equatable {
   }
 
   let id: App.ID
-  var isSelected: Bool
-  var title: String
-  var details: Details
-  var icon: URL
-  var url: URL
+  let title: String
+  let details: Details
+  let icon: URL
+  let url: URL
 }
 
 struct AppListInternalState: Equatable {
-  fileprivate var visibleApps: [AppSummary] = []
+  fileprivate var visibleApps: [App.ID] = []
 }
 
 struct AppListState: Equatable {
-  var apps: [App]
+  var apps: IdentifiedArrayOf<App>
   var sortOrderState: SortOrderState
   var theme: Theme
   var internalState: AppListInternalState
@@ -51,7 +50,7 @@ enum AppListAction {
   case removeApps([App.ID])
   case displaySettings(Bool)
   case sort(SortOrderAction)
-  case app(index: Int, action: AppListRowAction)
+  case app(id: App.ID, action: AppListRowAction)
   case appDetails(AppDetailsAction)
   case settings(SettingsAction)
   case addApps(AddAppsAction)
@@ -77,24 +76,31 @@ enum AppListRowAction {
 private extension AppListState {
   var appDetailsState: AppDetailsState? {
     get {
-      guard let details = displayedAppDetails, let app = apps.first(where: { $0.id == details.id }) else {
+      guard let details = displayedAppDetails, let app = apps[id: details.id] else {
         return nil
       }
       return AppDetailsState(app: app, versions: details.versions, showVersionHistory: details.showVersionHistory)
     }
     set {
-      guard let newValue = newValue, let index = apps.firstIndex(where: { $0.id == newValue.app.id }) else {
+      guard let newValue = newValue else {
         return
       }
-      apps[index] = newValue.app
+      apps[id: newValue.app.id] = newValue.app
       displayedAppDetails?.versions = newValue.versions
       displayedAppDetails?.showVersionHistory = newValue.showVersionHistory
     }
   }
 
+  func details(id: App.ID) -> AppDetailsState? {
+    guard let details = displayedAppDetails, id == details.id, let app = apps[id: id] else {
+      return nil
+    }
+    return AppDetailsState(app: app, versions: details.versions, showVersionHistory: details.showVersionHistory)
+  }
+
   var addAppsState: AddAppsState {
-    get { AddAppsState(apps: apps) }
-    set { apps = newValue.apps }
+    get { AddAppsState(apps: apps.elements) }
+    set { apps = IdentifiedArrayOf(newValue.apps) }
   }
 
   var settingsState: SettingsState {
@@ -143,49 +149,44 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       return .none
 
     case let .removeAppsAtIndexes(indexes):
-      let ids = indexes.map { state.internalState.visibleApps[$0].id }
+      let ids = indexes.map { state.internalState.visibleApps[$0] }
       return Effect(value: .removeApps(ids))
 
     case let .removeApps(ids):
-      state.internalState.visibleApps.removeAll(where: { ids.contains($0.id) })
+      state.internalState.visibleApps.removeAll(where: ids.contains)
       state.apps.removeAll(where: { ids.contains($0.id) })
       return .fireAndForget {
         environment.deleteApps(ids)
       }
 
     case let .app(id, .selected(true)):
-      state.internalState.visibleApps[id].isSelected = true
       let now = environment.now()
-      let id = state.internalState.visibleApps[id].id
       state.displayedAppDetails = .init(id: id, versions: nil, showVersionHistory: false)
-      if let index = state.apps.firstIndex(where: { $0.id == id }) {
-        state.apps[index].lastViewed = now
-      }
+      state.apps[id: id]?.lastViewed = now
       return .fireAndForget {
         environment.recordDetailsViewed(id, now)
       }
 
-    case let .app(index, .selected(false)):
-      state.internalState.visibleApps[index].isSelected = false
+    case .app(_, .selected(false)):
       state.displayedAppDetails = nil
       return .none
 
-    case let .app(index, .openInNewWindow):
-      let id = state.internalState.visibleApps[index].id
+    case let .app(id, .openInNewWindow):
       return .fireAndForget {
         let userActivity = NSUserActivity(activityType: ActivityIdentifier.details.rawValue)
         userActivity.userInfo = [ActivityIdentifier.UserInfoKey.id.rawValue: id.rawValue]
         UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil)
       }
 
-    case let .app(index, .viewInAppStore):
-      let url = state.internalState.visibleApps[index].url
+    case let .app(id, .viewInAppStore):
+      guard let url = state.apps[id: id]?.url else {
+        return .none
+      }
       return .fireAndForget {
         environment.openURL(url)
       }
 
-    case let .app(index, .remove):
-      let id = state.internalState.visibleApps[index].id
+    case let .app(id, .remove):
       return Effect(value: .removeApps([id]))
 
     case .settings(.deleteAll):
@@ -193,7 +194,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       return Effect(value: .removeApps(ids))
 
     case .sortOrderUpdated:
-      state.internalState.visibleApps = state.apps.applying(state.sortOrderState, displayedApp: state.displayedAppDetails?.id)
+      state.internalState.visibleApps = state.apps.applying(state.sortOrderState)
       return .none
 
     case .sort, .addApps(.addAppsResponse(.success)):
@@ -248,22 +249,51 @@ struct AppListView: View {
   }
 }
 
+private extension AppListState {
+  func summary(id: App.ID, sortOrder: SortOrder) -> AppSummary {
+    let app = apps[id: id]!
+    return .init(
+      id: app.id,
+      title: app.title,
+      details: .init(sortOrder: sortOrder, app: app),
+      icon: app.icon.medium,
+      url: app.url
+    )
+  }
+}
+
+private extension AppListState {
+  var viewState: AppListContentView.ViewState {
+    .init(sortOrder: sortOrderState.sortOrder, apps: internalState.visibleApps)
+  }
+}
+
 private struct AppListContentView: View {
+  struct ViewState: Equatable {
+    let sortOrder: SortOrder
+    let apps: [App.ID]
+  }
+
   let store: Store<AppListState, AppListAction>
 
   var body: some View {
-    WithViewStore(store.stateless) { viewStore in
+    WithViewStore(store.scope(state: \.viewState)) { viewStore in
       List {
-        ForEachStore(self.store.scope(state: \.internalState.visibleApps, action: AppListAction.app)) { appStore in
-          WithViewStore(appStore.scope(state: \.isSelected)) { viewStore in
+        ForEach(viewStore.apps, id: \.self) { id in
+          WithViewStore(self.store.scope(state: { $0.displayedAppDetails?.id == id })) { vs in
             NavigationLink(
               destination: IfLetStore(
-                self.store.scope(state: \.appDetailsState, action: AppListAction.appDetails),
+                self.store.scope(state: { $0.details(id: id) }, action: AppListAction.appDetails),
                 then: ConnectedAppDetailsView.init
               ),
-              isActive: viewStore.binding(send: AppListRowAction.selected)
+              isActive: vs.binding(send: { .app(id: id, action: .selected($0)) })
             ) {
-              ConnectedAppRow(store: appStore)
+              ConnectedAppRow(
+                store: self.store.scope(
+                  state: { $0.summary(id: id, sortOrder: viewStore.sortOrder) },
+                  action: { .app(id: id, action: $0) }
+                )
+              )
             }
           }
         }.onDelete {
@@ -447,20 +477,13 @@ extension NSItemProvider {
 }
 
 private extension Collection where Element == App {
-  func applying(_ sorting: SortOrderState, displayedApp: App.ID?) -> [AppSummary] {
+  func applying(_ sorting: SortOrderState) -> [App.ID] {
     sorted(by: sorting)
       .compactMap { app in
         if sorting.sortOrder == .price, !sorting.configuration.price.includeFree, app.price.current.value <= 0 {
           return nil
         }
-        return AppSummary(
-          id: app.id,
-          isSelected: app.id == displayedApp,
-          title: app.title,
-          details: AppSummary.Details(sortOrder: sorting.sortOrder, app: app),
-          icon: app.icon.medium,
-          url: app.url
-        )
+        return app.id
       }
   }
 
