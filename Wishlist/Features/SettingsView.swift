@@ -50,7 +50,10 @@ struct SettingsView: View {
       NavigationView {
         Form {
           Section(header: Text("Appearance")) {
-            Picker("Theme", selection: viewStore.binding(get: \.theme, send: SettingsAction.setTheme)) {
+            Picker(
+              "Theme",
+              selection: viewStore.binding(get: \.theme, send: SettingsAction.setTheme)
+            ) {
               ForEach(Theme.allCases, id: \.self) { theme in
                 Text(theme.title).tag(theme)
               }
@@ -58,15 +61,17 @@ struct SettingsView: View {
           }
           Section(header: Text("About")) {
             NavigationLink(
+              "Acknowledgements",
               destination: LicensesView(viewLicense: { viewStore.send(.viewLicense($0)) })
-            ) {
-              Text("Licenses")
-            }
+            )
             Button("Source Code") {
               viewStore.send(.viewSourceCode)
             }
           }
-          Section(header: Text("Danger Zone"), footer: Text("This will remove all apps from your Wishlist and cannot be undone.")) {
+          Section(
+            header: Text("Danger Zone"),
+            footer: Text("This will remove all apps from your Wishlist and cannot be undone.")
+          ) {
             Button("Delete All") {
               viewStore.send(.deleteAll)
             }.foregroundColor(.red)
@@ -109,9 +114,10 @@ private struct LicensesView: View {
         VStack(alignment: .leading, spacing: 8) {
           Text(license.title)
             .bold()
-          Button(action: { self.viewLicense(license.url) }) {
-            Text(license.url.absoluteString)
+          Button(license.url.absoluteString) {
+            self.viewLicense(license.url)
           }
+            .font(.callout)
             .buttonStyle(PlainButtonStyle())
             .foregroundColor(.blue)
         }
@@ -120,7 +126,7 @@ private struct LicensesView: View {
       }
       .padding([.top, .bottom], 8)
     }
-    .navigationBarTitle("Licenses")
+    .navigationBarTitle("Acknowledgements")
   }
 }
 
