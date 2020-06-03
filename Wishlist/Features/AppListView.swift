@@ -60,6 +60,7 @@ struct AppListEnvironment {
   var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
   var deleteApps: ([App.ID]) -> Void
   var versionHistory: (App.ID) -> [Version]
+  var saveNotifications: (App.ID, Set<ChangeNotification>) -> Void
   var openURL: (URL) -> Void
   var saveSortOrder: (SortOrder) -> Void
   var saveTheme: (Theme) -> Void
@@ -115,7 +116,11 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     action: /AppListAction.appDetails,
     environment: { systemEnvironment in
       systemEnvironment.map {
-        AppDetailsEnvironment(openURL: $0.openURL, versionHistory: $0.versionHistory)
+        AppDetailsEnvironment(
+          openURL: $0.openURL,
+          versionHistory: $0.versionHistory,
+          saveNotifications: $0.saveNotifications
+        )
       }
     }
   ),

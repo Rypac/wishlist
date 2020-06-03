@@ -10,6 +10,7 @@ public protocol AppRepository {
   func delete(id: App.ID) throws
   func delete(ids: [App.ID]) throws
   func viewedApp(id: App.ID, at date: Date) throws
+  func notify(id: App.ID, for notifications: Set<ChangeNotification>) throws
   func versionHistory(id: App.ID) throws -> [Version]
 }
 

@@ -69,6 +69,21 @@ public final class CoreDataAppRepository: AppRepository {
     }
   }
 
+  public func notify(id: App.ID, for notifications: Set<ChangeNotification>) throws {
+    container.performBackgroundTask { context in
+      let fetchRequest = NSFetchRequest<NotificationEntity>(entityName: NotificationEntity.entityName)
+      fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
+      fetchRequest.fetchLimit = 1
+
+      if let notification = try? context.fetch(fetchRequest).first {
+        notification.newVersion = notifications.contains(.newVersion)
+        notification.priceDrop = notifications.contains(.priceDrop)
+      }
+
+      try? context.saveIfNeeded()
+    }
+  }
+
   public func delete(ids: [App.ID]) throws {
     container.performBackgroundTask { context in
       let ids = ids.map { NSNumber(value: $0.rawValue) }
@@ -134,6 +149,9 @@ private extension NSManagedObjectContext {
     let interaction = InteractionEntity(context: self)
     interaction.firstAdded = date
 
+    let notification = NotificationEntity(context: self)
+    notification.priceDrop = app.price > 0
+
     let currentPrice = PriceEntity(context: self)
     currentPrice.update(app: app, at: date)
 
@@ -145,7 +163,7 @@ private extension NSManagedObjectContext {
     appEntity.add(version: currentVersion)
     appEntity.add(price: currentPrice)
     appEntity.interaction = interaction
-    appEntity.notification = NotificationEntity(context: self)
+    appEntity.notification = notification
   }
 
   func update(_ existingApp: AppEntity, with app: AppSnapshot, at date: Date) throws {

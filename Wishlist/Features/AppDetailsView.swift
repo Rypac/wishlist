@@ -12,12 +12,14 @@ struct AppDetailsState: Equatable {
 enum AppDetailsAction {
   case openInAppStore(URL)
   case showVersionHistory(Bool)
+  case notification(ChangeNotification, enable: Bool)
   case versionHistory(VersionHistoryAction)
 }
 
 struct AppDetailsEnvironment {
   var openURL: (URL) -> Void
   var versionHistory: (App.ID) -> [Version]
+  var saveNotifications: (App.ID, Set<ChangeNotification>) -> Void
 }
 
 let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>>.combine(
@@ -38,6 +40,18 @@ let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnviron
         state.versions = environment.versionHistory(state.app.id)
       }
       return .none
+
+    case let .notification(notification, enable):
+      if enable {
+        state.app.notifications.insert(notification)
+      } else {
+        state.app.notifications.remove(notification)
+      }
+      let id = state.app.id
+      let notifications = state.app.notifications
+      return .fireAndForget {
+        environment.saveNotifications(id, notifications)
+      }
 
     case let .openInAppStore(url):
       return .fireAndForget {
@@ -106,6 +120,7 @@ struct AppDetailsContentView: View {
       ScrollView(.vertical) {
         VStack(alignment: .leading, spacing: 16) {
           AppHeading(store: self.store.scope(state: \.headingState))
+          AppNotifications(store: self.store.scope(state: \.app.notifications))
           ReleaseNotes(store: self.store)
           AppDescription(description: viewStore.description)
         }
@@ -166,6 +181,28 @@ private struct ViewInAppStoreButton: View {
         .padding([.top, .bottom], 8)
         .background(Capsule().fill(Color.blue))
     }.hoverEffect(.lift)
+  }
+}
+
+private struct AppNotifications: View {
+  let store: Store<Set<ChangeNotification>, AppDetailsAction>
+
+  var body: some View {
+    Group {
+      Divider()
+      Text("Notifications")
+        .bold()
+      WithViewStore(store.scope(state: { $0.contains(.priceDrop) })) { viewStore in
+        Toggle(isOn: viewStore.binding(send: { .notification(.priceDrop, enable: $0) })) {
+          Text("Price Drops")
+        }
+      }
+      WithViewStore(store.scope(state: { $0.contains(.newVersion) })) { viewStore in
+        Toggle(isOn: viewStore.binding(send: { .notification(.newVersion, enable: $0) })) {
+          Text("Updates")
+        }
+      }
+    }
   }
 }
 

@@ -194,6 +194,9 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
           versionHistory: { id in
             (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
           },
+          saveNotifications: { id, notifications in
+            try? systemEnvironment.repository.notify(id: id, for: notifications)
+          },
           openURL: $0.openURL,
           saveSortOrder: { sortOrder in
             systemEnvironment.settings.sortOrder = sortOrder
