@@ -14,6 +14,7 @@ public final class AppEntity: NSManagedObject {
   @NSManaged var bundleID: String
   @NSManaged var releaseDate: Date
   @NSManaged var interaction: InteractionEntity?
+  @NSManaged var notification: NotificationEntity?
 
   @NSManaged var currentPrice: NSNumber
   @NSManaged var currentPriceFormatted: String

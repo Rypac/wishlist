@@ -15,6 +15,7 @@ public struct App: Identifiable, Equatable {
   public var version: Version
   public let firstAdded: Date?
   public var lastViewed: Date?
+  public var notifications: Set<ChangeNotification>
 
   public init(
     id: ID,
@@ -28,7 +29,8 @@ public struct App: Identifiable, Equatable {
     price: Tracked<Price>,
     version: Version,
     firstAdded: Date?,
-    lastViewed: Date?
+    lastViewed: Date?,
+    notifications: Set<ChangeNotification>
   ) {
     self.id = id
     self.title = title
@@ -42,6 +44,7 @@ public struct App: Identifiable, Equatable {
     self.version = version
     self.firstAdded = firstAdded
     self.lastViewed = lastViewed
+    self.notifications = notifications
   }
 }
 

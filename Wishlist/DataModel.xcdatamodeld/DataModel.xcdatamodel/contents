@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19F96" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19F101" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AppEntity" representedClassName="WishlistServices.AppEntity" syncable="YES">
         <attribute name="bundleID" optional="YES" attributeType="String"/>
         <attribute name="currentPrice" optional="YES" attributeType="Decimal"/>
@@ -19,6 +19,7 @@
         <attribute name="url" optional="YES" attributeType="URI"/>
         <attribute name="version" optional="YES" attributeType="String"/>
         <relationship name="interaction" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="InteractionEntity" inverseName="app" inverseEntity="InteractionEntity"/>
+        <relationship name="notification" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="NotificationEntity" inverseName="app" inverseEntity="NotificationEntity"/>
         <relationship name="prices" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PriceEntity" inverseName="app" inverseEntity="PriceEntity"/>
         <relationship name="versions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VersionEntity" inverseName="app" inverseEntity="VersionEntity"/>
         <fetchIndex name="byIdentifier">
@@ -35,6 +36,11 @@
         <attribute name="lastViewed" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="viewCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="app" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="interaction" inverseEntity="AppEntity"/>
+    </entity>
+    <entity name="NotificationEntity" representedClassName="WishlistServices.NotificationEntity" syncable="YES">
+        <attribute name="newVersion" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="priceDrop" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <relationship name="app" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="notification" inverseEntity="AppEntity"/>
     </entity>
     <entity name="PriceEntity" representedClassName="WishlistServices.PriceEntity" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -53,11 +59,13 @@
         <memberEntity name="VersionEntity"/>
         <memberEntity name="PriceEntity"/>
         <memberEntity name="InteractionEntity"/>
+        <memberEntity name="NotificationEntity"/>
     </configuration>
     <elements>
-        <element name="AppEntity" positionX="-1534.515625" positionY="-1032.13671875" width="117.296875" height="343"/>
+        <element name="AppEntity" positionX="-1534.515625" positionY="-1032.13671875" width="117.296875" height="358"/>
         <element name="InteractionEntity" positionX="-1101.32421875" positionY="-896.984375" width="128" height="103"/>
         <element name="PriceEntity" positionX="-1100.89453125" positionY="-1097.08203125" width="128" height="103"/>
         <element name="VersionEntity" positionX="-1100.5234375" positionY="-714.09375" width="128" height="103"/>
+        <element name="NotificationEntity" positionX="-1332" positionY="-945" width="128" height="88"/>
     </elements>
 </model>

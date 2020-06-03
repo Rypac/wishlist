@@ -145,6 +145,7 @@ private extension NSManagedObjectContext {
     appEntity.add(version: currentVersion)
     appEntity.add(price: currentPrice)
     appEntity.interaction = interaction
+    appEntity.notification = NotificationEntity(context: self)
   }
 
   func update(_ existingApp: AppEntity, with app: AppSnapshot, at date: Date) throws {
@@ -175,7 +176,7 @@ private extension NSManagedObjectContext {
 private extension AppEntity {
   static func fetchAll() -> NSFetchRequest<AppEntity> {
     let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
-    fetchRequest.relationshipKeyPathsForPrefetching = ["interaction"]
+    fetchRequest.relationshipKeyPathsForPrefetching = ["interaction", "notification"]
     fetchRequest.sortDescriptors = [
       NSSortDescriptor(key: "title", ascending: true)
     ]
@@ -185,7 +186,7 @@ private extension AppEntity {
   static func fetch(id: App.ID) -> NSFetchRequest<AppEntity> {
     let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
     fetchRequest.predicate = NSPredicate(format: "identifier = %@", NSNumber(value: id.rawValue))
-    fetchRequest.relationshipKeyPathsForPrefetching = ["interaction"]
+    fetchRequest.relationshipKeyPathsForPrefetching = ["interaction", "notification"]
     fetchRequest.fetchLimit = 1
     return fetchRequest
   }
@@ -247,7 +248,8 @@ private extension App {
       price: Tracked(entity),
       version: Version(entity),
       firstAdded: entity.interaction?.firstAdded,
-      lastViewed: entity.interaction?.lastViewed
+      lastViewed: entity.interaction?.lastViewed,
+      notifications: entity.notification?.enabled ?? []
     )
   }
 }
@@ -281,5 +283,18 @@ private extension Tracked where T == Price {
       current: Price(value: entity.currentPrice.doubleValue, formatted: entity.currentPriceFormatted),
       previous: previousPrice
     )
+  }
+}
+
+private extension NotificationEntity {
+  var enabled: Set<ChangeNotification> {
+    var notifications = Set<ChangeNotification>()
+    if priceDrop {
+      notifications.insert(.priceDrop)
+    }
+    if newVersion {
+      notifications.insert(.newVersion)
+    }
+    return notifications
   }
 }

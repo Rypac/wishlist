@@ -2,7 +2,7 @@ import Foundation
 import WishlistFoundation
 
 extension App {
-  init(_ app: AppSnapshot, firstAdded: Date, lastViewed: Date? = nil) {
+  init(_ app: AppSnapshot, firstAdded: Date, lastViewed: Date? = nil, notifications: Set<ChangeNotification> = []) {
     self.init(
       id: app.id,
       title: app.title,
@@ -15,7 +15,8 @@ extension App {
       price: Tracked(current: Price(value: app.price, formatted: app.formattedPrice)),
       version: Version(name: app.version, date: app.updateDate, notes: app.releaseNotes),
       firstAdded: firstAdded,
-      lastViewed: lastViewed
+      lastViewed: lastViewed,
+      notifications: notifications
     )
   }
 }
