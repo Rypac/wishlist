@@ -62,16 +62,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: UISceneSession Lifecycle
 
   func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-    let activity: ActivityIdentifier
+    let scene: SceneIdentifier
 
-    if let userActivity = options.userActivities.first, let specifiedActivity = ActivityIdentifier(rawValue: userActivity.activityType) {
-      activity = specifiedActivity
+    if let userActivity = options.userActivities.first, let identifier = SceneIdentifier(activity: userActivity) {
+      scene = identifier
       connectingSceneSession.userInfo = userActivity.userInfo as? [String: Any]
     } else {
-      activity = .list
+      scene = .default
     }
 
-    return activity.sceneConfiguration
+    return scene.configuration
   }
 
   // MARK: - Background Tasks

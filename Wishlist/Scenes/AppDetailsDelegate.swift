@@ -34,24 +34,25 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
   private lazy var viewStore = ViewStore(store)
 
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-    if let windowScene = scene as? UIWindowScene, let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-      guard
-        let id = session.userInfo?[ActivityIdentifier.UserInfoKey.id] as? Int,
-        let app = try? appDelegate.appRepository.fetch(id: AppID(rawValue: id))
-      else {
-        print("Attempted to show scene with invalid app id.")
-        UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
-        return
-      }
-
-      let window = UIWindow(windowScene: windowScene)
-      window.rootViewController = UIHostingController(rootView: AppDetailsNavigationView(store: store.stateless, app: app))
-      self.window = window
-      self.session = session
-      window.makeKeyAndVisible()
-
-      viewStore.send(.lifecycle(.willConnect))
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    guard
+      let id = session.userInfo?[SceneIdentifier.UserInfoKey.id] as? Int,
+      let app = try? appDelegate.appRepository.fetch(id: AppID(rawValue: id))
+    else {
+      print("Attempted to show scene with invalid app id.")
+      UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
+      return
     }
+
+    let window = UIWindow(windowScene: scene as! UIWindowScene)
+    window.rootViewController = UIHostingController(
+      rootView: AppDetailsNavigationView(store: store.stateless, app: app)
+    )
+    self.window = window
+    self.session = session
+    window.makeKeyAndVisible()
+
+    viewStore.send(.lifecycle(.willConnect))
   }
 
   func sceneWillEnterForeground(_ scene: UIScene) {
@@ -66,7 +67,12 @@ private struct AppDetailsNavigationView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       NavigationView {
-        AppDetailsContentView(store: self.store.scope(state: { AppDetailsState(app: self.app, showVersionHistory: false) }, action: AppDetailsSceneAction.details))
+        AppDetailsContentView(
+          store: self.store.scope(
+            state: { AppDetailsState(app: self.app, showVersionHistory: false) },
+            action: AppDetailsSceneAction.details
+          )
+        )
           .navigationBarTitle("Details", displayMode: .inline)
           .navigationBarItems(
             trailing: Button("Close") {
