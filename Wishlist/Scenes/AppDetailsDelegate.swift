@@ -17,6 +17,7 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
       reducer: appDetailsSceneReducer,
       environment: .live(
         environment: AppDetailsSceneEnvironment(
+          repository: appDelegate.appRepository,
           theme: appDelegate.settings.$theme.publisher().eraseToAnyPublisher(),
           applyTheme: { [weak self] theme in
             self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
@@ -34,25 +35,22 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
   private lazy var viewStore = ViewStore(store)
 
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    guard
-      let detailsScene = session.userInfo.flatMap(DetailsScene.init),
-      let app = try? appDelegate.appRepository.fetch(id: detailsScene.id)
-    else {
-      print("Attempted to show scene with invalid app id.")
+    guard let detailsScene = session.userInfo.flatMap(DetailsScene.init) else {
+      print("Attempted to show scene with invalid scene configuration.")
       UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
       return
     }
 
     let window = UIWindow(windowScene: scene as! UIWindowScene)
     window.rootViewController = UIHostingController(
-      rootView: AppDetailsNavigationView(store: store.stateless, app: app)
+      rootView: AppDetailsNavigationView(store: store)
     )
     self.window = window
     self.session = session
     window.makeKeyAndVisible()
 
     viewStore.send(.lifecycle(.willConnect))
+    viewStore.send(.viewApp(detailsScene.id))
   }
 
   func sceneWillEnterForeground(_ scene: UIScene) {
@@ -61,17 +59,14 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 private struct AppDetailsNavigationView: View {
-  let store: Store<Void, AppDetailsSceneAction>
-  let app: App
+  let store: Store<AppDetailsSceneState, AppDetailsSceneAction>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store.stateless) { viewStore in
       NavigationView {
-        AppDetailsContentView(
-          store: self.store.scope(
-            state: { AppDetailsState(app: self.app, showVersionHistory: false) },
-            action: AppDetailsSceneAction.details
-          )
+        IfLetStore(
+          self.store.scope(state: \.details, action: AppDetailsSceneAction.details),
+          then: AppDetailsContentView.init
         )
           .navigationBarTitle("Details", displayMode: .inline)
           .navigationBarItems(
@@ -85,10 +80,12 @@ private struct AppDetailsNavigationView: View {
 }
 
 struct AppDetailsSceneState: Equatable {
+  var details: AppDetailsState?
   var theme: Theme
 }
 
 enum AppDetailsSceneAction {
+  case viewApp(App.ID)
   case details(AppDetailsAction)
   case lifecycle(SceneLifecycleEvent)
   case themeChanged(PublisherAction<Theme>)
@@ -96,6 +93,7 @@ enum AppDetailsSceneAction {
 }
 
 struct AppDetailsSceneEnvironment {
+  var repository: AppRepository
   var theme: AnyPublisher<Theme, Never>
   var applyTheme: (Theme) -> Void
   var openURL: (URL) -> Void
@@ -103,6 +101,32 @@ struct AppDetailsSceneEnvironment {
 }
 
 let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction, SystemEnvironment<AppDetailsSceneEnvironment>>.combine(
+  publisherReducer().pullback(
+     state: \.theme,
+     action: /AppDetailsSceneAction.themeChanged,
+     environment: { systemEnvironment in
+       systemEnvironment.map {
+         PublisherEnvironment(publisher: $0.theme, perform: $0.applyTheme)
+       }
+     }
+  ),
+  appDetailsReducer.optional.pullback(
+    state: \.details,
+    action: /AppDetailsSceneAction.details,
+    environment: { systemEnvironment in
+      systemEnvironment.map {
+        AppDetailsEnvironment(
+          openURL: $0.openURL,
+          versionHistory: { id in
+            (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
+          },
+          saveNotifications: { id, notifications in
+            try? systemEnvironment.repository.notify(id: id, for: notifications)
+          }
+        )
+      }
+    }
+  ),
   Reducer { state, action, environment in
     switch action {
     case .lifecycle(.willConnect):
@@ -113,6 +137,12 @@ let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction
       return .fireAndForget {
         environment.applyTheme(theme)
       }
+
+    case let .viewApp(id):
+      state.details = try? environment.repository.fetch(id: id).map {
+        AppDetailsState(app: $0, versions: nil, showVersionHistory: false)
+      }
+      return .none
 
     case .closeDetails:
       return .fireAndForget {
@@ -127,14 +157,5 @@ let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction
     case .lifecycle, .themeChanged, .details:
       return .none
     }
-  },
-  publisherReducer().pullback(
-    state: \.theme,
-    action: /AppDetailsSceneAction.themeChanged,
-    environment: { systemEnvironment in
-      systemEnvironment.map {
-        PublisherEnvironment(publisher: $0.theme, perform: $0.applyTheme)
-      }
-    }
-  )
+  }
 )
