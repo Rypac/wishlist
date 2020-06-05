@@ -254,8 +254,10 @@ struct AppListView: View {
 }
 
 private extension AppListState {
-  func summary(id: App.ID, sortOrder: SortOrder) -> AppSummary {
-    let app = apps[id: id]!
+  func summary(id: App.ID, sortOrder: SortOrder) -> AppSummary? {
+    guard let app = apps[id: id] else {
+      return nil
+    }
     return .init(
       id: app.id,
       title: app.title,
@@ -296,11 +298,12 @@ private struct AppListContentView: View {
                 send: { .app(id: id, action: .selected($0 != nil)) }
               )
             ) {
-              ConnectedAppRow(
-                store: self.store.scope(
+              IfLetStore(
+                self.store.scope(
                   state: { $0.summary(id: id, sortOrder: viewStore.sortOrder) },
-                  action: { .app(id: id, action: $0) }
-                )
+                  action: { AppListAction.app(id: id, action: $0) }
+                ),
+                then: ConnectedAppRow.init
               )
             }
           }
