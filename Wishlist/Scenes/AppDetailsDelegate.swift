@@ -36,8 +36,8 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     guard
-      let id = session.userInfo?[SceneIdentifier.UserInfoKey.id] as? Int,
-      let app = try? appDelegate.appRepository.fetch(id: AppID(rawValue: id))
+      let detailsScene = session.userInfo.flatMap(DetailsScene.init),
+      let app = try? appDelegate.appRepository.fetch(id: detailsScene.id)
     else {
       print("Attempted to show scene with invalid app id.")
       UIApplication.shared.requestSceneSessionDestruction(session, options: nil)

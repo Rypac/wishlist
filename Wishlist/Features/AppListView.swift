@@ -178,9 +178,8 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
 
     case let .app(id, .openInNewWindow):
       return .fireAndForget {
-        let userActivity = NSUserActivity(scene: .details)
-        userActivity.userInfo = [SceneIdentifier.UserInfoKey.id.rawValue: id.rawValue]
-        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil)
+        let scene = DetailsScene(id: id)
+        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: scene.userActivity, options: nil)
       }
 
     case let .app(id, .viewInAppStore):
