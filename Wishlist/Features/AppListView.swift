@@ -290,7 +290,11 @@ private struct AppListContentView: View {
                 self.store.scope(state: { $0.details(id: id) }, action: AppListAction.appDetails),
                 then: ConnectedAppDetailsView.init
               ),
-              isActive: vs.binding(send: { .app(id: id, action: .selected($0)) })
+              tag: id,
+              selection: vs.binding(
+                get: { $0 ? id : nil },
+                send: { .app(id: id, action: .selected($0 != nil)) }
+              )
             ) {
               ConnectedAppRow(
                 store: self.store.scope(
