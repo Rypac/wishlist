@@ -16,23 +16,22 @@ public struct NSFetchRequestPublisher<Entity: NSManagedObject>: Publisher {
   }
 
   public func receive<S>(subscriber: S) where S: Subscriber, Output == S.Input, Failure == S.Failure {
-    subscriber.receive(subscription: NSFetchedResultsSubscription(request: request, context: context, refresh: refresh, downstream: subscriber))
+    subscriber.receive(subscription: NSFetchedResultsSubscription(request: request, context: context, refresh: refresh, subscriber: subscriber))
   }
 }
 
-private final class NSFetchedResultsSubscription<Entity: NSManagedObject, Downstream: Subscriber>: NSObject, Subscription, NSFetchedResultsControllerDelegate where Downstream.Input == [Entity], Downstream.Failure == Never {
+private final class NSFetchedResultsSubscription<Entity: NSManagedObject, S: Subscriber>: NSObject, Subscription, NSFetchedResultsControllerDelegate where S.Input == [Entity], S.Failure == Never {
   private var controller: NSFetchedResultsController<Entity>?
   private var refresh: DarwinNotification.Name?
-  private let downstream: Downstream
+  private var subscriber: S?
 
-  private var demand = Subscribers.Demand.none
   private let lock = NSRecursiveLock()
 
-  init(request: NSFetchRequest<Entity>, context: NSManagedObjectContext, refresh: DarwinNotification.Name?, downstream: Downstream) {
+  init(request: NSFetchRequest<Entity>, context: NSManagedObjectContext, refresh: DarwinNotification.Name?, subscriber: S) {
     let controller = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
     self.controller = controller
     self.refresh = refresh
-    self.downstream = downstream
+    self.subscriber = subscriber
     super.init()
 
     controller.delegate = self
@@ -53,10 +52,8 @@ private final class NSFetchedResultsSubscription<Entity: NSManagedObject, Downst
 
   func request(_ demand: Subscribers.Demand) {
     lock.synchronized {
-      self.demand += demand
-
-      if let controller = self.controller as? NSFetchedResultsController<NSFetchRequestResult> {
-        controllerDidChangeContent(controller)
+      if demand > 0, let items = controller?.fetchedObjects {
+        _ = subscriber?.receive(items)
       }
     }
   }
@@ -65,6 +62,7 @@ private final class NSFetchedResultsSubscription<Entity: NSManagedObject, Downst
     lock.synchronized {
       controller?.delegate = nil
       controller = nil
+      subscriber = nil
 
       if let refreshNotfication = refresh {
         DarwinNotificationCenter.shared.removeObserver(self, for: refreshNotfication)
@@ -76,14 +74,8 @@ private final class NSFetchedResultsSubscription<Entity: NSManagedObject, Downst
   // MARK: NSFetchedResultsControllerDelegate
 
   func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-    lock.synchronized {
-      guard demand > 0 else {
-        return
-      }
-
-      if let items = controller.fetchedObjects as? Downstream.Input {
-        demand += downstream.receive(items)
-      }
+    if let items = controller.fetchedObjects as? [Entity] {
+      _ = subscriber?.receive(items)
     }
   }
 
@@ -92,12 +84,11 @@ private final class NSFetchedResultsSubscription<Entity: NSManagedObject, Downst
   func refreshController() {
     do {
       try controller?.performFetch()
+      if let items = controller?.fetchedObjects {
+        _ = subscriber?.receive(items)
+      }
     } catch {
       print("Failed to perform fetch after external refresh")
-    }
-
-    if let controller = controller as? NSFetchedResultsController<NSFetchRequestResult> {
-      controllerDidChangeContent(controller)
     }
   }
 }
