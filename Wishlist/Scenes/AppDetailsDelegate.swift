@@ -6,7 +6,6 @@ import WishlistCore
 import WishlistFoundation
 
 class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
-
   var window: UIWindow?
   var session: UISceneSession?
 
@@ -55,6 +54,22 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
 
   func sceneWillEnterForeground(_ scene: UIScene) {
     viewStore.send(.lifecycle(.willEnterForground))
+  }
+
+  func sceneDidBecomeActive(_ scene: UIScene) {
+    viewStore.send(.lifecycle(.didBecomeActive))
+  }
+
+  func sceneWillResignActive(_ scene: UIScene) {
+    viewStore.send(.lifecycle(.willResignActive))
+  }
+
+  func sceneDidEnterBackground(_ scene: UIScene) {
+    viewStore.send(.lifecycle(.didEnterBackground))
+  }
+
+  func sceneDidDisconnect(_ scene: UIScene) {
+    viewStore.send(.lifecycle(.didDisconnect))
   }
 }
 

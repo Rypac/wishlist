@@ -6,7 +6,6 @@ import WishlistCore
 import WishlistFoundation
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
   var window: UIWindow?
 
   private lazy var store: Store<AppState, AppAction> = {
@@ -69,8 +68,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     viewStore.send(.lifecycle(.didBecomeActive))
   }
 
+  func sceneWillResignActive(_ scene: UIScene) {
+    viewStore.send(.lifecycle(.willResignActive))
+  }
+
   func sceneDidEnterBackground(_ scene: UIScene) {
     viewStore.send(.lifecycle(.didEnterBackground))
+  }
+
+  func sceneDidDisconnect(_ scene: UIScene) {
+    viewStore.send(.lifecycle(.didDisconnect))
   }
 
   func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
