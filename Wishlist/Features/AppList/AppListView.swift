@@ -1,169 +1,208 @@
+import Combine
 import ComposableArchitecture
 import SwiftUI
 import WishlistCore
 import WishlistFoundation
 
-struct AppListContentState: Equatable {
-  var sortOrder: SortOrder
-  var details: AppDetailsState?
-  var visibleApps: [App.ID]
+struct AppListInternalState: Equatable {
+  fileprivate var appliedSortOrder: SortOrder
+  fileprivate var visibleApps: [App.ID] = []
+
+  init(sortOrder: SortOrder) {
+    appliedSortOrder = sortOrder
+  }
+}
+
+struct AppListState: Equatable {
   var apps: IdentifiedArrayOf<App>
+  var sortOrderState: SortOrderState
+  var theme: Theme
+  var internalState: AppListInternalState
+  var displayedAppDetails: AppDetailsState?
+  var isSettingsPresented: Bool
 }
 
-enum AppListContentAction {
-  case removeAtIndexes(IndexSet)
-  case remove([App.ID])
-  case app(id: App.ID, action: AppListItemAction)
-  case details(AppDetailsAction)
+enum AppListAction {
+  case sortOrderUpdated
+  case displaySettings(Bool)
+  case sort(SortOrderAction)
+  case settings(SettingsAction)
+  case addApps(AddAppsAction)
+  case list(AppListContentAction)
 }
 
-struct AppListContentEnvironment {
-  var openURL: (URL) -> Void
-  var versionHistory: (App.ID) -> [Version]
+struct AppListEnvironment {
+  var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
   var deleteApps: ([App.ID]) -> Void
+  var versionHistory: (App.ID) -> [Version]
   var saveNotifications: (App.ID, Set<ChangeNotification>) -> Void
-  var recordAppViewed: (App.ID, Date) -> Void
+  var openURL: (URL) -> Void
+  var saveSortOrder: (SortOrder) -> Void
+  var saveTheme: (Theme) -> Void
+  var recordDetailsViewed: (App.ID, Date) -> Void
 }
 
-private extension AppListContentState {
-  var detailsState: AppDetailsState? {
-    get { details }
+private extension AppListState {
+  var addAppsState: AddAppsState {
+    get { AddAppsState(apps: apps.elements) }
+    set { apps = IdentifiedArrayOf(newValue.apps) }
+  }
+
+  var settingsState: SettingsState {
+    get { SettingsState(theme: theme) }
+    set { theme = newValue.theme }
+  }
+
+  var listState: AppListContentState {
+    get {
+      AppListContentState(
+        sortOrder: internalState.appliedSortOrder,
+        details: displayedAppDetails,
+        visibleApps: internalState.visibleApps,
+        apps: apps
+      )
+    }
     set {
-      details = newValue
-      if let app = newValue?.app {
-        apps[id: app.id] = app
-      }
+      internalState.appliedSortOrder = newValue.sortOrder
+      displayedAppDetails = newValue.details
+      internalState.visibleApps = newValue.visibleApps
+      apps = newValue.apps
     }
   }
 }
 
-let appListContentReducer = Reducer<AppListContentState, AppListContentAction, SystemEnvironment<AppListContentEnvironment>>.combine(
-  appListItemReducer.forEach(
-    state: \.apps,
-    action: /AppListContentAction.app,
+let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppListEnvironment>>.combine(
+  addAppsReducer.pullback(
+    state: \.addAppsState,
+    action: /AppListAction.addApps,
     environment: { systemEnvironment in
       systemEnvironment.map {
-        AppListItemEnvironment(recordAppViewed: $0.recordAppViewed)
+        AddAppsEnvironment(loadApps: $0.loadApps)
       }
     }
   ),
-  appDetailsReducer.optional.pullback(
-    state: \.detailsState,
-    action: /AppListContentAction.details,
+  settingsReducer.pullback(
+    state: \.settingsState,
+    action: /AppListAction.settings,
+    environment: {
+      SettingsEnvironment(saveTheme: $0.saveTheme, openURL: $0.openURL)
+    }
+  ),
+  sortOrderReducer.pullback(
+    state: \.sortOrderState,
+    action: /AppListAction.sort,
+    environment: {
+      SortOrderEnvironment(saveSortOrder: $0.saveSortOrder)
+    }
+  ),
+  appListContentReducer.pullback(
+    state: \.listState,
+    action: /AppListAction.list,
     environment: { systemEnvironment in
       systemEnvironment.map {
-        AppDetailsEnvironment(
+        AppListContentEnvironment(
           openURL: $0.openURL,
           versionHistory: $0.versionHistory,
-          saveNotifications: $0.saveNotifications
+          deleteApps: $0.deleteApps,
+          saveNotifications: $0.saveNotifications,
+          recordAppViewed: $0.recordDetailsViewed
         )
       }
     }
   ),
   Reducer { state, action, environment in
     switch action {
-    case let .removeAtIndexes(indexes):
-      let ids = indexes.map { state.visibleApps[$0] }
-      return Effect(value: .remove(ids))
-
-    case let .remove(ids):
-      state.visibleApps.removeAll(where: ids.contains)
-      state.apps.removeAll(where: { ids.contains($0.id) })
-      return .fireAndForget {
-        environment.deleteApps(ids)
-      }
-
-    case let .app(id, .selected(selected)):
-      if selected, let app = state.apps[id: id] {
-        state.details = AppDetailsState(app: app, versions: nil, showVersionHistory: false)
-      } else {
-        state.details = nil
-      }
+    case let .displaySettings(isPresented):
+      state.isSettingsPresented = isPresented
       return .none
 
-    case let .app(id, .remove):
-      return Effect(value: .remove([id]))
+    case .settings(.deleteAll):
+      let ids = state.apps.map(\.id)
+      return Effect(value: .list(.remove(ids)))
 
-    case .app, .details:
+    case .sortOrderUpdated:
+      state.internalState.appliedSortOrder = state.sortOrderState.sortOrder
+      state.internalState.visibleApps = state.apps.applying(state.sortOrderState)
+      return .none
+
+    case .sort, .addApps(.addAppsResponse(.success)):
+      struct DebouceID: Hashable {}
+      return Effect(value: .sortOrderUpdated)
+        .debounce(id: DebouceID(), for: .milliseconds(400), scheduler: environment.mainQueue())
+
+    case .addApps, .settings, .list:
       return .none
     }
   }
 )
 
-private extension AppListContentState {
-  func summary(_ id: App.ID) -> AppSummary? {
-    guard let app = apps[id: id] else {
-      return nil
-    }
-    return AppSummary(
-      id: app.id,
-      selected: details?.app.id == id,
-      title: app.title,
-      details: .init(sortOrder: sortOrder, app: app),
-      icon: app.icon.medium,
-      url: app.url
-    )
-  }
-}
-
-struct AppListContentView: View {
-  let store: Store<AppListContentState, AppListContentAction>
+struct AppListView: View {
+  let store: Store<AppListState, AppListAction>
 
   var body: some View {
-    WithViewStore(store.scope(state: \.visibleApps)) { viewStore in
-      List {
-        ForEach(viewStore.state, id: \.self) { id in
-          IfLetStore(
-            self.store.scope(state: { $0.summary(id) }, action: { .app(id: id, action: $0) })
-          ) { store in
-            WithViewStore(store.scope(state: \.selected)) { viewStore in
-              NavigationLink(
-                destination: IfLetStore(
-                  self.store.scope(state: \.details, action: AppListContentAction.details),
-                  then: ConnectedAppDetailsView.init
-                ),
-                tag: id,
-                selection: viewStore.binding(get: { $0 ? id : nil }, send: { .selected($0 != nil) })
-              ) {
-                AppListRow(store: store)
+    WithViewStore(store.scope(state: \.isSettingsPresented)) { viewStore in
+      NavigationView {
+        AppListContentView(store: self.store.scope(state: \.listState, action: AppListAction.list))
+          .navigationBarTitle("Wishlist")
+          .navigationBarItems(
+            trailing: Button(action: {
+              viewStore.send(.displaySettings(true))
+            }) {
+              HStack {
+                Image.settings
+                  .imageScale(.large)
+                  .accessibility(label: Text("Settings"))
               }
+              .frame(width: 24, height: 24)
             }
-          }
-        }.onDelete {
-          viewStore.send(.removeAtIndexes($0))
+            .hoverEffect()
+          )
+          .sortingSheet(store: self.store.scope(state: \.sortOrderState, action: AppListAction.sort))
+      }
+      .sheet(isPresented: viewStore.binding(send: AppListAction.displaySettings)) {
+        SettingsView(
+          store: self.store.scope(
+            state: \.settingsState,
+            action: AppListAction.settings
+          )
+        )
+      }
+      .onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
+        viewStore.send(.addApps(.addAppsFromURLs(urls)))
+      })
+      .navigationViewStyle(StackNavigationViewStyle())
+    }
+  }
+}
+
+private extension Image {
+  static var settings: Image { Image(systemName: "slider.horizontal.3") }
+}
+
+private extension Collection where Element == App {
+  func applying(_ sorting: SortOrderState) -> [App.ID] {
+    sorted(by: sorting)
+      .compactMap { app in
+        if sorting.sortOrder == .price, !sorting.configuration.price.includeFree, app.price.current.value <= 0 {
+          return nil
         }
+        return app.id
+      }
+  }
+
+  private func sorted(by order: SortOrderState) -> [App] {
+    sorted {
+      switch order.sortOrder {
+      case .title:
+        let aToZ = order.configuration.title.sortAToZ
+        return aToZ ? $0.title < $1.title : $0.title > $1.title
+      case .price:
+        let lowToHigh = order.configuration.price.sortLowToHigh
+        return lowToHigh ? $0.price.current < $1.price.current : $0.price.current > $1.price.current
+      case .updated:
+        let mostRecent = order.configuration.update.sortByMostRecent
+        return mostRecent ? $0.version > $1.version : $0.version < $1.version
       }
     }
-  }
-}
-
-private extension AppSummary.Details {
-  init(sortOrder: SortOrder, app: App) {
-    switch sortOrder {
-    case .updated:
-      if let lastViewed = app.lastViewed {
-        self = .updated(app.version.date, seen: lastViewed > app.version.date)
-      } else if let firstAdded = app.firstAdded {
-        self = .updated(app.version.date, seen: firstAdded > app.version.date)
-      } else {
-        self = .updated(app.version.date, seen: true)
-      }
-
-    case .price, .title:
-      self = .price(app.price.current.formatted, change: app.priceChange)
-    }
-  }
-}
-
-private extension App {
-  var priceChange: AppSummary.PriceChange {
-    guard let previousPrice = price.previous else {
-      return .same
-    }
-
-    if price.current == previousPrice {
-      return .same
-    }
-    return price.current > previousPrice ? .increase : .decrease
   }
 }
