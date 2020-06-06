@@ -12,6 +12,7 @@ struct ProcessUpdateState: Equatable {
 
 enum ProcessUpdateAction {
   case subscribe
+  case unsubscribe
   case apps(PublisherAction<[App]>)
   case sortOrder(PublisherAction<SortOrder>)
   case theme(PublisherAction<Theme>)
@@ -46,6 +47,13 @@ let processUpdateReducer = Reducer<ProcessUpdateState, ProcessUpdateAction, Syst
         Effect(value: .apps(.subscribe)),
         Effect(value: .sortOrder(.subscribe)),
         Effect(value: .theme(.subscribe))
+      )
+
+    case .unsubscribe:
+      return .merge(
+        Effect(value: .apps(.unsubscribe)),
+        Effect(value: .sortOrder(.unsubscribe)),
+        Effect(value: .theme(.unsubscribe))
       )
 
     case .apps, .sortOrder, .theme:

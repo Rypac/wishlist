@@ -7,6 +7,7 @@ public typealias PublisherState<T: Equatable> = T
 public enum PublisherAction<T> {
   case subscribe
   case receivedValue(T)
+  case unsubscribe
 }
 
 public struct PublisherEnvironment<T> {
@@ -22,6 +23,8 @@ public struct PublisherEnvironment<T> {
   }
 }
 
+private struct CancelSubscriptionID<T>: Hashable {}
+
 public func publisherReducer<T>() -> Reducer<PublisherState<T>, PublisherAction<T>, SystemEnvironment<PublisherEnvironment<T>>> {
   Reducer { state, action, environment in
     switch action {
@@ -31,6 +34,10 @@ public func publisherReducer<T>() -> Reducer<PublisherState<T>, PublisherAction<
         .receive(on: environment.mainQueue())
         .eraseToEffect()
         .map(PublisherAction.receivedValue)
+        .cancellable(id: CancelSubscriptionID<T>(), cancelInFlight: true)
+
+    case .unsubscribe:
+      return .cancel(id: CancelSubscriptionID<T>())
 
     case let .receivedValue(value):
       state = value
