@@ -92,13 +92,6 @@ private extension AppListState {
     }
   }
 
-  func details(id: App.ID) -> AppDetailsState? {
-    guard let details = displayedAppDetails, id == details.id, let app = apps[id: id] else {
-      return nil
-    }
-    return AppDetailsState(app: app, versions: details.versions, showVersionHistory: details.showVersionHistory)
-  }
-
   var addAppsState: AddAppsState {
     get { AddAppsState(apps: apps.elements) }
     set { apps = IdentifiedArrayOf(newValue.apps) }
@@ -220,7 +213,7 @@ struct AppListView: View {
   var body: some View {
     WithViewStore(store.scope(state: \.isSettingsPresented)) { viewStore in
       NavigationView {
-        AppListContentView(store: self.store)
+        AppListContentView(store: self.store.scope(state: \.listState))
           .navigationBarTitle("Wishlist")
           .navigationBarItems(
             trailing: Button(action: {
@@ -254,57 +247,97 @@ struct AppListView: View {
 }
 
 private extension AppListState {
-  func summary(id: App.ID, sortOrder: SortOrder) -> AppSummary? {
-    guard let app = apps[id: id] else {
-      return nil
-    }
-    return .init(
-      id: app.id,
-      title: app.title,
-      details: .init(sortOrder: sortOrder, app: app),
-      icon: app.icon.medium,
-      url: app.url
+  var listState: AppListContentView.State {
+    AppListContentView.State(
+      details: displayedAppDetails,
+      sortOrder: sortOrderState.sortOrder,
+      visibleApps: internalState.visibleApps,
+      apps: apps
     )
   }
 }
 
-private extension AppListState {
-  var viewState: AppListContentView.ViewState {
-    .init(sortOrder: sortOrderState.sortOrder, apps: internalState.visibleApps)
+private struct AppListContentState: Equatable {
+  private let details: AppDetailsContent?
+  private let sortOrder: SortOrder
+  private let visibleApps: [App.ID]
+  private let apps: IdentifiedArrayOf<App>
+
+  init(
+    details: AppDetailsContent?,
+    sortOrder: SortOrder,
+    visibleApps: [App.ID],
+    apps: IdentifiedArrayOf<App>
+  ) {
+    self.details = details
+    self.sortOrder = sortOrder
+    self.visibleApps = visibleApps
+    self.apps = apps
+  }
+
+  var selectedID: App.ID? { details?.id }
+
+  var summaries: [AppSummary] {
+    visibleApps.compactMap { id in
+      guard let app = apps[id: id] else {
+        return nil
+      }
+      return AppSummary(
+        id: app.id,
+        title: app.title,
+        details: .init(sortOrder: sortOrder, app: app),
+        icon: app.icon.medium,
+        url: app.url
+      )
+    }
+  }
+
+  var detailsState: AppDetailsState? {
+    guard let details = details, let app = apps[id: details.id] else {
+      return nil
+    }
+    return AppDetailsState(
+      app: app,
+      versions: details.versions,
+      showVersionHistory: details.showVersionHistory
+    )
+  }
+
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.sortOrder == rhs.sortOrder && lhs.visibleApps == rhs.visibleApps
   }
 }
 
 private struct AppListContentView: View {
-  struct ViewState: Equatable {
-    let sortOrder: SortOrder
-    let apps: [App.ID]
-  }
+  typealias State = AppListContentState
 
-  let store: Store<AppListState, AppListAction>
+  let store: Store<State, AppListAction>
 
   var body: some View {
-    WithViewStore(store.scope(state: \.viewState)) { viewStore in
+    WithViewStore(store) { viewStore in
       List {
-        ForEach(viewStore.apps, id: \.self) { id in
-          WithViewStore(self.store.scope(state: { $0.displayedAppDetails?.id == id })) { vs in
+        ForEach(viewStore.summaries) { app in
+          WithViewStore(
+            self.store.scope(
+              state: { $0.selectedID == app.id },
+              action: { .app(id: app.id, action: $0) }
+            )
+          ) { viewStore in
             NavigationLink(
               destination: IfLetStore(
-                self.store.scope(state: { $0.details(id: id) }, action: AppListAction.appDetails),
+                self.store.scope(
+                  state: { viewStore.state ? $0.detailsState : nil },
+                  action: AppListAction.appDetails
+                ),
                 then: ConnectedAppDetailsView.init
               ),
-              tag: id,
-              selection: vs.binding(
-                get: { $0 ? id : nil },
-                send: { .app(id: id, action: .selected($0 != nil)) }
+              tag: app.id,
+              selection: viewStore.binding(
+                get: { $0 ? app.id : nil },
+                send: { .selected($0 != nil) }
               )
             ) {
-              IfLetStore(
-                self.store.scope(
-                  state: { $0.summary(id: id, sortOrder: viewStore.sortOrder) },
-                  action: { AppListAction.app(id: id, action: $0) }
-                ),
-                then: ConnectedAppRow.init
-              )
+              AppListRow(app: app, action: viewStore.send)
             }
           }
         }.onDelete {
@@ -317,43 +350,42 @@ private struct AppListContentView: View {
 
 // MARK: - App Row
 
-private struct ConnectedAppRow: View {
-  let store: Store<AppSummary, AppListRowAction>
+private struct AppListRow: View {
+  let app: AppSummary
+  let action: (AppListRowAction) -> Void
 
   @State private var showShareSheet = false
 
   var body: some View {
-    WithViewStore(store) { viewStore in
-      AppRow(title: viewStore.title, details: viewStore.details, icon: viewStore.icon)
-        .onDrag {
-          NSItemProvider(url: viewStore.url, title: viewStore.title)
+    AppRow(title: app.title, details: app.details, icon: app.icon)
+      .onDrag {
+        NSItemProvider(url: self.app.url, title: self.app.title)
+      }
+      .contextMenu {
+        Button(action: { self.action(.openInNewWindow) }) {
+          Text("Open in New Window")
+          Image.window
+        }.visible(on: .pad)
+        Button(action: { self.action(.viewInAppStore) }) {
+          Text("View in App Store")
+          Image.store
         }
-        .contextMenu {
-          Button(action: { viewStore.send(.openInNewWindow) }) {
-            Text("Open in New Window")
-            Image.window
-          }.visible(on: .pad)
-          Button(action: { viewStore.send(.viewInAppStore) }) {
-            Text("View in App Store")
-            Image.store
-          }
-          Button(action: { self.showShareSheet = true }) {
-            Text("Share")
-            Image.share
-          }
-          Button(action: { viewStore.send(.remove) }) {
-            Text("Remove")
-            Image.trash
-          }
+        Button(action: { self.showShareSheet = true }) {
+          Text("Share")
+          Image.share
         }
-        .sheet(isPresented: self.$showShareSheet) {
-          ActivityView(
-            showing: self.$showShareSheet,
-            activityItems: [viewStore.url],
-            applicationActivities: nil
-          )
+        Button(action: { self.action(.remove) }) {
+          Text("Remove")
+          Image.trash
         }
-    }
+      }
+      .sheet(isPresented: self.$showShareSheet) {
+        ActivityView(
+          showing: self.$showShareSheet,
+          activityItems: [self.app.url],
+          applicationActivities: nil
+        )
+      }
   }
 }
 

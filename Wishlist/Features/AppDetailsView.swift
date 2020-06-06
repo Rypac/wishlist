@@ -102,30 +102,22 @@ private extension AppDetailsState {
       url: app.url
     )
   }
-
-  var contentViewState: AppDetailsContentView.ViewState {
-    .init(description: app.description)
-  }
 }
 
 struct AppDetailsContentView: View {
-  struct ViewState: Equatable {
-    let description: String
-  }
-
   let store: Store<AppDetailsState, AppDetailsAction>
 
   var body: some View {
-    WithViewStore(store.scope(state: \.contentViewState)) { viewStore in
-      ScrollView(.vertical) {
-        VStack(alignment: .leading, spacing: 16) {
-          AppHeading(store: self.store.scope(state: \.headingState))
-          AppNotifications(store: self.store.scope(state: \.app.notifications))
-          ReleaseNotes(store: self.store)
-          AppDescription(description: viewStore.description)
+    ScrollView(.vertical) {
+      VStack(alignment: .leading, spacing: 16) {
+        AppHeading(store: self.store.scope(state: \.headingState))
+        AppNotifications(store: self.store.scope(state: \.app.notifications))
+        ReleaseNotes(store: self.store)
+        WithViewStore(store.scope(state: \.app.description)) { viewStore in
+          AppDescription(description: viewStore.state)
         }
-        .padding()
       }
+      .padding()
     }
   }
 }
@@ -222,14 +214,14 @@ private struct AppDescription: View {
 
 private extension AppDetailsState {
   var releaseNotesViewState: ReleaseNotes.ViewState {
-    .init(version: app.version, showHistory: showVersionHistory)
+    .init(showHistory: showVersionHistory, version: app.version)
   }
 }
 
 private struct ReleaseNotes: View {
   struct ViewState: Equatable {
-    let version: Version
     let showHistory: Bool
+    let version: Version
   }
 
   @Environment(\.updateDateFormatter) private var dateFormatter
