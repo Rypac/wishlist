@@ -27,6 +27,7 @@ public struct UpdateAppsError: Error, Equatable {}
 public enum AppUpdateAction: Equatable {
   case checkForUpdates
   case receivedUpdates(Result<[AppSnapshot], UpdateAppsError>, at: Date)
+  case cancelUpdateCheck
 }
 
 public struct AppUpdateEnvironment {
@@ -38,6 +39,7 @@ public struct AppUpdateEnvironment {
 }
 
 public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnvironment<AppUpdateEnvironment>> { state, action, environment in
+  struct CancelUpdatesID: Hashable {}
   switch action {
   case .checkForUpdates:
     guard state.shouldCheckForUpdates(now: environment.now()) else {
@@ -50,6 +52,7 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
       .mapError { _ in UpdateAppsError() }
       .catchToEffect()
       .map { .receivedUpdates($0, at: environment.now()) }
+      .cancellable(id: CancelUpdatesID(), cancelInFlight: true)
 
   case let .receivedUpdates(.success(updatedApps), at: date):
     state.isUpdateInProgress = false
@@ -66,6 +69,10 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
   case let .receivedUpdates(.failure(error), at: _):
     state.isUpdateInProgress = false
     return .none
+
+  case .cancelUpdateCheck:
+    state.isUpdateInProgress = false
+    return .cancel(id: CancelUpdatesID())
   }
 }
 

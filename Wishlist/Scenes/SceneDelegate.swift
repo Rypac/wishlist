@@ -270,6 +270,9 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
     case .lifecycle(.didBecomeActive):
       return Effect(value: .updates(.checkForUpdates))
 
+    case .lifecycle(.willResignActive):
+      return Effect(value: .updates(.cancelUpdateCheck))
+
     case .lifecycle(.willEnterForground):
       let theme = state.theme
       return .merge(

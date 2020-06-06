@@ -118,4 +118,32 @@ class UpdateAppsReducerTests: XCTestCase {
       }
     )
   }
+
+  func testUpdateIsCancelledWhenRequested() throws {
+    let testStore = TestStore(
+      initialState: AppUpdateState(
+        apps: [App(.bear, firstAdded: now)],
+        lastUpdateDate: nil,
+        updateFrequency: 10,
+        isUpdateInProgress: false
+      ),
+      reducer: appUpdateReducer,
+      environment: systemEnvironment.map {
+        AppUpdateEnvironment(
+          lookupApps: { ids in
+            Empty(completeImmediately: false).eraseToAnyPublisher()
+          }
+        )
+      }
+    )
+
+    testStore.assert(
+      .send(.checkForUpdates) {
+        $0.isUpdateInProgress = true
+      },
+      .send(.cancelUpdateCheck) {
+        $0.isUpdateInProgress = false
+      }
+    )
+  }
 }
