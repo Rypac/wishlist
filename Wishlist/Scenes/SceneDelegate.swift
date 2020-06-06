@@ -88,10 +88,25 @@ struct AppState: Equatable {
   var lastUpdateDate: Date?
   var theme: Theme
   var appUpdateFrequency: TimeInterval
-  var appListInternalState: AppListInternalState = AppListInternalState()
+  var appListInternalState: AppListInternalState
   var viewingAppDetails: AppDetailsContent? = nil
   var isSettingsPresented: Bool = false
   var isUpdateInProgress: Bool = false
+
+  init(
+    apps: IdentifiedArrayOf<App>,
+    sortOrderState: SortOrderState,
+    lastUpdateDate: Date?,
+    theme: Theme,
+    appUpdateFrequency: TimeInterval
+  ) {
+    self.apps = apps
+    self.sortOrderState = sortOrderState
+    self.lastUpdateDate = lastUpdateDate
+    self.theme = theme
+    self.appUpdateFrequency = appUpdateFrequency
+    self.appListInternalState = AppListInternalState(sortOrder: sortOrderState.sortOrder)
+  }
 }
 
 private extension AppState {

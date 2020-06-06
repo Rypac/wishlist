@@ -32,7 +32,12 @@ private struct AppSummary: Identifiable, Equatable {
 }
 
 struct AppListInternalState: Equatable {
+  fileprivate var appliedSortOrder: SortOrder
   fileprivate var visibleApps: [App.ID] = []
+
+  init(sortOrder: SortOrder) {
+    appliedSortOrder = sortOrder
+  }
 }
 
 struct AppListState: Equatable {
@@ -191,6 +196,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
       return Effect(value: .removeApps(ids))
 
     case .sortOrderUpdated:
+      state.internalState.appliedSortOrder = state.sortOrderState.sortOrder
       state.internalState.visibleApps = state.apps.applying(state.sortOrderState)
       return .none
 
@@ -250,7 +256,7 @@ private extension AppListState {
   var listState: AppListContentView.State {
     AppListContentView.State(
       details: displayedAppDetails,
-      sortOrder: sortOrderState.sortOrder,
+      sortOrder: internalState.appliedSortOrder,
       visibleApps: internalState.visibleApps,
       apps: apps
     )
