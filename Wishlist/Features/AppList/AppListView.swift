@@ -91,33 +91,18 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
 )
 
 private extension AppListContentState {
-  var summaries: IdentifiedArrayOf<AppSummary> {
-    IdentifiedArrayOf(
-      visibleApps.compactMap { id in
-        guard let app = apps[id: id] else {
-          return nil
-        }
-        return AppSummary(
-          id: app.id,
-          selected: details?.app.id == id,
-          title: app.title,
-          details: .init(sortOrder: sortOrder, app: app),
-          icon: app.icon.medium,
-          url: app.url
-        )
-      }
+  func summary(_ id: App.ID) -> AppSummary? {
+    guard let app = apps[id: id] else {
+      return nil
+    }
+    return AppSummary(
+      id: app.id,
+      selected: details?.app.id == id,
+      title: app.title,
+      details: .init(sortOrder: sortOrder, app: app),
+      icon: app.icon.medium,
+      url: app.url
     )
-  }
-}
-
-private extension AppSummary {
-  struct ViewState: Equatable {
-    let id: App.ID
-    let selected: Bool
-  }
-
-  var view: ViewState {
-    .init(id: id, selected: selected)
   }
 }
 
@@ -125,22 +110,23 @@ struct AppListContentView: View {
   let store: Store<AppListContentState, AppListContentAction>
 
   var body: some View {
-    WithViewStore(store.stateless) { viewStore in
+    WithViewStore(store.scope(state: \.visibleApps)) { viewStore in
       List {
-        ForEachStore(self.store.scope(state: \.summaries, action: AppListContentAction.app)) { eachStore in
-          WithViewStore(eachStore.scope(state: \.view)) { viewStore in
-            NavigationLink(
-              destination: IfLetStore(
-                self.store.scope(state: \.details, action: AppListContentAction.details),
-                then: ConnectedAppDetailsView.init
-              ),
-              tag: viewStore.id,
-              selection: viewStore.binding(
-                get: { $0.selected ? $0.id : nil },
-                send: { .selected($0 != nil) }
-              )
-            ) {
-              AppListRow(store: eachStore)
+        ForEach(viewStore.state, id: \.self) { id in
+          IfLetStore(
+            self.store.scope(state: { $0.summary(id) }, action: { .app(id: id, action: $0) })
+          ) { store in
+            WithViewStore(store.scope(state: \.selected)) { viewStore in
+              NavigationLink(
+                destination: IfLetStore(
+                  self.store.scope(state: \.details, action: AppListContentAction.details),
+                  then: ConnectedAppDetailsView.init
+                ),
+                tag: id,
+                selection: viewStore.binding(get: { $0 ? id : nil }, send: { .selected($0 != nil) })
+              ) {
+                AppListRow(store: store)
+              }
             }
           }
         }.onDelete {
