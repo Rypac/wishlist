@@ -89,7 +89,7 @@ struct AppState: Equatable {
   var theme: Theme
   var appUpdateFrequency: TimeInterval
   var appListInternalState: AppListInternalState
-  var viewingAppDetails: AppDetailsContent? = nil
+  var viewingAppDetails: AppDetailsState? = nil
   var isSettingsPresented: Bool = false
   var isUpdateInProgress: Bool = false
 
@@ -133,15 +133,12 @@ private extension AppState {
 
   var urlSchemeState: URLSchemeState {
     get {
-      URLSchemeState(
-        apps: apps.elements,
-        viewingAppDetails: viewingAppDetails?.id
-      )
+      URLSchemeState(apps: apps.elements, viewingAppDetails: viewingAppDetails?.app.id)
     }
     set {
       apps = IdentifiedArrayOf(newValue.apps)
-      viewingAppDetails = newValue.viewingAppDetails.map {
-        AppDetailsContent(id: $0, versions: nil, showVersionHistory: false)
+      if let id = newValue.viewingAppDetails, let app = apps[id: id] {
+        viewingAppDetails = AppDetailsState(app: app, versions: nil, showVersionHistory: false)
       }
     }
   }
