@@ -261,9 +261,6 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
   ),
   Reducer { state, action, environment in
     switch action {
-    case .lifecycle(.willConnect):
-      return Effect(value: .processUpdates(.subscribe))
-
     case let .lifecycle(.openURL(url)):
       guard let urlScheme = URLScheme(rawValue: url) else {
         return .none
@@ -275,14 +272,20 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
 
     case .lifecycle(.willEnterForground):
       let theme = state.theme
-      return .fireAndForget {
-        environment.setTheme(theme)
-      }
+      return .merge(
+        Effect(value: .processUpdates(.subscribe)),
+        .fireAndForget {
+          environment.setTheme(theme)
+        }
+      )
 
     case .lifecycle(.didEnterBackground):
-      return .fireAndForget {
-        environment.scheduleBackgroundTasks()
-      }
+      return .merge(
+        Effect(value: .processUpdates(.unsubscribe)),
+        .fireAndForget {
+          environment.scheduleBackgroundTasks()
+        }
+      )
 
     case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
       return .fireAndForget {
