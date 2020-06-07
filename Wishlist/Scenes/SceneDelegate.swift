@@ -274,16 +274,11 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       }
       return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
 
-    case .lifecycle(.didBecomeActive):
-      return Effect(value: .updates(.checkForUpdates))
-
-    case .lifecycle(.willResignActive):
-      return Effect(value: .updates(.cancelUpdateCheck))
-
     case .lifecycle(.willEnterForground):
       let theme = state.theme
       return .merge(
         Effect(value: .processUpdates(.subscribe)),
+        Effect(value: .updates(.checkForUpdates)),
         .fireAndForget {
           environment.setTheme(theme)
         }
@@ -292,6 +287,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
     case .lifecycle(.didEnterBackground):
       return .merge(
         Effect(value: .processUpdates(.unsubscribe)),
+        Effect(value: .updates(.cancelUpdateCheck)),
         .fireAndForget {
           environment.scheduleBackgroundTasks()
         }
