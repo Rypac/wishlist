@@ -13,7 +13,7 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     return Store(
       initialState: AppDetailsSceneState(theme: appDelegate.settings.theme),
-      reducer: appDetailsSceneReducer,
+      reducer: appDetailsSceneReducer(id: UUID()),
       environment: .live(
         environment: AppDetailsSceneEnvironment(
           repository: appDelegate.appRepository,
@@ -103,7 +103,8 @@ enum AppDetailsSceneAction {
   case viewApp(App.ID)
   case details(AppDetailsAction)
   case lifecycle(SceneLifecycleEvent)
-  case themeChanged(PublisherAction<Theme>)
+  case theme(PublisherAction<Theme>)
+  case app(PublisherAction<[App]>)
   case closeDetails
 }
 
@@ -115,65 +116,116 @@ struct AppDetailsSceneEnvironment {
   var terminate: () -> Void
 }
 
-let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction, SystemEnvironment<AppDetailsSceneEnvironment>>.combine(
-  publisherReducer().pullback(
-     state: \.theme,
-     action: /AppDetailsSceneAction.themeChanged,
-     environment: { systemEnvironment in
-       systemEnvironment.map {
-         PublisherEnvironment(publisher: $0.theme, perform: $0.applyTheme)
-       }
-     }
-  ),
-  appDetailsReducer.optional.pullback(
-    state: \.details,
-    action: /AppDetailsSceneAction.details,
-    environment: { systemEnvironment in
-      systemEnvironment.map {
-        AppDetailsEnvironment(
-          updates: { id in
-            systemEnvironment.repository.publisher(for: id)
-          },
-          openURL: $0.openURL,
-          versionHistory: { id in
-            (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
-          },
-          saveNotifications: { id, notifications in
-            try? systemEnvironment.repository.notify(id: id, for: notifications)
-          }
-        )
+private extension AppDetailsSceneState {
+  var app: App? {
+    get { details?.app }
+    set {
+      if let app = newValue {
+        details?.app = app
       }
     }
-  ),
+  }
+}
+
+private struct ProcessID<T>: Hashable {
+  let id: AnyHashable
+
+  init(_ id: AnyHashable) {
+    self.id = id
+  }
+}
+
+func appDetailsSceneReducer(
+  id: AnyHashable
+) -> Reducer<AppDetailsSceneState, AppDetailsSceneAction, SystemEnvironment<AppDetailsSceneEnvironment>> {
+  .combine(
+    publisherReducer(id: ProcessID<Theme>(id)).pullback(
+       state: \.theme,
+       action: /AppDetailsSceneAction.theme,
+       environment: { systemEnvironment in
+         systemEnvironment.map {
+           PublisherEnvironment(publisher: $0.theme, perform: $0.applyTheme)
+         }
+       }
+    ),
+    appUpdatesReducer(id: ProcessID<App>(id)).optional.pullback(
+      state: \.app,
+      action: /AppDetailsSceneAction.app,
+      environment: { systemEnvironment in
+        systemEnvironment.map {
+          PublisherEnvironment(publisher: $0.repository.updates())
+        }
+      }
+    ),
+    appDetailsReducer.optional.pullback(
+      state: \.details,
+      action: /AppDetailsSceneAction.details,
+      environment: { systemEnvironment in
+        systemEnvironment.map {
+          AppDetailsEnvironment(
+            openURL: $0.openURL,
+            versionHistory: { id in
+              (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
+            },
+            saveNotifications: { id, notifications in
+              try? systemEnvironment.repository.notify(id: id, for: notifications)
+            }
+          )
+        }
+      }
+    ),
+    Reducer { state, action, environment in
+      switch action {
+      case .lifecycle(.willEnterForeground):
+        return .merge(
+          Effect(value: .theme(.subscribe)),
+          Effect(value: .app(.subscribe))
+        )
+
+      case .lifecycle(.didEnterBackground):
+        return .merge(
+          Effect(value: .theme(.unsubscribe)),
+          Effect(value: .app(.unsubscribe))
+        )
+
+      case let .viewApp(id):
+        state.details = try? environment.repository.fetch(id: id).map {
+          AppDetailsState(app: $0, versions: nil, showVersionHistory: false)
+        }
+        return .none
+
+      case .closeDetails:
+        return .fireAndForget {
+          environment.terminate()
+        }
+
+      case .lifecycle, .details, .theme, .app:
+        return .none
+      }
+    }
+  )
+}
+
+private func appUpdatesReducer(
+  id: AnyHashable
+) -> Reducer<App, PublisherAction<[App]>, SystemEnvironment<PublisherEnvironment<[App]>>> {
   Reducer { state, action, environment in
     switch action {
-    case .lifecycle(.willConnect):
-      return Effect(value: .themeChanged(.subscribe))
+    case .subscribe:
+      return environment.publisher
+        .receive(on: environment.mainQueue())
+        .eraseToEffect()
+        .map(PublisherAction.receivedValue)
+        .cancellable(id: id, cancelInFlight: true)
 
-    case .lifecycle(.willEnterForeground):
-      let theme = state.theme
-      return .fireAndForget {
-        environment.applyTheme(theme)
+    case .unsubscribe:
+      return .cancel(id: id)
+
+    case let .receivedValue(apps):
+      for app in apps where app.id == state.id {
+        state = app
       }
-
-    case let .viewApp(id):
-      state.details = try? environment.repository.fetch(id: id).map {
-        AppDetailsState(app: $0, versions: nil, showVersionHistory: false)
-      }
-      return .none
-
-    case .closeDetails:
-      return .fireAndForget {
-        environment.terminate()
-      }
-
-    case let .details(.openInAppStore(url)):
-      return .fireAndForget {
-        environment.openURL(url)
-      }
-
-    case .lifecycle, .themeChanged, .details:
       return .none
     }
   }
-)
+}

@@ -31,6 +31,7 @@ enum AppListRowAction {
 }
 
 struct AppListRowEnvironment {
+  var openURL: (URL) -> Void
   var recordAppViewed: (App.ID, Date) -> Void
 }
 
@@ -48,7 +49,20 @@ let appListRowReducer = Reducer<App, AppListRowAction, SystemEnvironment<AppList
       environment.recordAppViewed(id, now)
     }
 
-  case .openInNewWindow, .viewInAppStore, .remove:
+  case .openInNewWindow:
+    let id = state.id
+    return .fireAndForget {
+      let scene = DetailsScene(id: id)
+      UIApplication.shared.requestSceneSessionActivation(nil, userActivity: scene.userActivity, options: nil)
+    }
+
+  case .viewInAppStore:
+    let url = state.url
+    return .fireAndForget {
+      environment.openURL(url)
+    }
+
+  case .remove:
     return .none
   }
 }

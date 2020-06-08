@@ -4,9 +4,15 @@ import SwiftUI
 import WishlistCore
 import WishlistFoundation
 
+struct AppDetailsContent: Equatable {
+  let id: App.ID
+  var versions: [Version]?
+  var showVersionHistory: Bool
+}
+
 struct AppListContentState: Equatable {
   var sortOrder: SortOrder
-  var details: AppDetailsState?
+  var details: AppDetailsContent?
   var visibleApps: [App.ID]
   var apps: IdentifiedArrayOf<App>
 }
@@ -15,12 +21,10 @@ enum AppListContentAction {
   case removeAtIndexes(IndexSet)
   case remove([App.ID])
   case app(id: App.ID, action: AppListRowAction)
-  case selected(id: App.ID?)
   case details(AppDetailsAction)
 }
 
 struct AppListContentEnvironment {
-  var detailUpdates: (App.ID) -> AnyPublisher<App, Never>
   var openURL: (URL) -> Void
   var versionHistory: (App.ID) -> [Version]
   var deleteApps: ([App.ID]) -> Void
@@ -30,11 +34,17 @@ struct AppListContentEnvironment {
 
 private extension AppListContentState {
   var detailsState: AppDetailsState? {
-    get { details }
+    get {
+      guard let details = details, let app = apps[id: details.id] else {
+        return nil
+      }
+      return AppDetailsState(app: app, versions: details.versions, showVersionHistory: details.showVersionHistory)
+    }
     set {
-      details = newValue
-      if let app = newValue?.app {
-        apps[id: app.id] = app
+      if let newValue = newValue {
+        apps[id: newValue.app.id] = newValue.app
+        details?.versions = newValue.versions
+        details?.showVersionHistory = newValue.showVersionHistory
       }
     }
   }
@@ -46,7 +56,7 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
     action: /AppListContentAction.app,
     environment: { systemEnvironment in
       systemEnvironment.map {
-        AppListRowEnvironment(recordAppViewed: $0.recordAppViewed)
+        AppListRowEnvironment(openURL: $0.openURL, recordAppViewed: $0.recordAppViewed)
       }
     }
   ),
@@ -56,7 +66,6 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
     environment: { systemEnvironment in
       systemEnvironment.map {
         AppDetailsEnvironment(
-          updates: $0.detailUpdates,
           openURL: $0.openURL,
           versionHistory: $0.versionHistory,
           saveNotifications: $0.saveNotifications
@@ -79,20 +88,7 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
 
     case let .app(id, .selected(selected)):
       if selected {
-        return .concatenate(
-          Effect(value: .selected(id: id)),
-          Effect(value: .details(.update(.subscribe)))
-        )
-      } else {
-        return .concatenate(
-          Effect(value: .details(.update(.unsubscribe))),
-          Effect(value: .selected(id: nil))
-        )
-      }
-
-    case let .selected(id):
-      if let id = id, let app = state.apps[id: id] {
-        state.details = AppDetailsState(app: app, versions: nil, showVersionHistory: false)
+        state.details = AppDetailsContent(id: id, versions: nil, showVersionHistory: false)
       } else {
         state.details = nil
       }
@@ -114,7 +110,7 @@ private extension AppListContentState {
     }
     return AppSummary(
       id: app.id,
-      selected: details?.app.id == id,
+      selected: details?.id == id,
       title: app.title,
       details: .init(sortOrder: sortOrder, app: app),
       icon: app.icon.medium,
@@ -136,7 +132,7 @@ struct AppListContentView: View {
             WithViewStore(store.scope(state: \.selected)) { viewStore in
               NavigationLink(
                 destination: IfLetStore(
-                  self.store.scope(state: \.details, action: AppListContentAction.details),
+                  self.store.scope(state: \.detailsState, action: AppListContentAction.details),
                   then: ConnectedAppDetailsView.init
                 ),
                 tag: id,

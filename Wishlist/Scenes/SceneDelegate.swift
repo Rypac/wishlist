@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         theme: appDelegate.settings.theme,
         appUpdateFrequency: 5 * 60
       ),
-      reducer: appReducer,
+      reducer: appReducer(id: UUID()),
       environment: .live(
         environment: AppEnvironment(
           repository: appDelegate.appRepository,
@@ -96,7 +96,7 @@ struct AppState: Equatable {
   var theme: Theme
   var appUpdateFrequency: TimeInterval
   var appListInternalState: AppListInternalState
-  var viewingAppDetails: AppDetailsState? = nil
+  var viewingAppDetails: AppDetailsContent? = nil
   var isSettingsPresented: Bool = false
   var isUpdateInProgress: Bool = false
 
@@ -140,12 +140,12 @@ private extension AppState {
 
   var urlSchemeState: URLSchemeState {
     get {
-      URLSchemeState(apps: apps.elements, viewingAppDetails: viewingAppDetails?.app.id)
+      URLSchemeState(apps: apps.elements, viewingAppDetails: viewingAppDetails?.id)
     }
     set {
       apps = IdentifiedArrayOf(newValue.apps)
-      if let id = newValue.viewingAppDetails, let app = apps[id: id] {
-        viewingAppDetails = AppDetailsState(app: app, versions: nil, showVersionHistory: false)
+      if let id = newValue.viewingAppDetails {
+        viewingAppDetails = AppDetailsContent(id: id, versions: nil, showVersionHistory: false)
       }
     }
   }
@@ -169,10 +169,10 @@ private extension AppState {
 
   var processUpdateState: ProcessUpdateState {
     get {
-      ProcessUpdateState(apps: apps.elements, sortOrder: sortOrderState.sortOrder, theme: theme)
+      ProcessUpdateState(apps: apps, sortOrder: sortOrderState.sortOrder, theme: theme)
     }
     set {
-      apps = IdentifiedArrayOf(newValue.apps)
+      apps = newValue.apps
       sortOrderState.sortOrder = newValue.sortOrder
       theme = newValue.theme
     }
@@ -197,133 +197,131 @@ struct AppEnvironment {
   var setTheme: (Theme) -> Void
 }
 
-let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>.combine(
-  appListReducer.pullback(
-    state: \.appListState,
-    action: /AppAction.appList,
-    environment: { systemEnvironment in
-      systemEnvironment.map {
-        AppListEnvironment(
-          detailUpdates: { id in
-            systemEnvironment.repository.publisher(for: id)
-          },
-          loadApps: $0.loadApps,
-          deleteApps: { ids in
-            try? systemEnvironment.repository.delete(ids: ids)
-          },
-          versionHistory: { id in
-            (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
-          },
-          saveNotifications: { id, notifications in
-            try? systemEnvironment.repository.notify(id: id, for: notifications)
-          },
-          openURL: $0.openURL,
-          saveSortOrder: { sortOrder in
-            systemEnvironment.settings.sortOrder = sortOrder
-          },
-          saveTheme: { theme in
-            systemEnvironment.settings.theme = theme
-          },
-          recordDetailsViewed: { id, date in
-            try? systemEnvironment.repository.viewedApp(id: id, at: date)
+func appReducer(
+  id: AnyHashable
+) -> Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>> {
+  .combine(
+    appListReducer.pullback(
+      state: \.appListState,
+      action: /AppAction.appList,
+      environment: { systemEnvironment in
+        systemEnvironment.map {
+          AppListEnvironment(
+            loadApps: $0.loadApps,
+            deleteApps: { ids in
+              try? systemEnvironment.repository.delete(ids: ids)
+            },
+            versionHistory: { id in
+              (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
+            },
+            saveNotifications: { id, notifications in
+              try? systemEnvironment.repository.notify(id: id, for: notifications)
+            },
+            openURL: $0.openURL,
+            saveSortOrder: { sortOrder in
+              systemEnvironment.settings.sortOrder = sortOrder
+            },
+            saveTheme: { theme in
+              systemEnvironment.settings.theme = theme
+            },
+            recordDetailsViewed: { id, date in
+              try? systemEnvironment.repository.viewedApp(id: id, at: date)
+            }
+          )
+        }
+      }
+    ),
+    urlSchemeReducer.pullback(
+      state: \.urlSchemeState,
+      action: /AppAction.urlScheme,
+      environment: { systemEnvironment in
+        systemEnvironment.map {
+          URLSchemeEnvironment(loadApps: $0.loadApps)
+        }
+      }
+    ),
+    appUpdateReducer.pullback(
+      state: \.appUpdateState,
+      action: /AppAction.updates,
+      environment: { systemEnvironment in
+        systemEnvironment.map {
+          AppUpdateEnvironment(lookupApps: $0.loadApps)
+        }
+      }
+    ),
+    processUpdateReducer(id: id).pullback(
+      state: \.processUpdateState,
+      action: /AppAction.processUpdates,
+      environment: { systemEnvironment in
+        systemEnvironment.map { environment in
+          ProcessUpdateEnvironment(
+            apps: PublisherEnvironment(
+              publisher: environment.repository.publisher()
+            ),
+            updates: PublisherEnvironment(
+              publisher: systemEnvironment.repository.updates()
+            ),
+            sortOrder: PublisherEnvironment(
+              publisher: environment.settings.$sortOrder.publisher(initialValue: .skip).eraseToAnyPublisher()
+            ),
+            theme: PublisherEnvironment(
+              publisher: environment.settings.$theme.publisher().eraseToAnyPublisher(),
+              perform: environment.setTheme
+            )
+          )
+        }
+      }
+    ),
+    Reducer { state, action, environment in
+      switch action {
+      case let .lifecycle(.openURL(url)):
+        guard let urlScheme = URLScheme(rawValue: url) else {
+          return .none
+        }
+        return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
+
+      case .lifecycle(.willEnterForeground):
+        return .merge(
+          Effect(value: .processUpdates(.subscribe)),
+          Effect(value: .updates(.checkForUpdates))
+        )
+
+      case .lifecycle(.didEnterBackground):
+        return .merge(
+          Effect(value: .processUpdates(.unsubscribe)),
+          Effect(value: .updates(.cancelUpdateCheck)),
+          .fireAndForget {
+            environment.scheduleBackgroundTasks()
           }
         )
-      }
-    }
-  ),
-  urlSchemeReducer.pullback(
-    state: \.urlSchemeState,
-    action: /AppAction.urlScheme,
-    environment: { systemEnvironment in
-      systemEnvironment.map {
-        URLSchemeEnvironment(loadApps: $0.loadApps)
-      }
-    }
-  ),
-  appUpdateReducer.pullback(
-    state: \.appUpdateState,
-    action: /AppAction.updates,
-    environment: { systemEnvironment in
-      systemEnvironment.map {
-        AppUpdateEnvironment(lookupApps: $0.loadApps)
-      }
-    }
-  ),
-  processUpdateReducer.pullback(
-    state: \.processUpdateState,
-    action: /AppAction.processUpdates,
-    environment: { systemEnvironment in
-      systemEnvironment.map { environment in
-        ProcessUpdateEnvironment(
-          apps: PublisherEnvironment(
-            publisher: environment.repository.publisher()
-          ),
-          sortOrder: PublisherEnvironment(
-            publisher: environment.settings.$sortOrder.publisher(initialValue: .skip).eraseToAnyPublisher()
-          ),
-          theme: PublisherEnvironment(
-            publisher: environment.settings.$theme.publisher(initialValue: .skip).eraseToAnyPublisher(),
-            perform: environment.setTheme
-          )
-        )
-      }
-    }
-  ),
-  Reducer { state, action, environment in
-    switch action {
-    case let .lifecycle(.openURL(url)):
-      guard let urlScheme = URLScheme(rawValue: url) else {
+
+      case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
+        return .fireAndForget {
+          try? environment.repository.add(updatedApps)
+          environment.settings.lastUpdateDate = date
+        }
+
+      case let .appList(.addApps(.addAppsResponse(.success(apps)))),
+           let .urlScheme(.addApps(.addAppsResponse(.success(apps)))):
+        return .fireAndForget {
+          try? environment.repository.add(apps)
+        }
+
+      case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:
         return .none
       }
-      return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
+    },
+    Reducer { state, action, environment in
+      switch action {
+      case .lifecycle(.willConnect),
+           .processUpdates(.apps(.receivedValue)),
+           .updates(.receivedUpdates(.success, _)),
+           .urlScheme(.addApps(.addAppsResponse(.success))):
+        return Effect(value: .appList(.sortOrderUpdated))
 
-    case .lifecycle(.willEnterForeground):
-      let theme = state.theme
-      return .merge(
-        Effect(value: .processUpdates(.subscribe)),
-        Effect(value: .updates(.checkForUpdates)),
-        Effect(value: .appList(.list(.details(.update(.subscribe))))),
-        .fireAndForget {
-          environment.setTheme(theme)
-        }
-      )
-
-    case .lifecycle(.didEnterBackground):
-      return .merge(
-        Effect(value: .processUpdates(.unsubscribe)),
-        Effect(value: .updates(.cancelUpdateCheck)),
-        Effect(value: .appList(.list(.details(.update(.unsubscribe))))),
-        .fireAndForget {
-          environment.scheduleBackgroundTasks()
-        }
-      )
-
-    case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
-      return .fireAndForget {
-        try? environment.repository.add(updatedApps)
-        environment.settings.lastUpdateDate = date
+      default:
+        return .none
       }
-
-    case let .appList(.addApps(.addAppsResponse(.success(apps)))),
-         let .urlScheme(.addApps(.addAppsResponse(.success(apps)))):
-      return .fireAndForget {
-        try? environment.repository.add(apps)
-      }
-
-    case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:
-      return .none
     }
-  },
-  Reducer { state, action, environment in
-    switch action {
-    case .lifecycle(.willConnect),
-         .processUpdates(.apps(.receivedValue)),
-         .updates(.receivedUpdates(.success, _)),
-         .urlScheme(.addApps(.addAppsResponse(.success))):
-      return Effect(value: .appList(.sortOrderUpdated))
-
-    default:
-      return .none
-    }
-  }
-)
+  )
+}
