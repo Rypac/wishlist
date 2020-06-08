@@ -82,6 +82,10 @@ class ActionViewController: UIViewController {
         fatalError("Unresolved error \(error), \(error.userInfo)")
       }
     }
+
+    container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+    container.viewContext.automaticallyMergesChangesFromParent = true
+
     return container
   }()
 

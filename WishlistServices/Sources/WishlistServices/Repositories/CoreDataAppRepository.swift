@@ -7,10 +7,6 @@ public final class CoreDataAppRepository: AppRepository {
 
   public init(container: NSPersistentContainer) {
     self.container = container
-
-    let viewContext = container.viewContext
-    viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-    viewContext.automaticallyMergesChangesFromParent = true
   }
 
   public func publisher() -> AnyPublisher<[App], Never> {
@@ -109,7 +105,7 @@ public final class CoreDataAppRepository: AppRepository {
 private extension NSManagedObjectContext {
   func performAndFetch<T>(_ request: NSFetchRequest<T>) throws -> [T] where T: NSFetchRequestResult {
     try performAndWaitThrows {
-      try self.fetch(request)
+      try fetch(request)
     }
   }
 
