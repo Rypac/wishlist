@@ -1,3 +1,4 @@
+import Combine
 import ComposableArchitecture
 import SwiftUI
 import WishlistCore
@@ -10,6 +11,7 @@ struct AppDetailsState: Equatable {
 }
 
 enum AppDetailsAction {
+  case update(PublisherAction<App>)
   case openInAppStore(URL)
   case showVersionHistory(Bool)
   case notification(ChangeNotification, enable: Bool)
@@ -17,6 +19,7 @@ enum AppDetailsAction {
 }
 
 struct AppDetailsEnvironment {
+  var updates: (App.ID) -> AnyPublisher<App, Never>
   var openURL: (URL) -> Void
   var versionHistory: (App.ID) -> [Version]
   var saveNotifications: (App.ID, Set<ChangeNotification>) -> Void
@@ -32,8 +35,21 @@ let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnviron
       }
     }
   ),
+  publisherReducer().pullback(
+    state: \.app,
+    action: /AppDetailsAction.update,
+    environment: { systemEnvironment in
+      systemEnvironment.map { environment in
+        PublisherEnvironment(publisher: { environment.updates($0.id) })
+      }
+    }
+  ),
   Reducer { state, action, environment in
     switch action {
+    case let .update(.receivedValue(value)):
+      state.app = value
+      return .none
+
     case let .showVersionHistory(show):
       state.showVersionHistory = show
       if show, state.versions == nil {
@@ -58,7 +74,7 @@ let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnviron
         environment.openURL(url)
       }
 
-    case .versionHistory:
+    case .versionHistory, .update:
       return .none
     }
   }

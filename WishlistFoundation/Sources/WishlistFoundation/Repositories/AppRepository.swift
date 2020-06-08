@@ -3,6 +3,7 @@ import Foundation
 
 public protocol AppRepository {
   func publisher() -> AnyPublisher<[App], Never>
+  func publisher(for id: App.ID) -> AnyPublisher<App, Never>
   func fetchAll() throws -> [App]
   func fetch(id: App.ID) throws -> App?
   func add(_ app: AppSnapshot) throws

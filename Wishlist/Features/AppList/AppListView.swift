@@ -32,6 +32,7 @@ enum AppListAction {
 }
 
 struct AppListEnvironment {
+  var detailUpdates: (App.ID) -> AnyPublisher<App, Never>
   var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
   var deleteApps: ([App.ID]) -> Void
   var versionHistory: (App.ID) -> [Version]
@@ -101,6 +102,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     environment: { systemEnvironment in
       systemEnvironment.map {
         AppListContentEnvironment(
+          detailUpdates: $0.detailUpdates,
           openURL: $0.openURL,
           versionHistory: $0.versionHistory,
           deleteApps: $0.deleteApps,

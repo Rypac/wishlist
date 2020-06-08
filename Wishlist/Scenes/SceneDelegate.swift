@@ -204,6 +204,9 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
     environment: { systemEnvironment in
       systemEnvironment.map {
         AppListEnvironment(
+          detailUpdates: { id in
+            systemEnvironment.repository.publisher(for: id)
+          },
           loadApps: $0.loadApps,
           deleteApps: { ids in
             try? systemEnvironment.repository.delete(ids: ids)
@@ -279,6 +282,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       return .merge(
         Effect(value: .processUpdates(.subscribe)),
         Effect(value: .updates(.checkForUpdates)),
+        Effect(value: .appList(.list(.details(.update(.subscribe))))),
         .fireAndForget {
           environment.setTheme(theme)
         }
@@ -288,6 +292,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       return .merge(
         Effect(value: .processUpdates(.unsubscribe)),
         Effect(value: .updates(.cancelUpdateCheck)),
+        Effect(value: .appList(.list(.details(.update(.unsubscribe))))),
         .fireAndForget {
           environment.scheduleBackgroundTasks()
         }

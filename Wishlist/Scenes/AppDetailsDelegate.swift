@@ -131,6 +131,9 @@ let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction
     environment: { systemEnvironment in
       systemEnvironment.map {
         AppDetailsEnvironment(
+          updates: { id in
+            systemEnvironment.repository.publisher(for: id)
+          },
           openURL: $0.openURL,
           versionHistory: { id in
             (try? systemEnvironment.repository.versionHistory(id: id)) ?? []

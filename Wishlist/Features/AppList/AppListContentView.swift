@@ -1,3 +1,4 @@
+import Combine
 import ComposableArchitecture
 import SwiftUI
 import WishlistCore
@@ -14,10 +15,12 @@ enum AppListContentAction {
   case removeAtIndexes(IndexSet)
   case remove([App.ID])
   case app(id: App.ID, action: AppListRowAction)
+  case selected(id: App.ID?)
   case details(AppDetailsAction)
 }
 
 struct AppListContentEnvironment {
+  var detailUpdates: (App.ID) -> AnyPublisher<App, Never>
   var openURL: (URL) -> Void
   var versionHistory: (App.ID) -> [Version]
   var deleteApps: ([App.ID]) -> Void
@@ -53,6 +56,7 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
     environment: { systemEnvironment in
       systemEnvironment.map {
         AppDetailsEnvironment(
+          updates: $0.detailUpdates,
           openURL: $0.openURL,
           versionHistory: $0.versionHistory,
           saveNotifications: $0.saveNotifications
@@ -74,7 +78,20 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
       }
 
     case let .app(id, .selected(selected)):
-      if selected, let app = state.apps[id: id] {
+      if selected {
+        return .concatenate(
+          Effect(value: .selected(id: id)),
+          Effect(value: .details(.update(.subscribe)))
+        )
+      } else {
+        return .concatenate(
+          Effect(value: .details(.update(.unsubscribe))),
+          Effect(value: .selected(id: nil))
+        )
+      }
+
+    case let .selected(id):
+      if let id = id, let app = state.apps[id: id] {
         state.details = AppDetailsState(app: app, versions: nil, showVersionHistory: false)
       } else {
         state.details = nil

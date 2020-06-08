@@ -15,6 +15,36 @@ public final class CoreDataAppRepository: AppRepository {
       .eraseToAnyPublisher()
   }
 
+  public func publisher(for id: App.ID) -> AnyPublisher<App, Never> {
+    NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
+      .compactMap { [unowned self] notification in
+        guard let objects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject> else {
+          return nil
+        }
+
+        let hasUpdate = objects.contains { object in
+          switch object {
+          case let interaction as InteractionEntity:
+            return interaction.app.identifier.intValue == id.rawValue
+          case let notification as NotificationEntity:
+            return notification.app.identifier.intValue == id.rawValue
+          case let version as VersionEntity:
+            return version.app.identifier.intValue == id.rawValue
+          case let price as PriceEntity:
+            return price.app.identifier.intValue == id.rawValue
+          default:
+            return false
+          }
+        }
+        guard hasUpdate else {
+          return nil
+        }
+
+        return try? self.fetch(id: id)
+      }
+      .eraseToAnyPublisher()
+  }
+
   public func fetchAll() throws -> [App] {
     try container.viewContext.performAndFetch(AppEntity.fetchAll()).map(App.init)
   }
