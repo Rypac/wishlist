@@ -11,14 +11,22 @@ public enum PublisherAction<T> {
 }
 
 public struct PublisherEnvironment<T> {
-  public var publisher: AnyPublisher<T, Never>
+  public var publisher: (T) -> AnyPublisher<T, Never>
   public var perform: (T) -> Void
+
+  public init(
+    publisher: @escaping (T) -> AnyPublisher<T, Never>,
+    perform: @escaping (T) -> Void = { _ in }
+  ) {
+    self.publisher = publisher
+    self.perform = perform
+  }
 
   public init(
     publisher: AnyPublisher<T, Never>,
     perform: @escaping (T) -> Void = { _ in }
   ) {
-    self.publisher = publisher
+    self.publisher = { _ in publisher }
     self.perform = perform
   }
 }
@@ -29,7 +37,7 @@ public func publisherReducer<T>() -> Reducer<PublisherState<T>, PublisherAction<
   Reducer { state, action, environment in
     switch action {
     case .subscribe:
-      return environment.publisher
+      return environment.publisher(state)
         .removeDuplicates()
         .receive(on: environment.mainQueue())
         .eraseToEffect()
