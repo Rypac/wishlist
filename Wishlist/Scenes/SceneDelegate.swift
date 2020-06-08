@@ -61,7 +61,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneWillEnterForeground(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.willEnterForground))
+    viewStore.send(.lifecycle(.willEnterForeground))
   }
 
   func sceneDidBecomeActive(_ scene: UIScene) {
@@ -274,7 +274,7 @@ let appReducer = Reducer<AppState, AppAction, SystemEnvironment<AppEnvironment>>
       }
       return Effect(value: .urlScheme(.handleURLScheme(urlScheme)))
 
-    case .lifecycle(.willEnterForground):
+    case .lifecycle(.willEnterForeground):
       let theme = state.theme
       return .merge(
         Effect(value: .processUpdates(.subscribe)),

@@ -53,7 +53,7 @@ class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneWillEnterForeground(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.willEnterForground))
+    viewStore.send(.lifecycle(.willEnterForeground))
   }
 
   func sceneDidBecomeActive(_ scene: UIScene) {
@@ -147,7 +147,7 @@ let appDetailsSceneReducer = Reducer<AppDetailsSceneState, AppDetailsSceneAction
     case .lifecycle(.willConnect):
       return Effect(value: .themeChanged(.subscribe))
 
-    case .lifecycle(.willEnterForground):
+    case .lifecycle(.willEnterForeground):
       let theme = state.theme
       return .fireAndForget {
         environment.applyTheme(theme)

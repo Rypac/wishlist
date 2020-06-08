@@ -5,7 +5,7 @@ enum SceneLifecycleEvent: Equatable {
   case didDisconnect
   case didBecomeActive
   case willResignActive
-  case willEnterForground
+  case willEnterForeground
   case didEnterBackground
   case openURL(URL)
 }
