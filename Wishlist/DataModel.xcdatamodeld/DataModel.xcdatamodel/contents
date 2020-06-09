@@ -45,7 +45,7 @@
     <entity name="PriceEntity" representedClassName="WishlistServices.PriceEntity" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="formatted" optional="YES" attributeType="String"/>
-        <attribute name="value" optional="YES" attributeType="Double" usesScalarValueType="YES"/>
+        <attribute name="value" optional="YES" attributeType="Decimal"/>
         <relationship name="app" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AppEntity" inverseName="prices" inverseEntity="AppEntity"/>
     </entity>
     <entity name="VersionEntity" representedClassName="WishlistServices.VersionEntity" syncable="YES">
@@ -62,10 +62,10 @@
         <memberEntity name="NotificationEntity"/>
     </configuration>
     <elements>
-        <element name="AppEntity" positionX="-1534.515625" positionY="-1032.13671875" width="117.296875" height="358"/>
-        <element name="InteractionEntity" positionX="-1101.32421875" positionY="-896.984375" width="128" height="103"/>
-        <element name="PriceEntity" positionX="-1100.89453125" positionY="-1097.08203125" width="128" height="103"/>
-        <element name="VersionEntity" positionX="-1100.5234375" positionY="-714.09375" width="128" height="103"/>
-        <element name="NotificationEntity" positionX="-1332" positionY="-945" width="128" height="88"/>
+        <element name="AppEntity" positionX="-12580.62890625" positionY="-1213.90234375" width="117.296875" height="358"/>
+        <element name="InteractionEntity" positionX="-12097.2265625" positionY="-1177.77734375" width="128" height="103"/>
+        <element name="NotificationEntity" positionX="-12095.98828125" positionY="-1045.83203125" width="128" height="88"/>
+        <element name="PriceEntity" positionX="-12093.8125" positionY="-920.06640625" width="128" height="103"/>
+        <element name="VersionEntity" positionX="-12093.9375" positionY="-792.23828125" width="128" height="103"/>
     </elements>
 </model>

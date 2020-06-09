@@ -64,9 +64,9 @@ public extension App {
     bundleID = app.bundleID
     releaseDate = app.releaseDate
 
-    if app.price != price.current.value {
+    if app.price != price.current {
       price = Tracked(
-        current: Price(value: app.price, formatted: app.formattedPrice),
+        current: app.price,
         previous: price.current
       )
     }

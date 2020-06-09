@@ -167,7 +167,7 @@ private extension NSManagedObjectContext {
     interaction.firstAdded = date
 
     let notification = NotificationEntity(context: self)
-    notification.priceDrop = app.price > 0
+    notification.priceDrop = !app.price.value.isZero
 
     let currentPrice = PriceEntity(context: self)
     currentPrice.update(app: app, at: date)
@@ -198,7 +198,7 @@ private extension NSManagedObjectContext {
     }
 
     let currentPrice = try performAndFetch(PriceEntity.fetchLatest(id: app.id)).first
-    if let currentPrice = currentPrice, app.price != currentPrice.value {
+    if let currentPrice = currentPrice, app.price != Price(currentPrice) {
       let latestPrice = PriceEntity(context: self)
       latestPrice.update(app: app, at: date)
       existingApp.add(price: latestPrice)
@@ -309,13 +309,13 @@ private extension Tracked where T == Price {
   init(_ entity: AppEntity) {
     let previousPrice: Price?
     if let value = entity.previousPrice, let formatted = entity.previousPriceFormatted {
-      previousPrice = Price(value: value.doubleValue, formatted: formatted)
+      previousPrice = Price(value: value, formatted: formatted)
     } else {
       previousPrice = nil
     }
 
     self.init(
-      current: Price(value: entity.currentPrice.doubleValue, formatted: entity.currentPriceFormatted),
+      current: Price(value: entity.currentPrice, formatted: entity.currentPriceFormatted),
       previous: previousPrice
     )
   }
@@ -331,5 +331,11 @@ private extension NotificationEntity {
       notifications.insert(.newVersion)
     }
     return notifications
+  }
+}
+
+extension Price {
+  public init(value: NSDecimalNumber, formatted: String) {
+    self.init(value: value as Decimal, formatted: formatted)
   }
 }

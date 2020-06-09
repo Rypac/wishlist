@@ -16,9 +16,9 @@ public final class AppEntity: NSManagedObject {
   @NSManaged var interaction: InteractionEntity?
   @NSManaged var notification: NotificationEntity?
 
-  @NSManaged var currentPrice: NSNumber
+  @NSManaged var currentPrice: NSDecimalNumber
   @NSManaged var currentPriceFormatted: String
-  @NSManaged var previousPrice: NSNumber?
+  @NSManaged var previousPrice: NSDecimalNumber?
   @NSManaged var previousPriceFormatted: String?
 
   @NSManaged var version: String
@@ -47,12 +47,12 @@ extension AppEntity {
     updateDate = app.updateDate
     releaseNotes = app.releaseNotes
 
-    if app.price != currentPrice.doubleValue {
+    if app.price.value as NSDecimalNumber != currentPrice {
       previousPrice = currentPrice
       previousPriceFormatted = currentPriceFormatted
     }
-    currentPrice = NSNumber(value: app.price)
-    currentPriceFormatted = app.formattedPrice
+    currentPrice = app.price.value as NSDecimalNumber
+    currentPriceFormatted = app.price.formatted
   }
 
   func add(version: VersionEntity) {

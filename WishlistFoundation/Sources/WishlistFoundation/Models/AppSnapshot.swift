@@ -10,8 +10,7 @@ public struct AppSnapshot: Identifiable, Equatable {
   public var description: String
   public var url: URL
   public var icon: Icon
-  public var price: Double
-  public var formattedPrice: String
+  public var price: Price
   public var bundleID: String
   public var version: String
   public var releaseDate: Date
@@ -25,8 +24,7 @@ public struct AppSnapshot: Identifiable, Equatable {
     description: String,
     url: URL,
     icon: Icon,
-    price: Double,
-    formattedPrice: String,
+    price: Price,
     bundleID: String,
     version: String,
     releaseDate: Date,
@@ -40,7 +38,6 @@ public struct AppSnapshot: Identifiable, Equatable {
     self.url = url
     self.icon = icon
     self.price = price
-    self.formattedPrice = formattedPrice
     self.bundleID = bundleID
     self.version = version
     self.releaseDate = releaseDate

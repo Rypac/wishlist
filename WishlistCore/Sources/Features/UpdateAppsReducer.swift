@@ -115,7 +115,7 @@ private extension AppSnapshot {
       return false
     }
 
-    return price != app.price.current.value
+    return price != app.price.current
       || title != app.title
       || description != app.description
       || icon != app.icon
