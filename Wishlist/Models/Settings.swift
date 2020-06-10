@@ -23,9 +23,13 @@ final class Settings {
   @UserDefault(key: "theme", defaultValue: .system)
   var theme: Theme
 
+  @UserDefault(key: "enableNotifications", defaultValue: false)
+  var enableNotificaitons: Bool
+
   func register() {
     _sortOrder.register()
     _lastUpdateDate.register()
     _theme.register()
+    _enableNotificaitons.register()
   }
 }

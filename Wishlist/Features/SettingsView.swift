@@ -1,13 +1,26 @@
 import ComposableArchitecture
 import SwiftUI
+import WishlistFoundation
+
+struct NotificationState: Equatable {
+  var enabled: Bool
+  var notifyOnChange: Set<ChangeNotification>
+}
+
+enum NotificationAction {
+  case enable(Bool)
+  case notifiy(ChangeNotification, enabled: Bool)
+}
 
 struct SettingsState: Equatable {
   var theme: Theme
+  var notifications: NotificationState
 }
 
 enum SettingsAction {
   case setTheme(Theme)
   case viewLicense(URL)
+  case notifications(NotificationAction)
   case viewSourceCode
   case deleteAll
 }
@@ -35,6 +48,18 @@ let settingsReducer = Reducer<SettingsState, SettingsAction, SettingsEnvironment
       environment.openURL(URL(string: "https://github.com/Rypac/wishlist")!)
     }
 
+  case let .notifications(.enable(enabled)):
+    state.notifications.enabled = enabled
+    return .none
+
+  case let .notifications(.notifiy(notification, enabled)):
+    if enabled {
+      state.notifications.notifyOnChange.insert(notification)
+    } else {
+      state.notifications.notifyOnChange.remove(notification)
+    }
+    return .none
+
   case .deleteAll:
     return .none
   }
@@ -59,6 +84,11 @@ struct SettingsView: View {
               }
             }.pickerStyle(SegmentedPickerStyle())
           }
+          Section(header: Text("Notifications")) {
+            NotificationView(
+              store: self.store.scope(state: \.notifications, action: SettingsAction.notifications)
+            )
+          }
           Section(header: Text("About")) {
             NavigationLink(
               "Acknowledgements",
@@ -82,6 +112,80 @@ struct SettingsView: View {
           self.presentationMode.wrappedValue.dismiss()
         })
       }.navigationViewStyle(StackNavigationViewStyle())
+    }
+  }
+}
+
+private struct NotificationView: View {
+  let store: Store<NotificationState, NotificationAction>
+
+  var body: some View {
+    WithViewStore(store) { viewStore in
+      Group {
+        Toggle(
+          "Enable Notifications",
+          isOn: viewStore.binding(get: \.enabled, send: NotificationAction.enable)
+        )
+        if viewStore.enabled {
+          EnableNotificationsView(
+            store: self.store.scope(
+              state: {
+                .init(notification: .priceDrop, enabled: $0.notifyOnChange.contains(.priceDrop))
+              }
+            )
+          )
+          EnableNotificationsView(
+            store: self.store.scope(
+              state: {
+                .init(notification: .newVersion, enabled: $0.notifyOnChange.contains(.newVersion))
+              }
+            )
+          )
+        }
+      }
+    }
+  }
+}
+
+private struct EnableNotificationsView: View {
+  struct ViewState: Equatable {
+    var notification: ChangeNotification
+    var enabled: Bool
+  }
+
+  var store: Store<ViewState, NotificationAction>
+
+  var body: some View {
+    WithViewStore(store) { viewStore in
+      NavigationLink(
+        destination: Form {
+          Section(header: Text("")) {
+            Toggle(
+              "Enable Notifications",
+              isOn: viewStore.binding(
+                get: \.enabled,
+                send: { .notifiy(viewStore.notification, enabled: $0) }
+              )
+            )
+          }
+        }.navigationBarTitle(viewStore.title)
+      ) {
+        HStack {
+          Text(viewStore.title)
+          Spacer()
+          Text(viewStore.enabled ? "Enabled" : "Disabled")
+            .foregroundColor(.secondary)
+        }
+      }
+    }
+  }
+}
+
+private extension EnableNotificationsView.ViewState {
+  var title: String {
+    switch notification {
+    case .newVersion: return "Updates"
+    case .priceDrop: return "Price Drops"
     }
   }
 }

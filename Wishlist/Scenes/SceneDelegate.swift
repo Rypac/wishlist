@@ -22,7 +22,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
           )
         ),
         lastUpdateDate: appDelegate.settings.lastUpdateDate,
-        theme: appDelegate.settings.theme,
+        settings: SettingsState(
+          theme: appDelegate.settings.theme,
+          notifications: NotificationState(
+            enabled: appDelegate.settings.enableNotificaitons,
+            notifyOnChange: Set(ChangeNotification.allCases)
+          )
+        ),
         appUpdateFrequency: 5 * 60
       ),
       reducer: appReducer(id: UUID()),
@@ -93,7 +99,7 @@ struct AppState: Equatable {
   var apps: IdentifiedArrayOf<App>
   var sortOrderState: SortOrderState
   var lastUpdateDate: Date?
-  var theme: Theme
+  var settings: SettingsState
   var appUpdateFrequency: TimeInterval
   var appListInternalState: AppListInternalState
   var viewingAppDetails: AppDetailsContent? = nil
@@ -104,13 +110,13 @@ struct AppState: Equatable {
     apps: IdentifiedArrayOf<App>,
     sortOrderState: SortOrderState,
     lastUpdateDate: Date?,
-    theme: Theme,
+    settings: SettingsState,
     appUpdateFrequency: TimeInterval
   ) {
     self.apps = apps
     self.sortOrderState = sortOrderState
     self.lastUpdateDate = lastUpdateDate
-    self.theme = theme
+    self.settings = settings
     self.appUpdateFrequency = appUpdateFrequency
     self.appListInternalState = AppListInternalState(sortOrder: sortOrderState.sortOrder)
   }
@@ -122,7 +128,7 @@ private extension AppState {
       AppListState(
         apps: apps,
         sortOrderState: sortOrderState,
-        theme: theme,
+        settings: settings,
         internalState: appListInternalState,
         displayedAppDetails: viewingAppDetails,
         isSettingsPresented: isSettingsPresented
@@ -131,7 +137,7 @@ private extension AppState {
     set {
       apps = newValue.apps
       sortOrderState = newValue.sortOrderState
-      theme = newValue.theme
+      settings = newValue.settings
       appListInternalState = newValue.internalState
       isSettingsPresented = newValue.isSettingsPresented
       viewingAppDetails = newValue.displayedAppDetails
@@ -169,12 +175,12 @@ private extension AppState {
 
   var processUpdateState: ProcessUpdateState {
     get {
-      ProcessUpdateState(apps: apps, sortOrder: sortOrderState.sortOrder, theme: theme)
+      ProcessUpdateState(apps: apps, sortOrder: sortOrderState.sortOrder, theme: settings.theme)
     }
     set {
       apps = newValue.apps
       sortOrderState.sortOrder = newValue.sortOrder
-      theme = newValue.theme
+      settings.theme = newValue.theme
     }
   }
 }

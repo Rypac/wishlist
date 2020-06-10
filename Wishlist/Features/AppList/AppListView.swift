@@ -16,7 +16,7 @@ struct AppListInternalState: Equatable {
 struct AppListState: Equatable {
   var apps: IdentifiedArrayOf<App>
   var sortOrderState: SortOrderState
-  var theme: Theme
+  var settings: SettingsState
   var internalState: AppListInternalState
   var displayedAppDetails: AppDetailsContent?
   var isSettingsPresented: Bool
@@ -48,11 +48,6 @@ private extension AppListState {
     set { apps = IdentifiedArrayOf(newValue.apps) }
   }
 
-  var settingsState: SettingsState {
-    get { SettingsState(theme: theme) }
-    set { theme = newValue.theme }
-  }
-
   var listState: AppListContentState {
     get {
       AppListContentState(
@@ -82,7 +77,7 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     }
   ),
   settingsReducer.pullback(
-    state: \.settingsState,
+    state: \.settings,
     action: /AppListAction.settings,
     environment: {
       SettingsEnvironment(saveTheme: $0.saveTheme, openURL: $0.openURL)
@@ -160,12 +155,7 @@ struct AppListView: View {
           .sortingSheet(store: self.store.scope(state: \.sortOrderState, action: AppListAction.sort))
       }
       .sheet(isPresented: viewStore.binding(send: AppListAction.displaySettings)) {
-        SettingsView(
-          store: self.store.scope(
-            state: \.settingsState,
-            action: AppListAction.settings
-          )
-        )
+        SettingsView(store: self.store.scope(state: \.settings, action: AppListAction.settings))
       }
       .onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
         viewStore.send(.addApps(.addAppsFromURLs(urls)))
