@@ -1,4 +1,4 @@
-public enum ChangeNotification: CaseIterable {
+public enum ChangeNotification: Int, CaseIterable {
   case priceDrop
   case newVersion
 }

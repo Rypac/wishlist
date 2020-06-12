@@ -26,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
           theme: appDelegate.settings.theme,
           notifications: NotificationState(
             enabled: appDelegate.settings.enableNotificaitons,
-            notifyOnChange: Set(ChangeNotification.allCases)
+            notifyOnChange: appDelegate.settings.notifications
           )
         ),
         appUpdateFrequency: 5 * 60

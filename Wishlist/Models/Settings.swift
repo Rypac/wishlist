@@ -13,6 +13,8 @@ enum Theme: String, CaseIterable, UserDefaultsConvertible {
   case dark
 }
 
+extension ChangeNotification: UserDefaultsConvertible {}
+
 final class Settings {
   @UserDefault(key: "sortOrder", defaultValue: .price)
   var sortOrder: SortOrder
@@ -26,10 +28,14 @@ final class Settings {
   @UserDefault(key: "enableNotifications", defaultValue: false)
   var enableNotificaitons: Bool
 
+  @UserDefault(key: "notifications", defaultValue: Set(ChangeNotification.allCases))
+  var notifications: Set<ChangeNotification>
+
   func register() {
     _sortOrder.register()
     _lastUpdateDate.register()
     _theme.register()
     _enableNotificaitons.register()
+    _notifications.register()
   }
 }
