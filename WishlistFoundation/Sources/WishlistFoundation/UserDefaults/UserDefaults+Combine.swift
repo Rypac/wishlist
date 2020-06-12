@@ -1,10 +1,13 @@
 import Foundation
 import Combine
 
-@available(iOS 13.0, *)
 public extension UserDefaults {
-  func publisher<Value: UserDefaultsSerializable>(for key: Key<Value>, initialValue: InitialValueStrategy = .include) -> UserDefaults.Publisher<Value> {
-    UserDefaults.Publisher(defaults: self, key: key, initialValue: initialValue)
+  func publisher<Value>(
+    for key: Key<Value>,
+    adapter: UserDefaultsAdapter<Value>,
+    initialValue: InitialValueStrategy = .include
+  ) -> UserDefaults.Publisher<Value> {
+    UserDefaults.Publisher(defaults: self, key: key, adapter: adapter, initialValue: initialValue)
   }
 
   enum InitialValueStrategy {
@@ -12,21 +15,28 @@ public extension UserDefaults {
     case include
   }
 
-  struct Publisher<Output: UserDefaultsSerializable>: Combine.Publisher {
+  struct Publisher<Output>: Combine.Publisher {
     public typealias Failure = Never
 
-    public let defaults: UserDefaults
-    public let key: Key<Output>
-    public let initialValue: InitialValueStrategy
+    private let defaults: UserDefaults
+    private let key: Key<Output>
+    private let adapter: UserDefaultsAdapter<Output>
+    private let initialValue: InitialValueStrategy
 
-    public init(defaults: UserDefaults, key: Key<Output>, initialValue: InitialValueStrategy = .skip) {
+    public init(
+      defaults: UserDefaults,
+      key: Key<Output>,
+      adapter: UserDefaultsAdapter<Output>,
+      initialValue: InitialValueStrategy
+    ) {
       self.defaults = defaults
       self.key = key
+      self.adapter = adapter
       self.initialValue = initialValue
     }
 
     public func receive<S>(subscriber: S) where S: Subscriber, Output == S.Input, Failure == S.Failure {
-      let observer = UserDefaults.Observer(defaults: defaults, key: key, initialValue: initialValue)
+      let observer = UserDefaults.Observer(defaults: defaults, key: key, adapter: adapter, initialValue: initialValue)
       observer
         .subject
         .buffer(size: 1, prefetch: .keepFull, whenFull: .dropOldest)
@@ -38,16 +48,23 @@ public extension UserDefaults {
     }
   }
 
-  private final class Observer<Value: UserDefaultsSerializable>: NSObject {
+  private final class Observer<Value>: NSObject {
     let subject = PassthroughSubject<Value, Never>()
 
     private let defaults: UserDefaults
     private let key: Key<Value>
+    private let adapter: UserDefaultsAdapter<Value>
     private let initialValue: InitialValueStrategy
 
-    init(defaults: UserDefaults, key: Key<Value>, initialValue: InitialValueStrategy) {
+    init(
+      defaults: UserDefaults,
+      key: Key<Value>,
+      adapter: UserDefaultsAdapter<Value>,
+      initialValue: InitialValueStrategy
+    ) {
       self.defaults = defaults
       self.key = key
+      self.adapter = adapter
       self.initialValue = initialValue
       super.init()
     }
@@ -62,7 +79,7 @@ public extension UserDefaults {
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-      subject.send(defaults[key])
+      subject.send(adapter.get(defaults, key.key) ?? key.defaultValue)
     }
   }
 }

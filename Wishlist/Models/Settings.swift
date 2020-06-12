@@ -1,13 +1,13 @@
 import Foundation
 import WishlistFoundation
 
-enum SortOrder: String, CaseIterable, UserDefaultsSerializable {
+enum SortOrder: String, CaseIterable, UserDefaultsConvertible {
   case title
   case price
   case updated
 }
 
-enum Theme: String, CaseIterable, UserDefaultsSerializable {
+enum Theme: String, CaseIterable, UserDefaultsConvertible {
   case system
   case light
   case dark
