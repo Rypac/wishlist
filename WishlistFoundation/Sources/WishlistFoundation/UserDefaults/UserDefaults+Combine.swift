@@ -3,11 +3,10 @@ import Combine
 
 public extension UserDefaults {
   func publisher<Value>(
-    for key: Key<Value>,
-    adapter: UserDefaultsAdapter<Value>,
+    for key: UserDefaultsKey<Value>,
     initialValue: InitialValueStrategy = .include
   ) -> UserDefaults.Publisher<Value> {
-    UserDefaults.Publisher(defaults: self, key: key, adapter: adapter, initialValue: initialValue)
+    UserDefaults.Publisher(key: key, defaults: self, initialValue: initialValue)
   }
 
   enum InitialValueStrategy {
@@ -18,30 +17,24 @@ public extension UserDefaults {
   struct Publisher<Output>: Combine.Publisher {
     public typealias Failure = Never
 
+    private let key: UserDefaultsKey<Output>
     private let defaults: UserDefaults
-    private let key: Key<Output>
-    private let adapter: UserDefaultsAdapter<Output>
     private let initialValue: InitialValueStrategy
 
-    public init(
-      defaults: UserDefaults,
-      key: Key<Output>,
-      adapter: UserDefaultsAdapter<Output>,
-      initialValue: InitialValueStrategy
-    ) {
+    public init(key: UserDefaultsKey<Output>, defaults: UserDefaults, initialValue: InitialValueStrategy) {
       self.defaults = defaults
       self.key = key
-      self.adapter = adapter
       self.initialValue = initialValue
     }
 
     public func receive<S>(subscriber: S) where S: Subscriber, Output == S.Input, Failure == S.Failure {
-      let observer = UserDefaults.Observer(defaults: defaults, key: key, adapter: adapter, initialValue: initialValue)
+      let observer = UserDefaults.Observer(key: key, defaults: defaults, initialValue: initialValue)
       observer
         .subject
         .buffer(size: 1, prefetch: .keepFull, whenFull: .dropOldest)
         .handleEvents(
           receiveSubscription: { _ in observer.start() },
+          receiveCompletion: { _ in observer.stop() },
           receiveCancel: { observer.stop() }
         )
         .receive(subscriber: subscriber)
@@ -51,20 +44,13 @@ public extension UserDefaults {
   private final class Observer<Value>: NSObject {
     let subject = PassthroughSubject<Value, Never>()
 
+    private let key: UserDefaultsKey<Value>
     private let defaults: UserDefaults
-    private let key: Key<Value>
-    private let adapter: UserDefaultsAdapter<Value>
     private let initialValue: InitialValueStrategy
 
-    init(
-      defaults: UserDefaults,
-      key: Key<Value>,
-      adapter: UserDefaultsAdapter<Value>,
-      initialValue: InitialValueStrategy
-    ) {
+    init(key: UserDefaultsKey<Value>, defaults: UserDefaults, initialValue: InitialValueStrategy) {
       self.defaults = defaults
       self.key = key
-      self.adapter = adapter
       self.initialValue = initialValue
       super.init()
     }
@@ -79,7 +65,7 @@ public extension UserDefaults {
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-      subject.send(adapter.get(defaults, key.key) ?? key.defaultValue)
+      subject.send(defaults[key])
     }
   }
 }

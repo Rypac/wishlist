@@ -4,6 +4,16 @@ public struct UserDefaultsAdapter<Value> {
   public let get: (UserDefaults, String) -> Value?
   public let set: (UserDefaults, String, Value) -> Void
   public let register: (UserDefaults, String, Value) -> Void
+
+  public init(
+    get: @escaping (UserDefaults, String) -> Value?,
+    set: @escaping (UserDefaults, String, Value) -> Void,
+    register: @escaping (UserDefaults, String, Value) -> Void
+  ) {
+    self.get = get
+    self.set = set
+    self.register = register
+  }
 }
 
 private extension UserDefaultsAdapter {
@@ -115,7 +125,10 @@ extension Optional: UserDefaultsConvertible where Wrapped: UserDefaultsConvertib
   public static var userDefaultsAdapter: UserDefaultsAdapter<Self> {
     UserDefaultsAdapter(
       get: { defaults, key in
-        Wrapped.userDefaultsAdapter.get(defaults, key)
+        guard let value = Wrapped.userDefaultsAdapter.get(defaults, key) else {
+          return nil
+        }
+        return value
       },
       set: { defaults, key, value in
         if let value = value {

@@ -15,7 +15,7 @@ final class UserDefaultsTests: XCTestCase {
   }
 
   func testBooleanKey() {
-    let key = UserDefaults.Key(key: #function, defaultValue: true)
+    let key = UserDefaultsKey(#function, defaultValue: true)
 
     XCTAssertFalse(userDefaults.has(key))
     XCTAssertTrue(userDefaults[key])
@@ -37,7 +37,7 @@ final class UserDefaultsTests: XCTestCase {
   }
 
   func testOptionalBooleanKey() {
-    let key = UserDefaults.Key<Bool?>(key: #function, defaultValue: false)
+    let key = UserDefaultsKey<Bool?>(#function, defaultValue: false)
 
     XCTAssertFalse(userDefaults.has(key))
     XCTAssertEqual(userDefaults[key], false)
@@ -59,7 +59,7 @@ final class UserDefaultsTests: XCTestCase {
   }
 
   func testOptionalBooleanDefaultNilKey() {
-    let key = UserDefaults.Key<Bool?>(key: #function, defaultValue: nil)
+    let key = UserDefaultsKey<Bool?>(#function, defaultValue: nil)
 
     XCTAssertFalse(userDefaults.has(key))
     XCTAssertNil(userDefaults[key])
@@ -81,7 +81,7 @@ final class UserDefaultsTests: XCTestCase {
   }
 
   func testStringArrayKey() {
-    let key = UserDefaults.Key<[String]>(key: #function, defaultValue: [])
+    let key = UserDefaultsKey<[String]>(#function, defaultValue: [])
 
     XCTAssertFalse(userDefaults.has(key))
     XCTAssertEqual(userDefaults[key], [])

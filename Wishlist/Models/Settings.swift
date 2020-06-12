@@ -16,19 +16,19 @@ enum Theme: String, CaseIterable, UserDefaultsConvertible {
 extension ChangeNotification: UserDefaultsConvertible {}
 
 final class Settings {
-  @UserDefault(key: "sortOrder", defaultValue: .price)
+  @UserDefault("sortOrder", defaultValue: .price)
   var sortOrder: SortOrder
 
-  @UserDefault(key: "lastUpdateCheck", defaultValue: nil)
+  @UserDefault("lastUpdateCheck", defaultValue: nil)
   var lastUpdateDate: Date?
 
-  @UserDefault(key: "theme", defaultValue: .system)
+  @UserDefault("theme", defaultValue: .system)
   var theme: Theme
 
-  @UserDefault(key: "enableNotifications", defaultValue: false)
+  @UserDefault("enableNotifications", defaultValue: false)
   var enableNotificaitons: Bool
 
-  @UserDefault(key: "notifications", defaultValue: Set(ChangeNotification.allCases))
+  @UserDefault(UserDefaultsKey("notifications", defaultValue: Set(ChangeNotification.allCases)))
   var notifications: Set<ChangeNotification>
 
   func register() {
