@@ -8,7 +8,9 @@ struct VersionHistoryState: Equatable {
   var versions: [Version]
 }
 
-enum VersionHistoryAction {}
+enum VersionHistoryAction {
+  case never
+}
 
 struct VersionHistoryEnvironment {}
 
