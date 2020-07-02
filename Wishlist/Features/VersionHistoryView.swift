@@ -30,7 +30,7 @@ struct VersionHistoryView: View {
               .font(.callout)
               .bold()
             Spacer()
-            Text(self.dateFormatter.string(from: version.date))
+            Text(dateFormatter.string(from: version.date))
               .font(.callout)
               .foregroundColor(.secondary)
           }

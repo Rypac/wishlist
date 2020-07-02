@@ -127,7 +127,7 @@ struct AppListContentView: View {
       List {
         ForEach(viewStore.state, id: \.self) { id in
           IfLetStore(
-            self.store.scope(state: { $0.summary(id) }, action: { .app(id: id, action: $0) })
+            store.scope(state: { $0.summary(id) }, action: { .app(id: id, action: $0) })
           ) { store in
             WithViewStore(store.scope(state: \.selected)) { viewStore in
               NavigationLink(

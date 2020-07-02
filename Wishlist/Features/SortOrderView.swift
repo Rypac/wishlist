@@ -95,17 +95,17 @@ private struct SortOrderSheetModifier: ViewModifier {
         content
         Color(.separator)
           .frame(height: 0.5)
-        WithViewStore(self.store.stateless) { viewStore in
+        WithViewStore(store.stateless) { viewStore in
           ZStack {
             Color(.secondarySystemBackground)
               .edgesIgnoringSafeArea(.bottom)
             VStack(spacing: 0) {
               SortOrderToolbar(
-                store: self.store.scope(state: \.sortOrder),
-                isExpanded: self.$isExpanded
+                store: store.scope(state: \.sortOrder),
+                isExpanded: $isExpanded
               )
-              if self.isExpanded {
-                SortOrderConfigurationView(store: self.store)
+              if isExpanded {
+                SortOrderConfigurationView(store: store)
                   .padding(.top, geometry.safeAreaInsets.bottom)
                   .padding(.bottom)
                   .transition(.move(edge: .bottom))
@@ -116,7 +116,7 @@ private struct SortOrderSheetModifier: ViewModifier {
             .gesture(
               DragGesture(minimumDistance: 20).onChanged { change in
                 if change.translation.height > 0 {
-                  self.isExpanded = false
+                  isExpanded = false
                 }
               }
             )
@@ -135,14 +135,14 @@ private struct SortOrderToolbar: View {
 
   var body: some View {
     Button(action: {
-      self.isExpanded.toggle()
+      isExpanded.toggle()
     }) {
       WithViewStore(store) { viewStore in
         Group {
           Text("Sorted by \(viewStore.title)")
             .id(viewStore.state)
           Image(systemName: "chevron.up")
-            .rotationEffect(.degrees(self.isExpanded ? 180 : 0))
+            .rotationEffect(.degrees(isExpanded ? 180 : 0))
         }
           .font(.subheadline)
       }

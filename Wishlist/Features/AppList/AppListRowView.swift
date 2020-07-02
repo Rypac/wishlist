@@ -87,7 +87,7 @@ struct AppListRowView: View {
             Text("View in App Store")
             Image.store
           }
-          Button(action: { self.showShareSheet = true }) {
+          Button(action: { showShareSheet = true }) {
             Text("Share")
             Image.share
           }
@@ -96,9 +96,9 @@ struct AppListRowView: View {
             Image.trash
           }
         }
-        .sheet(isPresented: self.$showShareSheet) {
+        .sheet(isPresented: $showShareSheet) {
           ActivityView(
-            showing: self.$showShareSheet,
+            showing: $showShareSheet,
             activityItems: [viewStore.url],
             applicationActivities: nil
           )

@@ -72,17 +72,17 @@ struct ConnectedAppDetailsView: View {
 
   var body: some View {
     WithViewStore(store.scope(state: \.app.url)) { viewStore in
-      AppDetailsContentView(store: self.store)
+      AppDetailsContentView(store: store)
         .navigationBarTitle("Details", displayMode: .inline)
         .navigationBarItems(
-          trailing: Button(action: { self.showShareSheet = true }) {
+          trailing: Button(action: { showShareSheet = true }) {
             Image.share
               .imageScale(.large)
               .frame(width: 24, height: 24)
           }.hoverEffect()
         )
-        .sheet(isPresented: self.$showShareSheet) {
-          ActivityView(showing: self.$showShareSheet, activityItems: [viewStore.state], applicationActivities: nil)
+        .sheet(isPresented: $showShareSheet) {
+          ActivityView(showing: $showShareSheet, activityItems: [viewStore.state], applicationActivities: nil)
         }
     }
   }
@@ -111,9 +111,9 @@ struct AppDetailsContentView: View {
   var body: some View {
     ScrollView(.vertical) {
       VStack(alignment: .leading, spacing: 16) {
-        AppHeading(store: self.store.scope(state: \.headingState))
-        AppNotifications(store: self.store.scope(state: \.app.notifications))
-        ReleaseNotes(store: self.store)
+        AppHeading(store: store.scope(state: \.headingState))
+        AppNotifications(store: store.scope(state: \.app.notifications))
+        ReleaseNotes(store: store)
         WithViewStore(store.scope(state: \.app.description)) { viewStore in
           AppDescription(description: viewStore.state)
         }
@@ -241,7 +241,7 @@ private struct ReleaseNotes: View {
               Spacer(minLength: 0)
               NavigationLink(
                 destination: VersionHistoryView(
-                  store: self.store.scope(
+                  store: store.scope(
                     state: \.versionHistoryState,
                     action: AppDetailsAction.versionHistory
                   )
@@ -256,7 +256,7 @@ private struct ReleaseNotes: View {
                 .font(.callout)
                 .foregroundColor(.secondary)
               Spacer(minLength: 0)
-              Text(self.dateFormatter.string(from: viewStore.version.date))
+              Text(dateFormatter.string(from: viewStore.version.date))
                 .font(.callout)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.trailing)

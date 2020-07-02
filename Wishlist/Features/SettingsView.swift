@@ -86,7 +86,7 @@ struct SettingsView: View {
           }
           Section(header: Text("Notifications")) {
             NotificationView(
-              store: self.store.scope(state: \.notifications, action: SettingsAction.notifications)
+              store: store.scope(state: \.notifications, action: SettingsAction.notifications)
             )
           }
           Section(header: Text("About")) {
@@ -109,7 +109,7 @@ struct SettingsView: View {
         }
         .navigationBarTitle("Settings")
         .navigationBarItems(trailing: Button("Close") {
-          self.presentationMode.wrappedValue.dismiss()
+          presentationMode.wrappedValue.dismiss()
         })
       }.navigationViewStyle(StackNavigationViewStyle())
     }
@@ -128,14 +128,14 @@ private struct NotificationView: View {
         )
         if viewStore.enabled {
           EnableNotificationsView(
-            store: self.store.scope(
+            store: store.scope(
               state: {
                 .init(notification: .priceDrop, enabled: $0.notifyOnChange.contains(.priceDrop))
               }
             )
           )
           EnableNotificationsView(
-            store: self.store.scope(
+            store: store.scope(
               state: {
                 .init(notification: .newVersion, enabled: $0.notifyOnChange.contains(.newVersion))
               }
@@ -219,7 +219,7 @@ private struct LicensesView: View {
           Text(license.title)
             .bold()
           Button(license.url.absoluteString) {
-            self.viewLicense(license.url)
+            viewLicense(license.url)
           }
             .font(.callout)
             .buttonStyle(PlainButtonStyle())

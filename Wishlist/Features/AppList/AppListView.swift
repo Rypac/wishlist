@@ -137,7 +137,7 @@ struct AppListView: View {
   var body: some View {
     WithViewStore(store.scope(state: \.isSettingsPresented)) { viewStore in
       NavigationView {
-        AppListContentView(store: self.store.scope(state: \.listState, action: AppListAction.list))
+        AppListContentView(store: store.scope(state: \.listState, action: AppListAction.list))
           .navigationBarTitle("Wishlist")
           .navigationBarItems(
             trailing: Button(action: {
@@ -152,10 +152,10 @@ struct AppListView: View {
             }
             .hoverEffect()
           )
-          .sortingSheet(store: self.store.scope(state: \.sortOrderState, action: AppListAction.sort))
+          .sortingSheet(store: store.scope(state: \.sortOrderState, action: AppListAction.sort))
       }
       .sheet(isPresented: viewStore.binding(send: AppListAction.displaySettings)) {
-        SettingsView(store: self.store.scope(state: \.settings, action: AppListAction.settings))
+        SettingsView(store: store.scope(state: \.settings, action: AppListAction.settings))
       }
       .onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
         viewStore.send(.addApps(.addAppsFromURLs(urls)))
