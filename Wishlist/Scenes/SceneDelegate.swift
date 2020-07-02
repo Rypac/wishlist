@@ -96,7 +96,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 // MARK: - App State
 
 struct AppState: Equatable {
-  var apps: IdentifiedArrayOf<App>
+  var apps: IdentifiedArrayOf<WishlistFoundation.App>
   var sortOrderState: SortOrderState
   var lastUpdateDate: Date?
   var settings: SettingsState
@@ -107,7 +107,7 @@ struct AppState: Equatable {
   var isUpdateInProgress: Bool = false
 
   init(
-    apps: IdentifiedArrayOf<App>,
+    apps: IdentifiedArrayOf<WishlistFoundation.App>,
     sortOrderState: SortOrderState,
     lastUpdateDate: Date?,
     settings: SettingsState,
@@ -197,7 +197,7 @@ enum AppAction {
 struct AppEnvironment {
   var repository: AppRepository
   var settings: Settings
-  var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  var loadApps: ([WishlistFoundation.App.ID]) -> AnyPublisher<[AppSnapshot], Error>
   var openURL: (URL) -> Void
   var scheduleBackgroundTasks: () -> Void
   var setTheme: (Theme) -> Void

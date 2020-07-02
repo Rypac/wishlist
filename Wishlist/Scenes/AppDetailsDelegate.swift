@@ -100,11 +100,11 @@ struct AppDetailsSceneState: Equatable {
 }
 
 enum AppDetailsSceneAction {
-  case viewApp(App.ID)
+  case viewApp(WishlistFoundation.App.ID)
   case details(AppDetailsAction)
   case lifecycle(SceneLifecycleEvent)
   case theme(PublisherAction<Theme>)
-  case app(PublisherAction<[App]>)
+  case app(PublisherAction<[WishlistFoundation.App]>)
   case closeDetails
 }
 
@@ -117,7 +117,7 @@ struct AppDetailsSceneEnvironment {
 }
 
 private extension AppDetailsSceneState {
-  var app: App? {
+  var app: WishlistFoundation.App? {
     get { details?.app }
     set {
       if let app = newValue {
@@ -148,7 +148,7 @@ func appDetailsSceneReducer(
          }
        }
     ),
-    appUpdatesReducer(id: ProcessID<App>(id)).optional.pullback(
+    appUpdatesReducer(id: ProcessID<WishlistFoundation.App>(id)).optional.pullback(
       state: \.app,
       action: /AppDetailsSceneAction.app,
       environment: { systemEnvironment in
@@ -208,7 +208,7 @@ func appDetailsSceneReducer(
 
 private func appUpdatesReducer(
   id: AnyHashable
-) -> Reducer<App, PublisherAction<[App]>, SystemEnvironment<PublisherEnvironment<[App]>>> {
+) -> Reducer<WishlistFoundation.App, PublisherAction<[WishlistFoundation.App]>, SystemEnvironment<PublisherEnvironment<[WishlistFoundation.App]>>> {
   Reducer { state, action, environment in
     switch action {
     case .subscribe:

@@ -6,7 +6,7 @@ import WishlistFoundation
 
 struct AppListInternalState: Equatable {
   fileprivate var appliedSortOrder: SortOrder
-  fileprivate var visibleApps: [App.ID] = []
+  fileprivate var visibleApps: [WishlistFoundation.App.ID] = []
 
   init(sortOrder: SortOrder) {
     appliedSortOrder = sortOrder
@@ -14,7 +14,7 @@ struct AppListInternalState: Equatable {
 }
 
 struct AppListState: Equatable {
-  var apps: IdentifiedArrayOf<App>
+  var apps: IdentifiedArrayOf<WishlistFoundation.App>
   var sortOrderState: SortOrderState
   var settings: SettingsState
   var internalState: AppListInternalState
@@ -32,14 +32,14 @@ enum AppListAction {
 }
 
 struct AppListEnvironment {
-  var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
-  var deleteApps: ([App.ID]) -> Void
-  var versionHistory: (App.ID) -> [Version]
-  var saveNotifications: (App.ID, Set<ChangeNotification>) -> Void
+  var loadApps: ([WishlistFoundation.App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  var deleteApps: ([WishlistFoundation.App.ID]) -> Void
+  var versionHistory: (WishlistFoundation.App.ID) -> [Version]
+  var saveNotifications: (WishlistFoundation.App.ID, Set<ChangeNotification>) -> Void
   var openURL: (URL) -> Void
   var saveSortOrder: (SortOrder) -> Void
   var saveTheme: (Theme) -> Void
-  var recordDetailsViewed: (App.ID, Date) -> Void
+  var recordDetailsViewed: (WishlistFoundation.App.ID, Date) -> Void
 }
 
 private extension AppListState {
@@ -169,8 +169,8 @@ private extension Image {
   static var settings: Image { Image(systemName: "slider.horizontal.3") }
 }
 
-private extension Collection where Element == App {
-  func applying(_ sorting: SortOrderState) -> [App.ID] {
+private extension Collection where Element == WishlistFoundation.App {
+  func applying(_ sorting: SortOrderState) -> [WishlistFoundation.App.ID] {
     sorted(by: sorting)
       .compactMap { app in
         if sorting.sortOrder == .price, !sorting.configuration.price.includeFree, app.price.current.value <= 0 {
@@ -180,7 +180,7 @@ private extension Collection where Element == App {
       }
   }
 
-  private func sorted(by order: SortOrderState) -> [App] {
+  private func sorted(by order: SortOrderState) -> [WishlistFoundation.App] {
     sorted {
       switch order.sortOrder {
       case .title:

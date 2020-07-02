@@ -15,7 +15,7 @@ struct AppSummary: Identifiable, Equatable {
     case updated(Date, seen: Bool)
   }
 
-  let id: App.ID
+  let id: WishlistFoundation.App.ID
   let selected: Bool
   let title: String
   let details: Details
@@ -32,10 +32,10 @@ enum AppListRowAction {
 
 struct AppListRowEnvironment {
   var openURL: (URL) -> Void
-  var recordAppViewed: (App.ID, Date) -> Void
+  var recordAppViewed: (WishlistFoundation.App.ID, Date) -> Void
 }
 
-let appListRowReducer = Reducer<App, AppListRowAction, SystemEnvironment<AppListRowEnvironment>> { state, action, environment in
+let appListRowReducer = Reducer<WishlistFoundation.App, AppListRowAction, SystemEnvironment<AppListRowEnvironment>> { state, action, environment in
   switch action {
   case let .selected(selected):
     guard selected else {

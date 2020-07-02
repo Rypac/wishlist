@@ -5,7 +5,7 @@ import WishlistCore
 import WishlistFoundation
 
 struct AppDetailsState: Equatable {
-  var app: App
+  var app: WishlistFoundation.App
   var versions: [Version]?
   var showVersionHistory: Bool
 }
@@ -19,8 +19,8 @@ enum AppDetailsAction {
 
 struct AppDetailsEnvironment {
   var openURL: (URL) -> Void
-  var versionHistory: (App.ID) -> [Version]
-  var saveNotifications: (App.ID, Set<ChangeNotification>) -> Void
+  var versionHistory: (WishlistFoundation.App.ID) -> [Version]
+  var saveNotifications: (WishlistFoundation.App.ID, Set<ChangeNotification>) -> Void
 }
 
 let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>>.combine(

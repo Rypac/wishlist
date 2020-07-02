@@ -5,7 +5,7 @@ import WishlistCore
 import WishlistFoundation
 
 struct AppDetailsContent: Equatable {
-  let id: App.ID
+  let id: WishlistFoundation.App.ID
   var versions: [Version]?
   var showVersionHistory: Bool
 }
@@ -13,23 +13,23 @@ struct AppDetailsContent: Equatable {
 struct AppListContentState: Equatable {
   var sortOrder: SortOrder
   var details: AppDetailsContent?
-  var visibleApps: [App.ID]
-  var apps: IdentifiedArrayOf<App>
+  var visibleApps: [WishlistFoundation.App.ID]
+  var apps: IdentifiedArrayOf<WishlistFoundation.App>
 }
 
 enum AppListContentAction {
   case removeAtIndexes(IndexSet)
-  case remove([App.ID])
-  case app(id: App.ID, action: AppListRowAction)
+  case remove([WishlistFoundation.App.ID])
+  case app(id: WishlistFoundation.App.ID, action: AppListRowAction)
   case details(AppDetailsAction)
 }
 
 struct AppListContentEnvironment {
   var openURL: (URL) -> Void
-  var versionHistory: (App.ID) -> [Version]
-  var deleteApps: ([App.ID]) -> Void
-  var saveNotifications: (App.ID, Set<ChangeNotification>) -> Void
-  var recordAppViewed: (App.ID, Date) -> Void
+  var versionHistory: (WishlistFoundation.App.ID) -> [Version]
+  var deleteApps: ([WishlistFoundation.App.ID]) -> Void
+  var saveNotifications: (WishlistFoundation.App.ID, Set<ChangeNotification>) -> Void
+  var recordAppViewed: (WishlistFoundation.App.ID, Date) -> Void
 }
 
 private extension AppListContentState {
@@ -104,7 +104,7 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
 )
 
 private extension AppListContentState {
-  func summary(_ id: App.ID) -> AppSummary? {
+  func summary(_ id: WishlistFoundation.App.ID) -> AppSummary? {
     guard let app = apps[id: id] else {
       return nil
     }
@@ -151,7 +151,7 @@ struct AppListContentView: View {
 }
 
 private extension AppSummary.Details {
-  init(sortOrder: SortOrder, app: App) {
+  init(sortOrder: SortOrder, app: WishlistFoundation.App) {
     switch sortOrder {
     case .updated:
       if let lastViewed = app.lastViewed {
@@ -168,7 +168,7 @@ private extension AppSummary.Details {
   }
 }
 
-private extension App {
+private extension WishlistFoundation.App {
   var priceChange: AppSummary.PriceChange {
     guard let previousPrice = price.previous else {
       return .same
