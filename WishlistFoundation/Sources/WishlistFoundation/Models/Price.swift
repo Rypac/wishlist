@@ -17,7 +17,7 @@ extension Price {
   }
 
   public init(value: Double, formatted: String) {
-    self.value = Decimal(value.truncate(toDecimalPlaces: 2))
+    self.value = Decimal(string: String(format: "%.2f", value))!
     self.formatted = formatted
   }
 }
@@ -31,12 +31,5 @@ extension Price: Equatable {
 extension Price: Comparable {
   public static func < (lhs: Self, rhs: Self) -> Bool {
     lhs.value < rhs.value
-  }
-}
-
-private extension Double {
-  func truncate(toDecimalPlaces places: Int) -> Double {
-    let divisor = pow(10.0, Double(places))
-    return Foundation.round(self * divisor) / divisor
   }
 }
