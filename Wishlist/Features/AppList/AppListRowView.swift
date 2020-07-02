@@ -119,21 +119,15 @@ private struct AppRowContent: View {
         .fontWeight(.medium)
         .layoutPriority(1)
       Spacer()
-      appDetailsView()
-        .layoutPriority(1)
-    }
-  }
 
-  private func appDetailsView() -> some View {
-    switch details {
-    case let .price(price, change):
-      return ViewBuilder.buildEither(first:
+      switch details {
+      case let .price(price, change):
         AppPriceDetails(price: price, change: change)
-      ) as _ConditionalContent<AppPriceDetails, AppUpdateDetails>
-    case let .updated(date, seen):
-      return ViewBuilder.buildEither(second:
+          .layoutPriority(1)
+      case let .updated(date, seen):
         AppUpdateDetails(date: date, seen: seen)
-      ) as _ConditionalContent<AppPriceDetails, AppUpdateDetails>
+          .layoutPriority(1)
+      }
     }
   }
 }

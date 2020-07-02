@@ -160,7 +160,6 @@ struct AppListView: View {
       .onDrop(of: [UTI.url], delegate: URLDropDelegate { urls in
         viewStore.send(.addApps(.addAppsFromURLs(urls)))
       })
-      .navigationViewStyle(StackNavigationViewStyle())
     }
   }
 }
