@@ -210,7 +210,7 @@ private struct PriceSortOrderView: View {
   var body: some View {
     Group {
       HStack {
-        Text("Order Prices From")
+        Text("Order Prices")
         WithViewStore(store.scope(state: \.sortLowToHigh)) { viewStore in
           Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigurePrice.sortLowToHigh)) {
             Text("Low to High").tag(true)
@@ -232,7 +232,7 @@ private struct TitleSortOrderView: View {
 
   var body: some View {
     HStack {
-      Text("Order Titles From")
+      Text("Order Titles")
       WithViewStore(store.scope(state: \.sortAToZ)) { viewStore in
         Picker("Options", selection: viewStore.binding(send: SortOrderAction.ConfigureTitle.sortAToZ)) {
           Text("A to Z").tag(true)
