@@ -142,7 +142,7 @@ struct AppListContentView: View {
         }.onDelete {
           viewStore.send(.removeAtIndexes($0))
         }
-      }
+      }.listStyle(PlainListStyle())
     }
   }
 
