@@ -131,10 +131,7 @@ struct AppListContentView: View {
           ) { store in
             WithViewStore(store.scope(state: \.selected)) { viewStore in
               NavigationLink(
-                destination: IfLetStore(
-                  self.store.scope(state: \.detailsState, action: AppListContentAction.details),
-                  then: ConnectedAppDetailsView.init
-                ),
+                destination: appDetails,
                 tag: id,
                 selection: viewStore.binding(get: { $0 ? id : nil }, send: { .selected($0 != nil) })
               ) {
@@ -147,6 +144,13 @@ struct AppListContentView: View {
         }
       }
     }
+  }
+
+  private var appDetails: some View {
+    IfLetStore(
+      store.scope(state: \.detailsState, action: AppListContentAction.details),
+      then: ConnectedAppDetailsView.init
+    )
   }
 }
 
