@@ -60,7 +60,7 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
       }
     }
   ),
-  appDetailsReducer.optional.pullback(
+  appDetailsReducer.optional().pullback(
     state: \.detailsState,
     action: /AppListContentAction.details,
     environment: { systemEnvironment in

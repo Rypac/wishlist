@@ -148,7 +148,7 @@ func appDetailsSceneReducer(
          }
        }
     ),
-    appUpdatesReducer(id: ProcessID<WishlistFoundation.App>(id)).optional.pullback(
+    appUpdatesReducer(id: ProcessID<WishlistFoundation.App>(id)).optional().pullback(
       state: \.app,
       action: /AppDetailsSceneAction.app,
       environment: { systemEnvironment in
@@ -157,7 +157,7 @@ func appDetailsSceneReducer(
         }
       }
     ),
-    appDetailsReducer.optional.pullback(
+    appDetailsReducer.optional().pullback(
       state: \.details,
       action: /AppDetailsSceneAction.details,
       environment: { systemEnvironment in
