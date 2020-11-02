@@ -23,10 +23,8 @@ public struct UserDefault<Value> {
     defaults.register(key)
   }
 
-  public func publisher(
-    initialValue: UserDefaults.InitialValueStrategy = .include
-  ) -> UserDefaults.Publisher<Value> {
-    defaults.publisher(for: key, initialValue: initialValue)
+  public func publisher() -> UserDefaults.Publisher<Value> {
+    defaults.publisher(for: key)
   }
 }
 

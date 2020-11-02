@@ -268,7 +268,7 @@ func appReducer(
               publisher: systemEnvironment.repository.updates()
             ),
             sortOrder: PublisherEnvironment(
-              publisher: environment.settings.$sortOrder.publisher(initialValue: .skip).eraseToAnyPublisher()
+              publisher: environment.settings.$sortOrder.publisher().eraseToAnyPublisher()
             ),
             theme: PublisherEnvironment(
               publisher: environment.settings.$theme.publisher().eraseToAnyPublisher(),
