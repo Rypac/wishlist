@@ -8,11 +8,9 @@ public struct DeviceVisibilityModifier: ViewModifier {
     self.devices = devices
   }
 
-  public func body(content: Content) -> some View {
+  @ViewBuilder public func body(content: Content) -> some View {
     if devices.contains(UIDevice.current.userInterfaceIdiom) {
-      return ViewBuilder.buildEither(first: content) as _ConditionalContent<Content, EmptyView>
-    } else {
-      return ViewBuilder.buildEither(second: EmptyView()) as _ConditionalContent<Content, EmptyView>
+      content
     }
   }
 }
