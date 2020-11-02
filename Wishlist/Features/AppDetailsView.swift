@@ -231,42 +231,38 @@ private struct ReleaseNotes: View {
 
   var body: some View {
     WithViewStore(store.scope(state: \.releaseNotesViewState)) { viewStore in
-      Group {
-        if viewStore.version.notes != nil {
-          Divider()
-          VStack(spacing: 8) {
-            HStack {
-              Text("Release Notes")
-                .bold()
-              Spacer(minLength: 0)
-              NavigationLink(
-                destination: VersionHistoryView(
-                  store: store.scope(
-                    state: \.versionHistoryState,
-                    action: AppDetailsAction.versionHistory
-                  )
-                ),
-                isActive: viewStore.binding(get: \.showHistory, send: AppDetailsAction.showVersionHistory)
-              ) {
-                Text("Version History")
-              }
-            }
-            HStack {
-              Text(viewStore.version.name)
-                .font(.callout)
-                .foregroundColor(.secondary)
-              Spacer(minLength: 0)
-              Text(dateFormatter.string(from: viewStore.version.date))
-                .font(.callout)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.trailing)
+      if let versionNotes = viewStore.version.notes {
+        Divider()
+        VStack(spacing: 8) {
+          HStack {
+            Text("Release Notes")
+              .bold()
+            Spacer(minLength: 0)
+            NavigationLink(
+              destination: VersionHistoryView(
+                store: store.scope(
+                  state: \.versionHistoryState,
+                  action: AppDetailsAction.versionHistory
+                )
+              ),
+              isActive: viewStore.binding(get: \.showHistory, send: AppDetailsAction.showVersionHistory)
+            ) {
+              Text("Version History")
             }
           }
-          Text(viewStore.version.notes!)
-            .expandable(initialLineLimit: 3)
-        } else {
-          EmptyView()
+          HStack {
+            Text(viewStore.version.name)
+              .font(.callout)
+              .foregroundColor(.secondary)
+            Spacer(minLength: 0)
+            Text(dateFormatter.string(from: viewStore.version.date))
+              .font(.callout)
+              .foregroundColor(.secondary)
+              .multilineTextAlignment(.trailing)
+          }
         }
+        Text(versionNotes)
+          .expandable(initialLineLimit: 3)
       }
     }
   }

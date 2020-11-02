@@ -36,8 +36,8 @@ struct VersionHistoryView: View {
               .font(.callout)
               .foregroundColor(.secondary)
           }
-          if version.notes != nil {
-            Text(version.notes!)
+          if let notes = version.notes {
+            Text(notes)
               .expandable(initialLineLimit: 3)
           }
         }
