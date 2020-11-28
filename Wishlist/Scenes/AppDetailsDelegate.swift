@@ -2,8 +2,7 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import UIKit
-import WishlistCore
-import WishlistFoundation
+import Domain
 
 class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
@@ -100,11 +99,11 @@ struct AppDetailsSceneState: Equatable {
 }
 
 enum AppDetailsSceneAction {
-  case viewApp(WishlistFoundation.App.ID)
+  case viewApp(Domain.App.ID)
   case details(AppDetailsAction)
   case lifecycle(SceneLifecycleEvent)
   case theme(PublisherAction<Theme>)
-  case app(PublisherAction<[WishlistFoundation.App]>)
+  case app(PublisherAction<[Domain.App]>)
   case closeDetails
 }
 
@@ -117,7 +116,7 @@ struct AppDetailsSceneEnvironment {
 }
 
 private extension AppDetailsSceneState {
-  var app: WishlistFoundation.App? {
+  var app: Domain.App? {
     get { details?.app }
     set {
       if let app = newValue {
@@ -148,7 +147,7 @@ func appDetailsSceneReducer(
          }
        }
     ),
-    appUpdatesReducer(id: ProcessID<WishlistFoundation.App>(id)).optional().pullback(
+    appUpdatesReducer(id: ProcessID<Domain.App>(id)).optional().pullback(
       state: \.app,
       action: /AppDetailsSceneAction.app,
       environment: { systemEnvironment in
@@ -208,7 +207,7 @@ func appDetailsSceneReducer(
 
 private func appUpdatesReducer(
   id: AnyHashable
-) -> Reducer<WishlistFoundation.App, PublisherAction<[WishlistFoundation.App]>, SystemEnvironment<PublisherEnvironment<[WishlistFoundation.App]>>> {
+) -> Reducer<Domain.App, PublisherAction<[Domain.App]>, SystemEnvironment<PublisherEnvironment<[Domain.App]>>> {
   Reducer { state, action, environment in
     switch action {
     case .subscribe:

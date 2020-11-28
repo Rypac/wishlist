@@ -2,8 +2,7 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import UIKit
-import WishlistCore
-import WishlistFoundation
+import Domain
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
@@ -96,7 +95,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 // MARK: - App State
 
 struct AppState: Equatable {
-  var apps: IdentifiedArrayOf<WishlistFoundation.App>
+  var apps: IdentifiedArrayOf<Domain.App>
   var sortOrderState: SortOrderState
   var lastUpdateDate: Date?
   var settings: SettingsState
@@ -107,7 +106,7 @@ struct AppState: Equatable {
   var isUpdateInProgress: Bool = false
 
   init(
-    apps: IdentifiedArrayOf<WishlistFoundation.App>,
+    apps: IdentifiedArrayOf<Domain.App>,
     sortOrderState: SortOrderState,
     lastUpdateDate: Date?,
     settings: SettingsState,
@@ -197,7 +196,7 @@ enum AppAction {
 struct AppEnvironment {
   var repository: AppRepository
   var settings: Settings
-  var loadApps: ([WishlistFoundation.App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  var loadApps: ([Domain.App.ID]) -> AnyPublisher<[AppSnapshot], Error>
   var openURL: (URL) -> Void
   var scheduleBackgroundTasks: () -> Void
   var setTheme: (Theme) -> Void
@@ -268,7 +267,7 @@ func appReducer(
               publisher: systemEnvironment.repository.updates()
             ),
             sortOrder: PublisherEnvironment(
-              publisher: environment.settings.$sortOrder.publisher(initialValue: .skip).eraseToAnyPublisher()
+              publisher: environment.settings.$sortOrder.publisher().eraseToAnyPublisher()
             ),
             theme: PublisherEnvironment(
               publisher: environment.settings.$theme.publisher().eraseToAnyPublisher(),

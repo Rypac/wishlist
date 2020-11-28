@@ -1,12 +1,11 @@
 import Combine
 import ComposableArchitecture
 import SwiftUI
-import WishlistCore
-import WishlistFoundation
+import Domain
 
 struct AppListInternalState: Equatable {
   fileprivate var appliedSortOrder: SortOrder
-  fileprivate var visibleApps: [WishlistFoundation.App.ID] = []
+  fileprivate var visibleApps: [Domain.App.ID] = []
 
   init(sortOrder: SortOrder) {
     appliedSortOrder = sortOrder
@@ -14,7 +13,7 @@ struct AppListInternalState: Equatable {
 }
 
 struct AppListState: Equatable {
-  var apps: IdentifiedArrayOf<WishlistFoundation.App>
+  var apps: IdentifiedArrayOf<Domain.App>
   var sortOrderState: SortOrderState
   var settings: SettingsState
   var internalState: AppListInternalState
@@ -32,14 +31,14 @@ enum AppListAction {
 }
 
 struct AppListEnvironment {
-  var loadApps: ([WishlistFoundation.App.ID]) -> AnyPublisher<[AppSnapshot], Error>
-  var deleteApps: ([WishlistFoundation.App.ID]) -> Void
-  var versionHistory: (WishlistFoundation.App.ID) -> [Version]
-  var saveNotifications: (WishlistFoundation.App.ID, Set<ChangeNotification>) -> Void
+  var loadApps: ([Domain.App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  var deleteApps: ([Domain.App.ID]) -> Void
+  var versionHistory: (Domain.App.ID) -> [Version]
+  var saveNotifications: (Domain.App.ID, Set<ChangeNotification>) -> Void
   var openURL: (URL) -> Void
   var saveSortOrder: (SortOrder) -> Void
   var saveTheme: (Theme) -> Void
-  var recordDetailsViewed: (WishlistFoundation.App.ID, Date) -> Void
+  var recordDetailsViewed: (Domain.App.ID, Date) -> Void
 }
 
 private extension AppListState {
@@ -168,8 +167,8 @@ private extension Image {
   static var settings: Image { Image(systemName: "slider.horizontal.3") }
 }
 
-private extension Collection where Element == WishlistFoundation.App {
-  func applying(_ sorting: SortOrderState) -> [WishlistFoundation.App.ID] {
+private extension Collection where Element == Domain.App {
+  func applying(_ sorting: SortOrderState) -> [Domain.App.ID] {
     sorted(by: sorting)
       .compactMap { app in
         if sorting.sortOrder == .price, !sorting.configuration.price.includeFree, app.price.current.value <= 0 {
@@ -179,7 +178,7 @@ private extension Collection where Element == WishlistFoundation.App {
       }
   }
 
-  private func sorted(by order: SortOrderState) -> [WishlistFoundation.App] {
+  private func sorted(by order: SortOrderState) -> [Domain.App] {
     sorted {
       switch order.sortOrder {
       case .title:

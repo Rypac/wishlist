@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
-import WishlistFoundation
+import Toolbox
 
 extension SortOrder {
   struct Configuration: Equatable {

@@ -1,11 +1,10 @@
 import Combine
 import ComposableArchitecture
 import SwiftUI
-import WishlistCore
-import WishlistFoundation
+import Domain
 
 struct AppDetailsContent: Equatable {
-  let id: WishlistFoundation.App.ID
+  let id: Domain.App.ID
   var versions: [Version]?
   var showVersionHistory: Bool
 }
@@ -13,23 +12,23 @@ struct AppDetailsContent: Equatable {
 struct AppListContentState: Equatable {
   var sortOrder: SortOrder
   var details: AppDetailsContent?
-  var visibleApps: [WishlistFoundation.App.ID]
-  var apps: IdentifiedArrayOf<WishlistFoundation.App>
+  var visibleApps: [Domain.App.ID]
+  var apps: IdentifiedArrayOf<Domain.App>
 }
 
 enum AppListContentAction {
   case removeAtIndexes(IndexSet)
-  case remove([WishlistFoundation.App.ID])
-  case app(id: WishlistFoundation.App.ID, action: AppListRowAction)
+  case remove([Domain.App.ID])
+  case app(id: Domain.App.ID, action: AppListRowAction)
   case details(AppDetailsAction)
 }
 
 struct AppListContentEnvironment {
   var openURL: (URL) -> Void
-  var versionHistory: (WishlistFoundation.App.ID) -> [Version]
-  var deleteApps: ([WishlistFoundation.App.ID]) -> Void
-  var saveNotifications: (WishlistFoundation.App.ID, Set<ChangeNotification>) -> Void
-  var recordAppViewed: (WishlistFoundation.App.ID, Date) -> Void
+  var versionHistory: (Domain.App.ID) -> [Version]
+  var deleteApps: ([Domain.App.ID]) -> Void
+  var saveNotifications: (Domain.App.ID, Set<ChangeNotification>) -> Void
+  var recordAppViewed: (Domain.App.ID, Date) -> Void
 }
 
 private extension AppListContentState {
@@ -104,7 +103,7 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
 )
 
 private extension AppListContentState {
-  func summary(_ id: WishlistFoundation.App.ID) -> AppSummary? {
+  func summary(_ id: Domain.App.ID) -> AppSummary? {
     guard let app = apps[id: id] else {
       return nil
     }
@@ -155,7 +154,7 @@ struct AppListContentView: View {
 }
 
 private extension AppSummary.Details {
-  init(sortOrder: SortOrder, app: WishlistFoundation.App) {
+  init(sortOrder: SortOrder, app: Domain.App) {
     switch sortOrder {
     case .updated:
       if let lastViewed = app.lastViewed {
@@ -172,7 +171,7 @@ private extension AppSummary.Details {
   }
 }
 
-private extension WishlistFoundation.App {
+private extension Domain.App {
   var priceChange: AppSummary.PriceChange {
     guard let previousPrice = price.previous else {
       return .same

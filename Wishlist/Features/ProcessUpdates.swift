@@ -1,8 +1,7 @@
 import ComposableArchitecture
 import Combine
 import Foundation
-import WishlistCore
-import WishlistFoundation
+import Domain
 
 struct ProcessUpdateState: Equatable {
   var apps: IdentifiedArrayOf<App>
