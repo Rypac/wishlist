@@ -117,16 +117,13 @@ private struct AppRowContent: View {
       AppIcon(icon, width: 50)
       Text(title)
         .fontWeight(.medium)
-        .layoutPriority(1)
-      Spacer()
+      Spacer(minLength: 8)
 
       switch details {
       case let .price(price, change):
         AppPriceDetails(price: price, change: change)
-          .layoutPriority(1)
       case let .updated(date, seen):
         AppUpdateDetails(date: date, seen: seen)
-          .layoutPriority(1)
       }
     }
   }
@@ -145,7 +142,6 @@ private struct AppPriceDetails: View {
       }
       Text(price)
         .lineLimit(1)
-        .multilineTextAlignment(.trailing)
     }
       .foregroundColor(color)
   }
@@ -168,8 +164,8 @@ private struct AppUpdateDetails: View {
   var body: some View {
     ZStack(alignment: .topTrailing) {
       Text(dateFormatter.string(from: date))
+        .font(.callout)
         .lineLimit(1)
-        .multilineTextAlignment(.trailing)
 
       if !seen {
         Circle()
