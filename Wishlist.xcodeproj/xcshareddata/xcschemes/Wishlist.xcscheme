@@ -32,20 +32,20 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "94D8B290246B6C19003BD5E9"
-               BuildableName = "WishlistCoreTests.xctest"
-               BlueprintName = "WishlistCoreTests"
-               ReferencedContainer = "container:Wishlist.xcodeproj">
+               BlueprintIdentifier = "DomainTests"
+               BuildableName = "DomainTests"
+               BlueprintName = "DomainTests"
+               ReferencedContainer = "container:Modules">
             </BuildableReference>
          </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "WishlistFoundationTests"
-               BuildableName = "WishlistFoundationTests"
-               BlueprintName = "WishlistFoundationTests"
-               ReferencedContainer = "container:WishlistFoundation">
+               BlueprintIdentifier = "ToolboxTests"
+               BuildableName = "ToolboxTests"
+               BlueprintName = "ToolboxTests"
+               ReferencedContainer = "container:Modules">
             </BuildableReference>
          </TestableReference>
       </Testables>

@@ -45,11 +45,7 @@ let package = Package(
     .testTarget(
       name: "DomainTests",
       dependencies: ["Domain"]
-    ),
-    .testTarget(
-      name: "ServicesTests",
-      dependencies: ["Services"]
-    ),
+    )
   ],
   swiftLanguageVersions: [
     .v5
