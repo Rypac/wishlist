@@ -1,5 +1,5 @@
 import UIKit
-import WishlistFoundation
+import Domain
 
 protocol SceneDescriptor {
   var id: String { get }

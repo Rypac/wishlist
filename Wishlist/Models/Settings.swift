@@ -1,5 +1,6 @@
 import Foundation
-import WishlistFoundation
+import Domain
+import Toolbox
 
 enum SortOrder: String, CaseIterable, UserDefaultsConvertible {
   case title

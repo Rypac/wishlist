@@ -1,8 +1,8 @@
 import ComposableArchitecture
 import Foundation
 import SwiftUI
-import WishlistCore
-import WishlistFoundation
+import Core
+import Domain
 
 struct VersionHistoryState: Equatable {
   var versions: [Version]

@@ -3,9 +3,9 @@ import ComposableArchitecture
 import CoreData
 import MobileCoreServices
 import UIKit
-import WishlistCore
-import WishlistFoundation
-import WishlistServices
+import Core
+import Domain
+import Services
 
 enum Status: Equatable {
   case resting

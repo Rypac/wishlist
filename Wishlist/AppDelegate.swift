@@ -3,9 +3,9 @@ import Combine
 import ComposableArchitecture
 import CoreData
 import UIKit
-import WishlistCore
-import WishlistFoundation
-import WishlistServices
+import Core
+import Domain
+import Services
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

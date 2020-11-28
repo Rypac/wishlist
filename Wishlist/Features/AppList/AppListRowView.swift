@@ -1,7 +1,8 @@
 import ComposableArchitecture
 import SwiftUI
-import WishlistCore
-import WishlistFoundation
+import Core
+import Domain
+import ToolboxUI
 
 struct AppSummary: Identifiable, Equatable {
   enum PriceChange {
@@ -15,7 +16,7 @@ struct AppSummary: Identifiable, Equatable {
     case updated(Date, seen: Bool)
   }
 
-  let id: WishlistFoundation.App.ID
+  let id: Domain.App.ID
   let selected: Bool
   let title: String
   let details: Details
@@ -32,10 +33,10 @@ enum AppListRowAction {
 
 struct AppListRowEnvironment {
   var openURL: (URL) -> Void
-  var recordAppViewed: (WishlistFoundation.App.ID, Date) -> Void
+  var recordAppViewed: (Domain.App.ID, Date) -> Void
 }
 
-let appListRowReducer = Reducer<WishlistFoundation.App, AppListRowAction, SystemEnvironment<AppListRowEnvironment>> { state, action, environment in
+let appListRowReducer = Reducer<Domain.App, AppListRowAction, SystemEnvironment<AppListRowEnvironment>> { state, action, environment in
   switch action {
   case let .selected(selected):
     guard selected else {

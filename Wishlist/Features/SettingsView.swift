@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
-import WishlistFoundation
+import Domain
 
 struct NotificationState: Equatable {
   var enabled: Bool

@@ -1,11 +1,12 @@
 import Combine
 import ComposableArchitecture
 import SwiftUI
-import WishlistCore
-import WishlistFoundation
+import Core
+import Domain
+import ToolboxUI
 
 struct AppDetailsState: Equatable {
-  var app: WishlistFoundation.App
+  var app: Domain.App
   var versions: [Version]?
   var showVersionHistory: Bool
 }
@@ -19,8 +20,8 @@ enum AppDetailsAction {
 
 struct AppDetailsEnvironment {
   var openURL: (URL) -> Void
-  var versionHistory: (WishlistFoundation.App.ID) -> [Version]
-  var saveNotifications: (WishlistFoundation.App.ID, Set<ChangeNotification>) -> Void
+  var versionHistory: (Domain.App.ID) -> [Version]
+  var saveNotifications: (Domain.App.ID, Set<ChangeNotification>) -> Void
 }
 
 let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>>.combine(
