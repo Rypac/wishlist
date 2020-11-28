@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import Foundation
-import Core
+import Domain
 
 extension SystemEnvironment where Environment == Void {
   static func test(

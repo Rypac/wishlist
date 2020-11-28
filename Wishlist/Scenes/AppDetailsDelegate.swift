@@ -2,7 +2,6 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import UIKit
-import Core
 import Domain
 
 class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {

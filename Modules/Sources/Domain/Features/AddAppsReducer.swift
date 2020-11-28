@@ -1,7 +1,6 @@
 import Combine
 import ComposableArchitecture
 import Foundation
-import Domain
 
 public struct AddAppsError: Error, Equatable {}
 

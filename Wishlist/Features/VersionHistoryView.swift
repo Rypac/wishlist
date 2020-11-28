@@ -1,7 +1,6 @@
 import ComposableArchitecture
 import Foundation
 import SwiftUI
-import Core
 import Domain
 
 struct VersionHistoryState: Equatable {

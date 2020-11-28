@@ -3,7 +3,6 @@ import ComposableArchitecture
 import CoreData
 import MobileCoreServices
 import UIKit
-import Core
 import Domain
 import Services
 

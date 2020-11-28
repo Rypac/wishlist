@@ -10,7 +10,6 @@ let package = Package(
   products: [
     .library(name: "Toolbox", targets: ["Toolbox"]),
     .library(name: "ToolboxUI", targets: ["ToolboxUI"]),
-    .library(name: "Core", targets: ["Core"]),
     .library(name: "Domain", targets: ["Domain"]),
     .library(name: "Services", targets: ["Services"])
   ],
@@ -31,14 +30,7 @@ let package = Package(
     .target(
       name: "Domain",
       dependencies: [
-        "Toolbox"
-      ]
-    ),
-    .target(
-      name: "Core",
-      dependencies: [
         "Toolbox",
-        "Domain",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
       ]
     ),
@@ -53,10 +45,6 @@ let package = Package(
     .testTarget(
       name: "DomainTests",
       dependencies: ["Domain"]
-    ),
-    .testTarget(
-      name: "CoreTests",
-      dependencies: ["Core"]
     ),
     .testTarget(
       name: "ServicesTests",

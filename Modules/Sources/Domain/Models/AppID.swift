@@ -1,5 +1,3 @@
-import Foundation
-
 public struct AppID: Equatable, Hashable, Codable, RawRepresentable {
   public let rawValue: Int
 

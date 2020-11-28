@@ -1,7 +1,6 @@
 import Combine
 import ComposableArchitecture
 import Foundation
-import Domain
 
 public struct AppUpdateState: Equatable {
   public var apps: [App]

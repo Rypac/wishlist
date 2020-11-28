@@ -1,7 +1,6 @@
 import ComposableArchitecture
 import Combine
 import Foundation
-import Core
 import Domain
 
 struct ProcessUpdateState: Equatable {

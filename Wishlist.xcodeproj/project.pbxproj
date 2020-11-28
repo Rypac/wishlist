@@ -10,7 +10,6 @@
 		94151ED22469049700CBD2BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED12469049700CBD2BE /* SettingsView.swift */; };
 		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
 		94151ED6246A1ED900CBD2BE /* ProcessUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED5246A1ED900CBD2BE /* ProcessUpdates.swift */; };
-		942088122571FA9C0055137E /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 942088112571FA9C0055137E /* Core */; };
 		942088142571FA9C0055137E /* Services in Frameworks */ = {isa = PBXBuildFile; productRef = 942088132571FA9C0055137E /* Services */; };
 		942088162571FA9C0055137E /* Toolbox in Frameworks */ = {isa = PBXBuildFile; productRef = 942088152571FA9C0055137E /* Toolbox */; };
 		9428A496257224130071BDAC /* ToolboxUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9428A495257224130071BDAC /* ToolboxUI */; };
@@ -31,13 +30,14 @@
 		9494DA0E24319285003A7992 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9494DA0D24319285003A7992 /* ActionViewController.swift */; };
 		9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9494DA0F24319285003A7992 /* MainInterface.storyboard */; };
 		9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9494DA0924319285003A7992 /* Add to Wishlist.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		949AB89625724C6A00517894 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = 949AB89525724C6A00517894 /* Domain */; };
+		949AB89825724C7400517894 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = 949AB89725724C7400517894 /* Domain */; };
 		949C700E2434644900009960 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		94BB7A2C248B6BBB00A2BA68 /* AppListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BB7A2B248B6BBB00A2BA68 /* AppListRowView.swift */; };
 		94BB7A2E248B6E6C00A2BA68 /* AppListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BB7A2D248B6E6C00A2BA68 /* AppListContentView.swift */; };
 		94C28BE3246526320013B41F /* URLSchemes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C28BE2246526320013B41F /* URLSchemes.swift */; };
 		94C7B1532330F13F008181D1 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C7B1522330F13F008181D1 /* Settings.swift */; };
 		94C8D0852435756300D9C077 /* UTI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8D0842435756300D9C077 /* UTI.swift */; };
-		94CBB5C425722A5B0077DBB6 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 94CBB5C325722A5B0077DBB6 /* Core */; };
 		94CBB5C625722A5B0077DBB6 /* Services in Frameworks */ = {isa = PBXBuildFile; productRef = 94CBB5C525722A5B0077DBB6 /* Services */; };
 		94CBB5C825722A5B0077DBB6 /* Toolbox in Frameworks */ = {isa = PBXBuildFile; productRef = 94CBB5C725722A5B0077DBB6 /* Toolbox */; };
 		94CBB5CA25722A5C0077DBB6 /* ToolboxUI in Frameworks */ = {isa = PBXBuildFile; productRef = 94CBB5C925722A5C0077DBB6 /* ToolboxUI */; };
@@ -133,8 +133,8 @@
 			files = (
 				942088142571FA9C0055137E /* Services in Frameworks */,
 				942088162571FA9C0055137E /* Toolbox in Frameworks */,
+				949AB89825724C7400517894 /* Domain in Frameworks */,
 				9428A496257224130071BDAC /* ToolboxUI in Frameworks */,
-				942088122571FA9C0055137E /* Core in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,8 +144,8 @@
 			files = (
 				94CBB5C625722A5B0077DBB6 /* Services in Frameworks */,
 				94CBB5C825722A5B0077DBB6 /* Toolbox in Frameworks */,
+				949AB89625724C6A00517894 /* Domain in Frameworks */,
 				94CBB5CA25722A5C0077DBB6 /* ToolboxUI in Frameworks */,
-				94CBB5C425722A5B0077DBB6 /* Core in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,10 +312,10 @@
 			);
 			name = ActionExtension;
 			packageProductDependencies = (
-				942088112571FA9C0055137E /* Core */,
 				942088132571FA9C0055137E /* Services */,
 				942088152571FA9C0055137E /* Toolbox */,
 				9428A495257224130071BDAC /* ToolboxUI */,
+				949AB89725724C7400517894 /* Domain */,
 			);
 			productName = ActionExtension;
 			productReference = 9494DA0924319285003A7992 /* Add to Wishlist.appex */;
@@ -337,10 +337,10 @@
 			);
 			name = Wishlist;
 			packageProductDependencies = (
-				94CBB5C325722A5B0077DBB6 /* Core */,
 				94CBB5C525722A5B0077DBB6 /* Services */,
 				94CBB5C725722A5B0077DBB6 /* Toolbox */,
 				94CBB5C925722A5C0077DBB6 /* ToolboxUI */,
+				949AB89525724C6A00517894 /* Domain */,
 			);
 			productName = Wishlist;
 			productReference = 94FA20CB231BA2BC00EC1190 /* Wishlist.app */;
@@ -716,10 +716,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		942088112571FA9C0055137E /* Core */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Core;
-		};
 		942088132571FA9C0055137E /* Services */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Services;
@@ -732,9 +728,13 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = ToolboxUI;
 		};
-		94CBB5C325722A5B0077DBB6 /* Core */ = {
+		949AB89525724C6A00517894 /* Domain */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Core;
+			productName = Domain;
+		};
+		949AB89725724C7400517894 /* Domain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Domain;
 		};
 		94CBB5C525722A5B0077DBB6 /* Services */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -1,7 +1,6 @@
 import BackgroundTasks
 import Combine
 import ComposableArchitecture
-import Domain
 
 public protocol BackgroundTask: AnyObject {
   var identifier: String { get }

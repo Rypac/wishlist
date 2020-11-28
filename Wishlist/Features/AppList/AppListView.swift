@@ -1,7 +1,6 @@
 import Combine
 import ComposableArchitecture
 import SwiftUI
-import Core
 import Domain
 
 struct AppListInternalState: Equatable {

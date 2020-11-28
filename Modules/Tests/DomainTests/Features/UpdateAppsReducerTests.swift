@@ -2,7 +2,7 @@ import BackgroundTasks
 import Combine
 import ComposableArchitecture
 import Foundation
-import Core
+import Domain
 import Toolbox
 import XCTest
 

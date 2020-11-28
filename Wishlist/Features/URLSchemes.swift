@@ -1,7 +1,6 @@
 import Combine
 import ComposableArchitecture
 import Foundation
-import Core
 import Domain
 
 struct URLSchemeState: Equatable {

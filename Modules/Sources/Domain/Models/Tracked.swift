@@ -1,5 +1,3 @@
-import Foundation
-
 public struct Tracked<T> {
   public let current: T
   public let previous: T?
