@@ -14,8 +14,6 @@
 		942088142571FA9C0055137E /* Services in Frameworks */ = {isa = PBXBuildFile; productRef = 942088132571FA9C0055137E /* Services */; };
 		942088162571FA9C0055137E /* Toolbox in Frameworks */ = {isa = PBXBuildFile; productRef = 942088152571FA9C0055137E /* Toolbox */; };
 		9428A496257224130071BDAC /* ToolboxUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9428A495257224130071BDAC /* ToolboxUI */; };
-		9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
-		9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9428D40A2431BEC000CBAC1F /* CloudKit.framework */; };
 		942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */; };
 		9432BAC024355C20001CCCD9 /* URLDropDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */; };
 		943881B8246BB3FF009A60F7 /* SceneLifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943881B7246BB3FF009A60F7 /* SceneLifecycle.swift */; };
@@ -134,7 +132,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				942088142571FA9C0055137E /* Services in Frameworks */,
-				9428D40C2431BF4E00CBAC1F /* CloudKit.framework in Frameworks */,
 				942088162571FA9C0055137E /* Toolbox in Frameworks */,
 				9428A496257224130071BDAC /* ToolboxUI in Frameworks */,
 				942088122571FA9C0055137E /* Core in Frameworks */,
@@ -146,7 +143,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				94CBB5C625722A5B0077DBB6 /* Services in Frameworks */,
-				9428D40B2431BEC000CBAC1F /* CloudKit.framework in Frameworks */,
 				94CBB5C825722A5B0077DBB6 /* Toolbox in Frameworks */,
 				94CBB5CA25722A5C0077DBB6 /* ToolboxUI in Frameworks */,
 				94CBB5C425722A5B0077DBB6 /* Core in Frameworks */,
