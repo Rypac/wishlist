@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Combine
 import Foundation
 import Domain
+import DomainUI
 
 struct ProcessUpdateState: Equatable {
   var apps: IdentifiedArrayOf<AppDetails>

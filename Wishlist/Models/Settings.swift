@@ -1,18 +1,11 @@
 import Foundation
 import Domain
+import DomainUI
 import Toolbox
 
-enum SortOrder: String, CaseIterable, UserDefaultsConvertible {
-  case title
-  case price
-  case updated
-}
+extension Theme: UserDefaultsConvertible {}
 
-enum Theme: String, CaseIterable, UserDefaultsConvertible {
-  case system
-  case light
-  case dark
-}
+extension SortOrder: UserDefaultsConvertible {}
 
 extension ChangeNotification: UserDefaultsConvertible {}
 

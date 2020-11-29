@@ -1,4 +1,5 @@
 import UIKit
+import DomainUI
 
 extension UIUserInterfaceStyle {
   init(_ theme: Theme) {

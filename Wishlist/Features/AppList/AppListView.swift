@@ -2,6 +2,7 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import Domain
+import DomainUI
 
 struct AppListInternalState: Equatable {
   fileprivate var appliedSortOrder: SortOrder

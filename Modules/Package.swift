@@ -11,6 +11,7 @@ let package = Package(
     .library(name: "Toolbox", targets: ["Toolbox"]),
     .library(name: "ToolboxUI", targets: ["ToolboxUI"]),
     .library(name: "Domain", targets: ["Domain"]),
+    .library(name: "DomainUI", targets: ["DomainUI"]),
     .library(name: "Services", targets: ["Services"])
   ],
   dependencies: [
@@ -33,6 +34,10 @@ let package = Package(
         "Toolbox",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
       ]
+    ),
+    .target(
+      name: "DomainUI",
+      dependencies: ["Domain", "ToolboxUI"]
     ),
     .target(
       name: "Services",

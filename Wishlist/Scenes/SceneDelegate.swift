@@ -3,6 +3,7 @@ import ComposableArchitecture
 import SwiftUI
 import UIKit
 import Domain
+import DomainUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
