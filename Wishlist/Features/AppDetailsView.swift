@@ -5,7 +5,7 @@ import Domain
 import ToolboxUI
 
 struct AppDetailsState: Equatable {
-  var app: Domain.App
+  var app: AppDetails
   var versions: [Version]?
   var showVersionHistory: Bool
 }
@@ -19,8 +19,8 @@ enum AppDetailsAction {
 
 struct AppDetailsEnvironment {
   var openURL: (URL) -> Void
-  var versionHistory: (Domain.App.ID) -> [Version]
-  var saveNotifications: (Domain.App.ID, Set<ChangeNotification>) -> Void
+  var versionHistory: (AppID) -> [Version]
+  var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
 }
 
 let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>>.combine(

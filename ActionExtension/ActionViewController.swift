@@ -8,13 +8,13 @@ import Services
 
 enum Status: Equatable {
   case resting
-  case loading([App.ID])
-  case success([AppSnapshot])
+  case loading([AppID])
+  case success([AppSummary])
   case failure
 }
 
 struct ExtensionState: Equatable {
-  var apps: [App]
+  var apps: [AppDetails]
   var status: Status
 
   var addAppsState: AddAppsState {
@@ -28,8 +28,8 @@ enum ExtensionAction {
 }
 
 struct ExtensionEnvironment {
-  var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
-  var saveApps: ([AppSnapshot]) -> Void
+  var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
+  var saveApps: ([AppSummary]) -> Void
 }
 
 let extensionReducer = Reducer<ExtensionState, ExtensionAction, SystemEnvironment<ExtensionEnvironment>>.combine(

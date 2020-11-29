@@ -7,7 +7,6 @@ import Toolbox
 import XCTest
 
 class BackgroundTaskReducerTests: XCTestCase {
-
   let scheduler = DispatchQueue.testScheduler
   let now = Date()
   let uuid = UUID()
@@ -53,16 +52,15 @@ class BackgroundTaskReducerTests: XCTestCase {
   }
 
   func testHandleUpdateTaskSchedulesAnotherUpdateTaskAndSavesSuccessResultToEnvironment() throws {
-    let bear = App(.bear, firstAdded: now)
-    let things = App(.things, firstAdded: now)
+    let bear = AppDetails(.bear, firstAdded: now)
+    let things = AppDetails(.things, firstAdded: now)
     let apps = [bear, things]
 
-    var updatedThings = AppSnapshot.things
-    updatedThings.version = "3.12.4"
-    updatedThings.updateDate = now
+    var updatedThings = AppSummary.things
+    updatedThings.version = Version(name: "3.12.4", date: now, notes: nil)
 
-    var appsToUpdate: [App.ID]?
-    var updatedApps: [AppSnapshot]?
+    var appsToUpdate: [AppID]?
+    var updatedApps: [AppSummary]?
 
     let testStore = TestStore(
       initialState: BackgroundTaskState(
