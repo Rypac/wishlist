@@ -5,23 +5,23 @@ import Foundation
 public struct AddAppsError: Error, Equatable {}
 
 public struct AddAppsState: Equatable {
-  public var apps: [App]
+  public var apps: [AppDetails]
 
-  public init(apps: [App]) {
+  public init(apps: [AppDetails]) {
     self.apps = apps
   }
 }
 
 public enum AddAppsAction: Equatable {
-  case addApps([App.ID])
+  case addApps([AppID])
   case addAppsFromURLs([URL])
-  case addAppsResponse(Result<[AppSnapshot], AddAppsError>)
+  case addAppsResponse(Result<[AppSummary], AddAppsError>)
 }
 
 public struct AddAppsEnvironment {
-  public var loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  public var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
 
-  public init(loadApps: @escaping ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>) {
+  public init(loadApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>) {
     self.loadApps = loadApps
   }
 }
@@ -52,7 +52,7 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
   }
 }
 
-private func extractAppIDs(from urls: [URL]) -> [App.ID] {
+private func extractAppIDs(from urls: [URL]) -> [AppID] {
   let idMatch = "id"
   let appStoreURL = "https?://(?:itunes|apps).apple.com/.*/id(?<\(idMatch)>\\d+)"
   guard let regex = try? NSRegularExpression(pattern: appStoreURL, options: []) else {

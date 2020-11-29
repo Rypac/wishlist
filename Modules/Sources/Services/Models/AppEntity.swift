@@ -32,7 +32,7 @@ public final class AppEntity: NSManagedObject {
 }
 
 extension AppEntity {
-  func update(app: AppSnapshot) {
+  func update(app: AppSummary) {
     identifier = NSNumber(value: app.id.rawValue)
     title = app.title
     seller = app.seller
@@ -43,9 +43,9 @@ extension AppEntity {
     iconLargeURL = app.icon.large
     bundleID = app.bundleID
     releaseDate = app.releaseDate
-    version = app.version
-    updateDate = app.updateDate
-    releaseNotes = app.releaseNotes
+    version = app.version.name
+    updateDate = app.version.date
+    releaseNotes = app.version.notes
 
     if app.price.value as NSDecimalNumber != currentPrice {
       previousPrice = currentPrice

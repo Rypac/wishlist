@@ -1,7 +1,7 @@
 import Foundation
 
 /// A representation of the latest version of an app as listed in the App Store.
-public struct AppSnapshot: Identifiable, Equatable {
+public struct AppSummary: Identifiable, Equatable {
   public typealias ID = AppID
 
   public let id: ID
@@ -11,11 +11,9 @@ public struct AppSnapshot: Identifiable, Equatable {
   public var url: URL
   public var icon: Icon
   public var price: Price
+  public var version: Version
   public var bundleID: String
-  public var version: String
   public var releaseDate: Date
-  public var updateDate: Date
-  public var releaseNotes: String?
 
   public init(
     id: ID,
@@ -25,11 +23,9 @@ public struct AppSnapshot: Identifiable, Equatable {
     url: URL,
     icon: Icon,
     price: Price,
+    version: Version,
     bundleID: String,
-    version: String,
-    releaseDate: Date,
-    updateDate: Date,
-    releaseNotes: String?
+    releaseDate: Date
   ) {
     self.id = id
     self.title = title
@@ -38,10 +34,8 @@ public struct AppSnapshot: Identifiable, Equatable {
     self.url = url
     self.icon = icon
     self.price = price
-    self.bundleID = bundleID
     self.version = version
+    self.bundleID = bundleID
     self.releaseDate = releaseDate
-    self.updateDate = updateDate
-    self.releaseNotes = releaseNotes
   }
 }

@@ -95,7 +95,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 // MARK: - App State
 
 struct AppState: Equatable {
-  var apps: IdentifiedArrayOf<Domain.App>
+  var apps: IdentifiedArrayOf<AppDetails>
   var sortOrderState: SortOrderState
   var lastUpdateDate: Date?
   var settings: SettingsState
@@ -106,7 +106,7 @@ struct AppState: Equatable {
   var isUpdateInProgress: Bool = false
 
   init(
-    apps: IdentifiedArrayOf<Domain.App>,
+    apps: IdentifiedArrayOf<AppDetails>,
     sortOrderState: SortOrderState,
     lastUpdateDate: Date?,
     settings: SettingsState,
@@ -196,7 +196,7 @@ enum AppAction {
 struct AppEnvironment {
   var repository: AppRepository
   var settings: Settings
-  var loadApps: ([Domain.App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
   var openURL: (URL) -> Void
   var scheduleBackgroundTasks: () -> Void
   var setTheme: (Theme) -> Void

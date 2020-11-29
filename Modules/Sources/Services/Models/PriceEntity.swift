@@ -11,7 +11,7 @@ public final class PriceEntity: NSManagedObject {
 }
 
 extension PriceEntity {
-  func update(app: AppSnapshot, at date: Date) {
+  func update(app: AppSummary, at date: Date) {
     self.date = date
     self.value = app.price.value as NSDecimalNumber
     self.formatted = app.price.formatted

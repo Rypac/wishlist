@@ -4,8 +4,8 @@ import Foundation
 import Domain
 
 struct URLSchemeState: Equatable {
-  var apps: [App]
-  var viewingAppDetails: App.ID?
+  var apps: [AppDetails]
+  var viewingAppDetails: AppID?
 }
 
 enum URLSchemeAction {
@@ -14,7 +14,7 @@ enum URLSchemeAction {
 }
 
 struct URLSchemeEnvironment {
-  let loadApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  let loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
 }
 
 let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironment<URLSchemeEnvironment>>.combine(

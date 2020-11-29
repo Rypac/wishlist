@@ -32,7 +32,7 @@ struct DefaultScene {
 struct DetailsScene {
   static let description = SceneDescription(name: "Details", delegate: AppDetailsDelegate.self)
 
-  let id: App.ID
+  let id: AppID
 }
 
 extension DetailsScene {
@@ -42,7 +42,7 @@ extension DetailsScene {
     guard let id = userInfo[DetailsScene.idKey] as? Int else {
       return nil
     }
-    self.id = App.ID(rawValue: id)
+    self.id = AppID(rawValue: id)
   }
 
   var userActivity: NSUserActivity {

@@ -2,37 +2,37 @@ import Combine
 import Foundation
 
 public protocol AppRepository {
-  func publisher() -> AnyPublisher<[App], Never>
-  func updates() -> AnyPublisher<[App], Never>
-  func fetchAll() throws -> [App]
-  func fetch(id: App.ID) throws -> App?
-  func add(_ app: AppSnapshot) throws
-  func add(_ apps: [AppSnapshot]) throws
-  func delete(id: App.ID) throws
-  func delete(ids: [App.ID]) throws
-  func viewedApp(id: App.ID, at date: Date) throws
-  func notify(id: App.ID, for notifications: Set<ChangeNotification>) throws
-  func versionHistory(id: App.ID) throws -> [Version]
+  func publisher() -> AnyPublisher<[AppDetails], Never>
+  func updates() -> AnyPublisher<[AppDetails], Never>
+  func fetchAll() throws -> [AppDetails]
+  func fetch(id: AppID) throws -> AppDetails?
+  func add(_ app: AppSummary) throws
+  func add(_ apps: [AppSummary]) throws
+  func delete(id: AppID) throws
+  func delete(ids: [AppID]) throws
+  func viewedApp(id: AppID, at date: Date) throws
+  func notify(id: AppID, for notifications: Set<ChangeNotification>) throws
+  func versionHistory(id: AppID) throws -> [Version]
 }
 
 public extension AppRepository {
-  func fetch(id: App.ID) throws -> App? {
+  func fetch(id: AppID) throws -> AppDetails? {
     try fetchAll().first { $0.id == id }
   }
 
-  func add(_ app: AppSnapshot) throws {
+  func add(_ app: AppSummary) throws {
     try add([app])
   }
 
-  func delete(id: App.ID) throws {
+  func delete(id: AppID) throws {
     try delete(ids: [id])
   }
 
-  func delete(_ app: App) throws {
+  func delete(_ app: AppDetails) throws {
     try delete(id: app.id)
   }
 
-  func delete(_ apps: [App]) throws {
+  func delete(_ apps: [AppDetails]) throws {
     try delete(ids: apps.map(\.id))
   }
 }

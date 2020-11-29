@@ -2,8 +2,8 @@ import Foundation
 import Domain
 import Toolbox
 
-extension App {
-  init(_ app: AppSnapshot, firstAdded: Date, lastViewed: Date? = nil, notifications: Set<ChangeNotification> = []) {
+extension AppDetails {
+  init(_ app: AppSummary, firstAdded: Date, lastViewed: Date? = nil, notifications: Set<ChangeNotification> = []) {
     self.init(
       id: app.id,
       title: app.title,
@@ -22,9 +22,9 @@ extension App {
   }
 }
 
-extension AppSnapshot {
-  static var bear: AppSnapshot {
-    AppSnapshot(
+extension AppSummary {
+  static var bear: AppSummary {
+    AppSummary(
       id: 1016366447,
       title: "Bear",
       seller: "Shiny Frog Ltd.",
@@ -40,8 +40,8 @@ extension AppSnapshot {
     )
   }
 
-  static var things: AppSnapshot {
-    AppSnapshot(
+  static var things: AppSummary {
+    AppSummary(
       id: 904237743,
       title: "Things 3",
       seller: "Cultured Code GmbH & Co. KG",
