@@ -1,6 +1,6 @@
 import Foundation
 
-public struct App: Identifiable, Equatable {
+public struct AppDetails: Identifiable, Equatable {
   public typealias ID = AppID
 
   public let id: ID
@@ -48,14 +48,14 @@ public struct App: Identifiable, Equatable {
   }
 }
 
-extension App: Hashable {
+extension AppDetails: Hashable {
   public func hash(into hasher: inout Hasher) {
     hasher.combine(id)
   }
 }
 
-public extension App {
-  mutating func applyUpdate(_ app: AppSnapshot) {
+public extension AppDetails {
+  mutating func applyUpdate(_ app: AppSummary) {
     title = app.title
     seller = app.seller
     description = app.description
@@ -71,9 +71,9 @@ public extension App {
       )
     }
 
-    if app.updateDate > version.date {
+    if app.version.date > version.date {
       // If the update has the same name as the current version, use the previous version instead.
-      version = Version(name: app.version, date: app.updateDate, notes: app.releaseNotes)
+      version = app.version
     }
   }
 }

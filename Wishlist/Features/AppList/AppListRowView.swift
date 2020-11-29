@@ -3,7 +3,7 @@ import SwiftUI
 import Domain
 import ToolboxUI
 
-struct AppSummary: Identifiable, Equatable {
+struct AppListSummary: Identifiable, Equatable {
   enum PriceChange {
     case same
     case decrease
@@ -15,7 +15,7 @@ struct AppSummary: Identifiable, Equatable {
     case updated(Date, seen: Bool)
   }
 
-  let id: Domain.App.ID
+  let id: AppID
   let selected: Bool
   let title: String
   let details: Details
@@ -32,10 +32,10 @@ enum AppListRowAction {
 
 struct AppListRowEnvironment {
   var openURL: (URL) -> Void
-  var recordAppViewed: (Domain.App.ID, Date) -> Void
+  var recordAppViewed: (AppID, Date) -> Void
 }
 
-let appListRowReducer = Reducer<Domain.App, AppListRowAction, SystemEnvironment<AppListRowEnvironment>> { state, action, environment in
+let appListRowReducer = Reducer<AppDetails, AppListRowAction, SystemEnvironment<AppListRowEnvironment>> { state, action, environment in
   switch action {
   case let .selected(selected):
     guard selected else {
@@ -68,7 +68,7 @@ let appListRowReducer = Reducer<Domain.App, AppListRowAction, SystemEnvironment<
 }
 
 struct AppListRowView: View {
-  let store: Store<AppSummary, AppListRowAction>
+  let store: Store<AppListSummary, AppListRowAction>
 
   @State private var showShareSheet = false
 
@@ -109,7 +109,7 @@ struct AppListRowView: View {
 
 private struct AppRowContent: View {
   let title: String
-  let details: AppSummary.Details
+  let details: AppListSummary.Details
   let icon: URL
 
   var body: some View {
@@ -131,7 +131,7 @@ private struct AppRowContent: View {
 
 private struct AppPriceDetails: View {
   let price: String
-  let change: AppSummary.PriceChange
+  let change: AppListSummary.PriceChange
 
   var body: some View {
     HStack {

@@ -3,13 +3,13 @@ import ComposableArchitecture
 import Foundation
 
 public struct AppUpdateState: Equatable {
-  public var apps: [App]
+  public var apps: [AppDetails]
   public var lastUpdateDate: Date?
   public var updateFrequency: TimeInterval
   public var isUpdateInProgress: Bool
 
   public init(
-    apps: [App],
+    apps: [AppDetails],
     lastUpdateDate: Date?,
     updateFrequency: TimeInterval,
     isUpdateInProgress: Bool
@@ -25,14 +25,14 @@ public struct UpdateAppsError: Error, Equatable {}
 
 public enum AppUpdateAction: Equatable {
   case checkForUpdates
-  case receivedUpdates(Result<[AppSnapshot], UpdateAppsError>, at: Date)
+  case receivedUpdates(Result<[AppSummary], UpdateAppsError>, at: Date)
   case cancelUpdateCheck
 }
 
 public struct AppUpdateEnvironment {
-  public var lookupApps: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>
+  public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
 
-  public init(lookupApps: @escaping ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>) {
+  public init(lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>) {
     self.lookupApps = lookupApps
   }
 }
@@ -89,7 +89,7 @@ private extension AppUpdateState {
   }
 }
 
-func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[AppSnapshot], Error>) -> AnyPublisher<[AppSnapshot], Error> {
+func checkForUpdates(apps: [AppDetails], lookup: ([AppID]) -> AnyPublisher<[AppSummary], Error>) -> AnyPublisher<[AppSummary], Error> {
   lookup(apps.map(\.id))
     .map { latestApps in
       latestApps.reduce(into: []) { updatedApps, latestApp in
@@ -104,13 +104,13 @@ func checkForUpdates(apps: [App], lookup: ([App.ID]) -> AnyPublisher<[AppSnapsho
     .eraseToAnyPublisher()
 }
 
-private extension AppSnapshot {
-  func isUpdated(from app: App) -> Bool {
-    if updateDate > app.version.date {
+private extension AppSummary {
+  func isUpdated(from app: AppDetails) -> Bool {
+    if version.date > app.version.date {
       return true
     }
 
-    guard updateDate == app.version.date else {
+    guard version.date == app.version.date else {
       return false
     }
 

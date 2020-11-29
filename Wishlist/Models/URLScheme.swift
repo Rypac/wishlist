@@ -2,8 +2,8 @@ import Foundation
 import Domain
 
 enum URLScheme {
-  case addApps(ids: [App.ID])
-  case viewApp(id: App.ID)
+  case addApps(ids: [AppID])
+  case viewApp(id: AppID)
   case export
   case deleteAll
 }

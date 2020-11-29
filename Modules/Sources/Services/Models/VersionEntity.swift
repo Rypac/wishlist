@@ -11,9 +11,9 @@ public final class VersionEntity: NSManagedObject {
 }
 
 extension VersionEntity {
-  func update(app: AppSnapshot) {
-    self.date = app.updateDate
-    self.version = app.version
-    self.releaseNotes = app.releaseNotes
+  func update(app: AppSummary) {
+    self.date = app.version.date
+    self.version = app.version.name
+    self.releaseNotes = app.version.notes
   }
 }

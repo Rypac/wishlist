@@ -10,15 +10,15 @@ public final class CoreDataAppRepository: AppRepository {
     self.container = container
   }
 
-  public func publisher() -> AnyPublisher<[App], Never> {
+  public func publisher() -> AnyPublisher<[AppDetails], Never> {
     NSFetchRequestPublisher(request: AppEntity.fetchAll(), context: container.viewContext, refresh: .didSaveManagedObjectContextExternally)
-      .map { $0.map(App.init) }
+      .map { $0.map(AppDetails.init) }
       .eraseToAnyPublisher()
   }
 
-  public func updates() -> AnyPublisher<[App], Never> {
+  public func updates() -> AnyPublisher<[AppDetails], Never> {
     NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
-      .compactMap { notification -> [App]? in
+      .compactMap { notification -> [AppDetails]? in
         guard let objects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject> else {
           return nil
         }
@@ -26,9 +26,9 @@ public final class CoreDataAppRepository: AppRepository {
         return objects.compactMap { object in
           switch object {
           case let interaction as InteractionEntity:
-            return App(interaction.app)
+            return AppDetails(interaction.app)
           case let notification as NotificationEntity:
-            return App(notification.app)
+            return AppDetails(notification.app)
           default:
             return nil
           }
@@ -37,19 +37,19 @@ public final class CoreDataAppRepository: AppRepository {
       .eraseToAnyPublisher()
   }
 
-  public func fetchAll() throws -> [App] {
-    try container.viewContext.performAndFetch(AppEntity.fetchAll()).map(App.init)
+  public func fetchAll() throws -> [AppDetails] {
+    try container.viewContext.performAndFetch(AppEntity.fetchAll()).map(AppDetails.init)
   }
 
-  public func fetch(id: App.ID) throws -> App? {
-    try container.viewContext.performAndFetch(AppEntity.fetch(id: id)).first.map(App.init)
+  public func fetch(id: AppID) throws -> AppDetails? {
+    try container.viewContext.performAndFetch(AppEntity.fetch(id: id)).first.map(AppDetails.init)
   }
 
-  public func versionHistory(id: App.ID) throws -> [Version] {
+  public func versionHistory(id: AppID) throws -> [Version] {
     try container.viewContext.performAndFetch(VersionEntity.fetchAll(id: id)).map(Version.init)
   }
 
-  public func add(_ apps: [AppSnapshot]) throws {
+  public func add(_ apps: [AppSummary]) throws {
     container.performBackgroundTask { context in
       let ids = apps.map { NSNumber(value: $0.id.rawValue) }
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
@@ -72,7 +72,7 @@ public final class CoreDataAppRepository: AppRepository {
     }
   }
 
-  public func viewedApp(id: App.ID, at date: Date) throws {
+  public func viewedApp(id: AppID, at date: Date) throws {
     container.performBackgroundTask { context in
       let fetchRequest = NSFetchRequest<InteractionEntity>(entityName: InteractionEntity.entityName)
       fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
@@ -87,7 +87,7 @@ public final class CoreDataAppRepository: AppRepository {
     }
   }
 
-  public func notify(id: App.ID, for notifications: Set<ChangeNotification>) throws {
+  public func notify(id: AppID, for notifications: Set<ChangeNotification>) throws {
     container.performBackgroundTask { context in
       let fetchRequest = NSFetchRequest<NotificationEntity>(entityName: NotificationEntity.entityName)
       fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
@@ -102,7 +102,7 @@ public final class CoreDataAppRepository: AppRepository {
     }
   }
 
-  public func delete(ids: [App.ID]) throws {
+  public func delete(ids: [AppID]) throws {
     container.performBackgroundTask { context in
       let ids = ids.map { NSNumber(value: $0.rawValue) }
       let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
@@ -163,7 +163,7 @@ private extension NSManagedObjectContext {
 // MARK: - Upsert
 
 private extension NSManagedObjectContext {
-  func insert(_ app: AppSnapshot, at date: Date) {
+  func insert(_ app: AppSummary, at date: Date) {
     let interaction = InteractionEntity(context: self)
     interaction.firstAdded = date
 
@@ -184,12 +184,12 @@ private extension NSManagedObjectContext {
     appEntity.notification = notification
   }
 
-  func update(_ existingApp: AppEntity, with app: AppSnapshot, at date: Date) throws {
+  func update(_ existingApp: AppEntity, with app: AppSummary, at date: Date) throws {
     existingApp.update(app: app)
 
     let currentVersion = try performAndFetch(VersionEntity.fetchLatest(id: app.id)).first
-    if let currentVersion = currentVersion, app.updateDate > currentVersion.date {
-      if app.version == currentVersion.version {
+    if let currentVersion = currentVersion, app.version.date > currentVersion.date {
+      if app.version.name == currentVersion.version {
         currentVersion.update(app: app)
       } else {
         let latestVersion = VersionEntity(context: self)
@@ -219,7 +219,7 @@ private extension AppEntity {
     return fetchRequest
   }
 
-  static func fetch(id: App.ID) -> NSFetchRequest<AppEntity> {
+  static func fetch(id: AppID) -> NSFetchRequest<AppEntity> {
     let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
     fetchRequest.predicate = NSPredicate(format: "identifier = %@", NSNumber(value: id.rawValue))
     fetchRequest.relationshipKeyPathsForPrefetching = ["interaction", "notification"]
@@ -229,7 +229,7 @@ private extension AppEntity {
 }
 
 private extension VersionEntity {
-  static func fetchAll(id: App.ID) -> NSFetchRequest<VersionEntity> {
+  static func fetchAll(id: AppID) -> NSFetchRequest<VersionEntity> {
     let fetchRequest = NSFetchRequest<VersionEntity>(entityName: VersionEntity.entityName)
     fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
     fetchRequest.sortDescriptors = [
@@ -238,7 +238,7 @@ private extension VersionEntity {
     return fetchRequest
   }
 
-  static func fetchLatest(id: App.ID) -> NSFetchRequest<VersionEntity> {
+  static func fetchLatest(id: AppID) -> NSFetchRequest<VersionEntity> {
     let fetchRequest = NSFetchRequest<VersionEntity>(entityName: VersionEntity.entityName)
     fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
     fetchRequest.sortDescriptors = [
@@ -250,7 +250,7 @@ private extension VersionEntity {
 }
 
 private extension PriceEntity {
-  static func fetchAll(id: App.ID) -> NSFetchRequest<PriceEntity> {
+  static func fetchAll(id: AppID) -> NSFetchRequest<PriceEntity> {
     let fetchRequest = NSFetchRequest<PriceEntity>(entityName: PriceEntity.entityName)
     fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
     fetchRequest.sortDescriptors = [
@@ -259,7 +259,7 @@ private extension PriceEntity {
     return fetchRequest
   }
 
-  static func fetchLatest(id: App.ID) -> NSFetchRequest<PriceEntity> {
+  static func fetchLatest(id: AppID) -> NSFetchRequest<PriceEntity> {
     let fetchRequest = NSFetchRequest<PriceEntity>(entityName: PriceEntity.entityName)
     fetchRequest.predicate = NSPredicate(format: "app.identifier = %@", NSNumber(value: id.rawValue))
     fetchRequest.sortDescriptors = [
@@ -270,7 +270,7 @@ private extension PriceEntity {
   }
 }
 
-private extension App {
+private extension AppDetails {
   init(_ entity: AppEntity) {
     self.init(
       id: AppID(rawValue: entity.identifier.intValue),

@@ -14,7 +14,7 @@ public final class AppStoreService: AppLookupService {
     self.session = session
   }
 
-  public func lookup(ids: [App.ID]) -> AnyPublisher<[AppSnapshot], Error> {
+  public func lookup(ids: [AppID]) -> AnyPublisher<[AppSummary], Error> {
     if ids.isEmpty {
       return Result.Publisher([]).eraseToAnyPublisher()
     }
@@ -33,7 +33,7 @@ public final class AppStoreService: AppLookupService {
 
     return session.dataTaskPublisher(for: request)
       .tryMap { [decoder] data, _ in
-        try decoder.decode(LookupResponse.self, from: data).results.map(AppSnapshot.init)
+        try decoder.decode(LookupResponse.self, from: data).results.map(AppSummary.init)
       }
       .eraseToAnyPublisher()
   }
@@ -80,7 +80,7 @@ private struct LookupResponse: Decodable {
   }
 }
 
-private extension AppSnapshot {
+private extension AppSummary {
   init(app: LookupResponse.App) {
     self.init(
       id: app.id,
@@ -90,11 +90,13 @@ private extension AppSnapshot {
       url: app.url,
       icon: Icon(small: app.iconSmallURL, medium: app.iconMediumURL, large: app.iconLargeURL),
       price: Price(value: app.price, formatted: app.formattedPrice),
+      version: Version(
+        name: app.version,
+        date: app.updateDate,
+        notes: app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines)
+      ),
       bundleID: app.bundleID,
-      version: app.version,
-      releaseDate: app.releaseDate,
-      updateDate: app.updateDate,
-      releaseNotes: app.releaseNotes?.trimmingCharacters(in: .whitespacesAndNewlines)
+      releaseDate: app.releaseDate
     )
   }
 }

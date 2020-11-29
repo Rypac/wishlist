@@ -4,7 +4,7 @@ import Foundation
 import Domain
 
 struct ProcessUpdateState: Equatable {
-  var apps: IdentifiedArrayOf<App>
+  var apps: IdentifiedArrayOf<AppDetails>
   var sortOrder: SortOrder
   var theme: Theme
 }
@@ -12,21 +12,21 @@ struct ProcessUpdateState: Equatable {
 enum ProcessUpdateAction {
   case subscribe
   case unsubscribe
-  case apps(PublisherAction<[App]>)
-  case updates(PublisherAction<[App]>)
+  case apps(PublisherAction<[AppDetails]>)
+  case updates(PublisherAction<[AppDetails]>)
   case sortOrder(PublisherAction<SortOrder>)
   case theme(PublisherAction<Theme>)
 }
 
 struct ProcessUpdateEnvironment {
-  var apps: PublisherEnvironment<[App]>
-  var updates: PublisherEnvironment<[App]>
+  var apps: PublisherEnvironment<[AppDetails]>
+  var updates: PublisherEnvironment<[AppDetails]>
   var sortOrder: PublisherEnvironment<SortOrder>
   var theme: PublisherEnvironment<Theme>
 }
 
 private extension ProcessUpdateState {
-  var appElements: [App] {
+  var appElements: [AppDetails] {
     get { apps.elements }
     set { apps = IdentifiedArrayOf(newValue) }
   }
@@ -44,7 +44,7 @@ func processUpdateReducer(
   id: AnyHashable
 ) -> Reducer<ProcessUpdateState, ProcessUpdateAction, SystemEnvironment<ProcessUpdateEnvironment>> {
   .combine(
-    publisherReducer(id: ProcessID<[App]>(id)).pullback(
+    publisherReducer(id: ProcessID<[AppDetails]>(id)).pullback(
       state: \.appElements,
       action: /ProcessUpdateAction.apps,
       environment: { $0.map(\.apps) }
@@ -59,7 +59,7 @@ func processUpdateReducer(
       action: /ProcessUpdateAction.theme,
       environment: { $0.map(\.theme) }
     ),
-    appUpdatesReducer(id: ProcessID<IdentifiedArrayOf<App>>(id)).pullback(
+    appUpdatesReducer(id: ProcessID<IdentifiedArrayOf<AppDetails>>(id)).pullback(
       state: \.apps,
       action: /ProcessUpdateAction.updates,
       environment: { $0.map(\.updates) }
@@ -91,7 +91,7 @@ func processUpdateReducer(
 
 private func appUpdatesReducer(
   id: AnyHashable
-) -> Reducer<IdentifiedArrayOf<App>, PublisherAction<[App]>, SystemEnvironment<PublisherEnvironment<[App]>>> {
+) -> Reducer<IdentifiedArrayOf<AppDetails>, PublisherAction<[AppDetails]>, SystemEnvironment<PublisherEnvironment<[AppDetails]>>> {
   Reducer { state, action, environment in
     switch action {
     case .subscribe:

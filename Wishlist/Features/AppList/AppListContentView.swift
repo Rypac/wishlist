@@ -4,7 +4,7 @@ import SwiftUI
 import Domain
 
 struct AppDetailsContent: Equatable {
-  let id: Domain.App.ID
+  let id: AppID
   var versions: [Version]?
   var showVersionHistory: Bool
 }
@@ -12,23 +12,23 @@ struct AppDetailsContent: Equatable {
 struct AppListContentState: Equatable {
   var sortOrder: SortOrder
   var details: AppDetailsContent?
-  var visibleApps: [Domain.App.ID]
-  var apps: IdentifiedArrayOf<Domain.App>
+  var visibleApps: [AppID]
+  var apps: IdentifiedArrayOf<AppDetails>
 }
 
 enum AppListContentAction {
   case removeAtIndexes(IndexSet)
-  case remove([Domain.App.ID])
-  case app(id: Domain.App.ID, action: AppListRowAction)
+  case remove([AppID])
+  case app(id: AppID, action: AppListRowAction)
   case details(AppDetailsAction)
 }
 
 struct AppListContentEnvironment {
   var openURL: (URL) -> Void
-  var versionHistory: (Domain.App.ID) -> [Version]
-  var deleteApps: ([Domain.App.ID]) -> Void
-  var saveNotifications: (Domain.App.ID, Set<ChangeNotification>) -> Void
-  var recordAppViewed: (Domain.App.ID, Date) -> Void
+  var versionHistory: (AppID) -> [Version]
+  var deleteApps: ([AppID]) -> Void
+  var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
+  var recordAppViewed: (AppID, Date) -> Void
 }
 
 private extension AppListContentState {
@@ -103,11 +103,11 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
 )
 
 private extension AppListContentState {
-  func summary(_ id: Domain.App.ID) -> AppSummary? {
+  func summary(_ id: AppID) -> AppListSummary? {
     guard let app = apps[id: id] else {
       return nil
     }
-    return AppSummary(
+    return AppListSummary(
       id: app.id,
       selected: details?.id == id,
       title: app.title,
@@ -153,8 +153,8 @@ struct AppListContentView: View {
   }
 }
 
-private extension AppSummary.Details {
-  init(sortOrder: SortOrder, app: Domain.App) {
+private extension AppListSummary.Details {
+  init(sortOrder: SortOrder, app: AppDetails) {
     switch sortOrder {
     case .updated:
       if let lastViewed = app.lastViewed {
@@ -171,8 +171,8 @@ private extension AppSummary.Details {
   }
 }
 
-private extension Domain.App {
-  var priceChange: AppSummary.PriceChange {
+private extension AppDetails {
+  var priceChange: AppListSummary.PriceChange {
     guard let previousPrice = price.previous else {
       return .same
     }
