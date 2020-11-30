@@ -14,6 +14,7 @@ struct AppListInternalState: Equatable {
 
 struct AppListState: Equatable {
   var apps: IdentifiedArrayOf<AppDetails>
+  var addAppsState: AddAppsState
   var sortOrderState: SortOrderState
   var settings: SettingsState
   var internalState: AppListInternalState
@@ -32,6 +33,7 @@ enum AppListAction {
 
 struct AppListEnvironment {
   var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
+  var saveApps: ([AppSummary]) -> Void
   var deleteApps: ([AppID]) -> Void
   var versionHistory: (AppID) -> [Version]
   var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
@@ -42,11 +44,6 @@ struct AppListEnvironment {
 }
 
 private extension AppListState {
-  var addAppsState: AddAppsState {
-    get { AddAppsState(apps: apps.elements) }
-    set { apps = IdentifiedArrayOf(newValue.apps) }
-  }
-
   var listState: AppListContentState {
     get {
       AppListContentState(
@@ -71,7 +68,10 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
     action: /AppListAction.addApps,
     environment: { systemEnvironment in
       systemEnvironment.map {
-        AddAppsEnvironment(loadApps: $0.loadApps)
+        AddAppsEnvironment(
+          loadApps: $0.loadApps,
+          saveApps: $0.saveApps
+        )
       }
     }
   ),

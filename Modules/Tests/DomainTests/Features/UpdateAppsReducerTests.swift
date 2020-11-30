@@ -19,12 +19,10 @@ class UpdateAppsReducerTests: XCTestCase {
   }()
 
   func testNoUpdateIsAttemptedWhenWithinLastUpdateThreshold() throws {
-    let bear = AppDetails(.bear, firstAdded: now)
-    let things = AppDetails(.things, firstAdded: now)
+    var updatedApps: [AppSummary]?
 
     let testStore = TestStore(
       initialState: AppUpdateState(
-        apps: [bear, things],
         lastUpdateDate: now,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -34,20 +32,28 @@ class UpdateAppsReducerTests: XCTestCase {
         AppUpdateEnvironment(
           lookupApps: { ids in
             Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
-          }
+          },
+          fetchApps: {
+            [.bear, .things]
+          },
+          saveApps: { updatedApps = $0 }
         )
       }
     )
 
     testStore.assert(
-      .send(.checkForUpdates)
+      .send(.checkForUpdates),
+      .do {
+        XCTAssertNil(updatedApps)
+      }
     )
   }
 
   func testNoUpdateIsAttemptedWhenThereAreNoApps() throws {
+    var updatedApps: [AppSummary]?
+
     let testStore = TestStore(
       initialState: AppUpdateState(
-        apps: [],
         lastUpdateDate: nil,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -57,31 +63,31 @@ class UpdateAppsReducerTests: XCTestCase {
         AppUpdateEnvironment(
           lookupApps: { ids in
             Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
-          }
+          },
+          fetchApps: { [] },
+          saveApps: { updatedApps = $0 }
         )
       }
     )
 
     testStore.assert(
-      .send(.checkForUpdates)
+      .send(.checkForUpdates),
+      .do {
+        XCTAssertNil(updatedApps)
+      }
     )
   }
 
   func testUpdateIsAttemptedWhenOutsideLastUpdateThreshold() throws {
     let updateFrequency = TimeInterval(10)
 
-    let bear = AppDetails(.bear, firstAdded: now)
-    let things = AppDetails(.things, firstAdded: now)
-
     var updatedThings = AppSummary.things
     updatedThings.version = Version(name: "4.0.0", date: now, notes: nil)
 
-    var expectedThingsUpdate = things
-    expectedThingsUpdate.applyUpdate(updatedThings)
+    var updatedApps: [AppSummary]?
 
     let testStore = TestStore(
       initialState: AppUpdateState(
-        apps: [bear, things],
         lastUpdateDate: now,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -91,7 +97,11 @@ class UpdateAppsReducerTests: XCTestCase {
         AppUpdateEnvironment(
           lookupApps: { ids in
             Just([updatedThings]).setFailureType(to: Error.self).eraseToAnyPublisher()
-          }
+          },
+          fetchApps: {
+            [.bear, .things]
+          },
+          saveApps: { updatedApps = $0 }
         )
       }
     )
@@ -112,15 +122,18 @@ class UpdateAppsReducerTests: XCTestCase {
       .receive(.receivedUpdates(.success([updatedThings]), at: someFutureDate)) {
         $0.isUpdateInProgress = false
         $0.lastUpdateDate = someFutureDate
-        $0.apps = [bear, expectedThingsUpdate]
+      },
+      .do {
+        XCTAssertEqual(updatedApps, [updatedThings])
       }
     )
   }
 
   func testUpdateIsCancelledWhenRequested() throws {
+    var updatedApps: [AppSummary]?
+
     let testStore = TestStore(
       initialState: AppUpdateState(
-        apps: [AppDetails(.bear, firstAdded: now)],
         lastUpdateDate: nil,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -130,7 +143,9 @@ class UpdateAppsReducerTests: XCTestCase {
         AppUpdateEnvironment(
           lookupApps: { ids in
             Empty(completeImmediately: false).eraseToAnyPublisher()
-          }
+          },
+          fetchApps: { [.bear] },
+          saveApps: { updatedApps = $0 }
         )
       }
     )
@@ -141,6 +156,9 @@ class UpdateAppsReducerTests: XCTestCase {
       },
       .send(.cancelUpdateCheck) {
         $0.isUpdateInProgress = false
+      },
+      .do {
+        XCTAssertNil(updatedApps)
       }
     )
   }

@@ -3,18 +3,15 @@ import ComposableArchitecture
 import Foundation
 
 public struct AppUpdateState: Equatable {
-  public var apps: [AppDetails]
   public var lastUpdateDate: Date?
   public var updateFrequency: TimeInterval
   public var isUpdateInProgress: Bool
 
   public init(
-    apps: [AppDetails],
     lastUpdateDate: Date?,
     updateFrequency: TimeInterval,
     isUpdateInProgress: Bool
   ) {
-    self.apps = apps
     self.lastUpdateDate = lastUpdateDate
     self.updateFrequency = updateFrequency
     self.isUpdateInProgress = isUpdateInProgress
@@ -31,9 +28,17 @@ public enum AppUpdateAction: Equatable {
 
 public struct AppUpdateEnvironment {
   public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
+  public var fetchApps: () -> [AppSummary]
+  public var saveApps: ([AppSummary]) -> Void
 
-  public init(lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>) {
+  public init(
+    lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
+    fetchApps: @escaping () -> [AppSummary],
+    saveApps: @escaping ([AppSummary]) -> Void
+  ) {
     self.lookupApps = lookupApps
+    self.fetchApps = fetchApps
+    self.saveApps = saveApps
   }
 }
 
@@ -45,8 +50,13 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
       return .none
     }
 
+    let apps = environment.fetchApps()
+    guard !apps.isEmpty else {
+      return .none
+    }
+
     state.isUpdateInProgress = true
-    return checkForUpdates(apps: state.apps, lookup: environment.lookupApps)
+    return checkForUpdates(apps: apps, lookup: environment.lookupApps)
       .receive(on: environment.mainQueue())
       .mapError { _ in UpdateAppsError() }
       .catchToEffect()
@@ -57,13 +67,9 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
     state.isUpdateInProgress = false
     state.lastUpdateDate = date
 
-    updatedApps.forEach { app in
-      if let index = state.apps.firstIndex(where: { $0.id == app.id }) {
-        state.apps[index].applyUpdate(app)
-      }
+    return .fireAndForget {
+      environment.saveApps(updatedApps)
     }
-
-    return .none
 
   case let .receivedUpdates(.failure(error), at: _):
     state.isUpdateInProgress = false
@@ -77,7 +83,7 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
 
 private extension AppUpdateState {
   func shouldCheckForUpdates(now: Date) -> Bool {
-    if isUpdateInProgress || apps.isEmpty {
+    if isUpdateInProgress {
       return false
     }
 
@@ -89,7 +95,7 @@ private extension AppUpdateState {
   }
 }
 
-func checkForUpdates(apps: [AppDetails], lookup: ([AppID]) -> AnyPublisher<[AppSummary], Error>) -> AnyPublisher<[AppSummary], Error> {
+func checkForUpdates(apps: [AppSummary], lookup: ([AppID]) -> AnyPublisher<[AppSummary], Error>) -> AnyPublisher<[AppSummary], Error> {
   lookup(apps.map(\.id))
     .map { latestApps in
       latestApps.reduce(into: []) { updatedApps, latestApp in
@@ -105,7 +111,7 @@ func checkForUpdates(apps: [AppDetails], lookup: ([AppID]) -> AnyPublisher<[AppS
 }
 
 private extension AppSummary {
-  func isUpdated(from app: AppDetails) -> Bool {
+  func isUpdated(from app: AppSummary) -> Bool {
     if version.date > app.version.date {
       return true
     }
@@ -114,7 +120,7 @@ private extension AppSummary {
       return false
     }
 
-    return price != app.price.current
+    return price != app.price
       || title != app.title
       || description != app.description
       || icon != app.icon

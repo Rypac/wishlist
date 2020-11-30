@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       environment: .live(
         environment: BackgroundTaskEnvironment(
           submitTask: BGTaskScheduler.shared.submit,
-          fetchApps: { (try? self.appRepository.fetchAll()) ?? [] },
+          fetchApps: { (try? self.appRepository.fetchAll().map(\.summary)) ?? [] },
           lookupApps: self.appStore.lookup,
           saveUpdatedApps: { try? self.appRepository.add($0) }
         )

@@ -120,6 +120,23 @@ public final class CoreDataAppRepository: AppRepository {
       try? context.saveIfNeeded()
     }
   }
+
+  public func deleteAll() throws {
+    container.performBackgroundTask { context in
+      let fetchRequest = NSFetchRequest<AppEntity>(entityName: AppEntity.entityName)
+      fetchRequest.includesPropertyValues = false
+
+      guard let existingApps = try? context.fetch(fetchRequest) else {
+        return
+      }
+
+      existingApps.forEach { existingApp in
+        context.delete(existingApp)
+      }
+
+      try? context.saveIfNeeded()
+    }
+  }
 }
 
 // MARK: - Extensions
