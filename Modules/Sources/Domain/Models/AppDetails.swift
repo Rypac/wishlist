@@ -77,3 +77,20 @@ public extension AppDetails {
     }
   }
 }
+
+public extension AppDetails {
+  var summary: AppSummary {
+    AppSummary(
+      id: id,
+      title: title,
+      seller: seller,
+      description: description,
+      url: url,
+      icon: icon,
+      price: price.current,
+      version: version,
+      bundleID: bundleID,
+      releaseDate: releaseDate
+    )
+  }
+}

@@ -33,7 +33,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       reducer: appReducer(id: UUID()),
       environment: .live(
         environment: AppEnvironment(
-          repository: appDelegate.appRepository,
+          repository: appDelegate.appRepository.environment,
           settings: appDelegate.settings,
           loadApps: appDelegate.appStore.lookup,
           openURL: { UIApplication.shared.open($0) },
@@ -96,6 +96,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 struct AppState: Equatable {
   var apps: IdentifiedArrayOf<AppDetails>
+  var addAppsState: AddAppsState
   var sortOrderState: SortOrderState
   var lastUpdateDate: Date?
   var settings: SettingsState
@@ -113,6 +114,7 @@ struct AppState: Equatable {
     appUpdateFrequency: TimeInterval
   ) {
     self.apps = apps
+    self.addAppsState = AddAppsState(addingApps: false)
     self.sortOrderState = sortOrderState
     self.lastUpdateDate = lastUpdateDate
     self.settings = settings
@@ -126,6 +128,7 @@ private extension AppState {
     get {
       AppListState(
         apps: apps,
+        addAppsState: addAppsState,
         sortOrderState: sortOrderState,
         settings: settings,
         internalState: appListInternalState,
@@ -135,6 +138,7 @@ private extension AppState {
     }
     set {
       apps = newValue.apps
+      addAppsState = newValue.addAppsState
       sortOrderState = newValue.sortOrderState
       settings = newValue.settings
       appListInternalState = newValue.internalState
@@ -145,10 +149,13 @@ private extension AppState {
 
   var urlSchemeState: URLSchemeState {
     get {
-      URLSchemeState(apps: apps.elements, viewingAppDetails: viewingAppDetails?.id)
+      URLSchemeState(
+        addAppsState: addAppsState,
+        viewingAppDetails: viewingAppDetails?.id
+      )
     }
     set {
-      apps = IdentifiedArrayOf(newValue.apps)
+      addAppsState = newValue.addAppsState
       if let id = newValue.viewingAppDetails {
         viewingAppDetails = AppDetailsContent(id: id, versions: nil, showVersionHistory: false)
       }
@@ -158,14 +165,12 @@ private extension AppState {
   var appUpdateState: AppUpdateState {
     get {
       AppUpdateState(
-        apps: apps.elements,
         lastUpdateDate: lastUpdateDate,
         updateFrequency: appUpdateFrequency,
         isUpdateInProgress: isUpdateInProgress
       )
     }
     set {
-      apps = IdentifiedArrayOf(newValue.apps)
       lastUpdateDate = newValue.lastUpdateDate
       appUpdateFrequency = newValue.updateFrequency
       isUpdateInProgress = newValue.isUpdateInProgress
@@ -174,7 +179,11 @@ private extension AppState {
 
   var processUpdateState: ProcessUpdateState {
     get {
-      ProcessUpdateState(apps: apps, sortOrder: sortOrderState.sortOrder, theme: settings.theme)
+      ProcessUpdateState(
+        apps: apps,
+        sortOrder: sortOrderState.sortOrder,
+        theme: settings.theme
+      )
     }
     set {
       apps = newValue.apps
@@ -194,12 +203,54 @@ enum AppAction {
 }
 
 struct AppEnvironment {
-  var repository: AppRepository
+  var repository: AppRepositoryEnvironment
   var settings: Settings
   var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
   var openURL: (URL) -> Void
   var scheduleBackgroundTasks: () -> Void
   var setTheme: (Theme) -> Void
+}
+
+struct AppRepositoryEnvironment {
+  var fetchApps: () -> [AppSummary]
+  var saveApps: ([AppSummary]) -> Void
+  var deleteApps: ([AppID]) -> Void
+  var deleteAllApps: () -> Void
+  var versionHistory: (AppID) -> [Version]
+  var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
+  var viewedApp: (AppID, Date) -> Void
+  var publisher: () -> AnyPublisher<[AppDetails], Never>
+  var updates: () -> AnyPublisher<[AppDetails], Never>
+}
+
+extension AppRepository {
+  var environment: AppRepositoryEnvironment {
+    AppRepositoryEnvironment(
+      fetchApps: {
+        (try? fetchAll().map(\.summary)) ?? []
+      },
+      saveApps: { apps in
+        try? add(apps)
+      },
+      deleteApps: { ids in
+        try? delete(ids: ids)
+      },
+      deleteAllApps: {
+        try? deleteAll()
+      },
+      versionHistory: { id in
+        (try? versionHistory(id: id)) ?? []
+      },
+      saveNotifications: { id, notifications in
+        try? notify(id: id, for: notifications)
+      },
+      viewedApp: { id, date in
+        try? viewedApp(id: id, at: date)
+      },
+      publisher: publisher,
+      updates: updates
+    )
+  }
 }
 
 func appReducer(
@@ -213,15 +264,10 @@ func appReducer(
         systemEnvironment.map {
           AppListEnvironment(
             loadApps: $0.loadApps,
-            deleteApps: { ids in
-              try? systemEnvironment.repository.delete(ids: ids)
-            },
-            versionHistory: { id in
-              (try? systemEnvironment.repository.versionHistory(id: id)) ?? []
-            },
-            saveNotifications: { id, notifications in
-              try? systemEnvironment.repository.notify(id: id, for: notifications)
-            },
+            saveApps: $0.repository.saveApps,
+            deleteApps: $0.repository.deleteApps,
+            versionHistory: $0.repository.versionHistory,
+            saveNotifications: $0.repository.saveNotifications,
             openURL: $0.openURL,
             saveSortOrder: { sortOrder in
               systemEnvironment.settings.sortOrder = sortOrder
@@ -229,9 +275,7 @@ func appReducer(
             saveTheme: { theme in
               systemEnvironment.settings.theme = theme
             },
-            recordDetailsViewed: { id, date in
-              try? systemEnvironment.repository.viewedApp(id: id, at: date)
-            }
+            recordDetailsViewed: $0.repository.viewedApp
           )
         }
       }
@@ -241,7 +285,12 @@ func appReducer(
       action: /AppAction.urlScheme,
       environment: { systemEnvironment in
         systemEnvironment.map {
-          URLSchemeEnvironment(loadApps: $0.loadApps)
+          URLSchemeEnvironment(
+            loadApps: $0.loadApps,
+            fetchApps: $0.repository.fetchApps,
+            saveApps: $0.repository.saveApps,
+            deleteAllApps: $0.repository.deleteAllApps
+          )
         }
       }
     ),
@@ -250,7 +299,11 @@ func appReducer(
       action: /AppAction.updates,
       environment: { systemEnvironment in
         systemEnvironment.map {
-          AppUpdateEnvironment(lookupApps: $0.loadApps)
+          AppUpdateEnvironment(
+            lookupApps: $0.loadApps,
+            fetchApps: $0.repository.fetchApps,
+            saveApps: $0.repository.saveApps
+          )
         }
       }
     ),
@@ -302,14 +355,8 @@ func appReducer(
 
       case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
         return .fireAndForget {
-          try? environment.repository.add(updatedApps)
+          environment.repository.saveApps(updatedApps)
           environment.settings.lastUpdateDate = date
-        }
-
-      case let .appList(.addApps(.addAppsResponse(.success(apps)))),
-           let .urlScheme(.addApps(.addAppsResponse(.success(apps)))):
-        return .fireAndForget {
-          try? environment.repository.add(apps)
         }
 
       case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:

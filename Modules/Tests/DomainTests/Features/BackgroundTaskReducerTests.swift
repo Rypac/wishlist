@@ -70,7 +70,7 @@ class BackgroundTaskReducerTests: XCTestCase {
       environment: systemEnvironment.map {
         BackgroundTaskEnvironment(
           submitTask: { _ in },
-          fetchApps: { apps },
+          fetchApps: { [.bear, .things] },
           lookupApps: { ids in
             appsToUpdate = ids
             return Future { subscriber in

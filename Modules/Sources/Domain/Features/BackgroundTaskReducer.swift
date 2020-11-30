@@ -34,13 +34,13 @@ public enum BackgroundTaskAction {
 
 public struct BackgroundTaskEnvironment {
   public var submitTask: (BGTaskRequest) throws -> Void
-  public var fetchApps: () -> [AppDetails]
+  public var fetchApps: () -> [AppSummary]
   public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
   public var saveUpdatedApps: ([AppSummary]) -> Void
 
   public init(
     submitTask: @escaping (BGTaskRequest) throws -> Void,
-    fetchApps: @escaping () -> [AppDetails],
+    fetchApps: @escaping () -> [AppSummary],
     lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
     saveUpdatedApps: @escaping ([AppSummary]) -> Void
   ) {

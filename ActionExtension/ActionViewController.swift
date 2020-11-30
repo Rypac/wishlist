@@ -14,13 +14,8 @@ enum Status: Equatable {
 }
 
 struct ExtensionState: Equatable {
-  var apps: [AppDetails]
   var status: Status
-
-  var addAppsState: AddAppsState {
-    get { AddAppsState(apps: apps) }
-    set { apps = newValue.apps }
-  }
+  var addAppsState: AddAppsState
 }
 
 enum ExtensionAction {
@@ -58,7 +53,10 @@ let extensionReducer = Reducer<ExtensionState, ExtensionAction, SystemEnvironmen
     action: /ExtensionAction.addApps,
     environment: { systemEnvironment in
       systemEnvironment.map {
-        AddAppsEnvironment(loadApps: $0.loadApps)
+        AddAppsEnvironment(
+          loadApps: $0.loadApps,
+          saveApps: $0.saveApps
+        )
       }
     }
   )
@@ -91,7 +89,10 @@ class ActionViewController: UIViewController {
     let repository = CoreDataAppRepository(container: persistentContainer)
     let apps = (try? repository.fetchAll()) ?? []
     return Store(
-      initialState: ExtensionState(apps: apps, status: .resting),
+      initialState: ExtensionState(
+        status: .resting,
+        addAppsState: AddAppsState(addingApps: false)
+      ),
       reducer: extensionReducer,
       environment: .live(
         environment: ExtensionEnvironment(

@@ -6,7 +6,6 @@ import Toolbox
 import XCTest
 
 class AddAppsReducerTests: XCTestCase {
-
   let scheduler = DispatchQueue.testScheduler
   let now = Date()
   let uuid = UUID()
@@ -20,12 +19,15 @@ class AddAppsReducerTests: XCTestCase {
 
   func testAddAppsFromURLExtractsTheAppIDCorrectly() throws {
     let testStore = TestStore(
-      initialState: AddAppsState(apps: []),
+      initialState: AddAppsState(addingApps: false),
       reducer: addAppsReducer,
       environment: systemEnvironment.map {
         AddAppsEnvironment(
           loadApps: { ids in
             Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
+          },
+          saveApps: { apps in
+
           }
         )
       }
@@ -40,10 +42,13 @@ class AddAppsReducerTests: XCTestCase {
 
     testStore.assert(
       .send(.addAppsFromURLs(urls)),
-      .receive(.addApps([1016366447, 1080840241, 904237743])),
+      .receive(.addApps([1016366447, 1080840241, 904237743])) {
+        $0.addingApps = true
+      },
       .do { self.scheduler.advance(by: 1) },
-      .receive(.addAppsResponse(.success([])))
+      .receive(.addAppsResponse(.success([]))) {
+        $0.addingApps = false
+      }
     )
   }
-
 }

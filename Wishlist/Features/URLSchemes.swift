@@ -4,7 +4,7 @@ import Foundation
 import Domain
 
 struct URLSchemeState: Equatable {
-  var apps: [AppDetails]
+  var addAppsState: AddAppsState
   var viewingAppDetails: AppID?
 }
 
@@ -14,7 +14,10 @@ enum URLSchemeAction {
 }
 
 struct URLSchemeEnvironment {
-  let loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
+  var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
+  var fetchApps: () -> [AppSummary]
+  var saveApps: ([AppSummary]) -> Void
+  var deleteAllApps: () -> Void
 }
 
 let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironment<URLSchemeEnvironment>>.combine(
@@ -23,7 +26,10 @@ let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironmen
     action: /URLSchemeAction.addApps,
     environment: { systemEnvironment in
       systemEnvironment.map {
-        AddAppsEnvironment(loadApps: $0.loadApps)
+        AddAppsEnvironment(
+          loadApps: $0.loadApps,
+          saveApps: $0.saveApps
+        )
       }
     }
   ),
@@ -37,24 +43,19 @@ let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironmen
       return .none
 
     case .handleURLScheme(.export):
-      let addAppsURLScheme = URLScheme.addApps(ids: state.apps.map(\.id))
       return .fireAndForget {
+        let apps = environment.fetchApps()
+        let addAppsURLScheme = URLScheme.addApps(ids: apps.map(\.id))
         print(addAppsURLScheme.rawValue)
       }
 
     case .handleURLScheme(.deleteAll):
-      state.apps = []
-      return .none
+      return .fireAndForget {
+        environment.deleteAllApps()
+      }
 
     case .addApps:
       return .none
     }
   }
 )
-
-private extension URLSchemeState {
-  var addAppsState: AddAppsState {
-    get { AddAppsState(apps: apps) }
-    set { apps = newValue.apps }
-  }
-}
