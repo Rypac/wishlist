@@ -41,14 +41,10 @@ class BackgroundTaskReducerTests: XCTestCase {
       }
     )
 
-    testStore.assert(
-      .send(.scheduleAppUpdateTask),
-      .do { self.scheduler.advance(by: 1) },
-      .do {
-        XCTAssertEqual(submittedTask?.identifier, taskIdentifier)
-        XCTAssertEqual(submittedTask?.earliestBeginDate, self.now.addingTimeInterval(taskFrequency))
-      }
-    )
+    testStore.send(.scheduleAppUpdateTask)
+    scheduler.advance()
+    XCTAssertEqual(submittedTask?.identifier, taskIdentifier)
+    XCTAssertEqual(submittedTask?.earliestBeginDate, now.addingTimeInterval(taskFrequency))
   }
 
   func testHandleUpdateTaskSchedulesAnotherUpdateTaskAndSavesSuccessResultToEnvironment() throws {
@@ -84,44 +80,34 @@ class BackgroundTaskReducerTests: XCTestCase {
 
     let refreshTask = TestBackgroundTask(identifier: "refresh-task")
 
-    testStore.assert(
-      // Success flow
-      .send(.handleAppUpdateTask(refreshTask)),
-      .receive(.scheduleAppUpdateTask),
-      .do { self.scheduler.advance(by: 1) },
-      .do {
-        XCTAssertNotNil(refreshTask.expirationHandler)
-        XCTAssertEqual(refreshTask.taskCompletedResult, true)
-        XCTAssertEqual(appsToUpdate, apps.map(\.id))
-        XCTAssertEqual(updatedApps, [updatedThings])
-      },
+    // Success flow
+    testStore.send(.handleAppUpdateTask(refreshTask))
+    testStore.receive(.scheduleAppUpdateTask)
+    scheduler.advance()
+    XCTAssertNotNil(refreshTask.expirationHandler)
+    XCTAssertEqual(refreshTask.taskCompletedResult, true)
+    XCTAssertEqual(appsToUpdate, apps.map(\.id))
+    XCTAssertEqual(updatedApps, [updatedThings])
 
       // Reset test assertions
-      .do {
-        refreshTask.reset()
-        appsToUpdate = nil
-        updatedApps = nil
-      },
-      .environment { update in
-        update.lookupApps = { ids in
-          appsToUpdate = ids
-          return Future { subscriber in
-            subscriber(.failure(FetchAppsError()))
-          }.eraseToAnyPublisher()
-        }
-      },
+    refreshTask.reset()
+    appsToUpdate = nil
+    updatedApps = nil
+    testStore.environment.lookupApps = { ids in
+      appsToUpdate = ids
+      return Future { subscriber in
+        subscriber(.failure(FetchAppsError()))
+      }.eraseToAnyPublisher()
+    }
 
-      // Failure to lookup apps flow
-      .send(.handleAppUpdateTask(refreshTask)),
-      .receive(.scheduleAppUpdateTask),
-      .do { self.scheduler.advance(by: 1) },
-      .do {
-        XCTAssertNotNil(refreshTask.expirationHandler)
-        XCTAssertEqual(refreshTask.taskCompletedResult, false)
-        XCTAssertEqual(appsToUpdate, apps.map(\.id))
-        XCTAssertEqual(updatedApps, nil)
-      }
-    )
+    // Failure to lookup apps flow
+    testStore.send(.handleAppUpdateTask(refreshTask))
+    testStore.receive(.scheduleAppUpdateTask)
+    scheduler.advance()
+    XCTAssertNotNil(refreshTask.expirationHandler)
+    XCTAssertEqual(refreshTask.taskCompletedResult, false)
+    XCTAssertEqual(appsToUpdate, apps.map(\.id))
+    XCTAssertEqual(updatedApps, nil)
   }
 }
 

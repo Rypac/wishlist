@@ -41,12 +41,8 @@ class UpdateAppsReducerTests: XCTestCase {
       }
     )
 
-    testStore.assert(
-      .send(.checkForUpdates),
-      .do {
-        XCTAssertNil(updatedApps)
-      }
-    )
+    testStore.send(.checkForUpdates)
+    XCTAssertNil(updatedApps)
   }
 
   func testNoUpdateIsAttemptedWhenThereAreNoApps() throws {
@@ -70,12 +66,8 @@ class UpdateAppsReducerTests: XCTestCase {
       }
     )
 
-    testStore.assert(
-      .send(.checkForUpdates),
-      .do {
-        XCTAssertNil(updatedApps)
-      }
-    )
+    testStore.send(.checkForUpdates)
+    XCTAssertNil(updatedApps)
   }
 
   func testUpdateIsAttemptedWhenOutsideLastUpdateThreshold() throws {
@@ -108,25 +100,17 @@ class UpdateAppsReducerTests: XCTestCase {
 
     let someFutureDate = now.addingTimeInterval(updateFrequency)
 
-    testStore.assert(
-      .send(.checkForUpdates),
-
-      .environment {
-        $0.now = { someFutureDate }
-      },
-
-      .send(.checkForUpdates) {
-        $0.isUpdateInProgress = true
-      },
-      .do { self.scheduler.advance(by: 1) },
-      .receive(.receivedUpdates(.success([updatedThings]), at: someFutureDate)) {
-        $0.isUpdateInProgress = false
-        $0.lastUpdateDate = someFutureDate
-      },
-      .do {
-        XCTAssertEqual(updatedApps, [updatedThings])
-      }
-    )
+    testStore.send(.checkForUpdates)
+    testStore.environment.now = { someFutureDate }
+    testStore.send(.checkForUpdates) {
+      $0.isUpdateInProgress = true
+    }
+    scheduler.advance()
+    testStore.receive(.receivedUpdates(.success([updatedThings]), at: someFutureDate)) {
+      $0.isUpdateInProgress = false
+      $0.lastUpdateDate = someFutureDate
+    }
+    XCTAssertEqual(updatedApps, [updatedThings])
   }
 
   func testUpdateIsCancelledWhenRequested() throws {
@@ -150,16 +134,12 @@ class UpdateAppsReducerTests: XCTestCase {
       }
     )
 
-    testStore.assert(
-      .send(.checkForUpdates) {
-        $0.isUpdateInProgress = true
-      },
-      .send(.cancelUpdateCheck) {
-        $0.isUpdateInProgress = false
-      },
-      .do {
-        XCTAssertNil(updatedApps)
-      }
-    )
+    testStore.send(.checkForUpdates) {
+      $0.isUpdateInProgress = true
+    }
+    testStore.send(.cancelUpdateCheck) {
+      $0.isUpdateInProgress = false
+    }
+    XCTAssertNil(updatedApps)
   }
 }

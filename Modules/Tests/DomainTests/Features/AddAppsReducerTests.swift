@@ -40,15 +40,13 @@ class AddAppsReducerTests: XCTestCase {
       URL(string: "https://apps.google.com/us/id5678")!
     ]
 
-    testStore.assert(
-      .send(.addAppsFromURLs(urls)),
-      .receive(.addApps([1016366447, 1080840241, 904237743])) {
-        $0.addingApps = true
-      },
-      .do { self.scheduler.advance(by: 1) },
-      .receive(.addAppsResponse(.success([]))) {
-        $0.addingApps = false
-      }
-    )
+    testStore.send(.addAppsFromURLs(urls))
+    testStore.receive(.addApps([1016366447, 1080840241, 904237743])) {
+      $0.addingApps = true
+    }
+    scheduler.advance()
+    testStore.receive(.addAppsResponse(.success([]))) {
+      $0.addingApps = false
+    }
   }
 }
