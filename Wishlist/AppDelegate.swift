@@ -1,37 +1,18 @@
 import BackgroundTasks
 import Combine
 import ComposableArchitecture
-import CoreData
 import UIKit
 import Domain
 import Services
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-  private(set) lazy var persistentContainer: NSPersistentContainer = {
-    let container = NSPersistentContainer(name: "DataModel")
-
-    let storeURL = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
-    let storeDescription = NSPersistentStoreDescription(url: storeURL)
-    storeDescription.configuration = nil
-    container.persistentStoreDescriptions = [storeDescription]
-
-    container.loadPersistentStores() { _, error in
-      if let error = error as NSError? {
-        fatalError("Unresolved error \(error), \(error.userInfo)")
-      }
-    }
-
-    container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-    container.viewContext.automaticallyMergesChangesFromParent = true
-
-    return container
-  }()
-
   let settings = Settings()
   let appStore: AppLookupService = AppStoreService()
-  private(set) lazy var appRepository: AppRepository = CoreDataAppRepository(container: persistentContainer)
+  private(set) lazy var appRepository: AppRepository = {
+    let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
+    return try! SqliteAppRepository(sqlite: Sqlite(path: path.absoluteString))
+  }()
 
   private lazy var store: Store<AppDelegateState, AppDelegateAction> = {
     Store(

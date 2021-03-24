@@ -1,6 +1,5 @@
 import Combine
 import ComposableArchitecture
-import CoreData
 import MobileCoreServices
 import UIKit
 import Domain
@@ -63,30 +62,14 @@ let extensionReducer = Reducer<ExtensionState, ExtensionAction, SystemEnvironmen
 )
 
 class ActionViewController: UIViewController {
-
-  lazy var persistentContainer: NSPersistentContainer = {
-    let container = NSPersistentContainer(name: "DataModel")
-
-    let storeURL = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
-    let storeDescription = NSPersistentStoreDescription(url: storeURL)
-    storeDescription.configuration = nil
-    container.persistentStoreDescriptions = [storeDescription]
-
-    container.loadPersistentStores() { _, error in
-      if let error = error as NSError? {
-        fatalError("Unresolved error \(error), \(error.userInfo)")
-      }
-    }
-
-    container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-    container.viewContext.automaticallyMergesChangesFromParent = true
-
-    return container
+  private(set) lazy var appRepository: AppRepository = {
+    let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
+    return try! SqliteAppRepository(sqlite: Sqlite(path: path.absoluteString))
   }()
 
   private lazy var store: Store<ExtensionState, ExtensionAction> = {
     let appStore = AppStoreService()
-    let repository = CoreDataAppRepository(container: persistentContainer)
+    let repository = appRepository
     let apps = (try? repository.fetchAll()) ?? []
     return Store(
       initialState: ExtensionState(

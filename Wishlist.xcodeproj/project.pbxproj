@@ -17,7 +17,6 @@
 		9432BAC024355C20001CCCD9 /* URLDropDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */; };
 		943881B8246BB3FF009A60F7 /* SceneLifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943881B7246BB3FF009A60F7 /* SceneLifecycle.swift */; };
 		943F705A2462328A007425BA /* URLScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F70592462328A007425BA /* URLScheme.swift */; };
-		94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */; };
 		945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* URLItemProvider.swift */; };
@@ -32,7 +31,6 @@
 		9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9494DA0924319285003A7992 /* Add to Wishlist.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		949AB89625724C6A00517894 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = 949AB89525724C6A00517894 /* Domain */; };
 		949AB89825724C7400517894 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = 949AB89725724C7400517894 /* Domain */; };
-		949C700E2434644900009960 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */; };
 		94BB7A2C248B6BBB00A2BA68 /* AppListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BB7A2B248B6BBB00A2BA68 /* AppListRowView.swift */; };
 		94BB7A2E248B6E6C00A2BA68 /* AppListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BB7A2D248B6E6C00A2BA68 /* AppListContentView.swift */; };
 		94C28BE3246526320013B41F /* URLSchemes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C28BE2246526320013B41F /* URLSchemes.swift */; };
@@ -94,7 +92,6 @@
 		9432BABF24355C20001CCCD9 /* URLDropDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLDropDelegate.swift; sourceTree = "<group>"; };
 		943881B7246BB3FF009A60F7 /* SceneLifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneLifecycle.swift; sourceTree = "<group>"; };
 		943F70592462328A007425BA /* URLScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLScheme.swift; sourceTree = "<group>"; };
-		94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		945B44C4232CCD8F00A3B573 /* AppDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDetailsView.swift; sourceTree = "<group>"; };
 		945CCA55243172DE000B7586 /* URLItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLItemProvider.swift; sourceTree = "<group>"; };
@@ -279,7 +276,6 @@
 				94FA20D4231BA2BD00EC1190 /* Assets.xcassets */,
 				94FA20DC231BA2BD00EC1190 /* Info.plist */,
 				94637EB02431A211005EF584 /* Wishlist.entitlements */,
-				94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */,
 				94FA20D9231BA2BD00EC1190 /* LaunchScreen.storyboard */,
 				94FA20D6231BA2BD00EC1190 /* Preview Content */,
 			);
@@ -413,7 +409,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9494DA0E24319285003A7992 /* ActionViewController.swift in Sources */,
-				949C700E2434644900009960 /* DataModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,7 +423,6 @@
 				947E5A842478EED000EAE43D /* VersionHistoryView.swift in Sources */,
 				94C28BE3246526320013B41F /* URLSchemes.swift in Sources */,
 				948890C424304DDB00E3E5FA /* SceneDescription.swift in Sources */,
-				94555EEE2433ED4C00223AD2 /* DataModel.xcdatamodeld in Sources */,
 				947E5A8624790AA400EAE43D /* ExpandableTextModifier.swift in Sources */,
 				94BB7A2C248B6BBB00A2BA68 /* AppListRowView.swift in Sources */,
 				945B44C5232CCD8F00A3B573 /* AppDetailsView.swift in Sources */,
@@ -749,19 +743,6 @@
 			productName = ToolboxUI;
 		};
 /* End XCSwiftPackageProductDependency section */
-
-/* Begin XCVersionGroup section */
-		94555EEC2433ED4C00223AD2 /* DataModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */,
-			);
-			currentVersion = 94555EED2433ED4C00223AD2 /* DataModel.xcdatamodel */;
-			path = DataModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 94FA20C3231BA2BC00EC1190 /* Project object */;
 }
