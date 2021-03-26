@@ -165,12 +165,14 @@ private extension AppState {
   var appUpdateState: AppUpdateState {
     get {
       AppUpdateState(
+        apps: apps,
         lastUpdateDate: lastUpdateDate,
         updateFrequency: appUpdateFrequency,
         isUpdateInProgress: isUpdateInProgress
       )
     }
     set {
+      apps = newValue.apps
       lastUpdateDate = newValue.lastUpdateDate
       appUpdateFrequency = newValue.updateFrequency
       isUpdateInProgress = newValue.isUpdateInProgress
@@ -297,7 +299,6 @@ func appReducer(
         systemEnvironment.map {
           AppUpdateEnvironment(
             lookupApps: $0.loadApps,
-            fetchApps: $0.repository.fetchApps,
             saveApps: $0.repository.saveApps
           )
         }

@@ -3,15 +3,18 @@ import ComposableArchitecture
 import Foundation
 
 public struct AppUpdateState: Equatable {
+  public var apps: IdentifiedArrayOf<AppDetails>
   public var lastUpdateDate: Date?
   public var updateFrequency: TimeInterval
   public var isUpdateInProgress: Bool
 
   public init(
+    apps: IdentifiedArrayOf<AppDetails>,
     lastUpdateDate: Date?,
     updateFrequency: TimeInterval,
     isUpdateInProgress: Bool
   ) {
+    self.apps = apps
     self.lastUpdateDate = lastUpdateDate
     self.updateFrequency = updateFrequency
     self.isUpdateInProgress = isUpdateInProgress
@@ -28,16 +31,13 @@ public enum AppUpdateAction: Equatable {
 
 public struct AppUpdateEnvironment {
   public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  public var fetchApps: () -> [AppSummary]
-  public var saveApps: ([AppSummary]) -> Void
+  public var saveApps: ([AppSummary]) throws -> Void
 
   public init(
     lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
-    fetchApps: @escaping () -> [AppSummary],
-    saveApps: @escaping ([AppSummary]) -> Void
+    saveApps: @escaping ([AppSummary]) throws -> Void
   ) {
     self.lookupApps = lookupApps
-    self.fetchApps = fetchApps
     self.saveApps = saveApps
   }
 }
@@ -50,12 +50,8 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
       return .none
     }
 
-    let apps = environment.fetchApps()
-    guard !apps.isEmpty else {
-      return .none
-    }
-
     state.isUpdateInProgress = true
+    let apps = state.apps.map(\.summary)
     return checkForUpdates(apps: apps, lookup: environment.lookupApps)
       .receive(on: environment.mainQueue())
       .mapError { _ in UpdateAppsError() }
@@ -68,7 +64,7 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
     state.lastUpdateDate = date
 
     return .fireAndForget {
-      environment.saveApps(updatedApps)
+      try? environment.saveApps(updatedApps)
     }
 
   case let .receivedUpdates(.failure(error), at: _):
@@ -83,7 +79,7 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
 
 private extension AppUpdateState {
   func shouldCheckForUpdates(now: Date) -> Bool {
-    if isUpdateInProgress {
+    if isUpdateInProgress || apps.isEmpty {
       return false
     }
 

@@ -23,6 +23,7 @@ class UpdateAppsReducerTests: XCTestCase {
 
     let testStore = TestStore(
       initialState: AppUpdateState(
+        apps: [details(.bear), details(.things)],
         lastUpdateDate: now,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -32,9 +33,6 @@ class UpdateAppsReducerTests: XCTestCase {
         AppUpdateEnvironment(
           lookupApps: { ids in
             Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
-          },
-          fetchApps: {
-            [.bear, .things]
           },
           saveApps: { updatedApps = $0 }
         )
@@ -50,6 +48,7 @@ class UpdateAppsReducerTests: XCTestCase {
 
     let testStore = TestStore(
       initialState: AppUpdateState(
+        apps: [],
         lastUpdateDate: nil,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -60,7 +59,6 @@ class UpdateAppsReducerTests: XCTestCase {
           lookupApps: { ids in
             Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
           },
-          fetchApps: { [] },
           saveApps: { updatedApps = $0 }
         )
       }
@@ -80,6 +78,7 @@ class UpdateAppsReducerTests: XCTestCase {
 
     let testStore = TestStore(
       initialState: AppUpdateState(
+        apps: [details(.bear), details(.things)],
         lastUpdateDate: now,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -89,9 +88,6 @@ class UpdateAppsReducerTests: XCTestCase {
         AppUpdateEnvironment(
           lookupApps: { ids in
             Just([updatedThings]).setFailureType(to: Error.self).eraseToAnyPublisher()
-          },
-          fetchApps: {
-            [.bear, .things]
           },
           saveApps: { updatedApps = $0 }
         )
@@ -118,6 +114,7 @@ class UpdateAppsReducerTests: XCTestCase {
 
     let testStore = TestStore(
       initialState: AppUpdateState(
+        apps: [details(.bear)],
         lastUpdateDate: nil,
         updateFrequency: 10,
         isUpdateInProgress: false
@@ -128,7 +125,6 @@ class UpdateAppsReducerTests: XCTestCase {
           lookupApps: { ids in
             Empty(completeImmediately: false).eraseToAnyPublisher()
           },
-          fetchApps: { [.bear] },
           saveApps: { updatedApps = $0 }
         )
       }
@@ -141,5 +137,11 @@ class UpdateAppsReducerTests: XCTestCase {
       $0.isUpdateInProgress = false
     }
     XCTAssertNil(updatedApps)
+  }
+}
+
+private extension UpdateAppsReducerTests {
+  func details(_ summary: AppSummary) -> AppDetails {
+    AppDetails(summary, firstAdded: now.addingTimeInterval(-20000))
   }
 }
