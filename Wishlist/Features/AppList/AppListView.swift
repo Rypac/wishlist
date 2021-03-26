@@ -33,14 +33,14 @@ enum AppListAction {
 
 struct AppListEnvironment {
   var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  var saveApps: ([AppSummary]) -> Void
-  var deleteApps: ([AppID]) -> Void
-  var versionHistory: (AppID) -> [Version]
-  var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
+  var saveApps: ([AppSummary]) throws -> Void
+  var deleteApps: ([AppID]) throws -> Void
+  var versionHistory: (AppID) throws -> [Version]
+  var saveNotifications: (AppID, Set<ChangeNotification>) throws -> Void
   var openURL: (URL) -> Void
   var saveSortOrder: (SortOrder) -> Void
   var saveTheme: (Theme) -> Void
-  var recordDetailsViewed: (AppID, Date) -> Void
+  var recordDetailsViewed: (AppID, Date) throws -> Void
 }
 
 private extension AppListState {

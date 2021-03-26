@@ -32,7 +32,7 @@ enum AppListRowAction {
 
 struct AppListRowEnvironment {
   var openURL: (URL) -> Void
-  var recordAppViewed: (AppID, Date) -> Void
+  var recordAppViewed: (AppID, Date) throws -> Void
 }
 
 let appListRowReducer = Reducer<AppDetails, AppListRowAction, SystemEnvironment<AppListRowEnvironment>> { state, action, environment in
@@ -46,7 +46,7 @@ let appListRowReducer = Reducer<AppDetails, AppListRowAction, SystemEnvironment<
     let now = environment.now()
     state.lastViewed = now
     return .fireAndForget {
-      environment.recordAppViewed(id, now)
+      try? environment.recordAppViewed(id, now)
     }
 
   case .openInNewWindow:

@@ -25,10 +25,10 @@ enum AppListContentAction {
 
 struct AppListContentEnvironment {
   var openURL: (URL) -> Void
-  var versionHistory: (AppID) -> [Version]
-  var deleteApps: ([AppID]) -> Void
-  var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
-  var recordAppViewed: (AppID, Date) -> Void
+  var versionHistory: (AppID) throws -> [Version]
+  var deleteApps: ([AppID]) throws -> Void
+  var saveNotifications: (AppID, Set<ChangeNotification>) throws -> Void
+  var recordAppViewed: (AppID, Date) throws -> Void
 }
 
 private extension AppListContentState {
@@ -82,7 +82,7 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
       state.visibleApps.removeAll(where: ids.contains)
       state.apps.removeAll(where: { ids.contains($0.id) })
       return .fireAndForget {
-        environment.deleteApps(ids)
+        try? environment.deleteApps(ids)
       }
 
     case let .app(id, .selected(selected)):

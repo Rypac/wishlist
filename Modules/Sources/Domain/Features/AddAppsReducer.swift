@@ -21,11 +21,11 @@ public enum AddAppsAction: Equatable {
 
 public struct AddAppsEnvironment {
   public var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  public var saveApps: ([AppSummary]) -> Void
+  public var saveApps: ([AppSummary]) throws -> Void
 
   public init(
     loadApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
-    saveApps: @escaping ([AppSummary]) -> Void
+    saveApps: @escaping ([AppSummary]) throws -> Void
   ) {
     self.loadApps = loadApps
     self.saveApps = saveApps
@@ -51,7 +51,7 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
   case let .addAppsResponse(.success(apps)):
     state.addingApps = false
     return .fireAndForget {
-      environment.saveApps(apps)
+      try? environment.saveApps(apps)
     }
 
   case .addAppsResponse(.failure):

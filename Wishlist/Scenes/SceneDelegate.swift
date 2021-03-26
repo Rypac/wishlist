@@ -214,39 +214,27 @@ struct AppEnvironment {
 }
 
 struct AppRepositoryEnvironment {
-  var fetchApps: () -> [AppSummary]
-  var saveApps: ([AppSummary]) -> Void
-  var deleteApps: ([AppID]) -> Void
-  var deleteAllApps: () -> Void
-  var versionHistory: (AppID) -> [Version]
-  var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
-  var viewedApp: (AppID, Date) -> Void
+  var fetchApps: () throws -> [AppSummary]
+  var saveApps: ([AppSummary]) throws -> Void
+  var deleteApps: ([AppID]) throws -> Void
+  var deleteAllApps: () throws -> Void
+  var versionHistory: (AppID) throws -> [Version]
+  var saveNotifications: (AppID, Set<ChangeNotification>) throws -> Void
+  var viewedApp: (AppID, Date) throws -> Void
 }
 
 extension AppRepository {
   var environment: AppRepositoryEnvironment {
     AppRepositoryEnvironment(
       fetchApps: {
-        (try? fetchAll().map(\.summary)) ?? []
+        try fetchAll().map(\.summary)
       },
-      saveApps: { apps in
-        try? add(apps)
-      },
-      deleteApps: { ids in
-        try? delete(ids: ids)
-      },
-      deleteAllApps: {
-        try? deleteAll()
-      },
-      versionHistory: { id in
-        (try? versionHistory(id: id)) ?? []
-      },
-      saveNotifications: { id, notifications in
-        try? notify(id: id, for: notifications)
-      },
-      viewedApp: { id, date in
-        try? viewedApp(id: id, at: date)
-      }
+      saveApps: add,
+      deleteApps: delete,
+      deleteAllApps: deleteAll,
+      versionHistory: versionHistory,
+      saveNotifications: notify,
+      viewedApp: viewedApp
     )
   }
 }
@@ -346,7 +334,7 @@ func appReducer(
 
       case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
         return .fireAndForget {
-          environment.repository.saveApps(updatedApps)
+          try? environment.repository.saveApps(updatedApps)
           environment.settings.lastUpdateDate = date
         }
 

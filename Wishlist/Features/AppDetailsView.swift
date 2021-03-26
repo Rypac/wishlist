@@ -19,8 +19,8 @@ enum AppDetailsAction {
 
 struct AppDetailsEnvironment {
   var openURL: (URL) -> Void
-  var versionHistory: (AppID) -> [Version]
-  var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
+  var versionHistory: (AppID) throws -> [Version]
+  var saveNotifications: (AppID, Set<ChangeNotification>) throws -> Void
 }
 
 let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnvironment<AppDetailsEnvironment>>.combine(
@@ -38,7 +38,7 @@ let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnviron
     case let .showVersionHistory(show):
       state.showVersionHistory = show
       if show, state.versions == nil {
-        state.versions = environment.versionHistory(state.app.id)
+        state.versions = try? environment.versionHistory(state.app.id)
       }
       return .none
 
@@ -51,7 +51,7 @@ let appDetailsReducer = Reducer<AppDetailsState, AppDetailsAction, SystemEnviron
       let id = state.app.id
       let notifications = state.app.notifications
       return .fireAndForget {
-        environment.saveNotifications(id, notifications)
+        try? environment.saveNotifications(id, notifications)
       }
 
     case let .openInAppStore(url):

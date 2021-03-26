@@ -15,9 +15,9 @@ enum URLSchemeAction {
 
 struct URLSchemeEnvironment {
   var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  var fetchApps: () -> [AppSummary]
-  var saveApps: ([AppSummary]) -> Void
-  var deleteAllApps: () -> Void
+  var fetchApps: () throws -> [AppSummary]
+  var saveApps: ([AppSummary]) throws -> Void
+  var deleteAllApps: () throws -> Void
 }
 
 let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironment<URLSchemeEnvironment>>.combine(
@@ -44,14 +44,15 @@ let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironmen
 
     case .handleURLScheme(.export):
       return .fireAndForget {
-        let apps = environment.fetchApps()
-        let addAppsURLScheme = URLScheme.addApps(ids: apps.map(\.id))
-        print(addAppsURLScheme.rawValue)
+        if let apps = try? environment.fetchApps() {
+          let addAppsURLScheme = URLScheme.addApps(ids: apps.map(\.id))
+          print(addAppsURLScheme.rawValue)
+        }
       }
 
     case .handleURLScheme(.deleteAll):
       return .fireAndForget {
-        environment.deleteAllApps()
+        try? environment.deleteAllApps()
       }
 
     case .addApps:
