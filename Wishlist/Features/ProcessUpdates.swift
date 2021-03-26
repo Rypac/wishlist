@@ -12,15 +12,11 @@ struct ProcessUpdateState: Equatable {
 enum ProcessUpdateAction {
   case subscribe
   case unsubscribe
-  case apps(PublisherAction<[AppDetails]>)
-  case updates(PublisherAction<[AppDetails]>)
   case sortOrder(PublisherAction<SortOrder>)
   case theme(PublisherAction<Theme>)
 }
 
 struct ProcessUpdateEnvironment {
-  var apps: PublisherEnvironment<[AppDetails]>
-  var updates: PublisherEnvironment<[AppDetails]>
   var sortOrder: PublisherEnvironment<SortOrder>
   var theme: PublisherEnvironment<Theme>
 }
@@ -44,11 +40,6 @@ func processUpdateReducer(
   id: AnyHashable
 ) -> Reducer<ProcessUpdateState, ProcessUpdateAction, SystemEnvironment<ProcessUpdateEnvironment>> {
   .combine(
-    publisherReducer(id: ProcessID<[AppDetails]>(id)).pullback(
-      state: \.appElements,
-      action: /ProcessUpdateAction.apps,
-      environment: { $0.map(\.apps) }
-    ),
     publisherReducer(id: ProcessID<SortOrder>(id)).pullback(
       state: \.sortOrder,
       action: /ProcessUpdateAction.sortOrder,
@@ -59,30 +50,21 @@ func processUpdateReducer(
       action: /ProcessUpdateAction.theme,
       environment: { $0.map(\.theme) }
     ),
-    appUpdatesReducer(id: ProcessID<IdentifiedArrayOf<AppDetails>>(id)).pullback(
-      state: \.apps,
-      action: /ProcessUpdateAction.updates,
-      environment: { $0.map(\.updates) }
-    ),
     Reducer { state, action, environment in
       switch action {
       case .subscribe:
         return .merge(
-          Effect(value: .apps(.subscribe)),
-          Effect(value: .updates(.subscribe)),
           Effect(value: .sortOrder(.subscribe)),
           Effect(value: .theme(.subscribe))
         )
 
       case .unsubscribe:
         return .merge(
-          Effect(value: .apps(.unsubscribe)),
-          Effect(value: .updates(.unsubscribe)),
           Effect(value: .sortOrder(.unsubscribe)),
           Effect(value: .theme(.unsubscribe))
         )
 
-      case .apps, .sortOrder, .theme, .updates:
+      case .sortOrder, .theme:
         return .none
       }
     }

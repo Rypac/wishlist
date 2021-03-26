@@ -219,8 +219,6 @@ struct AppRepositoryEnvironment {
   var versionHistory: (AppID) -> [Version]
   var saveNotifications: (AppID, Set<ChangeNotification>) -> Void
   var viewedApp: (AppID, Date) -> Void
-  var publisher: () -> AnyPublisher<[AppDetails], Never>
-  var updates: () -> AnyPublisher<[AppDetails], Never>
 }
 
 extension AppRepository {
@@ -246,9 +244,7 @@ extension AppRepository {
       },
       viewedApp: { id, date in
         try? viewedApp(id: id, at: date)
-      },
-      publisher: publisher,
-      updates: updates
+      }
     )
   }
 }
@@ -313,12 +309,6 @@ func appReducer(
       environment: { systemEnvironment in
         systemEnvironment.map { environment in
           ProcessUpdateEnvironment(
-            apps: PublisherEnvironment(
-              publisher: environment.repository.publisher()
-            ),
-            updates: PublisherEnvironment(
-              publisher: systemEnvironment.repository.updates()
-            ),
             sortOrder: PublisherEnvironment(
               publisher: environment.settings.$sortOrder.publisher().eraseToAnyPublisher()
             ),
@@ -366,7 +356,6 @@ func appReducer(
     Reducer { state, action, environment in
       switch action {
       case .lifecycle(.willConnect),
-           .processUpdates(.apps(.receivedValue)),
            .updates(.receivedUpdates(.success, _)),
            .urlScheme(.addApps(.addAppsResponse(.success))):
         return Effect(value: .appList(.sortOrderUpdated))

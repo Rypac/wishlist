@@ -2,8 +2,6 @@ import Combine
 import Foundation
 
 public protocol AppRepository {
-  func publisher() -> AnyPublisher<[AppDetails], Never>
-  func updates() -> AnyPublisher<[AppDetails], Never>
   func fetchAll() throws -> [AppDetails]
   func fetch(id: AppID) throws -> AppDetails?
   func add(_ app: AppSummary) throws

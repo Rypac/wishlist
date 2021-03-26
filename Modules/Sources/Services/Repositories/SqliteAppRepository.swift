@@ -10,14 +10,6 @@ public final class SqliteAppRepository: AppRepository {
     try migrate()
   }
 
-  public func publisher() -> AnyPublisher<[AppDetails], Never> {
-    Empty().eraseToAnyPublisher()
-  }
-
-  public func updates() -> AnyPublisher<[AppDetails], Never> {
-    Empty().eraseToAnyPublisher()
-  }
-
   public func fetchAll() throws -> [AppDetails] {
     let utcISODateFormatter = ISO8601DateFormatter()
     let results = try sqlite.run(

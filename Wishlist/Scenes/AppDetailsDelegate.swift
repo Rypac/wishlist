@@ -147,15 +147,6 @@ func appDetailsSceneReducer(
          }
        }
     ),
-    appUpdatesReducer(id: ProcessID<AppDetails>(id)).optional().pullback(
-      state: \.app,
-      action: /AppDetailsSceneAction.app,
-      environment: { systemEnvironment in
-        systemEnvironment.map {
-          PublisherEnvironment(publisher: $0.repository.updates())
-        }
-      }
-    ),
     appDetailsReducer.optional().pullback(
       state: \.details,
       action: /AppDetailsSceneAction.details,
@@ -203,28 +194,4 @@ func appDetailsSceneReducer(
       }
     }
   )
-}
-
-private func appUpdatesReducer(
-  id: AnyHashable
-) -> Reducer<AppDetails, PublisherAction<[AppDetails]>, SystemEnvironment<PublisherEnvironment<[AppDetails]>>> {
-  Reducer { state, action, environment in
-    switch action {
-    case .subscribe:
-      return environment.publisher
-        .receive(on: environment.mainQueue())
-        .eraseToEffect()
-        .map(PublisherAction.receivedValue)
-        .cancellable(id: id, cancelInFlight: true)
-
-    case .unsubscribe:
-      return .cancel(id: id)
-
-    case let .receivedValue(apps):
-      for app in apps where app.id == state.id {
-        state = app
-      }
-      return .none
-    }
-  }
 }
