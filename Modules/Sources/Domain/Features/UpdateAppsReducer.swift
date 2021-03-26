@@ -31,11 +31,11 @@ public enum AppUpdateAction: Equatable {
 
 public struct AppUpdateEnvironment {
   public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  public var saveApps: ([AppSummary]) throws -> Void
+  public var saveApps: ([AppDetails]) throws -> Void
 
   public init(
     lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
-    saveApps: @escaping ([AppSummary]) throws -> Void
+    saveApps: @escaping ([AppDetails]) throws -> Void
   ) {
     self.lookupApps = lookupApps
     self.saveApps = saveApps
@@ -63,11 +63,17 @@ public let appUpdateReducer = Reducer<AppUpdateState, AppUpdateAction, SystemEnv
     state.isUpdateInProgress = false
     state.lastUpdateDate = date
 
+    for updatedApp in updatedApps {
+      state.apps[id: updatedApp.id]?.applyUpdate(updatedApp)
+    }
+
+    let updatedAppIds = Set(updatedApps.map(\.id))
+    let updatedApps = state.apps.elements.filter { updatedAppIds.contains($0.id) }
     return .fireAndForget {
       try? environment.saveApps(updatedApps)
     }
 
-  case let .receivedUpdates(.failure(error), at: _):
+  case let .receivedUpdates(.failure(error), _):
     state.isUpdateInProgress = false
     return .none
 

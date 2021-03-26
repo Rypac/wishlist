@@ -113,7 +113,7 @@ public final class SqliteAppRepository: AppRepository {
     }
   }
 
-  public func add(_ apps: [AppSummary]) throws {
+  public func add(_ apps: [AppDetails]) throws {
     let utcISODateFormatter = ISO8601DateFormatter()
     let now = Date()
     try sqlite.execute("BEGIN;")
@@ -133,7 +133,7 @@ public final class SqliteAppRepository: AppRepository {
         .text(app.icon.large.absoluteString),
         .text(utcISODateFormatter.string(from: app.releaseDate)),
         .text(app.version.name),
-        .text(app.price.formatted),
+        .text(app.price.current.formatted),
         "AUD"
       )
 
@@ -152,7 +152,7 @@ public final class SqliteAppRepository: AppRepository {
         REPLACE INTO price VALUES (?, ?, ?, ?);
         """,
         .integer(Int64(app.id.rawValue)),
-        .text(app.price.formatted),
+        .text(app.price.current.formatted),
         "AUD",
         nil
       )
@@ -162,8 +162,8 @@ public final class SqliteAppRepository: AppRepository {
         REPLACE INTO interaction VALUES (?, ?, ?, ?);
         """,
         .integer(Int64(app.id.rawValue)),
-        .text(utcISODateFormatter.string(from: now)),
-        nil,
+        .text(utcISODateFormatter.string(from: app.firstAdded ?? now)),
+        app.lastViewed.map(utcISODateFormatter.string).map(Sqlite.Datatype.text) ?? .null,
         0
       )
 
@@ -172,8 +172,8 @@ public final class SqliteAppRepository: AppRepository {
         REPLACE INTO notification VALUES (?, ?, ?);
         """,
         .integer(Int64(app.id.rawValue)),
-        .integer(app.price.value > 0 ? 1 : 0),
-        true
+        .integer(app.notifications.contains(.priceDrop) ? 1 : 0),
+        .integer(app.notifications.contains(.newVersion) ? 1 : 0)
       )
     }
     try sqlite.execute("COMMIT;")

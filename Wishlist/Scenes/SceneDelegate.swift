@@ -227,7 +227,7 @@ struct AppEnvironment {
 
 struct AppRepositoryEnvironment {
   var fetchApps: () throws -> [AppSummary]
-  var saveApps: ([AppSummary]) throws -> Void
+  var saveApps: ([AppDetails]) throws -> Void
   var deleteApps: ([AppID]) throws -> Void
   var deleteAllApps: () throws -> Void
   var versionHistory: (AppID) throws -> [Version]
@@ -344,18 +344,6 @@ func appReducer(
           }
         )
 
-      case let .updates(.receivedUpdates(.success(updatedApps), at: date)):
-        return .fireAndForget {
-          try? environment.repository.saveApps(updatedApps)
-          environment.settings.lastUpdateDate = date
-        }
-
-      case .lifecycle, .urlScheme, .appList, .updates, .settings, .processUpdates:
-        return .none
-      }
-    },
-    Reducer { state, action, environment in
-      switch action {
       case .lifecycle(.willConnect),
            .updates(.receivedUpdates(.success, _)),
            .urlScheme(.addApps(.addAppsResponse(.success))):

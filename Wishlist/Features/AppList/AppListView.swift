@@ -33,7 +33,7 @@ enum AppListAction {
 
 struct AppListEnvironment {
   var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  var saveApps: ([AppSummary]) throws -> Void
+  var saveApps: ([AppDetails]) throws -> Void
   var deleteApps: ([AppID]) throws -> Void
   var versionHistory: (AppID) throws -> [Version]
   var saveNotifications: (AppID, Set<ChangeNotification>) throws -> Void

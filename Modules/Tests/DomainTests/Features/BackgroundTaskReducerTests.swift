@@ -56,7 +56,7 @@ class BackgroundTaskReducerTests: XCTestCase {
     updatedThings.version = Version(name: "3.12.4", date: now, notes: nil)
 
     var appsToUpdate: [AppID]?
-    var updatedApps: [AppSummary]?
+    var updatedApps: [AppDetails]?
 
     let testStore = TestStore(
       initialState: BackgroundTaskState(
@@ -87,7 +87,7 @@ class BackgroundTaskReducerTests: XCTestCase {
     XCTAssertNotNil(refreshTask.expirationHandler)
     XCTAssertEqual(refreshTask.taskCompletedResult, true)
     XCTAssertEqual(appsToUpdate, apps.map(\.id))
-    XCTAssertEqual(updatedApps, [updatedThings])
+    XCTAssertEqual(updatedApps, [AppDetails(updatedThings, firstAdded: now)])
 
       // Reset test assertions
     refreshTask.reset()

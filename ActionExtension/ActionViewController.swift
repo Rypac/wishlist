@@ -23,7 +23,7 @@ enum ExtensionAction {
 
 struct ExtensionEnvironment {
   var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  var saveApps: ([AppSummary]) -> Void
+  var saveApps: ([AppDetails]) throws -> Void
 }
 
 let extensionReducer = Reducer<ExtensionState, ExtensionAction, SystemEnvironment<ExtensionEnvironment>>.combine(
@@ -35,8 +35,11 @@ let extensionReducer = Reducer<ExtensionState, ExtensionAction, SystemEnvironmen
 
     case let .addApps(.addAppsResponse(.success(apps))):
       state.status = .success(apps)
+
+      let now = environment.now()
+      let newApps = apps.map { AppDetails($0, firstAdded: now) }
       return .fireAndForget {
-        environment.saveApps(apps)
+        try? environment.saveApps(newApps)
       }
 
     case .addApps(.addAppsResponse(.failure)):
@@ -80,7 +83,7 @@ class ActionViewController: UIViewController {
       environment: .live(
         environment: ExtensionEnvironment(
           loadApps: appStore.lookup(ids:),
-          saveApps: { try? repository.add($0) }
+          saveApps: repository.add
         )
       )
     )

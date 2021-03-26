@@ -19,7 +19,7 @@ class UpdateAppsReducerTests: XCTestCase {
   }()
 
   func testNoUpdateIsAttemptedWhenWithinLastUpdateThreshold() throws {
-    var updatedApps: [AppSummary]?
+    var updatedApps: [AppDetails]?
 
     let testStore = TestStore(
       initialState: AppUpdateState(
@@ -44,7 +44,7 @@ class UpdateAppsReducerTests: XCTestCase {
   }
 
   func testNoUpdateIsAttemptedWhenThereAreNoApps() throws {
-    var updatedApps: [AppSummary]?
+    var updatedApps: [AppDetails]?
 
     let testStore = TestStore(
       initialState: AppUpdateState(
@@ -74,7 +74,7 @@ class UpdateAppsReducerTests: XCTestCase {
     var updatedThings = AppSummary.things
     updatedThings.version = Version(name: "4.0.0", date: now, notes: nil)
 
-    var updatedApps: [AppSummary]?
+    var updatedApps: [AppDetails]?
 
     let testStore = TestStore(
       initialState: AppUpdateState(
@@ -105,12 +105,13 @@ class UpdateAppsReducerTests: XCTestCase {
     testStore.receive(.receivedUpdates(.success([updatedThings]), at: someFutureDate)) {
       $0.isUpdateInProgress = false
       $0.lastUpdateDate = someFutureDate
+      $0.apps[id: updatedThings.id] = self.details(updatedThings)
     }
-    XCTAssertEqual(updatedApps, [updatedThings])
+    XCTAssertEqual(updatedApps, [details(updatedThings)])
   }
 
   func testUpdateIsCancelledWhenRequested() throws {
-    var updatedApps: [AppSummary]?
+    var updatedApps: [AppDetails]?
 
     let testStore = TestStore(
       initialState: AppUpdateState(

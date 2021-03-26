@@ -16,7 +16,7 @@ enum URLSchemeAction {
 struct URLSchemeEnvironment {
   var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
   var fetchApps: () throws -> [AppSummary]
-  var saveApps: ([AppSummary]) throws -> Void
+  var saveApps: ([AppDetails]) throws -> Void
   var deleteAllApps: () throws -> Void
 }
 

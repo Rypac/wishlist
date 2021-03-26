@@ -4,8 +4,8 @@ import Foundation
 public protocol AppRepository {
   func fetchAll() throws -> [AppDetails]
   func fetch(id: AppID) throws -> AppDetails?
-  func add(_ app: AppSummary) throws
-  func add(_ apps: [AppSummary]) throws
+  func add(_ app: AppDetails) throws
+  func add(_ apps: [AppDetails]) throws
   func delete(id: AppID) throws
   func delete(ids: [AppID]) throws
   func deleteAll() throws
@@ -19,7 +19,7 @@ public extension AppRepository {
     try fetchAll().first { $0.id == id }
   }
 
-  func add(_ app: AppSummary) throws {
+  func add(_ app: AppDetails) throws {
     try add([app])
   }
 

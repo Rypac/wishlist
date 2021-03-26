@@ -18,6 +18,8 @@ class AddAppsReducerTests: XCTestCase {
   }()
 
   func testAddAppsFromURLExtractsTheAppIDCorrectly() throws {
+    var updatedApps: [AppDetails]?
+
     let testStore = TestStore(
       initialState: AddAppsState(
         apps: [],
@@ -30,7 +32,7 @@ class AddAppsReducerTests: XCTestCase {
             Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
           },
           saveApps: { apps in
-
+            updatedApps = apps
           }
         )
       }
@@ -51,5 +53,6 @@ class AddAppsReducerTests: XCTestCase {
     testStore.receive(.addAppsResponse(.success([]))) {
       $0.addingApps = false
     }
+    XCTAssertNil(updatedApps)
   }
 }

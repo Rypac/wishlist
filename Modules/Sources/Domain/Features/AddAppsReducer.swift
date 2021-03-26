@@ -23,11 +23,11 @@ public enum AddAppsAction: Equatable {
 
 public struct AddAppsEnvironment {
   public var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  public var saveApps: ([AppSummary]) throws -> Void
+  public var saveApps: ([AppDetails]) throws -> Void
 
   public init(
     loadApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
-    saveApps: @escaping ([AppSummary]) throws -> Void
+    saveApps: @escaping ([AppDetails]) throws -> Void
   ) {
     self.loadApps = loadApps
     self.saveApps = saveApps
@@ -38,13 +38,13 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
   struct CancelAddAppsID: Hashable {}
   switch action {
   case let .addApps(ids):
-    let ids = Set(ids).subtracting(state.apps.ids)
-    guard !ids.isEmpty else {
+    let newIds = Set(ids).subtracting(state.apps.ids)
+    if newIds.isEmpty {
       return .none
     }
 
     state.addingApps = true
-    return environment.loadApps(Array(ids))
+    return environment.loadApps(Array(newIds))
       .receive(on: environment.mainQueue())
       .mapError { _ in AddAppsError() }
       .catchToEffect()
@@ -55,14 +55,20 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
     let ids = extractAppIDs(from: urls)
     return ids.isEmpty ? .none : Effect(value: .addApps(ids))
 
-  case let .addAppsResponse(.success(apps)):
+  case let .addAppsResponse(.success(newApps)):
     state.addingApps = false
-    let now = environment.now()
-    for app in apps where !state.apps.ids.contains(app.id) {
-      state.apps[id: app.id] = AppDetails(app, firstAdded: now)
+    if newApps.isEmpty {
+      return .none
     }
+
+    let now = environment.now()
+    let newApps = newApps.map { AppDetails($0, firstAdded: now) }
+    for newApp in newApps where state.apps[id: newApp.id] == nil {
+      state.apps.append(newApp)
+    }
+
     return .fireAndForget {
-      try? environment.saveApps(apps)
+      try? environment.saveApps(newApps)
     }
 
   case .addAppsResponse(.failure):

@@ -36,13 +36,13 @@ public struct BackgroundTaskEnvironment {
   public var submitTask: (BGTaskRequest) throws -> Void
   public var fetchApps: () -> [AppSummary]
   public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  public var saveUpdatedApps: ([AppSummary]) -> Void
+  public var saveUpdatedApps: ([AppDetails]) -> Void
 
   public init(
     submitTask: @escaping (BGTaskRequest) throws -> Void,
     fetchApps: @escaping () -> [AppSummary],
     lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
-    saveUpdatedApps: @escaping ([AppSummary]) -> Void
+    saveUpdatedApps: @escaping ([AppDetails]) -> Void
   ) {
     self.submitTask = submitTask
     self.fetchApps = fetchApps
@@ -77,7 +77,9 @@ public let backgroundTaskReducer = Reducer<BackgroundTaskState, BackgroundTaskAc
               subscriber.send(completion: .finished)
             },
             receiveValue: { newApps in
-              environment.saveUpdatedApps(newApps)
+              let now = environment.now()
+              let apps = newApps.map { AppDetails($0, firstAdded: now) }
+              environment.saveUpdatedApps(apps)
             }
           )
         task.expirationHandler = {
