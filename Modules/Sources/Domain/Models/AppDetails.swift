@@ -13,7 +13,7 @@ public struct AppDetails: Identifiable, Equatable {
   public var releaseDate: Date
   public var price: Tracked<Price>
   public var version: Version
-  public let firstAdded: Date?
+  public let firstAdded: Date
   public var lastViewed: Date?
   public var notifications: Set<ChangeNotification>
 
@@ -28,7 +28,7 @@ public struct AppDetails: Identifiable, Equatable {
     releaseDate: Date,
     price: Tracked<Price>,
     version: Version,
-    firstAdded: Date?,
+    firstAdded: Date,
     lastViewed: Date?,
     notifications: Set<ChangeNotification>
   ) {

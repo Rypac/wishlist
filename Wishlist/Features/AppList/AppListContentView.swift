@@ -159,10 +159,8 @@ private extension AppListSummary.Details {
     case .updated:
       if let lastViewed = app.lastViewed {
         self = .updated(app.version.date, seen: lastViewed > app.version.date)
-      } else if let firstAdded = app.firstAdded {
-        self = .updated(app.version.date, seen: firstAdded > app.version.date)
       } else {
-        self = .updated(app.version.date, seen: true)
+        self = .updated(app.version.date, seen: app.firstAdded > app.version.date)
       }
 
     case .price, .title:

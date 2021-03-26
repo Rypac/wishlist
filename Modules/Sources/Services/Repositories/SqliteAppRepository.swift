@@ -4,6 +4,7 @@ import Foundation
 
 public final class SqliteAppRepository: AppRepository {
   private let sqlite: Sqlite
+  private let utcISODateFormatter = ISO8601DateFormatter()
 
   public init(sqlite: Sqlite) throws {
     self.sqlite = sqlite
@@ -114,8 +115,6 @@ public final class SqliteAppRepository: AppRepository {
   }
 
   public func add(_ apps: [AppDetails]) throws {
-    let utcISODateFormatter = ISO8601DateFormatter()
-    let now = Date()
     try sqlite.execute("BEGIN;")
     for app in apps {
       try sqlite.run(
@@ -144,26 +143,16 @@ public final class SqliteAppRepository: AppRepository {
         .integer(Int64(app.id.rawValue)),
         .text(app.version.name),
         .text(utcISODateFormatter.string(from: app.version.date)),
-        app.version.notes.map(Sqlite.Datatype.text) ?? Sqlite.Datatype.null
+        app.version.notes.map(Sqlite.Datatype.text) ?? .null
       )
 
       try sqlite.run(
         """
-        REPLACE INTO price VALUES (?, ?, ?, ?);
+        INSERT OR IGNORE INTO interaction VALUES (?, ?, ?, ?);
         """,
         .integer(Int64(app.id.rawValue)),
-        .text(app.price.current.formatted),
-        "AUD",
-        nil
-      )
-
-      try sqlite.run(
-        """
-        REPLACE INTO interaction VALUES (?, ?, ?, ?);
-        """,
-        .integer(Int64(app.id.rawValue)),
-        .text(utcISODateFormatter.string(from: app.firstAdded ?? now)),
-        app.lastViewed.map(utcISODateFormatter.string).map(Sqlite.Datatype.text) ?? .null,
+        .text(utcISODateFormatter.string(from: app.firstAdded)),
+        nil,
         0
       )
 
