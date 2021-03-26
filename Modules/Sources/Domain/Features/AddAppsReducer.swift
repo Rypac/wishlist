@@ -5,9 +5,11 @@ import Foundation
 public struct AddAppsError: Error, Equatable {}
 
 public struct AddAppsState: Equatable {
+  public var apps: IdentifiedArrayOf<AppDetails>
   public var addingApps: Bool
 
-  public init(addingApps: Bool = false) {
+  public init(apps: IdentifiedArrayOf<AppDetails>, addingApps: Bool = false) {
+    self.apps = apps
     self.addingApps = addingApps
   }
 }
@@ -36,8 +38,13 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
   struct CancelAddAppsID: Hashable {}
   switch action {
   case let .addApps(ids):
+    let ids = Set(ids).subtracting(state.apps.ids)
+    guard !ids.isEmpty else {
+      return .none
+    }
+
     state.addingApps = true
-    return environment.loadApps(ids)
+    return environment.loadApps(Array(ids))
       .receive(on: environment.mainQueue())
       .mapError { _ in AddAppsError() }
       .catchToEffect()
@@ -50,6 +57,10 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
 
   case let .addAppsResponse(.success(apps)):
     state.addingApps = false
+    let now = environment.now()
+    for app in apps where !state.apps.ids.contains(app.id) {
+      state.apps[id: app.id] = AppDetails(app, firstAdded: now)
+    }
     return .fireAndForget {
       try? environment.saveApps(apps)
     }

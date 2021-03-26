@@ -96,7 +96,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 struct AppState: Equatable {
   var apps: IdentifiedArrayOf<AppDetails>
-  var addAppsState: AddAppsState
   var sortOrderState: SortOrderState
   var lastUpdateDate: Date?
   var settings: SettingsState
@@ -105,6 +104,7 @@ struct AppState: Equatable {
   var viewingAppDetails: AppDetailsContent? = nil
   var isSettingsPresented: Bool = false
   var isUpdateInProgress: Bool = false
+  var isAddingApps: Bool = false
 
   init(
     apps: IdentifiedArrayOf<AppDetails>,
@@ -114,7 +114,6 @@ struct AppState: Equatable {
     appUpdateFrequency: TimeInterval
   ) {
     self.apps = apps
-    self.addAppsState = AddAppsState(addingApps: false)
     self.sortOrderState = sortOrderState
     self.lastUpdateDate = lastUpdateDate
     self.settings = settings
@@ -144,6 +143,19 @@ private extension AppState {
       appListInternalState = newValue.internalState
       isSettingsPresented = newValue.isSettingsPresented
       viewingAppDetails = newValue.displayedAppDetails
+    }
+  }
+
+  var addAppsState: AddAppsState {
+    get {
+      AddAppsState(
+        apps: apps,
+        addingApps: isAddingApps
+      )
+    }
+    set {
+      apps = newValue.apps
+      isAddingApps = newValue.addingApps
     }
   }
 

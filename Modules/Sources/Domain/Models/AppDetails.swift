@@ -93,4 +93,27 @@ public extension AppDetails {
       releaseDate: releaseDate
     )
   }
+
+  init(
+    _ summary: AppSummary,
+    firstAdded: Date,
+    lastViewed: Date? = nil,
+    notifications: Set<ChangeNotification> = Set()
+  ) {
+    self.init(
+      id: summary.id,
+      title: summary.title,
+      seller: summary.seller,
+      description: summary.description,
+      url: summary.url,
+      icon: summary.icon,
+      bundleID: summary.bundleID,
+      releaseDate: summary.releaseDate,
+      price: Tracked(current: summary.price),
+      version: summary.version,
+      firstAdded: firstAdded,
+      lastViewed: lastViewed,
+      notifications: notifications
+    )
+  }
 }

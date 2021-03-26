@@ -19,7 +19,10 @@ class AddAppsReducerTests: XCTestCase {
 
   func testAddAppsFromURLExtractsTheAppIDCorrectly() throws {
     let testStore = TestStore(
-      initialState: AddAppsState(addingApps: false),
+      initialState: AddAppsState(
+        apps: [],
+        addingApps: false
+      ),
       reducer: addAppsReducer,
       environment: systemEnvironment.map {
         AddAppsEnvironment(

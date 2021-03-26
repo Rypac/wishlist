@@ -2,26 +2,6 @@ import Foundation
 import Domain
 import Toolbox
 
-extension AppDetails {
-  init(_ app: AppSummary, firstAdded: Date, lastViewed: Date? = nil, notifications: Set<ChangeNotification> = []) {
-    self.init(
-      id: app.id,
-      title: app.title,
-      seller: app.seller,
-      description: app.description,
-      url: app.url,
-      icon: app.icon,
-      bundleID: app.bundleID,
-      releaseDate: app.releaseDate,
-      price: Tracked(current: app.price),
-      version: app.version,
-      firstAdded: firstAdded,
-      lastViewed: lastViewed,
-      notifications: notifications
-    )
-  }
-}
-
 extension AppSummary {
   static var bear: AppSummary {
     AppSummary(
