@@ -11,7 +11,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     return Store(
       initialState: AppState(
-        apps: IdentifiedArrayOf((try? appDelegate.appRepository.fetchAll()) ?? []),
+        apps: [],
         sortOrderState: SortOrderState(
           sortOrder: appDelegate.settings.sortOrder,
           configuration: SortOrder.Configuration(
@@ -226,7 +226,7 @@ struct AppEnvironment {
 }
 
 struct AppRepositoryEnvironment {
-  var fetchApps: () throws -> [AppSummary]
+  var fetchApps: () throws -> [AppDetails]
   var saveApps: ([AppDetails]) throws -> Void
   var deleteApps: ([AppID]) throws -> Void
   var deleteAllApps: () throws -> Void
@@ -238,9 +238,7 @@ struct AppRepositoryEnvironment {
 extension AppRepository {
   var environment: AppRepositoryEnvironment {
     AppRepositoryEnvironment(
-      fetchApps: {
-        try fetchAll().map(\.summary)
-      },
+      fetchApps: fetchAll,
       saveApps: add,
       deleteApps: delete,
       deleteAllApps: deleteAll,
@@ -282,12 +280,12 @@ func appReducer(
       state: \.urlSchemeState,
       action: /AppAction.urlScheme,
       environment: { systemEnvironment in
-        systemEnvironment.map {
+        systemEnvironment.map { environment in
           URLSchemeEnvironment(
-            loadApps: $0.loadApps,
-            fetchApps: $0.repository.fetchApps,
-            saveApps: $0.repository.saveApps,
-            deleteAllApps: $0.repository.deleteAllApps
+            loadApps: environment.loadApps,
+            fetchApps: { try environment.repository.fetchApps().map(\.summary) },
+            saveApps: environment.repository.saveApps,
+            deleteAllApps: environment.repository.deleteAllApps
           )
         }
       }
@@ -310,6 +308,12 @@ func appReducer(
       environment: { systemEnvironment in
         systemEnvironment.map { environment in
           ProcessUpdateEnvironment(
+            apps: PublisherEnvironment(
+              publisher: Deferred {
+                Optional.Publisher(try? environment.repository.fetchApps())
+              }
+              .eraseToAnyPublisher()
+            ),
             sortOrder: PublisherEnvironment(
               publisher: environment.settings.$sortOrder.publisher().eraseToAnyPublisher()
             ),
@@ -345,6 +349,7 @@ func appReducer(
         )
 
       case .lifecycle(.willConnect),
+           .processUpdates(.apps(.receivedValue)),
            .updates(.receivedUpdates(.success, _)),
            .urlScheme(.addApps(.addAppsResponse(.success))):
         return Effect(value: .appList(.sortOrderUpdated))

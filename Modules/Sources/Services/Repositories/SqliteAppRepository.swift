@@ -152,7 +152,7 @@ public final class SqliteAppRepository: AppRepository {
         """,
         .integer(Int64(app.id.rawValue)),
         .text(utcISODateFormatter.string(from: app.firstAdded)),
-        nil,
+        app.lastViewed.map(utcISODateFormatter.string).map(Sqlite.Datatype.text) ?? .null,
         0
       )
 
