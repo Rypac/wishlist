@@ -30,7 +30,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ),
         appUpdateFrequency: 5 * 60
       ),
-      reducer: appReducer(id: UUID()),
+      reducer: appReducer(id: UUID()).debugActions(),
       environment: .live(
         environment: AppEnvironment(
           repository: appDelegate.appRepository.environment,
@@ -100,26 +100,10 @@ struct AppState: Equatable {
   var lastUpdateDate: Date?
   var settings: SettingsState
   var appUpdateFrequency: TimeInterval
-  var appListInternalState: AppListInternalState
   var viewingAppDetails: AppDetailsContent? = nil
   var isSettingsPresented: Bool = false
   var isUpdateInProgress: Bool = false
   var isAddingApps: Bool = false
-
-  init(
-    apps: IdentifiedArrayOf<AppDetails>,
-    sortOrderState: SortOrderState,
-    lastUpdateDate: Date?,
-    settings: SettingsState,
-    appUpdateFrequency: TimeInterval
-  ) {
-    self.apps = apps
-    self.sortOrderState = sortOrderState
-    self.lastUpdateDate = lastUpdateDate
-    self.settings = settings
-    self.appUpdateFrequency = appUpdateFrequency
-    self.appListInternalState = AppListInternalState(sortOrder: sortOrderState.sortOrder)
-  }
 }
 
 private extension AppState {
@@ -130,7 +114,6 @@ private extension AppState {
         addAppsState: addAppsState,
         sortOrderState: sortOrderState,
         settings: settings,
-        internalState: appListInternalState,
         displayedAppDetails: viewingAppDetails,
         isSettingsPresented: isSettingsPresented
       )
@@ -140,7 +123,6 @@ private extension AppState {
       addAppsState = newValue.addAppsState
       sortOrderState = newValue.sortOrderState
       settings = newValue.settings
-      appListInternalState = newValue.internalState
       isSettingsPresented = newValue.isSettingsPresented
       viewingAppDetails = newValue.displayedAppDetails
     }
@@ -347,12 +329,6 @@ func appReducer(
             environment.scheduleBackgroundTasks()
           }
         )
-
-      case .lifecycle(.willConnect),
-           .processUpdates(.apps(.receivedValue)),
-           .updates(.receivedUpdates(.success, _)),
-           .urlScheme(.addApps(.addAppsResponse(.success))):
-        return Effect(value: .appList(.sortOrderUpdated))
 
       default:
         return .none

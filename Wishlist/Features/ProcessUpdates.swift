@@ -89,7 +89,7 @@ private func appUpdatesReducer(
       return .cancel(id: id)
 
     case let .receivedValue(apps):
-      state = IdentifiedArrayOf(apps)
+      state = IdentifiedArray(apps)
       return .none
     }
   }

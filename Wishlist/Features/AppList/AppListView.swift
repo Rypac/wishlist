@@ -3,27 +3,16 @@ import ComposableArchitecture
 import SwiftUI
 import Domain
 
-struct AppListInternalState: Equatable {
-  fileprivate var appliedSortOrder: SortOrder
-  fileprivate var visibleApps: [AppID] = []
-
-  init(sortOrder: SortOrder) {
-    appliedSortOrder = sortOrder
-  }
-}
-
 struct AppListState: Equatable {
   var apps: IdentifiedArrayOf<AppDetails>
   var addAppsState: AddAppsState
   var sortOrderState: SortOrderState
   var settings: SettingsState
-  var internalState: AppListInternalState
   var displayedAppDetails: AppDetailsContent?
   var isSettingsPresented: Bool
 }
 
 enum AppListAction {
-  case sortOrderUpdated
   case displaySettings(Bool)
   case sort(SortOrderAction)
   case settings(SettingsAction)
@@ -47,17 +36,15 @@ private extension AppListState {
   var listState: AppListContentState {
     get {
       AppListContentState(
-        sortOrder: internalState.appliedSortOrder,
-        details: displayedAppDetails,
-        visibleApps: internalState.visibleApps,
-        apps: apps
+        apps: apps,
+        sortOrderState: sortOrderState,
+        details: displayedAppDetails
       )
     }
     set {
-      internalState.appliedSortOrder = newValue.sortOrder
-      displayedAppDetails = newValue.details
-      internalState.visibleApps = newValue.visibleApps
       apps = newValue.apps
+      sortOrderState = newValue.sortOrderState
+      displayedAppDetails = newValue.details
     }
   }
 }
@@ -112,19 +99,11 @@ let appListReducer = Reducer<AppListState, AppListAction, SystemEnvironment<AppL
 
     case .settings(.deleteAll):
       let ids = state.apps.map(\.id)
-      return Effect(value: .list(.remove(ids)))
+      return .fireAndForget {
+        try? environment.deleteApps(ids)
+      }
 
-    case .sortOrderUpdated:
-      state.internalState.appliedSortOrder = state.sortOrderState.sortOrder
-      state.internalState.visibleApps = state.apps.applying(state.sortOrderState)
-      return .none
-
-    case .sort, .addApps(.addAppsResponse(.success)):
-      struct DebouceID: Hashable {}
-      return Effect(value: .sortOrderUpdated)
-        .debounce(id: DebouceID(), for: .milliseconds(400), scheduler: environment.mainQueue())
-
-    case .addApps, .settings, .list:
+    case .addApps, .settings, .list, .sort:
       return .none
     }
   }
@@ -167,15 +146,15 @@ private extension Image {
   static var settings: Image { Image(systemName: "slider.horizontal.3") }
 }
 
-private extension Collection where Element == AppDetails {
-  func applying(_ sorting: SortOrderState) -> [AppID] {
-    sorted(by: sorting)
-      .compactMap { app in
-        if sorting.sortOrder == .price, !sorting.configuration.price.includeFree, app.price.current.value <= 0 {
-          return nil
+extension Collection where Element == AppDetails {
+  func applying(_ sorting: SortOrderState) -> [AppDetails] {
+      filter { app in
+        if sorting.sortOrder == .price && !sorting.configuration.price.includeFree {
+          return app.price.current.value > 0
         }
-        return app.id
+        return true
       }
+      .sorted(by: sorting)
   }
 
   private func sorted(by order: SortOrderState) -> [AppDetails] {

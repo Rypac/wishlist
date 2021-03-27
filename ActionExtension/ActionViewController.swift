@@ -77,7 +77,7 @@ class ActionViewController: UIViewController {
     return Store(
       initialState: ExtensionState(
         status: .resting,
-        addAppsState: AddAppsState(apps: IdentifiedArrayOf(apps), addingApps: false)
+        addAppsState: AddAppsState(apps: IdentifiedArray(apps), addingApps: false)
       ),
       reducer: extensionReducer,
       environment: .live(

@@ -10,10 +10,9 @@ struct AppDetailsContent: Equatable {
 }
 
 struct AppListContentState: Equatable {
-  var sortOrder: SortOrder
-  var details: AppDetailsContent?
-  var visibleApps: [AppID]
   var apps: IdentifiedArrayOf<AppDetails>
+  var sortOrderState: SortOrderState
+  var details: AppDetailsContent?
 }
 
 enum AppListContentAction {
@@ -37,7 +36,11 @@ private extension AppListContentState {
       guard let details = details, let app = apps[id: details.id] else {
         return nil
       }
-      return AppDetailsState(app: app, versions: details.versions, showVersionHistory: details.showVersionHistory)
+      return AppDetailsState(
+        app: app,
+        versions: details.versions,
+        showVersionHistory: details.showVersionHistory
+      )
     }
     set {
       if let newValue = newValue {
@@ -75,11 +78,15 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
   Reducer { state, action, environment in
     switch action {
     case let .removeAtIndexes(indexes):
-      let ids = indexes.map { state.visibleApps[$0] }
-      return Effect(value: .remove(ids))
+      let visibleAppIds = state.apps.applying(state.sortOrderState).map(\.id)
+      let ids = indexes.map { visibleAppIds[$0] }
+
+      state.apps.removeAll(where: { ids.contains($0.id) })
+      return .fireAndForget {
+        try? environment.deleteApps(ids)
+      }
 
     case let .remove(ids):
-      state.visibleApps.removeAll(where: ids.contains)
       state.apps.removeAll(where: { ids.contains($0.id) })
       return .fireAndForget {
         try? environment.deleteApps(ids)
@@ -94,7 +101,10 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
       return .none
 
     case let .app(id, .remove):
-      return Effect(value: .remove([id]))
+      state.apps.remove(id: id)
+      return .fireAndForget {
+        try? environment.deleteApps([id])
+      }
 
     case .app, .details:
       return .none
@@ -103,53 +113,46 @@ let appListContentReducer = Reducer<AppListContentState, AppListContentAction, S
 )
 
 private extension AppListContentState {
-  func summary(_ id: AppID) -> AppListSummary? {
-    guard let app = apps[id: id] else {
-      return nil
-    }
-    return AppListSummary(
-      id: app.id,
-      selected: details?.id == id,
-      title: app.title,
-      details: .init(sortOrder: sortOrder, app: app),
-      icon: app.icon.medium,
-      url: app.url
-    )
+  var viewState: AppListContentView.ViewState {
+    AppListContentView.ViewState(selectedId: detailsState?.app.id, sortOrder: sortOrderState)
   }
 }
 
 struct AppListContentView: View {
+  struct ViewState: Equatable {
+    let selectedId: AppID?
+    let sortOrder: SortOrderState
+  }
+
   let store: Store<AppListContentState, AppListContentAction>
 
   var body: some View {
-    WithViewStore(store.scope(state: \.visibleApps)) { viewStore in
+    WithViewStore(store.scope(state: \.viewState)) { viewStore in
       List {
-        ForEach(viewStore.state, id: \.self) { id in
-          IfLetStore(
-            store.scope(state: { $0.summary(id) }, action: { .app(id: id, action: $0) })
-          ) { store in
-            WithViewStore(store.scope(state: \.selected)) { viewStore in
-              NavigationLink(
-                destination: appDetails,
-                tag: id,
-                selection: viewStore.binding(get: { $0 ? id : nil }, send: { .selected($0 != nil) })
-              ) {
-                AppListRowView(store: store)
-              }
-            }
-          }
-        }.onDelete {
+        ForEachStore(
+          store.scope(
+            state: { state in
+              IdentifiedArray(
+                state.apps.applying(viewStore.sortOrder).map { app in
+                  AppListSummary(
+                    id: app.id,
+                    selected: app.id == viewStore.selectedId,
+                    title: app.title,
+                    details: .init(sortOrder: viewStore.sortOrder.sortOrder, app: app),
+                    icon: app.icon.medium,
+                    url: app.url
+                  )
+                }
+              )
+            },
+            action: AppListContentAction.app
+          ),
+          content: AppListRowView.init
+        ).onDelete {
           viewStore.send(.removeAtIndexes($0))
         }
       }.listStyle(PlainListStyle())
     }
-  }
-
-  private var appDetails: some View {
-    IfLetStore(
-      store.scope(state: \.detailsState, action: AppListContentAction.details),
-      then: ConnectedAppDetailsView.init
-    )
   }
 }
 
