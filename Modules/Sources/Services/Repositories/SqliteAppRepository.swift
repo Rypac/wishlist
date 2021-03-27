@@ -152,7 +152,7 @@ public final class SqliteAppRepository: AppRepository {
         """,
         .integer(Int64(app.id.rawValue)),
         .text(utcISODateFormatter.string(from: app.firstAdded)),
-        app.lastViewed.map(utcISODateFormatter.string).map(Sqlite.Datatype.text) ?? .null,
+        app.lastViewed.map { .text(utcISODateFormatter.string(from: $0)) } ?? .null,
         0
       )
 
@@ -190,6 +190,7 @@ public final class SqliteAppRepository: AppRepository {
       SET lastViewedDate = ?, viewCount = viewCount + 1
       WHERE appId = ?;
       """,
+      .text(utcISODateFormatter.string(from: date)),
       .integer(Int64(id.rawValue))
     )
   }
@@ -276,7 +277,7 @@ private extension SqliteAppRepository {
 
       CREATE TABLE IF NOT EXISTS interaction (
         appId INTEGER PRIMARY KEY REFERENCES app ON DELETE CASCADE,
-        firstAddedDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        firstAddedDate TEXT NOT NULL,
         lastViewedDate TEXT,
         viewCount INTEGER NOT NULL
       );
