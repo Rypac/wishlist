@@ -4,93 +4,93 @@ import SwiftUI
 import UIKit
 import Domain
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-  var window: UIWindow?
-
-  private lazy var store: Store<AppState, AppAction> = {
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    return Store(
-      initialState: AppState(
-        apps: [],
-        sortOrderState: SortOrderState(
-          sortOrder: appDelegate.settings.sortOrder,
-          configuration: SortOrder.Configuration(
-            price: .init(sortLowToHigh: true, includeFree: true),
-            title: .init(sortAToZ: true),
-            update: .init(sortByMostRecent: true)
-          )
-        ),
-        lastUpdateDate: appDelegate.settings.lastUpdateDate,
-        settings: SettingsState(
-          theme: appDelegate.settings.theme,
-          notifications: NotificationState(
-            enabled: appDelegate.settings.enableNotificaitons,
-            notifyOnChange: appDelegate.settings.notifications
-          )
-        ),
-        appUpdateFrequency: 5 * 60
-      ),
-      reducer: appReducer(id: UUID()).debugActions(),
-      environment: .live(
-        environment: AppEnvironment(
-          repository: appDelegate.appRepository.environment,
-          settings: appDelegate.settings,
-          loadApps: appDelegate.appStore.lookup,
-          openURL: { UIApplication.shared.open($0) },
-          scheduleBackgroundTasks: {
-            appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask))
-          },
-          setTheme: { [weak self] theme in
-            self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
-          }
-        )
-      )
-    )
-  }()
-  private lazy var viewStore: ViewStore<AppState, AppAction> = ViewStore(store)
-
-  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-    let window = UIWindow(windowScene: scene as! UIWindowScene)
-    window.rootViewController = UIHostingController(
-      rootView: AppListView(
-        store: store.scope(state: \.appListState, action: AppAction.appList)
-      )
-    )
-    self.window = window
-    window.makeKeyAndVisible()
-    viewStore.send(.lifecycle(.willConnect))
-
-    if let urlContext = connectionOptions.urlContexts.first {
-      viewStore.send(.lifecycle(.openURL(urlContext.url)))
-    }
-  }
-
-  func sceneWillEnterForeground(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.willEnterForeground))
-  }
-
-  func sceneDidBecomeActive(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.didBecomeActive))
-  }
-
-  func sceneWillResignActive(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.willResignActive))
-  }
-
-  func sceneDidEnterBackground(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.didEnterBackground))
-  }
-
-  func sceneDidDisconnect(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.didDisconnect))
-  }
-
-  func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
-    if let urlContext = urlContexts.first {
-      viewStore.send(.lifecycle(.openURL(urlContext.url)))
-    }
-  }
-}
+//class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+//  var window: UIWindow?
+//
+//  private lazy var store: Store<AppState, AppAction> = {
+//    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//    return Store(
+//      initialState: AppState(
+//        apps: [],
+//        sortOrderState: SortOrderState(
+//          sortOrder: appDelegate.settings.sortOrder,
+//          configuration: SortOrder.Configuration(
+//            price: .init(sortLowToHigh: true, includeFree: true),
+//            title: .init(sortAToZ: true),
+//            update: .init(sortByMostRecent: true)
+//          )
+//        ),
+//        lastUpdateDate: appDelegate.settings.lastUpdateDate,
+//        settings: SettingsState(
+//          theme: appDelegate.settings.theme,
+//          notifications: NotificationState(
+//            enabled: appDelegate.settings.enableNotificaitons,
+//            notifyOnChange: appDelegate.settings.notifications
+//          )
+//        ),
+//        appUpdateFrequency: 5 * 60
+//      ),
+//      reducer: appReducer(id: UUID()).debugActions(),
+//      environment: .live(
+//        environment: AppEnvironment(
+//          repository: appDelegate.appRepository.environment,
+//          settings: appDelegate.settings,
+//          loadApps: appDelegate.appStore.lookup,
+//          openURL: { UIApplication.shared.open($0) },
+//          scheduleBackgroundTasks: {
+//            appDelegate.viewStore.send(.backgroundTask(.scheduleAppUpdateTask))
+//          },
+//          setTheme: { [weak self] theme in
+//            self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
+//          }
+//        )
+//      )
+//    )
+//  }()
+//  private lazy var viewStore: ViewStore<AppState, AppAction> = ViewStore(store)
+//
+//  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+//    let window = UIWindow(windowScene: scene as! UIWindowScene)
+//    window.rootViewController = UIHostingController(
+//      rootView: AppListView(
+//        store: store.scope(state: \.appListState, action: AppAction.appList)
+//      )
+//    )
+//    self.window = window
+//    window.makeKeyAndVisible()
+//    viewStore.send(.lifecycle(.willConnect))
+//
+//    if let urlContext = connectionOptions.urlContexts.first {
+//      viewStore.send(.lifecycle(.openURL(urlContext.url)))
+//    }
+//  }
+//
+//  func sceneWillEnterForeground(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.willEnterForeground))
+//  }
+//
+//  func sceneDidBecomeActive(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.didBecomeActive))
+//  }
+//
+//  func sceneWillResignActive(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.willResignActive))
+//  }
+//
+//  func sceneDidEnterBackground(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.didEnterBackground))
+//  }
+//
+//  func sceneDidDisconnect(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.didDisconnect))
+//  }
+//
+//  func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
+//    if let urlContext = urlContexts.first {
+//      viewStore.send(.lifecycle(.openURL(urlContext.url)))
+//    }
+//  }
+//}
 
 // MARK: - App State
 

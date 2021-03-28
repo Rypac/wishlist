@@ -52,8 +52,8 @@ let appListRowReducer = Reducer<AppDetails, AppListRowAction, SystemEnvironment<
   case .openInNewWindow:
     let id = state.id
     return .fireAndForget {
-      let scene = DetailsScene(id: id)
-      UIApplication.shared.requestSceneSessionActivation(nil, userActivity: scene.userActivity, options: nil)
+//      let scene = DetailsScene(id: id)
+//      UIApplication.shared.requestSceneSessionActivation(nil, userActivity: scene.userActivity, options: nil)
     }
 
   case .viewInAppStore:
@@ -107,7 +107,7 @@ struct AppListRowView: View {
   }
 }
 
-private struct AppRowContent: View {
+struct AppRowContent: View {
   let title: String
   let details: AppListSummary.Details
   let icon: URL

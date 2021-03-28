@@ -26,11 +26,11 @@ struct SceneDescription<Delegate: UIWindowSceneDelegate>: Identifiable, SceneDes
 }
 
 struct DefaultScene {
-  static let description = SceneDescription(name: "Default", delegate: SceneDelegate.self)
+//  static let description = SceneDescription(name: "Default", delegate: SceneDelegate.self)
 }
 
 struct DetailsScene {
-  static let description = SceneDescription(name: "Details", delegate: AppDetailsDelegate.self)
+//  static let description = SceneDescription(name: "Details", delegate: AppDetailsDelegate.self)
 
   let id: AppID
 }
@@ -45,14 +45,14 @@ extension DetailsScene {
     self.id = AppID(rawValue: id)
   }
 
-  var userActivity: NSUserActivity {
-    let userActivity = NSUserActivity(activityType: Self.description.id)
-    userActivity.addUserInfoEntries(from: [DetailsScene.idKey: id.rawValue])
-    return userActivity
-  }
+//  var userActivity: NSUserActivity {
+//    let userActivity = NSUserActivity(activityType: Self.description.id)
+//    userActivity.addUserInfoEntries(from: [DetailsScene.idKey: id.rawValue])
+//    return userActivity
+//  }
 }
 
-func sceneConfiguration(for activity: NSUserActivity) -> UISceneConfiguration? {
-  let scenes: [SceneDescriptor] = [DefaultScene.description, DetailsScene.description]
-  return scenes.first(where: { $0.id == activity.activityType })?.configuration
-}
+//func sceneConfiguration(for activity: NSUserActivity) -> UISceneConfiguration? {
+//  let scenes: [SceneDescriptor] = [DefaultScene.description, DetailsScene.description]
+//  return scenes.first(where: { $0.id == activity.activityType })?.configuration
+//}

@@ -4,73 +4,73 @@ import SwiftUI
 import UIKit
 import Domain
 
-class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
-  var window: UIWindow?
-  var session: UISceneSession?
-
-  private lazy var store: Store<AppDetailsSceneState, AppDetailsSceneAction> = {
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    return Store(
-      initialState: AppDetailsSceneState(theme: appDelegate.settings.theme),
-      reducer: appDetailsSceneReducer(id: UUID()),
-      environment: .live(
-        environment: AppDetailsSceneEnvironment(
-          repository: appDelegate.appRepository,
-          theme: appDelegate.settings.$theme.publisher().eraseToAnyPublisher(),
-          applyTheme: { [weak self] theme in
-            self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
-          },
-          openURL: { UIApplication.shared.open($0) },
-          terminate: { [weak self] in
-            if let session = self?.session {
-              UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
-            }
-          }
-        )
-      )
-    )
-  }()
-  private lazy var viewStore = ViewStore(store)
-
-  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-    guard let detailsScene = session.userInfo.flatMap(DetailsScene.init) else {
-      print("Attempted to show scene with invalid scene configuration.")
-      UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
-      return
-    }
-
-    let window = UIWindow(windowScene: scene as! UIWindowScene)
-    window.rootViewController = UIHostingController(
-      rootView: AppDetailsNavigationView(store: store)
-    )
-    self.window = window
-    self.session = session
-    window.makeKeyAndVisible()
-
-    viewStore.send(.lifecycle(.willConnect))
-    viewStore.send(.viewApp(detailsScene.id))
-  }
-
-  func sceneWillEnterForeground(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.willEnterForeground))
-  }
-
-  func sceneDidBecomeActive(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.didBecomeActive))
-  }
-
-  func sceneWillResignActive(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.willResignActive))
-  }
-
-  func sceneDidEnterBackground(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.didEnterBackground))
-  }
-
-  func sceneDidDisconnect(_ scene: UIScene) {
-    viewStore.send(.lifecycle(.didDisconnect))
-  }
-}
+//class AppDetailsDelegate: UIResponder, UIWindowSceneDelegate {
+//  var window: UIWindow?
+//  var session: UISceneSession?
+//
+//  private lazy var store: Store<AppDetailsSceneState, AppDetailsSceneAction> = {
+//    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//    return Store(
+//      initialState: AppDetailsSceneState(theme: appDelegate.settings.theme),
+//      reducer: appDetailsSceneReducer(id: UUID()),
+//      environment: .live(
+//        environment: AppDetailsSceneEnvironment(
+//          repository: appDelegate.appRepository,
+//          theme: appDelegate.settings.$theme.publisher().eraseToAnyPublisher(),
+//          applyTheme: { [weak self] theme in
+//            self?.window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
+//          },
+//          openURL: { UIApplication.shared.open($0) },
+//          terminate: { [weak self] in
+//            if let session = self?.session {
+//              UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
+//            }
+//          }
+//        )
+//      )
+//    )
+//  }()
+//  private lazy var viewStore = ViewStore(store)
+//
+//  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+//    guard let detailsScene = session.userInfo.flatMap(DetailsScene.init) else {
+//      print("Attempted to show scene with invalid scene configuration.")
+//      UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
+//      return
+//    }
+//
+//    let window = UIWindow(windowScene: scene as! UIWindowScene)
+//    window.rootViewController = UIHostingController(
+//      rootView: AppDetailsNavigationView(store: store)
+//    )
+//    self.window = window
+//    self.session = session
+//    window.makeKeyAndVisible()
+//
+//    viewStore.send(.lifecycle(.willConnect))
+//    viewStore.send(.viewApp(detailsScene.id))
+//  }
+//
+//  func sceneWillEnterForeground(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.willEnterForeground))
+//  }
+//
+//  func sceneDidBecomeActive(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.didBecomeActive))
+//  }
+//
+//  func sceneWillResignActive(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.willResignActive))
+//  }
+//
+//  func sceneDidEnterBackground(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.didEnterBackground))
+//  }
+//
+//  func sceneDidDisconnect(_ scene: UIScene) {
+//    viewStore.send(.lifecycle(.didDisconnect))
+//  }
+//}
 
 private struct AppDetailsNavigationView: View {
   let store: Store<AppDetailsSceneState, AppDetailsSceneAction>
@@ -79,7 +79,7 @@ private struct AppDetailsNavigationView: View {
     WithViewStore(store.stateless) { viewStore in
       NavigationView {
         IfLetStore(
-          self.store.scope(state: \.details, action: AppDetailsSceneAction.details),
+          store.scope(state: \.details, action: AppDetailsSceneAction.details),
           then: AppDetailsContentView.init
         )
           .navigationBarTitle("Details", displayMode: .inline)
