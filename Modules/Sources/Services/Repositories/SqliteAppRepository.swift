@@ -12,8 +12,7 @@ public final class SqliteAppRepository: AppRepository {
   }
 
   public func fetchAll() throws -> [AppDetails] {
-    let utcISODateFormatter = ISO8601DateFormatter()
-    let results = try sqlite.run(
+    try sqlite.runDecoding(
       """
       SELECT
         app.id,
@@ -43,75 +42,6 @@ public final class SqliteAppRepository: AppRepository {
         ON app.id = notification.appId;
       """
     )
-
-    return results.compactMap { row in
-      guard
-        case let .integer(id) = row[0],
-        case let .text(title) = row[1],
-        case let .text(seller) = row[2],
-        case let .text(description) = row[3],
-        case let .text(url) = row[4],
-        case let .text(iconSmallUrl) = row[5],
-        case let .text(iconMediumUrl) = row[6],
-        case let .text(iconLargeUrl) = row[7],
-        case let .text(bundleId) = row[8],
-        case let .text(releaseDate) = row[9],
-        case let .text(price) = row[10],
-        case let .text(version) = row[11],
-        case let .text(updateDate) = row[12],
-        case let .text(firstAddedDate) = row[14],
-        case let .integer(priceDrop) = row[16],
-        case let .integer(newVersion) = row[17]
-      else {
-        return nil
-      }
-
-      let releaseNotes: String?
-      if case let .text(notes) = row[13] {
-        releaseNotes = notes
-      } else {
-        releaseNotes = nil
-      }
-
-      let lastViewedDate: Date?
-      if case let .text(date) = row[15] {
-        lastViewedDate = utcISODateFormatter.date(from: date)
-      } else {
-        lastViewedDate = nil
-      }
-
-      var notifications = Set<ChangeNotification>()
-      if priceDrop == 1 {
-        notifications.insert(.priceDrop)
-      }
-      if newVersion == 1 {
-        notifications.insert(.newVersion)
-      }
-
-      return AppDetails(
-        id: AppDetails.ID(rawValue: Int(id)),
-        title: title,
-        seller: seller,
-        description: description,
-        url: URL(string: url)!,
-        icon: Icon(
-          small: URL(string: iconSmallUrl)!,
-          medium: URL(string: iconMediumUrl)!,
-          large: URL(string: iconLargeUrl)!
-        ),
-        bundleID: bundleId,
-        releaseDate: utcISODateFormatter.date(from: releaseDate)!,
-        price: Tracked(current: Price(value: 0, formatted: price)),
-        version: Version(
-          name: version,
-          date: utcISODateFormatter.date(from: updateDate)!,
-          notes: releaseNotes
-        ),
-        firstAdded: utcISODateFormatter.date(from: firstAddedDate)!,
-        lastViewed: lastViewedDate,
-        notifications: notifications
-      )
-    }
   }
 
   public func add(_ apps: [AppDetails]) throws {
@@ -207,8 +137,7 @@ public final class SqliteAppRepository: AppRepository {
   }
 
   public func versionHistory(id: AppID) throws -> [Version] {
-    let utcISODateFormatter = ISO8601DateFormatter()
-    let results = try sqlite.run(
+    try sqlite.runDecoding(
       """
       SELECT name, releaseDate, releaseNotes
       FROM version
@@ -216,25 +145,6 @@ public final class SqliteAppRepository: AppRepository {
       """,
       .integer(Int64(id.rawValue))
     )
-
-    return results.compactMap { row in
-      guard
-        case let .text(name) = row[0],
-        case let .text(date) = row[1],
-        let releaseDate = utcISODateFormatter.date(from: date)
-      else {
-        return nil
-      }
-
-      let releaseNotes: String?
-      if case let .text(notes) = row[2] {
-        releaseNotes = notes
-      } else {
-        releaseNotes = nil
-      }
-
-      return Version(name: name, date: releaseDate, notes: releaseNotes)
-    }
   }
 }
 
@@ -288,6 +198,55 @@ private extension SqliteAppRepository {
         newVersion BOOLEAN NOT NULL
       );
       """
+    )
+  }
+}
+
+extension AppDetails: SQLiteRowDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    self.init(
+      id: AppID(rawValue: try decoder.decode(Int.self)),
+      title: try decoder.decode(String.self),
+      seller: try decoder.decode(String.self),
+      description: try decoder.decode(String.self),
+      url: try decoder.decode(URL.self),
+      icon: Icon(
+        small: try decoder.decode(URL.self),
+        medium: try decoder.decode(URL.self),
+        large: try decoder.decode(URL.self)
+      ),
+      bundleID: try decoder.decode(String.self),
+      releaseDate: try decoder.decode(Date.self),
+      price: Tracked(current: Price(value: 0, formatted: try decoder.decode(String.self))),
+      version: Version(
+        name: try decoder.decode(String.self),
+        date: try decoder.decode(Date.self),
+        notes: try decoder.decodeIfPresent(String.self)
+      ),
+      firstAdded: try decoder.decode(Date.self),
+      lastViewed: try decoder.decodeIfPresent(Date.self),
+      notifications: try {
+        var notifications = Set<ChangeNotification>()
+        if try decoder.decode(Bool.self) {
+          notifications.insert(.priceDrop)
+        }
+        if try decoder.decode(Bool.self) {
+          notifications.insert(.newVersion)
+        }
+        return notifications
+      }()
+    )
+  }
+}
+
+extension Version: SQLiteRowDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    self.init(
+      name: try decoder.decode(String.self),
+      date: try decoder.decode(Date.self),
+      notes: try decoder.decodeIfPresent(String.self)
     )
   }
 }
