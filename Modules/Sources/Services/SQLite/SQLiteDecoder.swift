@@ -38,6 +38,8 @@ extension SQLiteColumn: ExpressibleByNilLiteral {
   }
 }
 
+// MARK: Decoder
+
 public protocol SQLiteRowDecodable {
   init(from decoder: SQLiteDecoder) throws
 }
@@ -166,7 +168,16 @@ extension Date: SQLiteColumnDecodable {
   }
 }
 
-private let utcISO8601DateFormatter = ISO8601DateFormatter()
+extension Optional: SQLiteColumnDecodable where Wrapped: SQLiteColumnDecodable {
+  public init(statement: SQLiteStatement?, index: Int32) throws {
+    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
+    case .null:
+      self = nil
+    default:
+      self = try Wrapped(statement: statement, index: index)
+    }
+  }
+}
 
 public struct SQLiteDecoder {
   private var statement: SQLiteStatement?
@@ -262,3 +273,151 @@ extension SQLiteDecoder {
     try decodeNil() ? nil : try decode(type)
   }
 }
+
+// MARK: Encoder
+
+public protocol SQLiteEncodable {
+  func encode(to encoder: SQLiteEncoder) throws
+}
+
+public protocol SQLiteEncoder {
+  mutating func encodeNil() throws
+  mutating func encode(_ value: Bool) throws
+  mutating func encode(_ value: Int) throws
+  mutating func encode(_ value: Double) throws
+  mutating func encode(_ value: String) throws
+  mutating func encode(_ value: Data) throws
+  mutating func encode(_ value: SQLiteEncodable) throws
+}
+
+final class SQLiteBindingEncoder: SQLiteEncoder {
+  private var statement: SQLiteStatement?
+  private var index: Int32 = 1
+
+  init(statement: SQLiteStatement?) {
+    self.statement = statement
+  }
+
+  public func encodeNil() throws {
+    defer { index += 1 }
+    let result = sqlite3_bind_null(statement, index)
+    guard result == SQLITE_OK else {
+      throw SQLiteEncodingError.invalid(code: result)
+    }
+  }
+
+  public func encode(_ value: Bool) throws {
+    defer { index += 1 }
+    let result = sqlite3_bind_int64(statement, index, value ? 1 : 0)
+    guard result == SQLITE_OK else {
+      throw SQLiteEncodingError.invalid(code: result)
+    }
+  }
+
+  public func encode(_ value: Int) throws {
+    defer { index += 1 }
+    let result = sqlite3_bind_int64(statement, index, Int64(value))
+    guard result == SQLITE_OK else {
+      throw SQLiteEncodingError.invalid(code: result)
+    }
+  }
+
+  public func encode(_ value: Double) throws {
+    defer { index += 1 }
+    let result = sqlite3_bind_double(statement, index, value)
+    guard result == SQLITE_OK else {
+      throw SQLiteEncodingError.invalid(code: result)
+    }
+  }
+
+  public func encode(_ value: String) throws {
+    defer { index += 1 }
+    let result = sqlite3_bind_text(statement, index, value, -1, SQLITE_TRANSIENT)
+    guard result == SQLITE_OK else {
+      throw SQLiteEncodingError.invalid(code: result)
+    }
+  }
+
+  public func encode(_ value: Data) throws {
+    defer { index += 1 }
+    fatalError("Unimplemented")
+  }
+
+  public func encode(_ value: SQLiteEncodable) throws {
+    defer { index += 1 }
+    try value.encode(to: self)
+  }
+}
+
+public enum SQLiteEncodingError: Error {
+  case invalid(code: Int32)
+}
+
+extension Bool: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    try encoder.encode(self)
+  }
+}
+
+extension Int: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    try encoder.encode(self)
+  }
+}
+
+extension Double: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    try encoder.encode(self)
+  }
+}
+
+extension Float: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    try encoder.encode(Double(self))
+  }
+}
+
+extension String: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    try encoder.encode(self)
+  }
+}
+
+extension Date: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    try encoder.encode(utcISO8601DateFormatter.string(from: self))
+  }
+}
+
+extension URL: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    try encoder.encode(absoluteString)
+  }
+}
+
+extension Optional: SQLiteEncodable where Wrapped: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    if let value = self {
+      try encoder.encode(value)
+    } else {
+      try encoder.encodeNil()
+    }
+  }
+}
+
+extension SQLiteEncodable where Self: RawRepresentable, RawValue: SQLiteEncodable {
+  public func encode(to encoder: SQLiteEncoder) throws {
+    var encoder = encoder
+    try encoder.encode(rawValue)
+  }
+}
+
+private let utcISO8601DateFormatter = ISO8601DateFormatter()

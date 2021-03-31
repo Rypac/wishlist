@@ -2,7 +2,7 @@
 
 import SQLite3
 
-private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
+let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
 public final class Sqlite {
   public private(set) var handle: OpaquePointer?
@@ -26,83 +26,37 @@ public final class Sqlite {
     try validate(sqlite3_exec(handle, sql, nil, nil, nil))
   }
 
-  @discardableResult
-  public func run(_ sql: String, _ bindings: Datatype...) throws -> [[Datatype]] {
-    var statement: OpaquePointer?
-    try validate(sqlite3_prepare_v2(handle, sql, -1, &statement, nil))
-    defer { sqlite3_finalize(statement) }
-    for (index, binding) in zip(Int32(1)..., bindings) {
-      switch binding {
-      case .null:
-        try validate(sqlite3_bind_null(statement, index))
-      case let .integer(value):
-        try validate(sqlite3_bind_int64(statement, index, value))
-      case let .real(value):
-        try validate(sqlite3_bind_double(statement, index, value))
-      case let .text(value):
-        try validate(sqlite3_bind_text(statement, index, value, -1, SQLITE_TRANSIENT))
-      case let .blob(value):
-        try validate(sqlite3_bind_blob(statement, index, value, -1, SQLITE_TRANSIENT))
-      }
-    }
-
-    let cols = sqlite3_column_count(statement)
-    var rows: [[Datatype]] = []
-    while try validate(sqlite3_step(statement)) == SQLITE_ROW {
-      rows.append(
-        try (0..<cols).map { index in
-          switch sqlite3_column_type(statement, index) {
-          case SQLITE_NULL:
-            return .null
-          case SQLITE_INTEGER:
-            return .integer(sqlite3_column_int64(statement, index))
-          case SQLITE_FLOAT:
-            return .real(sqlite3_column_double(statement, index))
-          case SQLITE_TEXT:
-            return .text(String(cString: sqlite3_column_text(statement, index)))
-          case SQLITE_BLOB:
-            return .blob(sqlite3_column_blob(statement, index).load(as: [UInt8].self))
-          default:
-            throw Error(description: "Invalid data type")
-          }
-        }
-      )
-    }
-
-    return rows
-  }
-
-  @discardableResult
-  public func runDecoding<T>(_ sql: String, _ bindings: Datatype...) throws -> [T] where T: SQLiteRowDecodable {
+  public func execute(_ sql: String, _ bindings: SQLiteEncodable...) throws {
     var statement: SQLiteStatement?
     try validate(sqlite3_prepare_v2(handle, sql, -1, &statement, nil))
     defer { sqlite3_finalize(statement) }
-    for (index, binding) in zip(Int32(1)..., bindings) {
-      switch binding {
-      case .null:
-        try validate(sqlite3_bind_null(statement, index))
-      case let .integer(value):
-        try validate(sqlite3_bind_int64(statement, index, value))
-      case let .real(value):
-        try validate(sqlite3_bind_double(statement, index, value))
-      case let .text(value):
-        try validate(sqlite3_bind_text(statement, index, value, -1, SQLITE_TRANSIENT))
-      case let .blob(value):
-        try validate(sqlite3_bind_blob(statement, index, value, -1, SQLITE_TRANSIENT))
-      }
+
+    let encoder = SQLiteBindingEncoder(statement: statement)
+    for binding in bindings {
+      try encoder.encode(binding)
     }
 
-    var rows: [T] = []
+    try validate(sqlite3_step(statement))
+  }
+
+  @discardableResult
+  public func run<Row>(_ sql: String, _ bindings: SQLiteEncodable...) throws -> [Row] where Row: SQLiteRowDecodable {
+    var statement: SQLiteStatement?
+    try validate(sqlite3_prepare_v2(handle, sql, -1, &statement, nil))
+    defer { sqlite3_finalize(statement) }
+
+    let encoder = SQLiteBindingEncoder(statement: statement)
+    for binding in bindings {
+      try encoder.encode(binding)
+    }
+
+    var rows: [Row] = []
     while try validate(sqlite3_step(statement)) == SQLITE_ROW {
       let decoder = SQLiteDecoder(statement: statement)
-      rows.append(try T(from: decoder))
+      rows.append(try Row(from: decoder))
     }
 
     return rows
-  }
-
-  public var lastInsertRowid: Int64 {
-    sqlite3_last_insert_rowid(handle)
   }
 
   @discardableResult
@@ -113,52 +67,52 @@ public final class Sqlite {
     return code
   }
 
-  public enum Datatype: Equatable {
-    case blob([UInt8])
-    case integer(Int64)
-    case null
-    case real(Double)
-    case text(String)
-  }
-
   public struct Error: Swift.Error, Equatable {
-    public var code: Int32?
+    public var code: Int32
     public var description: String
   }
 }
 
-extension Sqlite.Error {
+private extension Sqlite.Error {
   init(code: Int32, db: OpaquePointer?) {
     self.code = code
     self.description = String(cString: sqlite3_errstr(code))
   }
 }
 
-extension Sqlite.Datatype: ExpressibleByStringLiteral {
+public enum SQLiteDatatype: Equatable {
+  case blob([UInt8])
+  case integer(Int64)
+  case null
+  case real(Double)
+  case text(String)
+}
+
+extension SQLiteDatatype: ExpressibleByStringLiteral {
   public init(stringLiteral value: String) {
     self = .text(value)
   }
 }
 
-extension Sqlite.Datatype: ExpressibleByIntegerLiteral {
+extension SQLiteDatatype: ExpressibleByIntegerLiteral {
   public init(integerLiteral value: Int64) {
     self = .integer(value)
   }
 }
 
-extension Sqlite.Datatype: ExpressibleByBooleanLiteral {
+extension SQLiteDatatype: ExpressibleByBooleanLiteral {
   public init(booleanLiteral value: Bool) {
     self = .integer(value ? 1 : 0)
   }
 }
 
-extension Sqlite.Datatype: ExpressibleByFloatLiteral {
+extension SQLiteDatatype: ExpressibleByFloatLiteral {
   public init(floatLiteral value: Double) {
     self = .real(value)
   }
 }
 
-extension Sqlite.Datatype: ExpressibleByNilLiteral {
+extension SQLiteDatatype: ExpressibleByNilLiteral {
   public init(nilLiteral: ()) {
     self = .null
   }

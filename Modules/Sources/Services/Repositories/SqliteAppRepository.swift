@@ -4,7 +4,6 @@ import Foundation
 
 public final class SqliteAppRepository: AppRepository {
   private let sqlite: Sqlite
-  private let utcISODateFormatter = ISO8601DateFormatter()
 
   public init(sqlite: Sqlite) throws {
     self.sqlite = sqlite
@@ -12,7 +11,7 @@ public final class SqliteAppRepository: AppRepository {
   }
 
   public func fetchAll() throws -> [AppDetails] {
-    try sqlite.runDecoding(
+    try sqlite.run(
       """
       SELECT
         app.id,
@@ -47,52 +46,52 @@ public final class SqliteAppRepository: AppRepository {
   public func add(_ apps: [AppDetails]) throws {
     try sqlite.execute("BEGIN;")
     for app in apps {
-      try sqlite.run(
+      try sqlite.execute(
         """
         REPLACE INTO app VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """,
-        .integer(Int64(app.id.rawValue)),
-        .text(app.bundleID),
-        .text(app.title),
-        .text(app.description),
-        .text(app.seller),
-        .text(app.url.absoluteString),
-        .text(app.icon.small.absoluteString),
-        .text(app.icon.medium.absoluteString),
-        .text(app.icon.large.absoluteString),
-        .text(utcISODateFormatter.string(from: app.releaseDate)),
-        .text(app.version.name),
-        .text(app.price.current.formatted),
+        app.id,
+        app.bundleID,
+        app.title,
+        app.description,
+        app.seller,
+        app.url,
+        app.icon.small,
+        app.icon.medium,
+        app.icon.large,
+        app.releaseDate,
+        app.version.name,
+        app.price.current.formatted,
         "AUD"
       )
 
-      try sqlite.run(
+      try sqlite.execute(
         """
         REPLACE INTO version VALUES (?, ?, ?, ?);
         """,
-        .integer(Int64(app.id.rawValue)),
-        .text(app.version.name),
-        .text(utcISODateFormatter.string(from: app.version.date)),
-        app.version.notes.map(Sqlite.Datatype.text) ?? .null
+        app.id,
+        app.version.name,
+        app.version.date,
+        app.version.notes
       )
 
-      try sqlite.run(
+      try sqlite.execute(
         """
         INSERT OR IGNORE INTO interaction VALUES (?, ?, ?, ?);
         """,
-        .integer(Int64(app.id.rawValue)),
-        .text(utcISODateFormatter.string(from: app.firstAdded)),
-        app.lastViewed.map { .text(utcISODateFormatter.string(from: $0)) } ?? .null,
+        app.id,
+        app.firstAdded,
+        app.lastViewed,
         0
       )
 
-      try sqlite.run(
+      try sqlite.execute(
         """
         REPLACE INTO notification VALUES (?, ?, ?);
         """,
-        .integer(Int64(app.id.rawValue)),
-        .integer(app.notifications.contains(.priceDrop) ? 1 : 0),
-        .integer(app.notifications.contains(.newVersion) ? 1 : 0)
+        app.id,
+        app.notifications.contains(.priceDrop),
+        app.notifications.contains(.newVersion)
       )
     }
     try sqlite.execute("COMMIT;")
@@ -105,45 +104,45 @@ public final class SqliteAppRepository: AppRepository {
   public func delete(ids: [AppID]) throws {
     try sqlite.execute("BEGIN;")
     for id in ids {
-      try sqlite.run(
+      try sqlite.execute(
         "DELETE FROM app WHERE id = ?;",
-        .integer(Int64(id.rawValue))
+        id
       )
     }
     try sqlite.execute("COMMIT;")
   }
 
   public func viewedApp(id: AppID, at date: Date) throws {
-    try sqlite.run(
+    try sqlite.execute(
       """
       UPDATE interaction
       SET lastViewedDate = ?, viewCount = viewCount + 1
       WHERE appId = ?;
       """,
-      .text(utcISODateFormatter.string(from: date)),
-      .integer(Int64(id.rawValue))
+      date,
+      id
     )
   }
 
   public func notify(id: AppID, for notifications: Set<ChangeNotification>) throws {
-    try sqlite.run(
+    try sqlite.execute(
       """
       REPLACE INTO notification VALUES (?, ?, ?);
       """,
-      .integer(Int64(id.rawValue)),
-      .integer(notifications.contains(.priceDrop) ? 1 : 0),
-      .integer(notifications.contains(.newVersion) ? 1 : 0)
+      id,
+      notifications.contains(.priceDrop),
+      notifications.contains(.newVersion)
     )
   }
 
   public func versionHistory(id: AppID) throws -> [Version] {
-    try sqlite.runDecoding(
+    try sqlite.run(
       """
       SELECT name, releaseDate, releaseNotes
       FROM version
       WHERE appId = ?;
       """,
-      .integer(Int64(id.rawValue))
+      id
     )
   }
 }
@@ -202,6 +201,8 @@ private extension SqliteAppRepository {
   }
 }
 
+extension AppID: SQLiteEncodable {}
+
 extension AppDetails: SQLiteRowDecodable {
   public init(from decoder: SQLiteDecoder) throws {
     var decoder = decoder
@@ -222,10 +223,10 @@ extension AppDetails: SQLiteRowDecodable {
       version: Version(
         name: try decoder.decode(String.self),
         date: try decoder.decode(Date.self),
-        notes: try decoder.decodeIfPresent(String.self)
+        notes: try decoder.decode(String?.self)
       ),
       firstAdded: try decoder.decode(Date.self),
-      lastViewed: try decoder.decodeIfPresent(Date.self),
+      lastViewed: try decoder.decode(Date?.self),
       notifications: try {
         var notifications = Set<ChangeNotification>()
         if try decoder.decode(Bool.self) {
@@ -246,7 +247,7 @@ extension Version: SQLiteRowDecodable {
     self.init(
       name: try decoder.decode(String.self),
       date: try decoder.decode(Date.self),
-      notes: try decoder.decodeIfPresent(String.self)
+      notes: try decoder.decode(String?.self)
     )
   }
 }
