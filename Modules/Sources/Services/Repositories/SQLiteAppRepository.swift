@@ -1,11 +1,10 @@
-import Combine
 import Domain
 import Foundation
 
-public final class SqliteAppRepository: AppRepository {
-  private let sqlite: Sqlite
+public final class SQLiteAppRepository: AppRepository {
+  private let sqlite: SQLite
 
-  public init(sqlite: Sqlite) throws {
+  public init(sqlite: SQLite) throws {
     self.sqlite = sqlite
     try migrate()
   }
@@ -147,7 +146,7 @@ public final class SqliteAppRepository: AppRepository {
   }
 }
 
-private extension SqliteAppRepository {
+private extension SQLiteAppRepository {
   func migrate() throws {
     try sqlite.execute(
       """
@@ -201,11 +200,10 @@ private extension SqliteAppRepository {
   }
 }
 
-extension AppID: SQLiteDecodable, SQLiteEncodable {}
+extension AppID: SQLiteCodable {}
 
 extension AppDetails: SQLiteDecodable {
-  public init(from decoder: SQLiteDecoder) throws {
-    var decoder = decoder
+  public init(from decoder: inout SQLiteDecoder) throws {
     self.init(
       id: try decoder.decode(AppID.self),
       title: try decoder.decode(String.self),
@@ -220,11 +218,7 @@ extension AppDetails: SQLiteDecodable {
       bundleID: try decoder.decode(String.self),
       releaseDate: try decoder.decode(Date.self),
       price: Tracked(current: Price(value: 0, formatted: try decoder.decode(String.self))),
-      version: Version(
-        name: try decoder.decode(String.self),
-        date: try decoder.decode(Date.self),
-        notes: try decoder.decode(String?.self)
-      ),
+      version: try Version(from: &decoder),
       firstAdded: try decoder.decode(Date.self),
       lastViewed: try decoder.decode(Date?.self),
       notifications: try {
@@ -242,8 +236,7 @@ extension AppDetails: SQLiteDecodable {
 }
 
 extension Version: SQLiteDecodable {
-  public init(from decoder: SQLiteDecoder) throws {
-    var decoder = decoder
+  public init(from decoder: inout SQLiteDecoder) throws {
     self.init(
       name: try decoder.decode(String.self),
       date: try decoder.decode(Date.self),

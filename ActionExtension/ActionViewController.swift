@@ -67,7 +67,7 @@ let extensionReducer = Reducer<ExtensionState, ExtensionAction, SystemEnvironmen
 class ActionViewController: UIViewController {
   private(set) lazy var appRepository: AppRepository = {
     let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
-    return try! SqliteAppRepository(sqlite: Sqlite(path: path.absoluteString))
+    return try! SQLiteAppRepository(sqlite: SQLite(path: path.absoluteString))
   }()
 
   private lazy var store: Store<ExtensionState, ExtensionAction> = {

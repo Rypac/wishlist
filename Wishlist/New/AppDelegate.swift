@@ -7,7 +7,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   let appStore: AppLookupService = AppStoreService()
   private(set) lazy var appRepository: AppRepository = {
     let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
-    return try! SqliteAppRepository(sqlite: Sqlite(path: path.absoluteString))
+    return try! SQLiteAppRepository(sqlite: SQLite(path: path.absoluteString))
   }()
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
