@@ -201,13 +201,13 @@ private extension SqliteAppRepository {
   }
 }
 
-extension AppID: SQLiteEncodable {}
+extension AppID: SQLiteDecodable, SQLiteEncodable {}
 
-extension AppDetails: SQLiteRowDecodable {
+extension AppDetails: SQLiteDecodable {
   public init(from decoder: SQLiteDecoder) throws {
     var decoder = decoder
     self.init(
-      id: AppID(rawValue: try decoder.decode(Int.self)),
+      id: try decoder.decode(AppID.self),
       title: try decoder.decode(String.self),
       seller: try decoder.decode(String.self),
       description: try decoder.decode(String.self),
@@ -241,7 +241,7 @@ extension AppDetails: SQLiteRowDecodable {
   }
 }
 
-extension Version: SQLiteRowDecodable {
+extension Version: SQLiteDecodable {
   public init(from decoder: SQLiteDecoder) throws {
     var decoder = decoder
     self.init(

@@ -1,231 +1,25 @@
 import Foundation
 import SQLite3
 
+private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
+
 public typealias SQLiteStatement = OpaquePointer
-
-public struct SQLiteColumn: Equatable {
-  public let rawValue: Int32
-
-  init(rawValue: Int32) {
-    self.rawValue = rawValue
-  }
-}
-
-extension SQLiteColumn: CustomStringConvertible {
-  public var description: String {
-    switch self {
-    case .null: return "NULL"
-    case .integer: return "INTEGER"
-    case .float: return "REAL"
-    case .text: return "TEXT"
-    case .blob: return "BLOB"
-    default: return "UNKNOWN"
-    }
-  }
-}
-
-extension SQLiteColumn {
-  public static let null = SQLiteColumn(rawValue: SQLITE_NULL)
-  public static let integer = SQLiteColumn(rawValue: SQLITE_INTEGER)
-  public static let float = SQLiteColumn(rawValue: SQLITE_FLOAT)
-  public static let text = SQLiteColumn(rawValue: SQLITE3_TEXT)
-  public static let blob = SQLiteColumn(rawValue: SQLITE_BLOB)
-}
-
-extension SQLiteColumn: ExpressibleByNilLiteral {
-  public init(nilLiteral: ()) {
-    self = .null
-  }
-}
 
 // MARK: Decoder
 
-public protocol SQLiteRowDecodable {
+public protocol SQLiteDecodable {
   init(from decoder: SQLiteDecoder) throws
 }
 
-public protocol SQLiteColumnDecodable {
-  init(statement: SQLiteStatement?, index: Int32) throws
-}
-
-extension SQLiteRowDecodable where Self: SQLiteColumnDecodable {
-  init(from decoder: SQLiteDecoder) throws {
-    var decoder = decoder
-    self = try decoder.decode(Self.self)
-  }
-}
-
-enum SQLiteDecodingError: Error {
-  case typeMismatch(Any.Type, description: String)
-  case dataCorrupted(description: String)
-}
-
-extension Bool: SQLiteColumnDecodable {
-  public init(statement: SQLiteStatement?, index: Int32) throws {
-    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
-    case .integer:
-      self = sqlite3_column_int64(statement, index) != 0
-    case .float:
-      self = sqlite3_column_double(statement, index) != 0.0
-    case let column:
-      throw SQLiteDecodingError.typeMismatch(
-        Bool.self,
-        description: "Expected \(SQLiteColumn.integer) or \(SQLiteColumn.float) but was \(column)"
-      )
-    }
-  }
-}
-
-extension Int: SQLiteColumnDecodable {
-  public init(statement: SQLiteStatement?, index: Int32) throws {
-    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
-    case .integer:
-      self = Int(sqlite3_column_int64(statement, index))
-    case let column:
-      throw SQLiteDecodingError.typeMismatch(
-        Int.self,
-        description: "Expected \(SQLiteColumn.integer) but was \(column)"
-      )
-    }
-  }
-}
-
-extension Double: SQLiteColumnDecodable {
-  public init(statement: SQLiteStatement?, index: Int32) throws {
-    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
-    case .float:
-      self = sqlite3_column_double(statement, index)
-    case let column:
-      throw SQLiteDecodingError.typeMismatch(
-        Double.self,
-        description: "Expected \(SQLiteColumn.float) but was \(column)"
-      )
-    }
-  }
-}
-
-extension Float: SQLiteColumnDecodable {
-  public init(statement: SQLiteStatement?, index: Int32) throws {
-    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
-    case .float:
-      self = Float(sqlite3_column_double(statement, index))
-    case let column:
-      throw SQLiteDecodingError.typeMismatch(
-        Float.self,
-        description: "Expected \(SQLiteColumn.float) but was \(column)"
-      )
-    }
-  }
-}
-
-extension String: SQLiteColumnDecodable {
-  public init(statement: SQLiteStatement?, index: Int32) throws {
-    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
-    case .text:
-      self = String(cString: sqlite3_column_text(statement, index))
-    case let column:
-      throw SQLiteDecodingError.typeMismatch(
-        String.self,
-        description: "Expected \(SQLiteColumn.text) but was \(column)"
-      )
-    }
-  }
-}
-
-extension URL: SQLiteColumnDecodable {
-  public init(statement: SQLiteStatement?, index: Int32) throws {
-    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
-    case .text:
-      let absoluteString = String(cString: sqlite3_column_text(statement, index))
-      guard let url = URL(string: absoluteString) else {
-        throw SQLiteDecodingError.dataCorrupted(description: "Invalid URL: \(absoluteString)")
-      }
-      self = url
-    case let column:
-      throw SQLiteDecodingError.typeMismatch(
-        URL.self,
-        description: "Expected \(SQLiteColumn.text) but was \(column)"
-      )
-    }
-  }
-}
-
-extension Date: SQLiteColumnDecodable {
-  public init(statement: SQLiteStatement?, index: Int32) throws {
-    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
-    case .text:
-      let timestamp = String(cString: sqlite3_column_text(statement, index))
-      guard let date = utcISO8601DateFormatter.date(from: timestamp) else {
-        throw SQLiteDecodingError.dataCorrupted(description: "Invalid ISO-8601 date: \(timestamp)")
-      }
-      self = date
-    case let column:
-      throw SQLiteDecodingError.typeMismatch(
-        Date.self,
-        description: "Expected \(SQLiteColumn.text) but was \(column)"
-      )
-    }
-  }
-}
-
-extension Optional: SQLiteColumnDecodable where Wrapped: SQLiteColumnDecodable {
-  public init(statement: SQLiteStatement?, index: Int32) throws {
-    switch SQLiteColumn(rawValue: sqlite3_column_type(statement, index)) {
-    case .null:
-      self = nil
-    default:
-      self = try Wrapped(statement: statement, index: index)
-    }
-  }
-}
-
-public struct SQLiteDecoder {
-  private var statement: SQLiteStatement?
-  private var index: Int32 = 0
-
-  private var isAtEnd: Bool { index < sqlite3_column_count(statement) }
-
-  public init(statement: SQLiteStatement?) {
-    self.statement = statement
-  }
-
-  public mutating func decodeNil() throws -> Bool {
-    let isNil = sqlite3_column_type(statement, index) == SQLITE_NULL
-    if isNil {
-      index += 1
-    }
-    return isNil
-  }
-
-  public mutating func decode(_ type: Bool.Type) throws -> Bool {
-    defer { index += 1 }
-    return try Bool(statement: statement, index: index)
-  }
-
-  public mutating func decode(_ type: Int.Type) throws -> Int {
-    defer { index += 1 }
-    return try Int(statement: statement, index: index)
-  }
-
-  public mutating func decode(_ type: Double.Type) throws -> Double {
-    defer { index += 1 }
-    return try Double(statement: statement, index: index)
-  }
-
-  public mutating func decode(_ type: Float.Type) throws -> Float {
-    defer { index += 1 }
-    return try Float(statement: statement, index: index)
-  }
-
-  public mutating func decode(_ type: String.Type) throws -> String {
-    defer { index += 1 }
-    return try String(statement: statement, index: index)
-  }
-
-  public mutating func decode<T>(_ type: T.Type) throws -> T where T: SQLiteColumnDecodable {
-    defer { index += 1 }
-    return try T(statement: statement, index: index)
-  }
+public protocol SQLiteDecoder {
+  mutating func decodeNil() throws -> Bool
+  mutating func decode(_ type: Bool.Type) throws -> Bool
+  mutating func decode(_ type: Int.Type) throws -> Int
+  mutating func decode(_ type: Double.Type) throws -> Double
+  mutating func decode(_ type: Float.Type) throws -> Float
+  mutating func decode(_ type: String.Type) throws -> String
+  mutating func decode(_ type: Data.Type) throws -> Data
+  mutating func decode<T>(_ type: T.Type) throws -> T where T: SQLiteDecodable
 }
 
 extension SQLiteDecoder {
@@ -249,28 +43,196 @@ extension SQLiteDecoder {
     try decodeNil() ? nil : try decode(type)
   }
 
-  public mutating func decodeIfPresent<T>(_ type: T.Type) throws -> T? where T: SQLiteColumnDecodable {
+  public mutating func decodeIfPresent(_ type: Data.Type) throws -> Data? {
+    try decodeNil() ? nil : try decode(type)
+  }
+
+  public mutating func decodeIfPresent<T>(_ type: T.Type) throws -> T? where T: SQLiteDecodable {
     try decodeNil() ? nil : try decode(type)
   }
 }
 
-extension SQLiteDecoder {
-  public mutating func decode(_ type: Date.Type) throws -> Date {
+enum SQLiteDecodingError: Error {
+  case typeMismatch(Any.Type, description: String)
+  case dataCorrupted(description: String)
+  case exceededColumnCount(index: Int)
+}
+
+extension Bool: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    self = try decoder.decode(Bool.self)
+  }
+}
+
+extension Int: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    self = try decoder.decode(Int.self)
+  }
+}
+
+extension Double: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    self = try decoder.decode(Double.self)
+  }
+}
+
+extension Float: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    self = try decoder.decode(Float.self)
+  }
+}
+
+extension String: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    self = try decoder.decode(String.self)
+  }
+}
+
+extension URL: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    let absoluteString = try decoder.decode(String.self)
+    guard let url = URL(string: absoluteString) else {
+      throw SQLiteDecodingError.dataCorrupted(description: "Invalid URL: \(absoluteString)")
+    }
+
+    self = url
+  }
+}
+
+extension Date: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    let timestamp = try decoder.decode(String.self)
+    guard let date = utcISO8601DateFormatter.date(from: timestamp) else {
+      throw SQLiteDecodingError.dataCorrupted(description: "Invalid ISO-8601 date: \(timestamp)")
+    }
+
+    self = date
+  }
+}
+
+extension Optional: SQLiteDecodable where Wrapped: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    if try decoder.decodeNil() {
+      self = nil
+    } else {
+      self = try decoder.decode(Wrapped.self)
+    }
+  }
+}
+
+extension SQLiteDecodable where Self: RawRepresentable, RawValue: SQLiteDecodable {
+  public init(from decoder: SQLiteDecoder) throws {
+    var decoder = decoder
+    guard let value = Self.init(rawValue: try decoder.decode(RawValue.self)) else {
+      throw SQLiteDecodingError.dataCorrupted(description: "Invalid raw value")
+    }
+    self = value
+  }
+}
+
+struct SQLiteRowDecoder: SQLiteDecoder {
+  private var statement: SQLiteStatement?
+  private var index: Int32 = 0
+
+  init(statement: SQLiteStatement?) {
+    self.statement = statement
+  }
+
+  private func checkIndex() throws {
+    guard index < sqlite3_column_count(statement) else {
+      throw SQLiteDecodingError.exceededColumnCount(index: Int(index))
+    }
+  }
+
+  mutating func decodeNil() throws -> Bool {
+    try checkIndex()
+    let isNil = sqlite3_column_type(statement, index) == SQLITE_NULL
+    if isNil {
+      index += 1
+    }
+    return isNil
+  }
+
+  mutating func decode(_ type: Bool.Type) throws -> Bool {
+    try checkIndex()
     defer { index += 1 }
-    return try Date(statement: statement, index: index)
+    switch sqlite3_column_type(statement, index) {
+    case SQLITE_INTEGER:
+      return sqlite3_column_int64(statement, index) != 0
+    case SQLITE_FLOAT:
+      return sqlite3_column_double(statement, index) != 0.0
+    default:
+      throw SQLiteDecodingError.typeMismatch(Bool.self, description: "Expected INTEGER or REAL")
+    }
   }
 
-  public mutating func decode(_ type: URL.Type) throws -> URL {
+  mutating func decode(_ type: Int.Type) throws -> Int {
+    try checkIndex()
     defer { index += 1 }
-    return try URL(statement: statement, index: index)
+    switch sqlite3_column_type(statement, index) {
+    case SQLITE_INTEGER:
+      return Int(sqlite3_column_int64(statement, index))
+    default:
+      throw SQLiteDecodingError.typeMismatch(Int.self, description: "Expected INTEGER")
+    }
   }
 
-  public mutating func decodeIfPresent(_ type: Date.Type) throws -> Date? {
-    try decodeNil() ? nil : try decode(type)
+  mutating func decode(_ type: Double.Type) throws -> Double {
+    try checkIndex()
+    defer { index += 1 }
+    switch sqlite3_column_type(statement, index) {
+    case SQLITE_FLOAT:
+      return sqlite3_column_double(statement, index)
+    default:
+      throw SQLiteDecodingError.typeMismatch(Double.self, description: "Expected REAL")
+    }
   }
 
-  public mutating func decodeIfPresent(_ type: URL.Type) throws -> URL? {
-    try decodeNil() ? nil : try decode(type)
+  mutating func decode(_ type: Float.Type) throws -> Float {
+    try checkIndex()
+    defer { index += 1 }
+    switch sqlite3_column_type(statement, index) {
+    case SQLITE_FLOAT:
+      return Float(sqlite3_column_double(statement, index))
+    default:
+      throw SQLiteDecodingError.typeMismatch(Float.self, description: "Expected REAL")
+    }
+  }
+
+  mutating func decode(_ type: String.Type) throws -> String {
+    try checkIndex()
+    defer { index += 1 }
+    switch sqlite3_column_type(statement, index) {
+    case SQLITE_TEXT:
+      return String(cString: sqlite3_column_text(statement, index))
+    default:
+      throw SQLiteDecodingError.typeMismatch(String.self, description: "Expected TEXT")
+    }
+  }
+
+  mutating func decode(_ type: Data.Type) throws -> Data {
+    try checkIndex()
+    defer { index += 1 }
+    switch sqlite3_column_type(statement, index) {
+    case SQLITE_BLOB:
+      return sqlite3_column_blob(statement, index).load(as: Data.self)
+    default:
+      throw SQLiteDecodingError.typeMismatch(Data.self, description: "Expected BLOB")
+    }
+  }
+
+  mutating func decode<T>(_ type: T.Type) throws -> T where T: SQLiteDecodable {
+    try checkIndex()
+    defer { index += 1 }
+    return try T(from: self)
   }
 }
 
@@ -340,7 +302,12 @@ final class SQLiteBindingEncoder: SQLiteEncoder {
 
   public func encode(_ value: Data) throws {
     defer { index += 1 }
-    fatalError("Unimplemented")
+    try value.withUnsafeBytes { bytes in
+      let result = sqlite3_bind_blob(statement, index, bytes.baseAddress, -1, SQLITE_TRANSIENT)
+      guard result == SQLITE_OK else {
+        throw SQLiteEncodingError.invalid(code: result)
+      }
+    }
   }
 
   public func encode(_ value: SQLiteEncodable) throws {
