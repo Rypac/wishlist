@@ -1,3 +1,4 @@
+import Combine
 import Domain
 import Services
 import SwiftUI
@@ -5,10 +6,20 @@ import SwiftUI
 final class AppDelegate: NSObject, UIApplicationDelegate {
   let settings = Settings()
   let appStore: AppLookupService = AppStoreService()
-  private(set) lazy var appRepository: AppRepository = {
+  let appRepository: AppRepository
+  let appAdder: AppAdder
+  let urlSchemeHandler: URLSchemeHandler
+
+  override init() {
     let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
-    return try! SQLiteAppRepository(sqlite: SQLite(path: path.absoluteString))
-  }()
+    appRepository = try! SQLiteAppRepository(sqlite: SQLite(path: path.absoluteString))
+    appAdder = AppAdder(
+      environment: .live(
+        environment: AddAppsEnvironment(loadApps: appStore.lookup, saveApps: appRepository.add)
+      )
+    )
+    urlSchemeHandler = URLSchemeHandler(appAdder: appAdder)
+  }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     settings.register()

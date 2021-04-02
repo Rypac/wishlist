@@ -60,3 +60,33 @@ let urlSchemeReducer = Reducer<URLSchemeState, URLSchemeAction, SystemEnvironmen
     }
   }
 )
+
+final class URLSchemeHandler {
+  var appAdder: AppAdder
+
+  private var cancellables = Set<AnyCancellable>()
+
+  init(appAdder: AppAdder) {
+    self.appAdder = appAdder
+  }
+
+  deinit {
+    for cancellable in cancellables {
+      cancellable.cancel()
+    }
+  }
+
+  func handle(_ urlScheme: URLScheme) {
+    switch urlScheme {
+    case .addApps(let ids):
+      appAdder.addApps(ids: ids)
+        .sink { result in
+          print("Successfully added apps: \(result)")
+        }
+        .store(in: &cancellables)
+    case .deleteAll: break
+    case .export: break
+    case .viewApp: break
+    }
+  }
+}

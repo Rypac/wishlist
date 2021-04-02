@@ -9,7 +9,7 @@ final class Wishlist: App {
   @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
   var body: some Scene {
-    WindowGroup {
+    WindowGroup { [urlSchemeHandler = appDelegate.urlSchemeHandler] in
       ContentView(
         environment: ContentViewEnvironment(
           apps: appDelegate.appRepository.appPublisher.catch { _ in Just([]) }.eraseToAnyPublisher(),
@@ -17,6 +17,11 @@ final class Wishlist: App {
           sortOrderState: appDelegate.settings.sortOrderStatePublisher
         )
       )
+      .onOpenURL { url in
+        if let urlScheme = URLScheme(rawValue: url) {
+          urlSchemeHandler.handle(urlScheme)
+        }
+      }
     }
   }
 }

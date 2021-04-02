@@ -1,6 +1,7 @@
 import Combine
 import ComposableArchitecture
 import Foundation
+import Toolbox
 
 public struct AddAppsError: Error, Equatable {}
 
@@ -52,8 +53,9 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
       .cancellable(id: CancelAddAppsID(), cancelInFlight: true)
 
   case let .addAppsFromURLs(urls):
-    let ids = extractAppIDs(from: urls)
-    return ids.isEmpty ? .none : Effect(value: .addApps(ids))
+    return .none
+//    let ids = extractAppIDs(from: urls)
+//    return ids.isEmpty ? .none : Effect(value: .addApps(ids))
 
   case let .addAppsResponse(.success(newApps)):
     state.addingApps = false
@@ -78,6 +80,62 @@ public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironme
   case .cancelAddingApps:
     state.addingApps = false
     return .cancel(id: CancelAddAppsID())
+  }
+}
+
+extension AddAppsEnvironment {
+  public func loadApps(from urls: [URL]) -> AnyPublisher<[AppSummary], Error> {
+    let idMatch = "id"
+    let appStoreURL = "https?://(?:itunes|apps).apple.com/.*/id(?<\(idMatch)>\\d+)"
+    guard let regex = try? NSRegularExpression(pattern: appStoreURL, options: []) else {
+      return .just([])
+    }
+
+    let appIds = urls.compactMap { url -> AppID? in
+      let url = url.absoluteString
+      let entireRange = NSRange(url.startIndex..<url.endIndex, in: url)
+      guard let match = regex.firstMatch(in: url, options: [], range: entireRange) else {
+        return nil
+      }
+
+      let idRange = match.range(withName: idMatch)
+      guard idRange.location != NSNotFound, let range = Range(idRange, in: url) else {
+        return nil
+      }
+
+      return Int(url[range]).map(AppID.init(rawValue:))
+    }
+
+    if appIds.isEmpty {
+      return .just([])
+    }
+
+    return loadApps(appIds)
+  }
+}
+
+public struct AppAdder {
+  public var environment: SystemEnvironment<AddAppsEnvironment>
+
+  public init(environment: SystemEnvironment<AddAppsEnvironment>) {
+    self.environment = environment
+  }
+
+  public func addApps(ids: [AppID]) -> AnyPublisher<Bool, Never> {
+    environment.loadApps(ids)
+      .receive(on: environment.mainQueue())
+      .tryMap { summaries in
+        let now = environment.now()
+        let apps = summaries.map { AppDetails($0, firstAdded: now) }
+        try environment.saveApps(apps)
+        return true
+      }
+      .catch { _ in Just(false) }
+      .eraseToAnyPublisher()
+  }
+
+  public func addApps(from urls: [URL]) -> AnyPublisher<Bool, Never> {
+    addApps(ids: extractAppIDs(from: urls))
   }
 }
 
