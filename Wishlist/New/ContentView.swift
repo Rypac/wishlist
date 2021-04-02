@@ -5,6 +5,7 @@ import ToolboxUI
 
 struct ContentViewEnvironment {
   var apps: AnyPublisher<[AppDetails], Never>
+  var versionHistory: (AppDetails.ID) -> AnyPublisher<[Version], Never>
   var sortOrderState: AnyPublisher<SortOrderState, Never>
 }
 
@@ -26,7 +27,12 @@ struct ContentView: View {
   
   var body: some View {
     NavigationView {
-      NewAppListView(environment: NewAppListViewEnvironment(apps: environment.sortedApps))
+      NewAppListView(
+        environment: NewAppListViewEnvironment(
+          apps: environment.sortedApps,
+          versionHistory: environment.versionHistory
+        )
+      )
         .navigationTitle("Wishlist")
         .navigationBarItems(
           trailing: Button(action: { showSettings = true }) {

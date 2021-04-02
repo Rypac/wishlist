@@ -53,6 +53,7 @@
 		94FA20D5231BA2BD00EC1190 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94FA20D4231BA2BD00EC1190 /* Assets.xcassets */; };
 		94FA20D8231BA2BD00EC1190 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94FA20D7231BA2BD00EC1190 /* Preview Assets.xcassets */; };
 		94FA20DB231BA2BD00EC1190 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94FA20D9231BA2BD00EC1190 /* LaunchScreen.storyboard */; };
+		94FA5E882616FDC800430964 /* NewVersionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA5E872616FDC800430964 /* NewVersionHistoryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +136,7 @@
 		94FA20D7231BA2BD00EC1190 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		94FA20DA231BA2BD00EC1190 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		94FA20DC231BA2BD00EC1190 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		94FA5E872616FDC800430964 /* NewVersionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewVersionHistoryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -243,6 +245,7 @@
 				949A58DF261038F200B38E78 /* NewAppListView.swift */,
 				949A58E626103A4700B38E78 /* NewSettingsView.swift */,
 				949A58EC26103D9700B38E78 /* NotificationsView.swift */,
+				94FA5E872616FDC800430964 /* NewVersionHistoryView.swift */,
 			);
 			path = New;
 			sourceTree = "<group>";
@@ -464,6 +467,7 @@
 				949A58EA26103A9600B38E78 /* LicensesView.swift in Sources */,
 				942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */,
 				948890C224304D3000E3E5FA /* AppDetailsDelegate.swift in Sources */,
+				94FA5E882616FDC800430964 /* NewVersionHistoryView.swift in Sources */,
 				949A58ED26103D9700B38E78 /* NotificationsView.swift in Sources */,
 				94C7B1532330F13F008181D1 /* Settings.swift in Sources */,
 				94FA20D1231BA2BC00EC1190 /* SceneDelegate.swift in Sources */,

@@ -5,6 +5,7 @@ import SwiftUI
 
 struct NewAppListViewEnvironment {
   var apps: AnyPublisher<[AppDetails], Never>
+  var versionHistory: (AppDetails.ID) -> AnyPublisher<[Version], Never>
 }
 
 struct NewAppListView: View {
@@ -14,7 +15,12 @@ struct NewAppListView: View {
 
   var body: some View {
     List(apps) { app in
-      NavigationLink(destination: NewAppDetailsContainerView(app: app)) {
+      NavigationLink(
+        destination: NewAppDetailsContainerView(
+          app: app,
+          versionHistory: environment.versionHistory(app.id)
+        )
+      ) {
         AppRowContent(
           title: app.title,
           details: .updated(app.version.date, seen: true),

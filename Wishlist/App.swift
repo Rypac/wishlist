@@ -13,6 +13,7 @@ final class Wishlist: App {
       ContentView(
         environment: ContentViewEnvironment(
           apps: appDelegate.appRepository.appPublisher.catch { _ in Just([]) }.eraseToAnyPublisher(),
+          versionHistory: appDelegate.appRepository.versionsPublisher(id:),
           sortOrderState: appDelegate.settings.sortOrderStatePublisher
         )
       )
@@ -26,6 +27,13 @@ private extension AppRepository {
       Result.Publisher {
         try fetchAll()
       }
+    }
+    .eraseToAnyPublisher()
+  }
+
+  func versionsPublisher(id: AppID) -> AnyPublisher<[Version], Never> {
+    Deferred {
+      Optional.Publisher(try? versionHistory(id: id))
     }
     .eraseToAnyPublisher()
   }

@@ -1,14 +1,16 @@
+import Combine
 import Domain
 import SwiftUI
 import ToolboxUI
 
 struct NewAppDetailsContainerView: View {
   let app: AppDetails
+  let versionHistory: AnyPublisher<[Version], Never>
 
   @State private var showShareSheet = false
 
   var body: some View {
-    NewAppDetailsView(app: app)
+    NewAppDetailsView(app: app, versionHistory: versionHistory)
       .navigationBarTitle("Details", displayMode: .inline)
       .navigationBarItems(
         trailing: Button(action: { showShareSheet = true }) {
@@ -27,6 +29,7 @@ struct NewAppDetailsContainerView: View {
 
 struct NewAppDetailsView: View {
   let app: AppDetails
+  let versionHistory: AnyPublisher<[Version], Never>
 
   var body: some View {
     ScrollView(.vertical) {
@@ -34,6 +37,10 @@ struct NewAppDetailsView: View {
         AppHeading(app: app)
         Divider()
         AppNotifications(notifications: app.notifications)
+        if app.version.notes != nil {
+          Divider()
+          AppVersion(version: app.version, versionHistory: versionHistory)
+        }
         Divider()
         AppDescription(description: app.description)
       }
@@ -123,5 +130,41 @@ private struct AppNotifications: View {
       .bold()
     Toggle("Price Drops", isOn: .constant(notifications.contains(.priceDrop)))
     Toggle("Updates", isOn: .constant(notifications.contains(.newVersion)))
+  }
+}
+
+private struct AppVersion: View {
+  let version: Version
+  let versionHistory: AnyPublisher<[Version], Never>
+
+  @Environment(\.updateDateFormatter) private var dateFormatter
+
+  var body: some View {
+    VStack(spacing: 8) {
+      HStack {
+        Text("Release Notes")
+          .bold()
+        Spacer(minLength: 0)
+        NavigationLink(
+          destination: NewVersionHistoryView(versions: [version], versionHistory: versionHistory)
+        ) {
+          Text("Version History")
+        }
+      }
+      HStack {
+        Text(version.name)
+          .font(.callout)
+          .foregroundColor(.secondary)
+        Spacer(minLength: 0)
+        Text(dateFormatter.string(from: version.date))
+          .font(.callout)
+          .foregroundColor(.secondary)
+          .multilineTextAlignment(.trailing)
+      }
+    }
+    if let releaseNotes = version.notes {
+      Text(releaseNotes)
+        .expandable(initialLineLimit: 3)
+    }
   }
 }
