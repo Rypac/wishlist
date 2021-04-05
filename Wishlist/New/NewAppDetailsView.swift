@@ -1,51 +1,50 @@
 import Combine
 import Domain
+import Foundation
 import SwiftUI
 import ToolboxUI
 
-struct NewAppDetailsContainerView: View {
-  let app: AppDetails
-  let versionHistory: AnyPublisher<[Version], Never>
+final class AppDetailsViewModel: ObservableObject {
+  struct Environment {
+    var versionHistory: AnyPublisher<[Version], Never>
+  }
 
-  @State private var showShareSheet = false
+  @Published private(set) var app: AppDetails
 
-  var body: some View {
-    NewAppDetailsView(app: app, versionHistory: versionHistory)
-      .navigationBarTitle("Details", displayMode: .inline)
-      .navigationBarItems(
-        trailing: Button(action: { showShareSheet = true }) {
-          SFSymbol.share
-            .imageScale(.large)
-            .accessibility(label: Text("Share"))
-            .frame(width: 24, height: 24)
-        }
-        .hoverEffect()
-      )
-      .sheet(isPresented: $showShareSheet) {
-        ActivityView(showing: $showShareSheet, activityItems: [app.url], applicationActivities: nil)
-      }
+  let environment: Environment
+
+  init(app: AppDetails, environment: Environment) {
+    self.app = app
+    self.environment = environment
+  }
+
+  var notifications: Binding<Set<ChangeNotification>> {
+    Binding(
+      get: { self.app.notifications },
+      set: { self.app.notifications = $0 }
+    )
   }
 }
 
 struct NewAppDetailsView: View {
-  let app: AppDetails
-  let versionHistory: AnyPublisher<[Version], Never>
+  @StateObject var viewModel: AppDetailsViewModel
 
   var body: some View {
     ScrollView(.vertical) {
       VStack(alignment: .leading, spacing: 16) {
-        AppHeading(app: app)
+        AppHeading(app: viewModel.app)
         Divider()
-        AppNotifications(notifications: app.notifications)
-        if app.version.notes != nil {
+        AppNotifications(notifications: viewModel.notifications)
+        if viewModel.app.version.notes != nil {
           Divider()
-          AppVersion(version: app.version, versionHistory: versionHistory)
+          AppVersion(version: viewModel.app.version, versionHistory: viewModel.environment.versionHistory)
         }
         Divider()
-        AppDescription(description: app.description)
+        AppDescription(description: viewModel.app.description)
       }
       .padding()
     }
+    .navigationBarTitle("Details", displayMode: .inline)
   }
 }
 
@@ -123,13 +122,28 @@ private struct AppDescription: View {
 }
 
 private struct AppNotifications: View {
-  let notifications: Set<ChangeNotification>
+  @Binding var notifications: Set<ChangeNotification>
 
   var body: some View {
     Text("Notifications")
       .bold()
-    Toggle("Price Drops", isOn: .constant(notifications.contains(.priceDrop)))
-    Toggle("Updates", isOn: .constant(notifications.contains(.newVersion)))
+    Toggle("Price Drops", isOn: $notifications.contains(.priceDrop))
+    Toggle("Updates", isOn: $notifications.contains(.newVersion))
+  }
+}
+
+private extension Binding {
+  func contains<Element>(_ element: Element) -> Binding<Bool> where Value == Set<Element> {
+    Binding<Bool>(
+      get: { wrappedValue.contains(element) },
+      set: { newValue in
+        if newValue {
+          wrappedValue.insert(element)
+        } else {
+          wrappedValue.remove(element)
+        }
+      }
+    )
   }
 }
 
@@ -146,7 +160,9 @@ private struct AppVersion: View {
           .bold()
         Spacer(minLength: 0)
         NavigationLink(
-          destination: NewVersionHistoryView(versions: [version], versionHistory: versionHistory)
+          destination: NewVersionHistoryView(
+            viewModel: VersionHistoryViewModel(latestVersion: version, versionHistory: versionHistory)
+          )
         ) {
           Text("Version History")
         }

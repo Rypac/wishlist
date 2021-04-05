@@ -17,7 +17,7 @@ enum Theme: String, CaseIterable, UserDefaultsConvertible {
 extension ChangeNotification: UserDefaultsConvertible {}
 
 final class Settings {
-  @UserDefault("sortOrder", defaultValue: .price)
+  @UserDefault("sortOrder", defaultValue: .updated)
   var sortOrder: SortOrder
 
   @UserDefault("lastUpdateCheck", defaultValue: nil)

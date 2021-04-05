@@ -1,36 +1,35 @@
 import Combine
 import Domain
+import Foundation
 import SwiftUI
 import ToolboxUI
 
 struct ContentViewEnvironment {
   var apps: AnyPublisher<[AppDetails], Never>
+  var deleteApps: ([AppID]) throws -> Void
+  var deleteAllApps: () throws -> Void
   var versionHistory: (AppDetails.ID) -> AnyPublisher<[Version], Never>
   var sortOrderState: AnyPublisher<SortOrderState, Never>
-}
-
-extension ContentViewEnvironment {
-  var sortedApps: AnyPublisher<[AppDetails], Never> {
-    apps
-      .combineLatest(sortOrderState.removeDuplicates())
-      .map { apps, sortOrderState in
-        apps.applying(sortOrderState)
-      }
-      .eraseToAnyPublisher()
-  }
+  var checkForUpdates: () -> Void
 }
 
 struct ContentView: View {
   let environment: ContentViewEnvironment
-  
+
   @State private var showSettings = false
-  
+
+  @Environment(\.scenePhase) private var scenePhase
+
   var body: some View {
     NavigationView {
       NewAppListView(
-        environment: NewAppListViewEnvironment(
-          apps: environment.sortedApps,
-          versionHistory: environment.versionHistory
+        viewModel: AppListViewModel(
+          environment: AppListViewModel.Environment(
+            apps: environment.apps,
+            sortOrder: environment.sortOrderState,
+            deleteApps: environment.deleteApps,
+            versionHistory: environment.versionHistory
+          )
         )
       )
         .navigationTitle("Wishlist")
@@ -45,7 +44,16 @@ struct ContentView: View {
         )
     }
     .sheet(isPresented: $showSettings) {
-      NewSettingsView()
+      NewSettingsView(
+        viewModel: SettingsViewModel(
+          environment: SettingsViewModel.Environment(deleteAllApps: environment.deleteAllApps)
+        )
+      )
+    }
+    .onChange(of: scenePhase) { phase in
+      if phase == .active {
+        environment.checkForUpdates()
+      }
     }
   }
 }

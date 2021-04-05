@@ -9,38 +9,61 @@ final class Wishlist: App {
   @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
   var body: some Scene {
-    WindowGroup { [urlSchemeHandler = appDelegate.urlSchemeHandler] in
+    WindowGroup { [handleURLScheme = appDelegate.urlSchemeHandler.handle] in
       ContentView(
         environment: ContentViewEnvironment(
-          apps: appDelegate.appRepository.appPublisher.catch { _ in Just([]) }.eraseToAnyPublisher(),
-          versionHistory: appDelegate.appRepository.versionsPublisher(id:),
-          sortOrderState: appDelegate.settings.sortOrderStatePublisher
+          apps: appDelegate.reactiveEnvironment.appsPublisher,
+          deleteApps: appDelegate.appRepository.delete(ids:),
+          deleteAllApps: appDelegate.reactiveEnvironment.deleteAllApps,
+          versionHistory: appDelegate.reactiveEnvironment.versionsPublisher(id:),
+          sortOrderState: appDelegate.settings.sortOrderStatePublisher,
+          checkForUpdates: appDelegate.updateChecker.update
         )
       )
       .onOpenURL { url in
         if let urlScheme = URLScheme(rawValue: url) {
-          urlSchemeHandler.handle(urlScheme)
+          handleURLScheme(urlScheme)
         }
       }
     }
   }
 }
 
-private extension AppRepository {
-  var appPublisher: AnyPublisher<[AppDetails], Error> {
-    Deferred {
-      Result.Publisher {
-        try fetchAll()
-      }
-    }
-    .eraseToAnyPublisher()
+struct ReactiveAppEnvironment {
+  private let refreshTrigger = PassthroughSubject<Void, Never>()
+  private var appRepository: AppRepository
+
+  init(repository: AppRepository) {
+    appRepository = repository
+  }
+
+  var appsPublisher: AnyPublisher<[AppDetails], Never> {
+    refreshTrigger
+      .prepend(())
+      .tryMap(appRepository.fetchAll)
+      .catch { _ in Just([]) }
+      .eraseToAnyPublisher()
   }
 
   func versionsPublisher(id: AppID) -> AnyPublisher<[Version], Never> {
     Deferred {
-      Optional.Publisher(try? versionHistory(id: id))
+      Optional.Publisher(try? appRepository.versionHistory(id: id))
     }
     .eraseToAnyPublisher()
+  }
+
+  func saveApps(_ apps: [AppDetails]) throws {
+    try appRepository.add(apps)
+    refresh()
+  }
+
+  func deleteAllApps() throws {
+    try appRepository.deleteAll()
+    refresh()
+  }
+
+  func refresh() {
+    refreshTrigger.send(())
   }
 }
 

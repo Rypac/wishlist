@@ -1,5 +1,6 @@
 import Combine
 import Domain
+import Foundation
 import Services
 import SwiftUI
 
@@ -8,14 +9,31 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   let appStore: AppLookupService = AppStoreService()
   let appRepository: AppRepository
   let appAdder: AppAdder
+  let updateChecker: UpdateChecker
   let urlSchemeHandler: URLSchemeHandler
+  let reactiveEnvironment: ReactiveAppEnvironment
 
   override init() {
     let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
     appRepository = try! SQLiteAppRepository(sqlite: SQLite(path: path.absoluteString))
+    reactiveEnvironment = ReactiveAppEnvironment(repository: appRepository)
     appAdder = AppAdder(
       environment: .live(
-        environment: AddAppsEnvironment(loadApps: appStore.lookup, saveApps: appRepository.add)
+        environment: AddAppsEnvironment(
+          loadApps: appStore.lookup,
+          saveApps: reactiveEnvironment.saveApps
+        )
+      )
+    )
+    updateChecker = UpdateChecker(
+      environment: .live(
+        environment: UpdateChecker.Environment(
+          apps: reactiveEnvironment.appsPublisher,
+          lookupApps: appStore.lookup,
+          saveApps: reactiveEnvironment.saveApps,
+          lastUpdateDate: settings.$lastUpdateDate,
+          updateFrequency: 5 * 60
+        )
       )
     )
     urlSchemeHandler = URLSchemeHandler(appAdder: appAdder)
