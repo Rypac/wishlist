@@ -1,4 +1,4 @@
-import ComposableArchitecture
+import CombineSchedulers
 import Foundation
 
 @dynamicMemberLookup

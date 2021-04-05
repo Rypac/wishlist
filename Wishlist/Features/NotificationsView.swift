@@ -5,20 +5,7 @@ import SwiftUI
 
 final class NotificationsModel: ObservableObject {
   @Published var enabled = false
-  @Published private var notifications = Set<ChangeNotification>()
-
-  func enabled(for notification: ChangeNotification) -> Binding<Bool> {
-    Binding(
-      get: { self.notifications.contains(notification) },
-      set: { enable in
-        if enable {
-          self.notifications.insert(notification)
-        } else {
-          self.notifications.remove(notification)
-        }
-      }
-    )
-  }
+  @Published var notifications = Set<ChangeNotification>()
 }
 
 struct NotificationsView: View {
@@ -30,11 +17,11 @@ struct NotificationsView: View {
     if model.enabled {
       ConfigureNotificationsView(
         notification: .priceDrop,
-        enabled: model.enabled(for: .priceDrop)
+        enabled: $model.notifications.contains(.priceDrop)
       )
       ConfigureNotificationsView(
         notification: .newVersion,
-        enabled: model.enabled(for: .newVersion)
+        enabled: $model.notifications.contains(.newVersion)
       )
     }
   }

@@ -1,90 +1,9 @@
 import Combine
-import ComposableArchitecture
 import Foundation
 import Toolbox
 
-public struct AddAppsError: Error, Equatable {}
-
-public struct AddAppsState: Equatable {
-  public var apps: IdentifiedArrayOf<AppDetails>
-  public var addingApps: Bool
-
-  public init(apps: IdentifiedArrayOf<AppDetails>, addingApps: Bool = false) {
-    self.apps = apps
-    self.addingApps = addingApps
-  }
-}
-
-public enum AddAppsAction: Equatable {
-  case addApps([AppID])
-  case addAppsFromURLs([URL])
-  case addAppsResponse(Result<[AppSummary], AddAppsError>)
-  case cancelAddingApps
-}
-
-public struct AddAppsEnvironment {
-  public var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  public var saveApps: ([AppDetails]) throws -> Void
-
-  public init(
-    loadApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
-    saveApps: @escaping ([AppDetails]) throws -> Void
-  ) {
-    self.loadApps = loadApps
-    self.saveApps = saveApps
-  }
-}
-
-public let addAppsReducer = Reducer<AddAppsState, AddAppsAction, SystemEnvironment<AddAppsEnvironment>> { state, action, environment in
-  struct CancelAddAppsID: Hashable {}
-  switch action {
-  case let .addApps(ids):
-    let newIds = Set(ids).subtracting(state.apps.ids)
-    if newIds.isEmpty {
-      return .none
-    }
-
-    state.addingApps = true
-    return environment.loadApps(Array(newIds))
-      .receive(on: environment.mainQueue())
-      .mapError { _ in AddAppsError() }
-      .catchToEffect()
-      .map(AddAppsAction.addAppsResponse)
-      .cancellable(id: CancelAddAppsID(), cancelInFlight: true)
-
-  case let .addAppsFromURLs(urls):
-    return .none
-//    let ids = extractAppIDs(from: urls)
-//    return ids.isEmpty ? .none : Effect(value: .addApps(ids))
-
-  case let .addAppsResponse(.success(newApps)):
-    state.addingApps = false
-    if newApps.isEmpty {
-      return .none
-    }
-
-    let now = environment.now()
-    let newApps = newApps.map { AppDetails($0, firstAdded: now) }
-    for newApp in newApps where state.apps[id: newApp.id] == nil {
-      state.apps.append(newApp)
-    }
-
-    return .fireAndForget {
-      try? environment.saveApps(newApps)
-    }
-
-  case .addAppsResponse(.failure):
-    state.addingApps = false
-    return .none
-
-  case .cancelAddingApps:
-    state.addingApps = false
-    return .cancel(id: CancelAddAppsID())
-  }
-}
-
-extension AddAppsEnvironment {
-  public func loadApps(from urls: [URL]) -> AnyPublisher<[AppSummary], Error> {
+private extension AppAdder.Environment {
+  func loadApps(from urls: [URL]) -> AnyPublisher<[AppSummary], Error> {
     let idMatch = "id"
     let appStoreURL = "https?://(?:itunes|apps).apple.com/.*/id(?<\(idMatch)>\\d+)"
     guard let regex = try? NSRegularExpression(pattern: appStoreURL, options: []) else {
@@ -115,9 +34,22 @@ extension AddAppsEnvironment {
 }
 
 public struct AppAdder {
-  public var environment: SystemEnvironment<AddAppsEnvironment>
+  public struct Environment {
+    public var loadApps: (_ ids: [AppID]) -> AnyPublisher<[AppSummary], Error>
+    public var saveApps: (_ apps: [AppDetails]) throws -> Void
 
-  public init(environment: SystemEnvironment<AddAppsEnvironment>) {
+    public init(
+      loadApps: @escaping (_ ids: [AppID]) -> AnyPublisher<[AppSummary], Error>,
+      saveApps: @escaping (_ apps: [AppDetails]) throws -> Void
+    ) {
+      self.loadApps = loadApps
+      self.saveApps = saveApps
+    }
+  }
+
+  public var environment: SystemEnvironment<Environment>
+
+  public init(environment: SystemEnvironment<Environment>) {
     self.environment = environment
   }
 

@@ -4,9 +4,9 @@ import SwiftUI
 struct LicensesView: View {
   private let licenses: [License] = [
     .mit(
-      name: "Composable Architecture",
+      name: "Combine Schedulers",
       copyright: "2020 Point-Free, Inc.",
-      url: URL(string: "https://github.com/pointfreeco/swift-composable-architecture")!
+      url: URL(string: "https://github.com/pointfreeco/combine-schedulers")!
     ),
     .mit(
       name: "SDWebImage",

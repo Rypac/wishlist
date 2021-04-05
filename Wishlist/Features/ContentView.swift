@@ -22,7 +22,7 @@ struct ContentView: View {
 
   var body: some View {
     NavigationView {
-      NewAppListView(
+      AppListView(
         viewModel: AppListViewModel(
           environment: AppListViewModel.Environment(
             apps: environment.apps,
@@ -35,7 +35,7 @@ struct ContentView: View {
         .navigationTitle("Wishlist")
         .navigationBarItems(
           trailing: Button(action: { showSettings = true }) {
-            SFSymbol.sliderHorizontal3
+            SFSymbol.settings
               .imageScale(.large)
               .accessibility(label: Text("Settings"))
               .frame(width: 24, height: 24)
@@ -44,7 +44,7 @@ struct ContentView: View {
         )
     }
     .sheet(isPresented: $showSettings) {
-      NewSettingsView(
+      SettingsView(
         viewModel: SettingsViewModel(
           environment: SettingsViewModel.Environment(deleteAllApps: environment.deleteAllApps)
         )

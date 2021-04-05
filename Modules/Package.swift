@@ -14,7 +14,7 @@ let package = Package(
     .library(name: "Services", targets: ["Services"])
   ],
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", .upToNextMajor(from: "0.17.0")),
+    .package(url: "https://github.com/pointfreeco/combine-schedulers", .upToNextMajor(from: "0.5.0")),
     .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI", .upToNextMajor(from: "1.5.0"))
   ],
   targets: [
@@ -30,8 +30,8 @@ let package = Package(
     .target(
       name: "Domain",
       dependencies: [
-        "Toolbox",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+        .product(name: "CombineSchedulers", package: "combine-schedulers"),
+        "Toolbox"
       ]
     ),
     .target(

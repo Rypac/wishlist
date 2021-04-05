@@ -19,7 +19,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     reactiveEnvironment = ReactiveAppEnvironment(repository: appRepository)
     appAdder = AppAdder(
       environment: .live(
-        environment: AddAppsEnvironment(
+        environment: AppAdder.Environment(
           loadApps: appStore.lookup,
           saveApps: reactiveEnvironment.saveApps
         )
@@ -36,7 +36,12 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         )
       )
     )
-    urlSchemeHandler = URLSchemeHandler(appAdder: appAdder)
+    urlSchemeHandler = URLSchemeHandler(
+      environment: URLSchemeHandler.Environment(
+        addApps: appAdder.addApps,
+        deleteAllApps: reactiveEnvironment.deleteAllApps
+      )
+    )
   }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
