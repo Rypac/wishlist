@@ -1,16 +1,14 @@
 import Foundation
 import Combine
 
-public extension UserDefaults {
-  func publisher<Value>(for key: UserDefaultsKey<Value>) -> UserDefaults.Publisher<Value> {
+// MARK: - Publisher
+
+extension UserDefaults {
+  public func publisher<Value>(for key: UserDefaultsKey<Value>) -> UserDefaults.Publisher<Value> {
     UserDefaults.Publisher(key: key, defaults: self)
   }
 
-  func subject<Value>(for key: UserDefaultsKey<Value>) -> UserDefaults.Subject<Value> {
-    UserDefaults.Subject(key: key, defaults: self)
-  }
-
-  struct Publisher<Output>: Combine.Publisher {
+  public struct Publisher<Output>: Combine.Publisher {
     public typealias Failure = Never
 
     private let key: UserDefaultsKey<Output>
@@ -26,8 +24,16 @@ public extension UserDefaults {
       subscriber.receive(subscription: subscription)
     }
   }
+}
 
-  final class Subject<Output>: Combine.Subject {
+// MARK: - Subject
+
+extension UserDefaults {
+  public func subject<Value>(for key: UserDefaultsKey<Value>) -> UserDefaults.Subject<Value> {
+    UserDefaults.Subject(key: key, defaults: self)
+  }
+
+  public final class Subject<Output>: Combine.Subject {
     public typealias Failure = Never
 
     private let key: UserDefaultsKey<Output>
@@ -66,11 +72,15 @@ public extension UserDefaults {
       }
     }
   }
+}
 
-  private final class Subscription<S: Subscriber>: NSObject, Combine.Subscription {
+// MARK: - Subscription
+
+private extension UserDefaults {
+  final class Subscription<S: Subscriber>: NSObject, Combine.Subscription {
     private var subscriber: S?
     private var requested: Subscribers.Demand = .none
-    private var defaultsObserverToken: NSObject? = nil
+    private var defaultsObserverToken: NSObject?
 
     private let key: UserDefaultsKey<S.Input>
     private let defaults: UserDefaults
@@ -102,6 +112,7 @@ public extension UserDefaults {
       guard let subscriber = subscriber, requested > .none else {
         return
       }
+
       requested -= .max(1)
       let newDemand = subscriber.receive(defaults[key])
       requested += newDemand
