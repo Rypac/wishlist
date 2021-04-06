@@ -47,7 +47,20 @@ public final class SQLiteAppRepository: AppRepository {
     for app in apps {
       try sqlite.execute(
         """
-        REPLACE INTO app VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO app VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          bundleId = excluded.bundleId,
+          title = excluded.title,
+          description = excluded.description,
+          seller = excluded.seller,
+          url = excluded.url,
+          iconSmallUrl = excluded.iconSmallUrl,
+          iconMediumUrl = excluded.iconMediumUrl,
+          iconLargeUrl = excluded.iconLargeUrl,
+          releaseDate = excluded.releaseDate,
+          version = excluded.version,
+          price = excluded.price,
+          currency = excluded.currency;
         """,
         app.id,
         app.bundleID,
@@ -126,11 +139,13 @@ public final class SQLiteAppRepository: AppRepository {
   public func notify(id: AppID, for notifications: Set<ChangeNotification>) throws {
     try sqlite.execute(
       """
-      REPLACE INTO notification VALUES (?, ?, ?);
+      UPDATE notification
+      SET priceDrop = ?, newVersion = ?
+      WHERE appId = ?;
       """,
-      id,
       notifications.contains(.priceDrop),
-      notifications.contains(.newVersion)
+      notifications.contains(.newVersion),
+      id
     )
   }
 
