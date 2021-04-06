@@ -6,6 +6,10 @@ public extension UserDefaults {
     UserDefaults.Publisher(key: key, defaults: self)
   }
 
+  func subject<Value>(for key: UserDefaultsKey<Value>) -> UserDefaults.Subject<Value> {
+    UserDefaults.Subject(key: key, defaults: self)
+  }
+
   struct Publisher<Output>: Combine.Publisher {
     public typealias Failure = Never
 
@@ -20,6 +24,46 @@ public extension UserDefaults {
     public func receive<S>(subscriber: S) where S: Subscriber, Output == S.Input, Failure == S.Failure {
       let subscription = Subscription(subscriber: subscriber, key: key, defaults: defaults)
       subscriber.receive(subscription: subscription)
+    }
+  }
+
+  final class Subject<Output>: Combine.Subject {
+    public typealias Failure = Never
+
+    private let key: UserDefaultsKey<Output>
+    private let defaults: UserDefaults
+
+    private var isActive = true
+
+    public init(key: UserDefaultsKey<Output>, defaults: UserDefaults) {
+      self.defaults = defaults
+      self.key = key
+    }
+
+    public var value: Output {
+      defaults[key]
+    }
+
+    public func send(_ value: Output) {
+      defaults[key] = value
+    }
+
+    public func send(completion: Subscribers.Completion<Failure>) {
+      isActive = false
+    }
+
+    public func send(subscription: Combine.Subscription) {
+      subscription.request(.unlimited)
+    }
+
+    public func receive<S>(subscriber: S) where S: Subscriber, Output == S.Input, Failure == S.Failure {
+      if isActive {
+        let subscription = Subscription(subscriber: subscriber, key: key, defaults: defaults)
+        subscriber.receive(subscription: subscription)
+      } else {
+        subscriber.receive(subscription: Subscriptions.empty)
+        subscriber.receive(completion: .finished)
+      }
     }
   }
 

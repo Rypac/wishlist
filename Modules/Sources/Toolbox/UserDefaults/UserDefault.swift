@@ -26,6 +26,10 @@ public struct UserDefault<Value> {
   public func publisher() -> UserDefaults.Publisher<Value> {
     defaults.publisher(for: key)
   }
+
+  public func subject() -> UserDefaults.Subject<Value> {
+    defaults.subject(for: key)
+  }
 }
 
 public extension UserDefault where Value: UserDefaultsConvertible {
