@@ -2,18 +2,26 @@ import Combine
 import Domain
 import Foundation
 import SwiftUI
+import Toolbox
 
 final class SettingsViewModel: ObservableObject {
   struct Environment {
+    var theme: UserDefault<Theme>
     var deleteAllApps: () throws -> Void
   }
 
-  @Published var theme: Theme = .system
+  @Published var theme: Theme {
+    willSet {
+      environment.theme.wrappedValue = newValue
+    }
+  }
 
-  private let environment: Environment
+  private var environment: Environment
 
   init(environment: Environment) {
     self.environment = environment
+    theme = environment.theme.wrappedValue
+    environment.theme.publisher().assign(to: &$theme)
   }
 
   func deleteAllApps() {

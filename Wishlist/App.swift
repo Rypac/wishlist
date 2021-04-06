@@ -16,6 +16,7 @@ final class Wishlist: App {
           deleteApps: appDelegate.appRepository.delete(ids:),
           deleteAllApps: appDelegate.reactiveEnvironment.deleteAllApps,
           versionHistory: appDelegate.reactiveEnvironment.versionsPublisher(id:),
+          theme: appDelegate.settings.$theme,
           sortOrderState: appDelegate.settings.sortOrderStatePublisher,
           checkForUpdates: appDelegate.updateChecker.update
         )
