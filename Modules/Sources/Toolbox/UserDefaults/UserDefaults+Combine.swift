@@ -18,41 +18,59 @@ public extension UserDefaults {
     }
 
     public func receive<S>(subscriber: S) where S: Subscriber, Output == S.Input, Failure == S.Failure {
-      let observer = UserDefaults.Observer(key: key, defaults: defaults)
-      observer
-        .subject
-        .handleEvents(
-          receiveSubscription: { _ in observer.start() },
-          receiveCompletion: { _ in observer.stop() },
-          receiveCancel: { observer.stop() }
-        )
-        .receive(subscriber: subscriber)
+      let subscription = Subscription(subscriber: subscriber, key: key, defaults: defaults)
+      subscriber.receive(subscription: subscription)
     }
   }
 
-  private final class Observer<Value>: NSObject {
-    let subject: CurrentValueSubject<Value, Never>
+  private final class Subscription<S: Subscriber>: NSObject, Combine.Subscription {
+    private var subscriber: S?
+    private var requested: Subscribers.Demand = .none
+    private var defaultsObserverToken: NSObject? = nil
 
-    private let key: UserDefaultsKey<Value>
+    private let key: UserDefaultsKey<S.Input>
     private let defaults: UserDefaults
 
-    init(key: UserDefaultsKey<Value>, defaults: UserDefaults) {
+    private let lock = NSRecursiveLock()
+
+    init(subscriber: S, key: UserDefaultsKey<S.Input>, defaults: UserDefaults) {
+      self.subscriber = subscriber
       self.defaults = defaults
       self.key = key
-      self.subject = CurrentValueSubject(defaults[key])
       super.init()
     }
 
-    func start() {
-      defaults.addObserver(self, forKeyPath: key.key, options: [], context: nil)
-    }
+    func request(_ demand: Subscribers.Demand) {
+      lock.lock()
+      defer { lock.unlock() }
+      requested += demand
+      guard defaultsObserverToken == nil, requested > .none else {
+        return
+      }
 
-    func stop() {
-      defaults.removeObserver(self, forKeyPath: key.key)
+      defaultsObserverToken = self
+      defaults.addObserver(self, forKeyPath: key.key, options: [.initial], context: nil)
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-      subject.send(defaults[key])
+      lock.lock()
+      defer { lock.unlock() }
+      guard let subscriber = subscriber, requested > .none else {
+        return
+      }
+      requested -= .max(1)
+      let newDemand = subscriber.receive(defaults[key])
+      requested += newDemand
+    }
+
+    func cancel() {
+      lock.lock()
+      defer { lock.unlock() }
+      if let token = defaultsObserverToken {
+        defaults.removeObserver(token, forKeyPath: key.key)
+      }
+      defaultsObserverToken = nil
+      subscriber = nil
     }
   }
 }
