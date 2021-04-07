@@ -4,10 +4,16 @@ import Foundation
 import SwiftUI
 import ToolboxUI
 
+struct SingleAppRepository {
+  var app: AnyPublisher<AppDetails?, Never>
+  var versionHistory: AnyPublisher<[Version], Never>
+  var delete: () throws -> Void
+  var recordViewed: (Date) -> Void
+}
+
 final class AppDetailsViewModel: ObservableObject {
   struct Environment {
-    var versionHistory: AnyPublisher<[Version], Never>
-    var recordViewed: (Date) -> Void
+    var repository: SingleAppRepository
     var system: SystemEnvironment<Void>
   }
 
@@ -18,6 +24,7 @@ final class AppDetailsViewModel: ObservableObject {
   init(app: AppDetails, environment: Environment) {
     self.app = app
     self.environment = environment
+    environment.repository.app.compactMap { $0 }.assign(to: &$app)
   }
 
   var notifications: Binding<Set<ChangeNotification>> {
@@ -30,7 +37,7 @@ final class AppDetailsViewModel: ObservableObject {
   func onAppear() {
     let now = environment.system.now()
     app.lastViewed = now
-    environment.recordViewed(now)
+    environment.repository.recordViewed(now)
   }
 }
 
@@ -45,7 +52,10 @@ struct AppDetailsView: View {
         AppNotifications(notifications: viewModel.notifications)
         if viewModel.app.version.notes != nil {
           Divider()
-          AppVersion(version: viewModel.app.version, versionHistory: viewModel.environment.versionHistory)
+          AppVersion(
+            version: viewModel.app.version,
+            versionHistory: viewModel.environment.repository.versionHistory
+          )
         }
         Divider()
         AppDescription(description: viewModel.app.description)

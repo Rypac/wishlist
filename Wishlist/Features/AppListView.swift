@@ -4,13 +4,30 @@ import Foundation
 import SwiftUI
 import ToolboxUI
 
+struct AllAppsRepository {
+  var apps: AnyPublisher<[AppDetails], Never>
+  var app: (AppID) -> AnyPublisher<AppDetails?, Never>
+  var versionHistory: (AppID) -> AnyPublisher<[Version], Never>
+  var recordViewed: (AppID, Date) -> Void
+  var deleteApps: ([AppID]) throws -> Void
+  var deleteAllApps: () throws -> Void
+}
+
+extension AllAppsRepository {
+  func repository(for id: AppID) -> SingleAppRepository {
+    SingleAppRepository(
+      app: app(id),
+      versionHistory: versionHistory(id),
+      delete: { try deleteApps([id]) },
+      recordViewed: { date in recordViewed(id, date) }
+    )
+  }
+}
+
 final class AppListViewModel: ObservableObject {
   struct Environment {
-    var apps: AnyPublisher<[AppDetails], Never>
+    var repository: AllAppsRepository
     var sortOrder: AnyPublisher<SortOrderState, Never>
-    var deleteApps: ([AppID]) throws -> Void
-    var versionHistory: (AppDetails.ID) -> AnyPublisher<[Version], Never>
-    var recordAppViewed: (AppDetails.ID, Date) -> Void
     var system: SystemEnvironment<Void>
   }
 
@@ -21,7 +38,7 @@ final class AppListViewModel: ObservableObject {
   init(environment: Environment) {
     self.environment = environment
 
-    environment.apps
+    environment.repository.apps
       .combineLatest(environment.sortOrder.removeDuplicates())
       .map { apps, sortOrderState in
         apps.applying(sortOrderState)
@@ -31,7 +48,7 @@ final class AppListViewModel: ObservableObject {
 
   func deleteApps(_ ids: [AppID]) {
     do {
-      try environment.deleteApps(ids)
+      try environment.repository.deleteApps(ids)
       apps.removeAll(where: { ids.contains($0.id) })
     } catch {
       print("Failed to delete apps with ids: \(ids)")
@@ -42,10 +59,7 @@ final class AppListViewModel: ObservableObject {
     AppDetailsViewModel(
       app: app,
       environment: AppDetailsViewModel.Environment(
-        versionHistory: environment.versionHistory(app.id),
-        recordViewed: { [recordViewed = environment.recordAppViewed] date in
-          recordViewed(app.id, date)
-        },
+        repository: environment.repository.repository(for: app.id),
         system: environment.system
       )
     )

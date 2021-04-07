@@ -6,11 +6,7 @@ import Toolbox
 import ToolboxUI
 
 struct ContentViewEnvironment {
-  var apps: AnyPublisher<[AppDetails], Never>
-  var deleteApps: ([AppID]) throws -> Void
-  var deleteAllApps: () throws -> Void
-  var versionHistory: (AppDetails.ID) -> AnyPublisher<[Version], Never>
-  var recordAppViewed: (AppDetails.ID, Date) -> Void
+  var repository: AllAppsRepository
   var theme: UserDefault<Theme>
   var sortOrderState: AnyPublisher<SortOrderState, Never>
   var checkForUpdates: () -> Void
@@ -29,11 +25,8 @@ struct ContentView: View {
       AppListView(
         viewModel: AppListViewModel(
           environment: AppListViewModel.Environment(
-            apps: environment.apps,
+            repository: environment.repository,
             sortOrder: environment.sortOrderState,
-            deleteApps: environment.deleteApps,
-            versionHistory: environment.versionHistory,
-            recordAppViewed: environment.recordAppViewed,
             system: environment.system
           )
         )
@@ -54,7 +47,7 @@ struct ContentView: View {
         viewModel: SettingsViewModel(
           environment: SettingsViewModel.Environment(
             theme: environment.theme,
-            deleteAllApps: environment.deleteAllApps
+            deleteAllApps: environment.repository.deleteAllApps
           )
         )
       )

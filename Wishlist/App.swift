@@ -12,11 +12,14 @@ final class Wishlist: App {
     WindowGroup { [handleURLScheme = appDelegate.urlSchemeHandler.handle] in
       ContentView(
         environment: ContentViewEnvironment(
-          apps: appDelegate.reactiveEnvironment.appsPublisher,
-          deleteApps: appDelegate.appRepository.delete(ids:),
-          deleteAllApps: appDelegate.reactiveEnvironment.deleteAllApps,
-          versionHistory: appDelegate.reactiveEnvironment.versionsPublisher(id:),
-          recordAppViewed: appDelegate.reactiveEnvironment.recordAppViewed,
+          repository: AllAppsRepository(
+            apps: appDelegate.reactiveEnvironment.appsPublisher,
+            app: appDelegate.reactiveEnvironment.appPublisher(forId:),
+            versionHistory: appDelegate.reactiveEnvironment.versionsPublisher(id:),
+            recordViewed: appDelegate.reactiveEnvironment.recordAppViewed,
+            deleteApps: appDelegate.appRepository.delete(ids:),
+            deleteAllApps: appDelegate.reactiveEnvironment.deleteAllApps
+          ),
           theme: appDelegate.settings.$theme,
           sortOrderState: appDelegate.settings.sortOrderStatePublisher,
           checkForUpdates: appDelegate.updateChecker.update,
@@ -45,6 +48,14 @@ struct ReactiveAppEnvironment {
       .prepend(())
       .tryMap(appRepository.fetchAll)
       .catch { _ in Just([]) }
+      .eraseToAnyPublisher()
+  }
+
+  func appPublisher(forId id: AppID) -> AnyPublisher<AppDetails?, Never> {
+    refreshTrigger
+      .prepend(())
+      .tryMap { try appRepository.fetch(id: id) }
+      .catch { _ in Just(nil) }
       .eraseToAnyPublisher()
   }
 
