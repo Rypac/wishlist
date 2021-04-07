@@ -16,9 +16,11 @@ final class Wishlist: App {
           deleteApps: appDelegate.appRepository.delete(ids:),
           deleteAllApps: appDelegate.reactiveEnvironment.deleteAllApps,
           versionHistory: appDelegate.reactiveEnvironment.versionsPublisher(id:),
+          recordAppViewed: appDelegate.reactiveEnvironment.recordAppViewed,
           theme: appDelegate.settings.$theme,
           sortOrderState: appDelegate.settings.sortOrderStatePublisher,
-          checkForUpdates: appDelegate.updateChecker.update
+          checkForUpdates: appDelegate.updateChecker.update,
+          system: .live(())
         )
       )
       .onOpenURL { url in
@@ -61,6 +63,15 @@ struct ReactiveAppEnvironment {
   func deleteAllApps() throws {
     try appRepository.deleteAll()
     refresh()
+  }
+
+  func recordAppViewed(id: AppID, atDate date: Date) {
+    do {
+      try appRepository.viewedApp(id: id, at: date)
+      refresh()
+    } catch {
+      print(error)
+    }
   }
 
   func refresh() {

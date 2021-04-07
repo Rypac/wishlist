@@ -28,7 +28,7 @@ public struct SystemEnvironment<Environment> {
 }
 
 public extension SystemEnvironment {
-  static func live(environment: Environment) -> Self {
+  static func live(_ environment: Environment) -> Self {
     Self(
       environment: environment,
       now: Date.init,

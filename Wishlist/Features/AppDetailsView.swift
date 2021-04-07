@@ -7,6 +7,8 @@ import ToolboxUI
 final class AppDetailsViewModel: ObservableObject {
   struct Environment {
     var versionHistory: AnyPublisher<[Version], Never>
+    var recordViewed: (Date) -> Void
+    var system: SystemEnvironment<Void>
   }
 
   @Published private(set) var app: AppDetails
@@ -23,6 +25,12 @@ final class AppDetailsViewModel: ObservableObject {
       get: { self.app.notifications },
       set: { self.app.notifications = $0 }
     )
+  }
+
+  func onAppear() {
+    let now = environment.system.now()
+    app.lastViewed = now
+    environment.recordViewed(now)
   }
 }
 
@@ -45,6 +53,9 @@ struct AppDetailsView: View {
       .padding()
     }
     .navigationBarTitle("Details", displayMode: .inline)
+    .onAppear {
+      viewModel.onAppear()
+    }
   }
 }
 

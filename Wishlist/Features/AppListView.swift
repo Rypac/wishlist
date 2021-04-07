@@ -10,6 +10,8 @@ final class AppListViewModel: ObservableObject {
     var sortOrder: AnyPublisher<SortOrderState, Never>
     var deleteApps: ([AppID]) throws -> Void
     var versionHistory: (AppDetails.ID) -> AnyPublisher<[Version], Never>
+    var recordAppViewed: (AppDetails.ID, Date) -> Void
+    var system: SystemEnvironment<Void>
   }
 
   @Published private(set) var apps: [AppDetails] = []
@@ -40,7 +42,11 @@ final class AppListViewModel: ObservableObject {
     AppDetailsViewModel(
       app: app,
       environment: AppDetailsViewModel.Environment(
-        versionHistory: environment.versionHistory(app.id)
+        versionHistory: environment.versionHistory(app.id),
+        recordViewed: { [recordViewed = environment.recordAppViewed] date in
+          recordViewed(app.id, date)
+        },
+        system: environment.system
       )
     )
   }

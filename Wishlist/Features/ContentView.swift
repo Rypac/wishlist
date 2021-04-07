@@ -10,9 +10,11 @@ struct ContentViewEnvironment {
   var deleteApps: ([AppID]) throws -> Void
   var deleteAllApps: () throws -> Void
   var versionHistory: (AppDetails.ID) -> AnyPublisher<[Version], Never>
+  var recordAppViewed: (AppDetails.ID, Date) -> Void
   var theme: UserDefault<Theme>
   var sortOrderState: AnyPublisher<SortOrderState, Never>
   var checkForUpdates: () -> Void
+  var system: SystemEnvironment<Void>
 }
 
 struct ContentView: View {
@@ -30,7 +32,9 @@ struct ContentView: View {
             apps: environment.apps,
             sortOrder: environment.sortOrderState,
             deleteApps: environment.deleteApps,
-            versionHistory: environment.versionHistory
+            versionHistory: environment.versionHistory,
+            recordAppViewed: environment.recordAppViewed,
+            system: environment.system
           )
         )
       )
