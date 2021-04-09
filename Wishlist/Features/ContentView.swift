@@ -60,6 +60,7 @@ struct ContentView: View {
     .onReceive(environment.theme.publisher()) { theme in
       setColorScheme(theme: theme)
     }
+    .navigationViewStyle(StackNavigationViewStyle())
   }
 }
 
