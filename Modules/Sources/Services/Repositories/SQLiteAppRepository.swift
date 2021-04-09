@@ -78,86 +78,94 @@ public final class SQLiteAppRepository: AppRepository {
     ).first
   }
 
+  public func add(_ app: AppDetails) throws {
+    try sqlite.execute(
+      """
+      INSERT INTO app VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        bundleId = excluded.bundleId,
+        title = excluded.title,
+        description = excluded.description,
+        seller = excluded.seller,
+        url = excluded.url,
+        iconSmallUrl = excluded.iconSmallUrl,
+        iconMediumUrl = excluded.iconMediumUrl,
+        iconLargeUrl = excluded.iconLargeUrl,
+        releaseDate = excluded.releaseDate,
+        version = excluded.version,
+        price = excluded.price,
+        currency = excluded.currency;
+      """,
+      app.id,
+      app.bundleID,
+      app.title,
+      app.description,
+      app.seller,
+      app.url,
+      app.icon.small,
+      app.icon.medium,
+      app.icon.large,
+      app.releaseDate,
+      app.version.name,
+      app.price.current.formatted,
+      "AUD"
+    )
+
+    try sqlite.execute(
+      """
+      REPLACE INTO version VALUES (?, ?, ?, ?);
+      """,
+      app.id,
+      app.version.name,
+      app.version.date,
+      app.version.notes
+    )
+
+    try sqlite.execute(
+      """
+      INSERT OR IGNORE INTO interaction VALUES (?, ?, ?, ?);
+      """,
+      app.id,
+      app.firstAdded,
+      app.lastViewed,
+      0
+    )
+
+    try sqlite.execute(
+      """
+      REPLACE INTO notification VALUES (?, ?, ?);
+      """,
+      app.id,
+      app.notifications.contains(.priceDrop),
+      app.notifications.contains(.newVersion)
+    )
+  }
+
   public func add(_ apps: [AppDetails]) throws {
-    try sqlite.execute("BEGIN;")
-    for app in apps {
-      try sqlite.execute(
-        """
-        INSERT INTO app VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(id) DO UPDATE SET
-          bundleId = excluded.bundleId,
-          title = excluded.title,
-          description = excluded.description,
-          seller = excluded.seller,
-          url = excluded.url,
-          iconSmallUrl = excluded.iconSmallUrl,
-          iconMediumUrl = excluded.iconMediumUrl,
-          iconLargeUrl = excluded.iconLargeUrl,
-          releaseDate = excluded.releaseDate,
-          version = excluded.version,
-          price = excluded.price,
-          currency = excluded.currency;
-        """,
-        app.id,
-        app.bundleID,
-        app.title,
-        app.description,
-        app.seller,
-        app.url,
-        app.icon.small,
-        app.icon.medium,
-        app.icon.large,
-        app.releaseDate,
-        app.version.name,
-        app.price.current.formatted,
-        "AUD"
-      )
-
-      try sqlite.execute(
-        """
-        REPLACE INTO version VALUES (?, ?, ?, ?);
-        """,
-        app.id,
-        app.version.name,
-        app.version.date,
-        app.version.notes
-      )
-
-      try sqlite.execute(
-        """
-        INSERT OR IGNORE INTO interaction VALUES (?, ?, ?, ?);
-        """,
-        app.id,
-        app.firstAdded,
-        app.lastViewed,
-        0
-      )
-
-      try sqlite.execute(
-        """
-        REPLACE INTO notification VALUES (?, ?, ?);
-        """,
-        app.id,
-        app.notifications.contains(.priceDrop),
-        app.notifications.contains(.newVersion)
-      )
+    try sqlite.transaction {
+      for app in apps {
+        try add(app)
+      }
     }
-    try sqlite.execute("COMMIT;")
+  }
+
+  public func delete(id: AppID) throws {
+    try sqlite.execute(
+      "DELETE FROM app WHERE id = ?;",
+      id
+    )
+  }
+
+  public func delete(ids: [AppID]) throws {
+    try sqlite.transaction {
+      for id in ids {
+        try delete(id: id)
+      }
+    }
   }
 
   public func deleteAll() throws {
     try sqlite.execute("DELETE FROM app;")
-  }
-
-  public func delete(ids: [AppID]) throws {
-    try sqlite.execute("BEGIN;")
-    for id in ids {
-      try sqlite.execute(
-        "DELETE FROM app WHERE id = ?;",
-        id
-      )
-    }
-    try sqlite.execute("COMMIT;")
   }
 
   public func viewedApp(id: AppID, at date: Date) throws {
@@ -172,7 +180,7 @@ public final class SQLiteAppRepository: AppRepository {
     )
   }
 
-  public func notify(id: AppID, for notifications: Set<ChangeNotification>) throws {
+  public func notifyApp(id: AppID, for notifications: Set<ChangeNotification>) throws {
     try sqlite.execute(
       """
       UPDATE notification

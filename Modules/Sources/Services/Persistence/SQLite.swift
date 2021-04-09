@@ -61,6 +61,12 @@ public final class SQLite {
     return rows
   }
 
+  public func transaction(behavior: TransactionBehavior = .deferred, execute work: () throws -> Void) throws {
+    try execute("BEGIN \(behavior.rawValue) TRANSACTION;")
+    try work()
+    try execute("COMMIT;")
+  }
+
   @discardableResult
   private func validate(_ code: Int32) throws -> Int32 {
     guard code == SQLITE_OK || code == SQLITE_ROW || code == SQLITE_DONE else {
@@ -72,6 +78,12 @@ public final class SQLite {
   public struct Error: Swift.Error, Equatable {
     public var code: Int32
     public var description: String
+  }
+
+  public enum TransactionBehavior: String {
+    case deferred = "DEFERRED"
+    case exclusive = "EXCLUSIVE"
+    case immediate = "IMMEDIATE"
   }
 }
 

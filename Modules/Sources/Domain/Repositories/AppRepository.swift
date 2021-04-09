@@ -1,4 +1,3 @@
-import Combine
 import Foundation
 
 public protocol AppRepository {
@@ -10,28 +9,6 @@ public protocol AppRepository {
   func delete(ids: [AppID]) throws
   func deleteAll() throws
   func viewedApp(id: AppID, at date: Date) throws
-  func notify(id: AppID, for notifications: Set<ChangeNotification>) throws
+  func notifyApp(id: AppID, for notifications: Set<ChangeNotification>) throws
   func versionHistory(id: AppID) throws -> [Version]
-}
-
-public extension AppRepository {
-  func fetch(id: AppID) throws -> AppDetails? {
-    try fetchAll().first { $0.id == id }
-  }
-
-  func add(_ app: AppDetails) throws {
-    try add([app])
-  }
-
-  func delete(id: AppID) throws {
-    try delete(ids: [id])
-  }
-
-  func delete(_ app: AppDetails) throws {
-    try delete(id: app.id)
-  }
-
-  func delete(_ apps: [AppDetails]) throws {
-    try delete(ids: apps.map(\.id))
-  }
 }
