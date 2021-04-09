@@ -2,37 +2,6 @@ import Combine
 import Foundation
 import Toolbox
 
-private extension AppAdder.Environment {
-  func loadApps(from urls: [URL]) -> AnyPublisher<[AppSummary], Error> {
-    let idMatch = "id"
-    let appStoreURL = "https?://(?:itunes|apps).apple.com/.*/id(?<\(idMatch)>\\d+)"
-    guard let regex = try? NSRegularExpression(pattern: appStoreURL, options: []) else {
-      return .just([])
-    }
-
-    let appIds = urls.compactMap { url -> AppID? in
-      let url = url.absoluteString
-      let entireRange = NSRange(url.startIndex..<url.endIndex, in: url)
-      guard let match = regex.firstMatch(in: url, options: [], range: entireRange) else {
-        return nil
-      }
-
-      let idRange = match.range(withName: idMatch)
-      guard idRange.location != NSNotFound, let range = Range(idRange, in: url) else {
-        return nil
-      }
-
-      return Int(url[range]).map(AppID.init(rawValue:))
-    }
-
-    if appIds.isEmpty {
-      return .just([])
-    }
-
-    return loadApps(appIds)
-  }
-}
-
 public struct AppAdder {
   public struct Environment {
     public var loadApps: (_ ids: [AppID]) -> AnyPublisher<[AppSummary], Error>

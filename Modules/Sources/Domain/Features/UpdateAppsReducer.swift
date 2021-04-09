@@ -39,7 +39,7 @@ public final class UpdateChecker {
 
     cancellable = environment.apps
       .first()
-      .map { [lookupApps = environment.lookupApps] apps in
+      .flatMap { [lookupApps = environment.lookupApps] apps in
         lookupApps(apps.map(\.id))
           .map { latestApps in
             latestApps.reduce(into: [] as [AppDetails]) { updatedApps, latestApp in
@@ -50,7 +50,6 @@ public final class UpdateChecker {
             }
           }
       }
-      .switchToLatest()
       .receive(on: environment.mainQueue())
       .sink(
         receiveCompletion: { _ in },
@@ -79,38 +78,7 @@ public final class UpdateChecker {
   }
 }
 
-func checkForUpdates(apps: [AppSummary], lookup: ([AppID]) -> AnyPublisher<[AppSummary], Error>) -> AnyPublisher<[AppSummary], Error> {
-  lookup(apps.map(\.id))
-    .map { latestApps in
-      latestApps.reduce(into: []) { updatedApps, latestApp in
-        guard let app = apps.first(where: { $0.id == latestApp.id }) else {
-          return
-        }
-        if latestApp.isUpdated(from: app) {
-          updatedApps.append(latestApp)
-        }
-      }
-    }
-    .eraseToAnyPublisher()
-}
-
 private extension AppSummary {
-  func isUpdated(from app: AppSummary) -> Bool {
-    if version.date > app.version.date {
-      return true
-    }
-
-    guard version.date == app.version.date else {
-      return false
-    }
-
-    return price != app.price
-      || title != app.title
-      || description != app.description
-      || icon != app.icon
-      || url != app.url
-  }
-
   func isUpdated(from app: AppDetails) -> Bool {
     if version.date > app.version.date {
       return true
