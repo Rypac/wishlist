@@ -123,12 +123,11 @@ public final class SQLiteAppRepository: AppRepository {
 
     try sqlite.execute(
       """
-      INSERT OR IGNORE INTO interaction VALUES (?, ?, ?, ?);
+      REPLACE INTO interaction VALUES (?, ?, ?);
       """,
       app.id,
       app.firstAdded,
-      app.lastViewed,
-      0
+      app.lastViewed
     )
 
     try sqlite.execute(
@@ -172,7 +171,7 @@ public final class SQLiteAppRepository: AppRepository {
     try sqlite.execute(
       """
       UPDATE interaction
-      SET lastViewedDate = ?, viewCount = viewCount + 1
+      SET lastViewedDate = ?
       WHERE appId = ?;
       """,
       date,
@@ -245,8 +244,7 @@ private extension SQLiteAppRepository {
       CREATE TABLE IF NOT EXISTS interaction (
         appId INTEGER PRIMARY KEY REFERENCES app ON DELETE CASCADE,
         firstAddedDate TEXT NOT NULL,
-        lastViewedDate TEXT,
-        viewCount INTEGER NOT NULL
+        lastViewedDate TEXT
       );
 
       CREATE TABLE IF NOT EXISTS notification (
