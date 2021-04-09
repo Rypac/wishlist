@@ -71,7 +71,7 @@ public extension AppDetails {
       )
     }
 
-    if app.version.date > version.date {
+    if app.version > version {
       // If the update has the same name as the current version, use the previous version instead.
       version = app.version
     }

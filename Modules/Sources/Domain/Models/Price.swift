@@ -22,12 +22,6 @@ extension Price {
   }
 }
 
-extension Price: Equatable {
-  public static func == (lhs: Self, rhs: Self) -> Bool {
-    lhs.value == rhs.value
-  }
-}
-
 extension Price: Comparable {
   public static func < (lhs: Self, rhs: Self) -> Bool {
     lhs.value < rhs.value

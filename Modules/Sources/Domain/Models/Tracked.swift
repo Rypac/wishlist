@@ -1,6 +1,6 @@
 public struct Tracked<T> {
-  public let current: T
-  public let previous: T?
+  public var current: T
+  public var previous: T?
 
   public init(current: T, previous: T? = nil) {
     self.current = current
