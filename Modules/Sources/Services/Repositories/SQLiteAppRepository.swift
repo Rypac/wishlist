@@ -42,6 +42,42 @@ public final class SQLiteAppRepository: AppRepository {
     )
   }
 
+  public func fetch(id: AppID) throws -> AppDetails? {
+    try sqlite.run(
+      """
+      SELECT
+        app.id,
+        app.title,
+        app.seller,
+        app.description,
+        app.url,
+        app.iconSmallUrl,
+        app.iconMediumUrl,
+        app.iconLargeUrl,
+        app.bundleId,
+        app.releaseDate,
+        app.price,
+        version.name,
+        version.releaseDate,
+        version.releaseNotes,
+        interaction.firstAddedDate,
+        interaction.lastViewedDate,
+        notification.priceDrop,
+        notification.newVersion
+      FROM app
+      LEFT JOIN version
+        ON app.id = version.appId AND app.version = version.name
+      LEFT JOIN interaction
+        ON app.id = interaction.appId
+      LEFT JOIN notification
+        ON app.id = notification.appId
+      WHERE id = ?
+      LIMIT 1;
+      """,
+      id
+    ).first
+  }
+
   public func add(_ apps: [AppDetails]) throws {
     try sqlite.execute("BEGIN;")
     for app in apps {
