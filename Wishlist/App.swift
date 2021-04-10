@@ -35,84 +35,98 @@ final class Wishlist: App {
   }
 }
 
-struct ReactiveAppEnvironment {
-  private enum RefreshStrategy {
-    case all
-    case only([AppID])
+final class ReactiveAppEnvironment {
+  private enum Action {
+    case update([AppDetails])
+    case delete([AppID])
+    case viewed(AppID, Date)
+    case deleteAll
   }
 
-  private let refreshTrigger = PassthroughSubject<RefreshStrategy, Never>()
+  private let refreshTrigger = PassthroughSubject<Void, Never>()
+  private let actionTrigger = PassthroughSubject<Action, Never>()
+  private let apps = CurrentValueSubject<[AppID: AppDetails], Never>([:])
+
   private var appRepository: AppRepository
+  private var cancellable: Cancellable?
 
   init(repository: AppRepository) {
     appRepository = repository
+    cancellable = actionTrigger
+      .scan([:]) { apps, update in
+        var apps = apps
+        switch update {
+        case .update(let updatedApps):
+          if updatedApps.count > apps.capacity {
+            apps.reserveCapacity(updatedApps.count)
+          }
+          for app in updatedApps {
+            apps[app.id] = app
+          }
+        case .delete(let ids):
+          for id in ids {
+            apps[id] = nil
+          }
+        case .viewed(let id, let date):
+          apps[id]?.lastViewed = date
+        case .deleteAll:
+          apps.removeAll()
+        }
+        return apps
+      }
+      .subscribe(apps)
   }
 
   var appsPublisher: AnyPublisher<[AppDetails], Never> {
-    refreshTrigger
-      .prepend(.all)
-      .tryMap { _ in try appRepository.fetchAll() }
-      .catch { _ in Just([]) }
+    apps
+      .map { Array($0.values) }
       .eraseToAnyPublisher()
   }
 
   func appPublisher(forId id: AppID) -> AnyPublisher<AppDetails?, Never> {
-    refreshTrigger
-      .prepend(.only([id]))
-      .filter { strategy in
-        switch strategy {
-        case .all: return true
-        case .only(let ids): return ids.contains(id)
-        }
-      }
-      .tryMap { _ in try appRepository.fetch(id: id) }
-      .catch { _ in Just(nil) }
+    apps
+      .map { $0[id] }
+      .removeDuplicates()
       .eraseToAnyPublisher()
   }
 
   func versionsPublisher(forId id: AppID) -> AnyPublisher<[Version], Never> {
-    refreshTrigger
-      .prepend(.only([id]))
-      .filter { strategy in
-        switch strategy {
-        case .all: return true
-        case .only(let ids): return ids.contains(id)
+    appPublisher(forId: id)
+      .compactMap { [versionHistory = appRepository.versionHistory] app in
+        guard let id = app?.id else {
+          return nil
         }
+        return try? versionHistory(id)
       }
-      .compactMap { _ in try? appRepository.versionHistory(id: id) }
       .eraseToAnyPublisher()
   }
 
   func saveApps(_ apps: [AppDetails]) throws {
     try appRepository.add(apps)
-    refresh(.only(apps.map(\.id)))
+    actionTrigger.send(.update(apps))
   }
 
   func deleteApps(ids: [AppID]) throws {
     try appRepository.delete(ids: ids)
-    refresh(.only(ids))
+    actionTrigger.send(.delete(ids))
   }
 
   func deleteAllApps() throws {
     try appRepository.deleteAll()
-    refresh(.all)
+    actionTrigger.send(.deleteAll)
   }
 
   func recordAppViewed(id: AppID, atDate date: Date) {
     do {
       try appRepository.viewedApp(id: id, at: date)
-      refresh(.only([id]))
+      actionTrigger.send(.viewed(id, date))
     } catch {
       print(error)
     }
   }
 
-  func refresh() {
-    refresh(.all)
-  }
-
-  private func refresh(_ strategy: RefreshStrategy) {
-    refreshTrigger.send(strategy)
+  func refresh() throws {
+    actionTrigger.send(.update(try appRepository.fetchAll()))
   }
 }
 
