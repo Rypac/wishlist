@@ -18,6 +18,7 @@ final class Wishlist: App {
           ),
           theme: appDelegate.settings.$theme,
           sortOrderState: appDelegate.settings.sortOrderStatePublisher,
+          refresh: appDelegate.appRepository.refresh,
           checkForUpdates: appDelegate.updateChecker.update,
           system: .live(())
         )

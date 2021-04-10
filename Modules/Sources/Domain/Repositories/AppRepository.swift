@@ -59,7 +59,7 @@ public final class AppRepository {
     refreshTrigger.send(.only([id]))
   }
 
-  public func refresh() throws {
+  public func refresh() {
     refreshTrigger.send(.all)
   }
 }

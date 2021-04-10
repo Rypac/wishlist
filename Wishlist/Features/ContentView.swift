@@ -9,6 +9,7 @@ struct ContentViewEnvironment {
   var repository: AppListRepository
   var theme: UserDefault<Theme>
   var sortOrderState: AnyPublisher<SortOrderState, Never>
+  var refresh: () -> Void
   var checkForUpdates: () -> Void
   var system: SystemEnvironment<Void>
 }
@@ -54,6 +55,7 @@ struct ContentView: View {
     }
     .onChange(of: scenePhase) { phase in
       if phase == .active {
+        environment.refresh()
         environment.checkForUpdates()
       }
     }
