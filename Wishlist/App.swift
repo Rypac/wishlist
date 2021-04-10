@@ -37,6 +37,7 @@ final class Wishlist: App {
 
 final class ReactiveAppEnvironment {
   private enum Action {
+    case refresh([AppDetails])
     case update([AppDetails])
     case delete([AppID])
     case viewed(AppID, Date)
@@ -55,10 +56,15 @@ final class ReactiveAppEnvironment {
     cancellable = actionTrigger
       .scan(into: [:]) { apps, update in
         switch update {
-        case .update(let updatedApps):
-          if updatedApps.count > apps.capacity {
-            apps.reserveCapacity(updatedApps.count)
+        case .refresh(let refreshedApps):
+          apps.removeAll(keepingCapacity: true)
+          if refreshedApps.count > apps.capacity {
+            apps.reserveCapacity(refreshedApps.count)
           }
+          for app in refreshedApps {
+            apps[app.id] = app
+          }
+        case .update(let updatedApps):
           for app in updatedApps {
             apps[app.id] = app
           }
@@ -124,7 +130,7 @@ final class ReactiveAppEnvironment {
   }
 
   func refresh() throws {
-    actionTrigger.send(.update(try appRepository.fetchAll()))
+    actionTrigger.send(.refresh(try appRepository.fetchAll()))
   }
 }
 
