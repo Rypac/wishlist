@@ -8,7 +8,7 @@ struct AppListRepository {
   var apps: AnyPublisher<[AppDetails], Never>
   var app: (AppID) -> AnyPublisher<AppDetails?, Never>
   var versionHistory: (AppID) -> AnyPublisher<[Version], Never>
-  var recordViewed: (AppID, Date) -> Void
+  var recordViewed: (AppID, Date) throws -> Void
   var deleteApps: ([AppID]) throws -> Void
   var deleteAllApps: () throws -> Void
 }
@@ -19,7 +19,7 @@ extension AppListRepository {
       app: app(id),
       versionHistory: versionHistory(id),
       delete: { try deleteApps([id]) },
-      recordViewed: { date in recordViewed(id, date) }
+      recordViewed: { date in try recordViewed(id, date) }
     )
   }
 }

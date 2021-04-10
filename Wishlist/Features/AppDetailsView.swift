@@ -8,7 +8,7 @@ struct AppDetailsRepository {
   var app: AnyPublisher<AppDetails?, Never>
   var versionHistory: AnyPublisher<[Version], Never>
   var delete: () throws -> Void
-  var recordViewed: (Date) -> Void
+  var recordViewed: (Date) throws -> Void
 }
 
 final class AppDetailsViewModel: ObservableObject {
@@ -36,8 +36,7 @@ final class AppDetailsViewModel: ObservableObject {
 
   func onAppear() {
     let now = environment.system.now()
-    app.lastViewed = now
-    environment.repository.recordViewed(now)
+    try? environment.repository.recordViewed(now)
   }
 }
 
