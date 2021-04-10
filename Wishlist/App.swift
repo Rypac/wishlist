@@ -53,8 +53,7 @@ final class ReactiveAppEnvironment {
   init(repository: AppRepository) {
     appRepository = repository
     cancellable = actionTrigger
-      .scan([:]) { apps, update in
-        var apps = apps
+      .scan(into: [:]) { apps, update in
         switch update {
         case .update(let updatedApps):
           if updatedApps.count > apps.capacity {
@@ -72,7 +71,6 @@ final class ReactiveAppEnvironment {
         case .deleteAll:
           apps.removeAll()
         }
-        return apps
       }
       .subscribe(apps)
   }
