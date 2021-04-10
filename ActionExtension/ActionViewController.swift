@@ -1,28 +1,34 @@
 import Combine
-import MobileCoreServices
-import UIKit
 import Domain
+import MobileCoreServices
 import Services
 import Toolbox
+import UIKit
 
-enum Status: Equatable {
+private enum State: Equatable {
   case resting
-  case loading([AppID])
+  case loading([URL])
   case success([AppSummary])
   case failure
 }
 
-struct ExtensionEnvironment {
-  var loadApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
-  var saveApps: ([AppDetails]) throws -> Void
+private struct Environment {
+  var addApps: ([URL]) -> AnyPublisher<Bool, Never>
+  var fetchApps: () throws -> [AppDetails]
 }
 
 class ActionViewController: UIViewController {
-  private let appRepository: AppPersistence = {
+  private let environment: Environment = {
     let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
-    return try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
+    let repository = try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
+    let appStore = AppStoreService()
+    let appAdder = AppAdder(
+      environment: .live(AppAdder.Environment(loadApps: appStore.lookup, saveApps: repository.add))
+    )
+    return Environment(addApps: appAdder.addApps(from:), fetchApps: repository.fetchAll)
   }()
 
+  private let state = CurrentValueSubject<State, Never>(.resting)
   private var cancellables = Set<AnyCancellable>()
 
   @IBOutlet private var statusLabel: UILabel!
@@ -36,51 +42,65 @@ class ActionViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-//    viewStore.publisher
-//      .map { state in
-//        switch state.status {
-//        case let .loading(ids) where ids.isEmpty:
-//          return "No apps to add"
-//        case let .loading(ids):
-//          return "Adding \(ids.count) apps to Wishlist…"
-//        case let .success(apps) where apps.isEmpty:
-//          return "No apps added to Wishlist"
-//        case let .success(apps):
-//          return "Added to Wishlist:\n\n" + apps.map(\.title).joined(separator: "\n")
-//        case .failure:
-//          return "Failed to add apps to Wishlist"
-//        case .resting:
-//          return ""
-//        }
-//      }
-//      .receive(on: DispatchQueue.main)
-//      .assign(to: \.text, on: statusLabel)
-//      .store(in: &cancellables)
-//
-//    viewStore.publisher
-//      .filter { state in
-//        guard case .success = state.status else {
-//          return false
-//        }
-//        return true
-//      }
-//      .delay(for: .seconds(1.5), scheduler: DispatchQueue.main)
-//      .receive(on: DispatchQueue.main)
-//      .sink { [weak self] _ in
-//        self?.done()
-//      }
-//      .store(in: &cancellables)
-//
-//    extensionContext!.loadURLs()
-//      .receive(on: DispatchQueue.main)
-//      .sink(receiveCompletion: { _ in }) { [weak self] urls in
-//        self?.viewStore.send(.addApps(.addAppsFromURLs(urls)))
-//      }
-//      .store(in: &cancellables)
+    state
+      .map { state in
+        switch state {
+        case let .loading(ids) where ids.isEmpty:
+          return "No apps to add"
+        case let .loading(ids):
+          return "Adding \(ids.count) apps to Wishlist…"
+        case let .success(apps) where apps.isEmpty:
+          return "No apps added to Wishlist"
+        case let .success(apps):
+          return "Added to Wishlist:\n\n" + apps.map(\.title).joined(separator: "\n")
+        case .failure:
+          return "Failed to add apps to Wishlist"
+        case .resting:
+          return ""
+        }
+      }
+      .receive(on: DispatchQueue.main)
+      .assign(to: \.text, on: statusLabel)
+      .store(in: &cancellables)
+
+    state
+      .filter { state in
+        guard case .success = state else {
+          return false
+        }
+        return true
+      }
+      .delay(for: .seconds(1.5), scheduler: DispatchQueue.main)
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in
+        self?.done()
+      }
+      .store(in: &cancellables)
+
+    extensionContext!.loadURLs()
+      .tryMap { [environment] urls -> AnyPublisher<State, Error> in
+        let initialApps = Set(try environment.fetchApps().map(\.id))
+        return environment.addApps(urls)
+          .tryMap { added in
+            guard added else {
+              return .failure
+            }
+
+            let updatedApps = try environment.fetchApps()
+            let newApps = updatedApps.filter { !initialApps.contains($0.id) }
+            return .success(newApps.map(\.summary))
+          }
+          .prepend(.loading(urls))
+          .eraseToAnyPublisher()
+      }
+      .switchToLatest()
+      .catch { _ in Just(.failure) }
+      .subscribe(state)
+      .store(in: &cancellables)
   }
 
   @IBAction func done() {
-    self.extensionContext!.completeRequest(returningItems: self.extensionContext!.inputItems, completionHandler: nil)
+    extensionContext!.completeRequest(returningItems: extensionContext!.inputItems, completionHandler: nil)
   }
 }
 
