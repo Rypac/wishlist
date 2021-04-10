@@ -26,7 +26,7 @@ public final class UpdateChecker {
   }
 
   private var environment: SystemEnvironment<Environment>
-  private var cancellable: AnyCancellable?
+  private var cancellable: Cancellable?
 
   public init(environment: SystemEnvironment<Environment>) {
     self.environment = environment
@@ -78,7 +78,7 @@ public final class UpdateChecker {
   }
 }
 
-private extension AppSummary {
+extension AppSummary {
   func isUpdated(from app: AppDetails) -> Bool {
     if version.date > app.version.date {
       return true

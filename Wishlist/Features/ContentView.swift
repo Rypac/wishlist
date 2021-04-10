@@ -11,6 +11,7 @@ struct ContentViewEnvironment {
   var sortOrderState: AnyPublisher<SortOrderState, Never>
   var refresh: () -> Void
   var checkForUpdates: () -> Void
+  var scheduleBackgroundTasks: () throws -> Void
   var system: SystemEnvironment<Void>
 }
 
@@ -54,9 +55,14 @@ struct ContentView: View {
       )
     }
     .onChange(of: scenePhase) { phase in
-      if phase == .active {
+      switch phase {
+      case .active:
         environment.refresh()
         environment.checkForUpdates()
+      case .background:
+        try? environment.scheduleBackgroundTasks()
+      default:
+        break
       }
     }
     .onReceive(environment.theme.publisher()) { theme in

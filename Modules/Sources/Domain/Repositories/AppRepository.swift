@@ -14,6 +14,10 @@ public final class AppRepository {
     self.persistence = persistence
   }
 
+  public func fetchApps() throws -> [AppDetails] {
+    try persistence.fetchAll()
+  }
+
   public var appsPublisher: AnyPublisher<[AppDetails], Never> {
     refreshTrigger
       .prepend(.all)
