@@ -4,7 +4,7 @@ import Foundation
 import SwiftUI
 import ToolboxUI
 
-struct SingleAppRepository {
+struct AppDetailsRepository {
   var app: AnyPublisher<AppDetails?, Never>
   var versionHistory: AnyPublisher<[Version], Never>
   var delete: () throws -> Void
@@ -13,7 +13,7 @@ struct SingleAppRepository {
 
 final class AppDetailsViewModel: ObservableObject {
   struct Environment {
-    var repository: SingleAppRepository
+    var repository: AppDetailsRepository
     var system: SystemEnvironment<Void>
   }
 

@@ -20,7 +20,7 @@ public struct ExpandableTextModifier: ViewModifier {
       }
       if !expanded {
         Button("more") {
-          self.expanded.toggle()
+          expanded.toggle()
         }
           .buttonStyle(PlainButtonStyle())
           .foregroundColor(.blue)

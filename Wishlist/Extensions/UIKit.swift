@@ -1,6 +1,15 @@
 import UIKit
 
-extension UIUserInterfaceStyle {
+extension UIApplication {
+  func setColorScheme(theme: Theme) {
+    if let window = windows.first {
+      window.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
+      window.tintColor = UIColor(.blue)
+    }
+  }
+}
+
+private extension UIUserInterfaceStyle {
   init(_ theme: Theme) {
     switch theme {
     case .system: self = .unspecified

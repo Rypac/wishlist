@@ -1,5 +1,5 @@
-import Foundation
 import Domain
+import Foundation
 
 enum URLScheme {
   case addApps(ids: [AppID])

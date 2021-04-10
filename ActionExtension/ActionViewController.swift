@@ -3,6 +3,7 @@ import MobileCoreServices
 import UIKit
 import Domain
 import Services
+import Toolbox
 
 enum Status: Equatable {
   case resting
@@ -17,9 +18,9 @@ struct ExtensionEnvironment {
 }
 
 class ActionViewController: UIViewController {
-  private(set) lazy var appRepository: AppRepository = {
+  private let appRepository: AppPersistence = {
     let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
-    return try! SQLiteAppRepository(sqlite: SQLite(path: path.absoluteString))
+    return try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
   }()
 
   private var cancellables = Set<AnyCancellable>()
@@ -97,7 +98,7 @@ private extension NSExtensionContext {
   func loadURLs() -> AnyPublisher<[URL], Error> {
     let providers = urlItemProviders
     if providers.isEmpty {
-      return Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
+      return .just([])
     }
 
     let loadURLs = providers.map { $0.loadURL() }

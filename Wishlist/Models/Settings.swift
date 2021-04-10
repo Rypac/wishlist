@@ -1,5 +1,6 @@
-import Foundation
+import Combine
 import Domain
+import Foundation
 import Toolbox
 
 enum SortOrder: String, CaseIterable, UserDefaultsConvertible {
@@ -38,5 +39,22 @@ final class Settings {
     _theme.register()
     _enableNotificaitons.register()
     _notifications.register()
+  }
+}
+
+extension Settings {
+  var sortOrderStatePublisher: AnyPublisher<SortOrderState, Never> {
+    $sortOrder.publisher()
+      .map { sortOrder in
+        SortOrderState(
+          sortOrder: sortOrder,
+          configuration: SortOrder.Configuration(
+            price: SortOrder.Configuration.Price(sortLowToHigh: true, includeFree: true),
+            title: SortOrder.Configuration.Title(sortAToZ: true),
+            update: SortOrder.Configuration.Update(sortByMostRecent: true)
+          )
+        )
+      }
+      .eraseToAnyPublisher()
   }
 }

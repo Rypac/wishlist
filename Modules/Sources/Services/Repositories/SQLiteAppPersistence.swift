@@ -1,7 +1,7 @@
 import Domain
 import Foundation
 
-public final class SQLiteAppRepository: AppRepository {
+public final class SQLiteAppPersistence: AppPersistence {
   private let sqlite: SQLite
 
   public init(sqlite: SQLite) throws {
@@ -204,7 +204,7 @@ public final class SQLiteAppRepository: AppRepository {
   }
 }
 
-private extension SQLiteAppRepository {
+private extension SQLiteAppPersistence {
   func migrate() throws {
     try sqlite.execute(
       """

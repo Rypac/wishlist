@@ -4,7 +4,7 @@ import Foundation
 import SwiftUI
 import ToolboxUI
 
-struct AllAppsRepository {
+struct AppListRepository {
   var apps: AnyPublisher<[AppDetails], Never>
   var app: (AppID) -> AnyPublisher<AppDetails?, Never>
   var versionHistory: (AppID) -> AnyPublisher<[Version], Never>
@@ -13,9 +13,9 @@ struct AllAppsRepository {
   var deleteAllApps: () throws -> Void
 }
 
-extension AllAppsRepository {
-  func repository(for id: AppID) -> SingleAppRepository {
-    SingleAppRepository(
+extension AppListRepository {
+  func repository(for id: AppID) -> AppDetailsRepository {
+    AppDetailsRepository(
       app: app(id),
       versionHistory: versionHistory(id),
       delete: { try deleteApps([id]) },
@@ -26,7 +26,7 @@ extension AllAppsRepository {
 
 final class AppListViewModel: ObservableObject {
   struct Environment {
-    var repository: AllAppsRepository
+    var repository: AppListRepository
     var sortOrder: AnyPublisher<SortOrderState, Never>
     var system: SystemEnvironment<Void>
   }

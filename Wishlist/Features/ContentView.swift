@@ -6,7 +6,7 @@ import Toolbox
 import ToolboxUI
 
 struct ContentViewEnvironment {
-  var repository: AllAppsRepository
+  var repository: AppListRepository
   var theme: UserDefault<Theme>
   var sortOrderState: AnyPublisher<SortOrderState, Never>
   var checkForUpdates: () -> Void
@@ -58,14 +58,8 @@ struct ContentView: View {
       }
     }
     .onReceive(environment.theme.publisher()) { theme in
-      setColorScheme(theme: theme)
+      UIApplication.shared.setColorScheme(theme: theme)
     }
     .navigationViewStyle(StackNavigationViewStyle())
   }
-}
-
-private func setColorScheme(theme: Theme) {
-  let window = UIApplication.shared.windows.first
-  window?.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
-  window?.tintColor = UIColor(.blue)
 }
