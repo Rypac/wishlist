@@ -15,7 +15,6 @@ public struct AppDetails: Identifiable, Equatable {
   public var version: Version
   public let firstAdded: Date
   public var lastViewed: Date?
-  public var notifications: Set<ChangeNotification>
 
   public init(
     id: ID,
@@ -29,8 +28,7 @@ public struct AppDetails: Identifiable, Equatable {
     price: Tracked<Price>,
     version: Version,
     firstAdded: Date,
-    lastViewed: Date?,
-    notifications: Set<ChangeNotification>
+    lastViewed: Date?
   ) {
     self.id = id
     self.title = title
@@ -44,7 +42,6 @@ public struct AppDetails: Identifiable, Equatable {
     self.version = version
     self.firstAdded = firstAdded
     self.lastViewed = lastViewed
-    self.notifications = notifications
   }
 }
 
@@ -97,8 +94,7 @@ public extension AppDetails {
   init(
     _ summary: AppSummary,
     firstAdded: Date,
-    lastViewed: Date? = nil,
-    notifications: Set<ChangeNotification> = Set()
+    lastViewed: Date? = nil
   ) {
     self.init(
       id: summary.id,
@@ -112,8 +108,7 @@ public extension AppDetails {
       price: Tracked(current: summary.price),
       version: summary.version,
       firstAdded: firstAdded,
-      lastViewed: lastViewed,
-      notifications: notifications
+      lastViewed: lastViewed
     )
   }
 }

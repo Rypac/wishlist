@@ -18,6 +18,7 @@ final class AppDetailsViewModel: ObservableObject {
   }
 
   @Published private(set) var app: AppDetails
+  @Published var notifications: Set<ChangeNotification> = Set()
 
   let environment: Environment
 
@@ -25,13 +26,6 @@ final class AppDetailsViewModel: ObservableObject {
     self.app = app
     self.environment = environment
     environment.repository.app.compactMap { $0 }.assign(to: &$app)
-  }
-
-  var notifications: Binding<Set<ChangeNotification>> {
-    Binding(
-      get: { self.app.notifications },
-      set: { self.app.notifications = $0 }
-    )
   }
 
   func onAppear() {
@@ -48,7 +42,7 @@ struct AppDetailsView: View {
       VStack(alignment: .leading, spacing: 16) {
         AppHeading(app: viewModel.app)
         Divider()
-        AppNotifications(notifications: viewModel.notifications)
+        AppNotifications(notifications: $viewModel.notifications)
         if viewModel.app.version.notes != nil {
           Divider()
           AppVersion(

@@ -28,16 +28,12 @@ public final class SQLiteAppPersistence: AppPersistence {
         version.releaseDate,
         version.releaseNotes,
         interaction.firstAddedDate,
-        interaction.lastViewedDate,
-        notification.priceDrop,
-        notification.newVersion
+        interaction.lastViewedDate
       FROM app
       LEFT JOIN version
         ON app.id = version.appId AND app.version = version.name
       LEFT JOIN interaction
-        ON app.id = interaction.appId
-      LEFT JOIN notification
-        ON app.id = notification.appId;
+        ON app.id = interaction.appId;
       """
     )
   }
@@ -61,16 +57,12 @@ public final class SQLiteAppPersistence: AppPersistence {
         version.releaseDate,
         version.releaseNotes,
         interaction.firstAddedDate,
-        interaction.lastViewedDate,
-        notification.priceDrop,
-        notification.newVersion
+        interaction.lastViewedDate
       FROM app
       LEFT JOIN version
         ON app.id = version.appId AND app.version = version.name
       LEFT JOIN interaction
         ON app.id = interaction.appId
-      LEFT JOIN notification
-        ON app.id = notification.appId
       WHERE id = ?
       LIMIT 1;
       """,
@@ -132,11 +124,11 @@ public final class SQLiteAppPersistence: AppPersistence {
 
     try sqlite.execute(
       """
-      REPLACE INTO notification VALUES (?, ?, ?);
+      INSERT OR IGNORE INTO notification VALUES (?, ?, ?);
       """,
       app.id,
-      app.notifications.contains(.priceDrop),
-      app.notifications.contains(.newVersion)
+      app.price.current.value > 0,
+      true
     )
   }
 
@@ -277,17 +269,7 @@ extension AppDetails: SQLiteDecodable {
       price: Tracked(current: Price(value: 0, formatted: try decoder.decode(String.self))),
       version: try Version(from: &decoder),
       firstAdded: try decoder.decode(Date.self),
-      lastViewed: try decoder.decode(Date?.self),
-      notifications: try {
-        var notifications = Set<ChangeNotification>()
-        if try decoder.decode(Bool.self) {
-          notifications.insert(.priceDrop)
-        }
-        if try decoder.decode(Bool.self) {
-          notifications.insert(.newVersion)
-        }
-        return notifications
-      }()
+      lastViewed: try decoder.decode(Date?.self)
     )
   }
 }
