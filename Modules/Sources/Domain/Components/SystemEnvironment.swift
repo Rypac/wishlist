@@ -27,8 +27,8 @@ public struct SystemEnvironment<Environment> {
   }
 }
 
-public extension SystemEnvironment {
-  static func live(_ environment: Environment) -> Self {
+extension SystemEnvironment {
+  public static func live(_ environment: Environment) -> Self {
     Self(
       environment: environment,
       now: Date.init,
@@ -38,7 +38,7 @@ public extension SystemEnvironment {
   }
 
 #if DEBUG
-  static func mock(
+  public static func mock(
     environment: Environment,
     now: @escaping () -> Date,
     uuid: @escaping () -> UUID,

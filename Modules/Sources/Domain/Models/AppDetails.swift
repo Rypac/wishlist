@@ -13,7 +13,7 @@ public struct AppDetails: Identifiable, Equatable {
   public var releaseDate: Date
   public var price: Tracked<Price>
   public var version: Version
-  public let firstAdded: Date
+  public var firstAdded: Date
   public var lastViewed: Date?
 
   public init(
@@ -45,14 +45,8 @@ public struct AppDetails: Identifiable, Equatable {
   }
 }
 
-extension AppDetails: Hashable {
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(id)
-  }
-}
-
-public extension AppDetails {
-  mutating func applyUpdate(_ app: AppSummary) {
+extension AppDetails {
+  public mutating func applyUpdate(_ app: AppSummary) {
     title = app.title
     seller = app.seller
     description = app.description
@@ -75,8 +69,8 @@ public extension AppDetails {
   }
 }
 
-public extension AppDetails {
-  var summary: AppSummary {
+extension AppDetails {
+  public var summary: AppSummary {
     AppSummary(
       id: id,
       title: title,
@@ -91,10 +85,10 @@ public extension AppDetails {
     )
   }
 
-  init(
-    _ summary: AppSummary,
+  public init(
+    summary: AppSummary,
     firstAdded: Date,
-    lastViewed: Date? = nil
+    lastViewed: Date?
   ) {
     self.init(
       id: summary.id,

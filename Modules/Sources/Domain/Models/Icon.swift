@@ -1,9 +1,9 @@
 import Foundation
 
 public struct Icon: Equatable {
-  public let small: URL
-  public let medium: URL
-  public let large: URL
+  public var small: URL
+  public var medium: URL
+  public var large: URL
 
   public init(small: URL, medium: URL, large: URL) {
     self.small = small

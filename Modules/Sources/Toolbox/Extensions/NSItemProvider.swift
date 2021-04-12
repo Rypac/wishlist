@@ -1,8 +1,8 @@
 import Combine
 import Foundation
 
-public extension NSItemProvider {
-  func loadURL() -> AnyPublisher<URL, Error> {
+extension NSItemProvider {
+  public func loadURL() -> AnyPublisher<URL, Error> {
     Deferred {
       Future { [item = self] promise in
         _ = item.loadObject(ofClass: URL.self) { url, error in

@@ -27,7 +27,7 @@ public struct AppAdder {
       .receive(on: environment.mainQueue())
       .tryMap { summaries in
         let now = environment.now()
-        let apps = summaries.map { AppDetails($0, firstAdded: now) }
+        let apps = summaries.map { AppDetails(summary: $0, firstAdded: now, lastViewed: nil) }
         try environment.saveApps(apps)
         return true
       }
