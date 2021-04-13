@@ -7,6 +7,7 @@ public final class UpdateChecker {
     public var apps: AnyPublisher<[AppDetails], Never>
     public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
     public var saveApps: ([AppDetails]) throws -> Void
+    public var system: SystemEnvironment
     @UserDefault public var lastUpdateDate: Date?
     public var updateFrequency: TimeInterval
 
@@ -14,21 +15,23 @@ public final class UpdateChecker {
       apps: AnyPublisher<[AppDetails], Never>,
       lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
       saveApps: @escaping ([AppDetails]) throws -> Void,
+      system: SystemEnvironment,
       lastUpdateDate: UserDefault<Date?>,
       updateFrequency: TimeInterval
     ) {
       self.apps = apps
       self.lookupApps = lookupApps
       self.saveApps = saveApps
+      self.system = system
       self._lastUpdateDate = lastUpdateDate
       self.updateFrequency = updateFrequency
     }
   }
 
-  private var environment: SystemEnvironment<Environment>
+  private var environment: Environment
   private var cancellable: Cancellable?
 
-  public init(environment: SystemEnvironment<Environment>) {
+  public init(environment: Environment) {
     self.environment = environment
   }
 
@@ -50,11 +53,11 @@ public final class UpdateChecker {
             }
           }
       }
-      .receive(on: environment.mainQueue())
+      .receive(on: environment.system.mainQueue)
       .sink(
         receiveCompletion: { _ in },
         receiveValue: { [weak self] updates in
-          self?.environment.lastUpdateDate = self?.environment.now()
+          self?.environment.lastUpdateDate = self?.environment.system.now()
 
           if updates.isEmpty {
             return
@@ -74,7 +77,8 @@ public final class UpdateChecker {
       return true
     }
 
-    return environment.now().timeIntervalSince(lastUpdateDate) >= TimeInterval(environment.updateFrequency)
+    let timeSinceLastUpdate = environment.system.now().timeIntervalSince(lastUpdateDate)
+    return timeSinceLastUpdate >= TimeInterval(environment.updateFrequency)
   }
 }
 

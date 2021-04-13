@@ -23,14 +23,14 @@ public struct BackgroundTaskEnvironment {
   public var fetchApps: () throws -> [AppDetails]
   public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
   public var saveUpdatedApps: ([AppDetails]) throws -> Void
-  public var system: SystemEnvironment<Void>
+  public var system: SystemEnvironment
 
   public init(
     submitTask: @escaping (BGTaskRequest) throws -> Void,
     fetchApps: @escaping () throws -> [AppDetails],
     lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
     saveUpdatedApps: @escaping ([AppDetails]) throws -> Void,
-    system: SystemEnvironment<Void>
+    system: SystemEnvironment
   ) {
     self.submitTask = submitTask
     self.fetchApps = fetchApps
@@ -79,7 +79,7 @@ public final class BackgroundAppUpdater {
           }
         }
       }
-      .receive(on: environment.system.mainQueue())
+      .receive(on: environment.system.mainQueue)
       .sink(
         receiveCompletion: { completion in
           switch completion {

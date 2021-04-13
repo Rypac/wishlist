@@ -21,7 +21,7 @@ final class Wishlist: App {
           refresh: appDelegate.appRepository.refresh,
           checkForUpdates: appDelegate.updateChecker.update,
           scheduleBackgroundTasks: appDelegate.backgroundAppUpdater.scheduleTask,
-          system: .live(())
+          system: appDelegate.system
         )
       )
       .onOpenURL { url in

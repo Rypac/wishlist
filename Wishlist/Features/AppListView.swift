@@ -28,7 +28,7 @@ final class AppListViewModel: ObservableObject {
   struct Environment {
     var repository: AppListRepository
     var sortOrder: AnyPublisher<SortOrderState, Never>
-    var system: SystemEnvironment<Void>
+    var system: SystemEnvironment
   }
 
   @Published private(set) var apps: [AppDetails] = []

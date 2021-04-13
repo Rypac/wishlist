@@ -6,6 +6,7 @@ import SwiftUI
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
   let settings = Settings()
+  let system: SystemEnvironment = .live
   let appAdder: AppAdder
   let updateChecker: UpdateChecker
   let backgroundAppUpdater: BackgroundAppUpdater
@@ -19,22 +20,20 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   override init() {
     let appStore: AppLookupService = AppStoreService()
     appAdder = AppAdder(
-      environment: .live(
-        AppAdder.Environment(
-          loadApps: appStore.lookup,
-          saveApps: appRepository.saveApps
-        )
+      environment: AppAdder.Environment(
+        loadApps: appStore.lookup,
+        saveApps: appRepository.saveApps,
+        system: system
       )
     )
     updateChecker = UpdateChecker(
-      environment: .live(
-        UpdateChecker.Environment(
-          apps: appRepository.appsPublisher,
-          lookupApps: appStore.lookup,
-          saveApps: appRepository.saveApps,
-          lastUpdateDate: settings.$lastUpdateDate,
-          updateFrequency: 5 * 60
-        )
+      environment: UpdateChecker.Environment(
+        apps: appRepository.appsPublisher,
+        lookupApps: appStore.lookup,
+        saveApps: appRepository.saveApps,
+        system: system,
+        lastUpdateDate: settings.$lastUpdateDate,
+        updateFrequency: 5 * 60
       )
     )
     backgroundAppUpdater = BackgroundAppUpdater(
@@ -44,7 +43,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         fetchApps: appRepository.fetchApps,
         lookupApps: appStore.lookup(ids:),
         saveUpdatedApps: appRepository.saveApps,
-        system: .live(())
+        system: system
       )
     )
     urlSchemeHandler = URLSchemeHandler(

@@ -23,7 +23,11 @@ class ActionViewController: UIViewController {
     let repository = try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
     let appStore = AppStoreService()
     let appAdder = AppAdder(
-      environment: .live(AppAdder.Environment(loadApps: appStore.lookup, saveApps: repository.add))
+      environment: AppAdder.Environment(
+        loadApps: appStore.lookup,
+        saveApps: repository.add,
+        system: .live
+      )
     )
     return Environment(addApps: appAdder.addApps(from:), fetchApps: repository.fetchAll)
   }()

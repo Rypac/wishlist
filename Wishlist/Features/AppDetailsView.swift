@@ -14,7 +14,7 @@ struct AppDetailsRepository {
 final class AppDetailsViewModel: ObservableObject {
   struct Environment {
     var repository: AppDetailsRepository
-    var system: SystemEnvironment<Void>
+    var system: SystemEnvironment
   }
 
   @Published private(set) var app: AppDetails

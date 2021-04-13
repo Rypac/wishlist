@@ -6,27 +6,30 @@ public struct AppAdder {
   public struct Environment {
     public var loadApps: (_ ids: [AppID]) -> AnyPublisher<[AppSummary], Error>
     public var saveApps: (_ apps: [AppDetails]) throws -> Void
+    public var system: SystemEnvironment
 
     public init(
       loadApps: @escaping (_ ids: [AppID]) -> AnyPublisher<[AppSummary], Error>,
-      saveApps: @escaping (_ apps: [AppDetails]) throws -> Void
+      saveApps: @escaping (_ apps: [AppDetails]) throws -> Void,
+      system: SystemEnvironment
     ) {
       self.loadApps = loadApps
       self.saveApps = saveApps
+      self.system = system
     }
   }
 
-  public var environment: SystemEnvironment<Environment>
+  public var environment: Environment
 
-  public init(environment: SystemEnvironment<Environment>) {
+  public init(environment: Environment) {
     self.environment = environment
   }
 
   public func addApps(ids: [AppID]) -> AnyPublisher<Bool, Never> {
     environment.loadApps(ids)
-      .receive(on: environment.mainQueue())
+      .receive(on: environment.system.mainQueue)
       .tryMap { summaries in
-        let now = environment.now()
+        let now = environment.system.now()
         let apps = summaries.map { AppDetails(summary: $0, firstAdded: now, lastViewed: nil) }
         try environment.saveApps(apps)
         return true

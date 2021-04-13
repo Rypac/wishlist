@@ -12,7 +12,7 @@ struct ContentViewEnvironment {
   var refresh: () -> Void
   var checkForUpdates: () -> Void
   var scheduleBackgroundTasks: () throws -> Void
-  var system: SystemEnvironment<Void>
+  var system: SystemEnvironment
 }
 
 struct ContentView: View {
