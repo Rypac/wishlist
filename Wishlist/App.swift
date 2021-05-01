@@ -26,7 +26,7 @@ final class Wishlist: App {
       )
       .onOpenURL { url in
         if let urlScheme = URLScheme(rawValue: url) {
-          handleURLScheme(urlScheme)
+          try? handleURLScheme(urlScheme)
         }
       }
     }

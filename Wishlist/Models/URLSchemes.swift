@@ -22,7 +22,7 @@ final class URLSchemeHandler {
     }
   }
 
-  func handle(_ urlScheme: URLScheme) {
+  func handle(_ urlScheme: URLScheme) throws {
     switch urlScheme {
     case .addApps(let ids):
       environment.addApps(ids)
@@ -31,11 +31,7 @@ final class URLSchemeHandler {
         }
         .store(in: &cancellables)
     case .deleteAll:
-      do {
-        try environment.deleteAllApps()
-      } catch {
-        print("Unabled to delete all apps: \(error)")
-      }
+      try environment.deleteAllApps()
     case .export: break
     case .viewApp: break
     }
