@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "Modules",
   platforms: [
-    .iOS(.v14)
+    .iOS("15.0")
   ],
   products: [
     .library(name: "Toolbox", targets: ["Toolbox"]),

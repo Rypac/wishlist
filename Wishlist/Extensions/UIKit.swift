@@ -1,8 +1,8 @@
 import UIKit
 
-extension UIApplication {
+extension UIWindowScene {
   func setColorScheme(theme: Theme) {
-    if let window = windows.first {
+    for window in windows {
       window.overrideUserInterfaceStyle = UIUserInterfaceStyle(theme)
       window.tintColor = UIColor(.blue)
     }

@@ -1,4 +1,5 @@
 import Foundation
+import UniformTypeIdentifiers
 
 final class URLItemProvider: NSObject, Encodable, NSItemProviderWriting {
   let url: URL
@@ -11,21 +12,21 @@ final class URLItemProvider: NSObject, Encodable, NSItemProviderWriting {
 
   static var writableTypeIdentifiersForItemProvider: [String] {
     [
-      UTI.url,
-      UTI.plainText
+      UTType.url.identifier,
+      UTType.plainText.identifier
     ]
   }
 
   func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
     switch typeIdentifier {
-    case UTI.url:
+    case UTType.url.identifier:
       do {
         let data = try PropertyListEncoder().encode(URLDropRepresentation(url: url, title: title))
         completionHandler(data, nil)
       } catch {
         completionHandler(nil, error)
       }
-    case UTI.plainText:
+    case UTType.plainText.identifier:
       if let data = url.absoluteString.data(using: .utf8) {
         completionHandler(data, nil)
       } else {

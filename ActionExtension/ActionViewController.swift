@@ -1,9 +1,9 @@
 import Combine
 import Domain
-import MobileCoreServices
 import Services
 import Toolbox
 import UIKit
+import UniformTypeIdentifiers
 
 private enum State: Equatable {
   case resting
@@ -116,7 +116,7 @@ private extension NSExtensionContext {
 
     return items.compactMap(\.attachments)
       .flatMap { $0 }
-      .filter { $0.hasItemConformingToTypeIdentifier(kUTTypeURL as String) }
+      .filter { $0.hasItemConformingToTypeIdentifier(UTType.url.identifier) }
   }
 
   func loadURLs() -> AnyPublisher<[URL], Error> {

@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import SwiftUI
+import UniformTypeIdentifiers
 
 final class URLDropDelegate: DropDelegate {
   private let acceptURLs: ([URL]) -> Void
@@ -17,7 +18,7 @@ final class URLDropDelegate: DropDelegate {
   }
 
   func performDrop(info: DropInfo) -> Bool {
-    guard info.hasItemsConforming(to: [UTI.url]) else {
+    guard info.hasItemsConforming(to: [UTType.url.identifier]) else {
       return false
     }
 
@@ -34,7 +35,7 @@ final class URLDropDelegate: DropDelegate {
 
 private extension DropInfo {
   func loadURLs() -> AnyPublisher<[URL], Error> {
-    let items = itemProviders(for: [UTI.url])
+    let items = itemProviders(for: [UTType.url.identifier])
     let futureURLs = items.map { $0.loadURL() }
     return Publishers.Sequence(sequence: futureURLs)
       .flatMap { $0 }

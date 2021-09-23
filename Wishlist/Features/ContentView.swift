@@ -66,7 +66,11 @@ struct ContentView: View {
       }
     }
     .onReceive(environment.theme.publisher()) { theme in
-      UIApplication.shared.setColorScheme(theme: theme)
+      for scene in UIApplication.shared.connectedScenes {
+        if let windowScene = scene as? UIWindowScene {
+          windowScene.setColorScheme(theme: theme)
+        }
+      }
     }
     .navigationViewStyle(StackNavigationViewStyle())
   }
