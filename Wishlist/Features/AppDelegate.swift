@@ -12,7 +12,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   let backgroundAppUpdater: BackgroundAppUpdater
   let urlSchemeHandler: URLSchemeHandler
   let appRepository: AppRepository = {
-    let path = FileManager.default.storeURL(for: "group.wishlist.database", databaseName: "Wishlist")
+    let path = FileManager.default.storeURL(for: "group.wishlisttest.database", databaseName: "Wishlist")
     let persistence = try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
     return AppRepository(persistence: persistence)
   }()
