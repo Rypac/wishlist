@@ -58,12 +58,12 @@ final class AppListViewModel: ObservableObject {
     }
   }
 
-  func deleteApps(_ ids: [AppID]) {
+  func deleteApp(_ id: AppID) {
     do {
-      try environment.repository.deleteApps(ids)
-      apps.removeAll(where: { ids.contains($0.id) })
+      try environment.repository.deleteApps([id])
+      apps.removeAll(where: { $0.id == id })
     } catch {
-      print("Failed to delete apps with ids: \(ids)")
+      print("Failed to delete apps with id: \(id)")
     }
   }
 
@@ -91,12 +91,13 @@ struct AppListView: View {
             icon: app.icon.medium
           )
         }
-      }
-      .onDelete { indexes in
-        let ids = viewModel.apps.enumerated().compactMap { index, app in
-          indexes.contains(index) ? app.id : nil
+        .swipeActions {
+          Button("Delete", role: .destructive) {
+            withAnimation {
+              viewModel.deleteApp(app.id)
+            }
+          }
         }
-        viewModel.deleteApps(ids)
       }
     }
     .searchable(text: $viewModel.filterQuery)
