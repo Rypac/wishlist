@@ -25,7 +25,10 @@ final class AppDetailsViewModel: ObservableObject {
   init(app: AppDetails, environment: Environment) {
     self.app = app
     self.environment = environment
-    environment.repository.app.compactMap { $0 }.assign(to: &$app)
+    environment.repository.app
+      .compactMap { $0 }
+      .receive(on: environment.system.mainQueue)
+      .assign(to: &$app)
   }
 
   func onAppear() {
@@ -138,7 +141,13 @@ private struct AppVersion: View {
         Spacer(minLength: 0)
         NavigationLink(
           destination: VersionHistoryView(
-            viewModel: VersionHistoryViewModel(latestVersion: version, versionHistory: versionHistory)
+            viewModel: VersionHistoryViewModel(
+              latestVersion: version,
+              environment: VersionHistoryViewModel.Environment(
+                versionHistory: versionHistory,
+                system: .live
+              )
+            )
           )
         ) {
           Text("Version History")

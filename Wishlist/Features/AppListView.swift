@@ -47,6 +47,7 @@ final class AppListViewModel: ObservableObject {
       ) { apps, sortOrderState, query in
         apps.applying(sortOrderState, titleFilter: query)
       }
+      .receive(on: environment.system.mainQueue)
       .assign(to: &$apps)
   }
 

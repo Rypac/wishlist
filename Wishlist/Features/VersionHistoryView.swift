@@ -4,15 +4,21 @@ import Foundation
 import SwiftUI
 
 final class VersionHistoryViewModel: ObservableObject {
+  struct Environment {
+    var versionHistory: AnyPublisher<[Version], Never>
+    var system: SystemEnvironment
+  }
+
   @Published private(set) var versions: [Version]
 
-  init(latestVersion: Version, versionHistory: AnyPublisher<[Version], Never>) {
+  init(latestVersion: Version, environment: Environment) {
     versions = [latestVersion]
 
-    versionHistory
+    environment.versionHistory
       .map { versions in
         versions.sorted(by: { $0.date > $1.date })
       }
+      .receive(on: environment.system.mainQueue)
       .assign(to: &$versions)
   }
 }

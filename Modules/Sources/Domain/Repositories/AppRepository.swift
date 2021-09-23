@@ -23,7 +23,6 @@ public final class AppRepository {
       .prepend(.all)
       .tryMap { [persistence] _ in try persistence.fetchAll() }
       .catch { _ in Just([]) }
-      .receive(on: DispatchQueue.main)
       .eraseToAnyPublisher()
   }
 
@@ -33,8 +32,6 @@ public final class AppRepository {
       .filter { $0.includes(id: id) }
       .tryMap { [persistence] _ in try persistence.fetch(id: id) }
       .catch { _ in Just(nil) }
-      .removeDuplicates()
-      .receive(on: DispatchQueue.main)
       .eraseToAnyPublisher()
   }
 
