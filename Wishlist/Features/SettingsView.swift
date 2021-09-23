@@ -36,7 +36,7 @@ final class SettingsViewModel: ObservableObject {
 struct SettingsView: View {
   @StateObject var viewModel: SettingsViewModel
 
-  @Environment(\.presentationMode) private var presentationMode
+  @Environment(\.dismiss) var dismiss
 
   @State private var showDeleteAllConfirmation = false
 
@@ -69,7 +69,7 @@ struct SettingsView: View {
       }
       .navigationBarTitle("Settings")
       .navigationBarItems(trailing: Button("Close") {
-        presentationMode.wrappedValue.dismiss()
+        dismiss()
       })
     }
     .navigationViewStyle(.stack)
