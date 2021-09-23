@@ -8,6 +8,7 @@ struct AppListRepository {
   var apps: AnyPublisher<[AppDetails], Never>
   var app: (AppID) -> AnyPublisher<AppDetails?, Never>
   var versionHistory: (AppID) -> AnyPublisher<[Version], Never>
+  var checkForUpdates: () async throws -> Void
   var recordViewed: (AppID, Date) throws -> Void
   var deleteApps: ([AppID]) throws -> Void
   var deleteAllApps: () throws -> Void
@@ -44,6 +45,14 @@ final class AppListViewModel: ObservableObject {
         apps.applying(sortOrderState)
       }
       .assign(to: &$apps)
+  }
+
+  func checkForUpdates() async {
+    do {
+      try await environment.repository.checkForUpdates()
+    } catch {
+      print("Failed to update apps: \(error)")
+    }
   }
 
   func deleteApps(_ ids: [AppID]) {
@@ -86,6 +95,9 @@ struct AppListView: View {
         }
         viewModel.deleteApps(ids)
       }
+    }
+    .refreshable {
+      await viewModel.checkForUpdates()
     }
     .listStyle(.plain)
   }

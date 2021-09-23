@@ -28,7 +28,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     )
     updateChecker = UpdateChecker(
       environment: UpdateChecker.Environment(
-        apps: appRepository.appsPublisher,
+        fetchApps: appRepository.fetchApps,
         lookupApps: appStore.lookup,
         saveApps: appRepository.saveApps,
         system: system,

@@ -12,6 +12,7 @@ final class Wishlist: App {
             apps: appDelegate.appRepository.appsPublisher,
             app: appDelegate.appRepository.appPublisher(forId:),
             versionHistory: appDelegate.appRepository.versionsPublisher(forId:),
+            checkForUpdates: appDelegate.updateChecker.update,
             recordViewed: appDelegate.appRepository.recordAppViewed,
             deleteApps: appDelegate.appRepository.deleteApps(ids:),
             deleteAllApps: appDelegate.appRepository.deleteAllApps
@@ -19,7 +20,7 @@ final class Wishlist: App {
           theme: appDelegate.settings.$theme,
           sortOrderState: appDelegate.settings.sortOrderStatePublisher,
           refresh: appDelegate.appRepository.refresh,
-          checkForUpdates: appDelegate.updateChecker.update,
+          checkForUpdates: appDelegate.updateChecker.updateIfNeeded,
           scheduleBackgroundTasks: appDelegate.backgroundAppUpdater.scheduleTask,
           system: appDelegate.system
         )
