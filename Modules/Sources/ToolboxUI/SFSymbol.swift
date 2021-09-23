@@ -3,6 +3,7 @@ import SwiftUI
 public enum SFSymbol: String {
   case arrowUp = "arrow.up"
   case arrowDown = "arrow.down"
+  case chevronForward = "chevron.forward"
   case settings = "slider.horizontal.3"
   case share = "square.and.arrow.up"
   case trash = "trash"

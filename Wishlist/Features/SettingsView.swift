@@ -55,7 +55,7 @@ struct SettingsView: View {
           NotificationsView()
         }
         Section(header: Text("About")) {
-          NavigationLink("Acknowledgements", destination: LicensesView())
+          NavigationLink("Acknowledgements", destination: LicensesView.init)
           Link("Source Code", destination: URL(string: "https://github.com/Rypac/wishlist")!)
         }
         Section(
@@ -72,7 +72,6 @@ struct SettingsView: View {
         dismiss()
       })
     }
-    .navigationViewStyle(.stack)
     .alert("Are you sure you want to delete all apps?", isPresented: $showDeleteAllConfirmation) {
       Button("Delete", role: .destructive) {
         viewModel.deleteAllApps()

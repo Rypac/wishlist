@@ -18,6 +18,7 @@ final class AppDetailsViewModel: ObservableObject {
   }
 
   @Published private(set) var app: AppDetails
+  @Published var displayVersionHistory: Bool = false
   @Published var notifications: Set<ChangeNotification> = Set()
 
   let environment: Environment
@@ -35,6 +36,16 @@ final class AppDetailsViewModel: ObservableObject {
     let now = environment.system.now()
     try? environment.repository.recordViewed(now)
   }
+
+  func versionHistoryViewModel() -> VersionHistoryViewModel {
+    VersionHistoryViewModel(
+      latestVersion: app.version,
+      environment: VersionHistoryViewModel.Environment(
+        versionHistory: environment.repository.versionHistory,
+        system: environment.system
+      )
+    )
+  }
 }
 
 struct AppDetailsView: View {
@@ -50,13 +61,16 @@ struct AppDetailsView: View {
           Divider()
           AppVersion(
             version: viewModel.app.version,
-            versionHistory: viewModel.environment.repository.versionHistory
+            displayVersionHistory: $viewModel.displayVersionHistory
           )
         }
         Divider()
         AppDescription(description: viewModel.app.description)
       }
       .padding()
+    }
+    .navigation(isActive: $viewModel.displayVersionHistory) {
+      VersionHistoryView(viewModel: viewModel.versionHistoryViewModel())
     }
     .navigationBarTitle("Details", displayMode: .inline)
     .onAppear {
@@ -129,7 +143,7 @@ private struct AppNotifications: View {
 
 private struct AppVersion: View {
   let version: Version
-  let versionHistory: AnyPublisher<[Version], Never>
+  @Binding var displayVersionHistory: Bool
 
   @Environment(\.updateDateFormatter) private var dateFormatter
 
@@ -139,18 +153,8 @@ private struct AppVersion: View {
         Text("Release Notes")
           .bold()
         Spacer(minLength: 0)
-        NavigationLink(
-          destination: VersionHistoryView(
-            viewModel: VersionHistoryViewModel(
-              latestVersion: version,
-              environment: VersionHistoryViewModel.Environment(
-                versionHistory: versionHistory,
-                system: .live
-              )
-            )
-          )
-        ) {
-          Text("Version History")
+        Button("Version History") {
+          displayVersionHistory = true
         }
       }
       HStack {

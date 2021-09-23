@@ -33,6 +33,7 @@ final class AppListViewModel: ObservableObject {
   }
 
   @Published private(set) var apps: [AppDetails] = []
+  @Published var viewingAppDetails: AppDetails? = nil
   @Input var filterQuery: String = ""
 
   let environment: Environment
@@ -83,20 +84,26 @@ struct AppListView: View {
   @StateObject var viewModel: AppListViewModel
 
   var body: some View {
-    List {
-      ForEach(viewModel.apps) { app in
-        NavigationLink(destination: AppDetailsView(viewModel: viewModel.detailViewModel(app))) {
+    List(viewModel.apps) { app in
+      Button {
+        viewModel.viewingAppDetails = app
+      } label: {
+        HStack {
           AppRow(
             title: app.title,
             details: .updated(app.version.date, seen: true),
             icon: app.icon.medium
           )
+          Spacer()
+          SFSymbol.chevronForward
+            .font(.caption.bold())
+            .foregroundColor(Color(.tertiaryLabel))
         }
-        .swipeActions {
-          Button("Delete", role: .destructive) {
-            withAnimation {
-              viewModel.deleteApp(app.id)
-            }
+      }
+      .swipeActions {
+        Button("Delete", role: .destructive) {
+          withAnimation {
+            viewModel.deleteApp(app.id)
           }
         }
       }
@@ -106,6 +113,9 @@ struct AppListView: View {
       await viewModel.checkForUpdates()
     }
     .listStyle(.plain)
+    .navigation(item: $viewModel.viewingAppDetails) { app in
+      AppDetailsView(viewModel: viewModel.detailViewModel(app))
+    }
   }
 }
 
