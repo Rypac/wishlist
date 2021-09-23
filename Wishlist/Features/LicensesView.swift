@@ -22,7 +22,7 @@ struct LicensesView: View {
             openURL(license.url)
           }
           .font(.callout)
-          .buttonStyle(PlainButtonStyle())
+          .buttonStyle(.plain)
           .foregroundColor(.blue)
         }
         Text(license.terms)
@@ -30,6 +30,7 @@ struct LicensesView: View {
       }
       .padding([.top, .bottom], 8)
     }
+    .listStyle(.grouped)
     .navigationBarTitle("Acknowledgements")
   }
 }

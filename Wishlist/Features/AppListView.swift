@@ -87,7 +87,7 @@ struct AppListView: View {
         viewModel.deleteApps(ids)
       }
     }
-    .listStyle(PlainListStyle())
+    .listStyle(.plain)
   }
 }
 

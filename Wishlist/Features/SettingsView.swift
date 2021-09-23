@@ -50,7 +50,7 @@ struct SettingsView: View {
               Text(theme.title).tag(theme)
             }
           }
-          .pickerStyle(SegmentedPickerStyle())
+          .pickerStyle(.segmented)
         }
         Section(header: Text("Notifications")) {
           NotificationsView()
@@ -76,7 +76,7 @@ struct SettingsView: View {
         presentationMode.wrappedValue.dismiss()
       })
     }
-    .navigationViewStyle(StackNavigationViewStyle())
+    .navigationViewStyle(.stack)
     .alert(isPresented: $showDeleteAllConfirmation) {
       Alert(
         title: Text("Are you sure you want to delete all apps?"),

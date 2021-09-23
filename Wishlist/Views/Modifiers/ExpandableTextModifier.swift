@@ -22,19 +22,19 @@ public struct ExpandableTextModifier: ViewModifier {
         Button("more") {
           expanded.toggle()
         }
-          .buttonStyle(PlainButtonStyle())
-          .foregroundColor(.blue)
-          .padding(.leading, 20)
-          .background(
-            LinearGradient(
-              gradient: Gradient(stops: [
-                Gradient.Stop(color: Color(.systemBackground).opacity(0), location: 0),
-                Gradient.Stop(color: Color(.systemBackground), location: 0.25)
-              ]),
-              startPoint: .leading,
-              endPoint: .trailing
-            )
+        .buttonStyle(.plain)
+        .foregroundColor(.blue)
+        .padding(.leading, 20)
+        .background(
+          LinearGradient(
+            gradient: Gradient(stops: [
+              Gradient.Stop(color: Color(.systemBackground).opacity(0), location: 0),
+              Gradient.Stop(color: Color(.systemBackground), location: 0.25)
+            ]),
+            startPoint: .leading,
+            endPoint: .trailing
           )
+        )
       }
     }
   }
