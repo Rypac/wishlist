@@ -62,10 +62,9 @@ struct SettingsView: View {
           header: Text("Danger Zone"),
           footer: Text("This will remove all apps from your Wishlist and cannot be undone.")
         ) {
-          Button("Delete All") {
+          Button("Delete All", role: .destructive) {
             showDeleteAllConfirmation = true
           }
-          .foregroundColor(.red)
         }
       }
       .navigationBarTitle("Settings")
@@ -74,15 +73,12 @@ struct SettingsView: View {
       })
     }
     .navigationViewStyle(.stack)
-    .alert(isPresented: $showDeleteAllConfirmation) {
-      Alert(
-        title: Text("Are you sure you want to delete all apps?"),
-        message: Text("All apps will be deleted. This action cannot be undone."),
-        primaryButton: .destructive(Text("Delete")) {
-          viewModel.deleteAllApps()
-        },
-        secondaryButton: .cancel()
-      )
+    .alert("Are you sure you want to delete all apps?", isPresented: $showDeleteAllConfirmation) {
+      Button("Delete", role: .destructive) {
+        viewModel.deleteAllApps()
+      }
+    } message: {
+      Text("All apps will be deleted. This action cannot be undone.")
     }
   }
 }
