@@ -10,20 +10,16 @@ struct LicensesView: View {
     )
   ]
 
-  @Environment(\.openURL) private var openURL
-
   var body: some View {
     List(licenses, id: \.title) { license in
       VStack(alignment: .leading, spacing: 16) {
         VStack(alignment: .leading, spacing: 8) {
           Text(license.title)
             .bold()
-          Button(license.url.absoluteString) {
-            openURL(license.url)
-          }
-          .font(.callout)
-          .buttonStyle(.plain)
-          .foregroundColor(.blue)
+          Link(license.url.absoluteString, destination: license.url)
+            .font(.callout)
+            .buttonStyle(.plain)
+            .foregroundColor(.blue)
         }
         Text(license.terms)
           .font(.system(.footnote, design: .monospaced))

@@ -37,7 +37,6 @@ struct SettingsView: View {
   @StateObject var viewModel: SettingsViewModel
 
   @Environment(\.presentationMode) private var presentationMode
-  @Environment(\.openURL) private var openURL
 
   @State private var showDeleteAllConfirmation = false
 
@@ -57,9 +56,7 @@ struct SettingsView: View {
         }
         Section(header: Text("About")) {
           NavigationLink("Acknowledgements", destination: LicensesView())
-          Button("Source Code") {
-            openURL(URL(string: "https://github.com/Rypac/wishlist")!)
-          }
+          Link("Source Code", destination: URL(string: "https://github.com/Rypac/wishlist")!)
         }
         Section(
           header: Text("Danger Zone"),
