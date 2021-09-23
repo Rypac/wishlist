@@ -22,7 +22,7 @@ struct LicensesView: View {
             .foregroundColor(.blue)
         }
         Text(license.terms)
-          .font(.system(.footnote, design: .monospaced))
+          .font(.footnote.monospaced())
       }
       .padding([.top, .bottom], 8)
     }

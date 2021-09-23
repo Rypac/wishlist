@@ -69,23 +69,22 @@ private struct AppHeading: View {
   let icon: URL
   let url: URL
 
-  @Environment(\.openURL) private var openURL
-
   var body: some View {
     HStack(alignment: .top, spacing: 16) {
       AppIcon(icon, width: 100)
       VStack(alignment: .leading) {
         Text(title)
-          .font(Font.title.bold())
+          .font(.title.bold())
           .fixedSize(horizontal: false, vertical: true)
         Text(seller)
           .font(.headline)
-        HStack {
+        HStack(alignment: .firstTextBaseline) {
           Text(price)
           Spacer()
-          ViewInAppStoreButton {
-            openURL(url)
-          }
+          Link("VIEW", destination: url)
+            .font(.subheadline.bold())
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
         }
         .padding(.top, 8)
       }
@@ -100,27 +99,6 @@ private extension AppHeading {
     price = app.price.current.formatted
     icon = app.icon.large
     url = app.url
-  }
-}
-
-private struct ViewInAppStoreButton: View {
-  let action: () -> Void
-
-  init(_ action: @escaping () -> Void) {
-    self.action = action
-  }
-
-  var body: some View {
-    Button(action: action) {
-      Text("VIEW")
-        .font(.subheadline)
-        .fontWeight(.bold)
-        .foregroundColor(.white)
-        .padding([.leading, .trailing], 20)
-        .padding([.top, .bottom], 8)
-        .background(Capsule().fill(Color.blue))
-    }
-    .hoverEffect(.lift)
   }
 }
 
