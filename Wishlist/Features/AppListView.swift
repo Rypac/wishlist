@@ -33,6 +33,7 @@ final class AppListViewModel: ObservableObject {
   }
 
   @Published private(set) var apps: [AppDetails] = []
+  @Input var filterQuery: String = ""
 
   let environment: Environment
 
@@ -40,9 +41,11 @@ final class AppListViewModel: ObservableObject {
     self.environment = environment
 
     environment.repository.apps
-      .combineLatest(environment.sortOrder.removeDuplicates())
-      .map { apps, sortOrderState in
-        apps.applying(sortOrderState)
+      .combineLatest(
+        environment.sortOrder.removeDuplicates(),
+        $filterQuery.removeDuplicates()
+      ) { apps, sortOrderState, query in
+        apps.applying(sortOrderState, titleFilter: query)
       }
       .assign(to: &$apps)
   }
@@ -96,6 +99,7 @@ struct AppListView: View {
         viewModel.deleteApps(ids)
       }
     }
+    .searchable(text: $viewModel.filterQuery)
     .refreshable {
       await viewModel.checkForUpdates()
     }
@@ -230,8 +234,11 @@ private extension AppDetails {
 }
 
 extension Collection where Element == AppDetails {
-  func applying(_ sorting: SortOrderState) -> [AppDetails] {
+  func applying(_ sorting: SortOrderState, titleFilter: String) -> [AppDetails] {
       filter { app in
+        guard titleFilter.isEmpty || app.title.localizedCaseInsensitiveContains(titleFilter) else {
+          return false
+        }
         if sorting.sortOrder == .price && !sorting.configuration.price.includeFree {
           return app.price.current.value > 0
         }
