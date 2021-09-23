@@ -15,17 +15,13 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/pointfreeco/combine-schedulers", .upToNextMajor(from: "0.5.0")),
-    .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI", .upToNextMajor(from: "1.5.0"))
   ],
   targets: [
     .target(
       name: "Toolbox"
     ),
     .target(
-      name: "ToolboxUI",
-      dependencies: [
-        "SDWebImageSwiftUI"
-      ]
+      name: "ToolboxUI"
     ),
     .target(
       name: "Domain",

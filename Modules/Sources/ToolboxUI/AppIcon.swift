@@ -1,5 +1,4 @@
 import SwiftUI
-import SDWebImageSwiftUI
 
 public struct AppIcon: View {
   let url: URL
@@ -11,13 +10,14 @@ public struct AppIcon: View {
   }
 
   public var body: some View {
-    WebImage(url: url)
-      .resizable()
-      .placeholder {
-        Rectangle().foregroundColor(.gray)
-      }
-      .scaledToFill()
-      .clipShape(RoundedRectangle(cornerRadius: width * 0.2237))
-      .frame(width: width, height: width, alignment: .center)
+    AsyncImage(url: url) { image in
+      image.resizable()
+    } placeholder: {
+      Color.gray
+    }
+    .scaledToFill()
+    .frame(width: width, height: width, alignment: .center)
+    .clipShape(RoundedRectangle(cornerRadius: width * 0.2237))
+    .shadow(radius: 0.5)
   }
 }

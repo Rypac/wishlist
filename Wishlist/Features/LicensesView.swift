@@ -7,11 +7,6 @@ struct LicensesView: View {
       name: "Combine Schedulers",
       copyright: "2020 Point-Free, Inc.",
       url: URL(string: "https://github.com/pointfreeco/combine-schedulers")!
-    ),
-    .mit(
-      name: "SDWebImage",
-      copyright: "2009-2018 Olivier Poitrey rs@dailymotion.com",
-      url: URL(string: "https://github.com/SDWebImage/SDWebImage")!
     )
   ]
 
