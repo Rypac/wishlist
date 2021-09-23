@@ -36,7 +36,7 @@ final class URLDropDelegate: DropDelegate {
 private extension DropInfo {
   func loadURLs() -> AnyPublisher<[URL], Error> {
     let items = itemProviders(for: [UTType.url.identifier])
-    let futureURLs = items.map { $0.loadURL() }
+    let futureURLs = items.map { $0.loadURLPublisher() }
     return Publishers.Sequence(sequence: futureURLs)
       .flatMap { $0 }
       .collect()

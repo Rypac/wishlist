@@ -21,14 +21,14 @@ public struct BackgroundTaskConfiguration: Identifiable, Equatable {
 public struct BackgroundTaskEnvironment {
   public var submitTask: (BGTaskRequest) throws -> Void
   public var fetchApps: () throws -> [AppDetails]
-  public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
+  public var lookupApps: ([AppID]) async throws -> [AppSummary]
   public var saveUpdatedApps: ([AppDetails]) throws -> Void
   public var system: SystemEnvironment
 
   public init(
     submitTask: @escaping (BGTaskRequest) throws -> Void,
     fetchApps: @escaping () throws -> [AppDetails],
-    lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
+    lookupApps: @escaping ([AppID]) async throws -> [AppSummary],
     saveUpdatedApps: @escaping ([AppDetails]) throws -> Void,
     system: SystemEnvironment
   ) {
@@ -44,18 +44,9 @@ public final class BackgroundAppUpdater {
   public let configuration: BackgroundTaskConfiguration
   private let environment: BackgroundTaskEnvironment
 
-  private var cancellables = Set<AnyCancellable>()
-
   public init(configuration: BackgroundTaskConfiguration, environment: BackgroundTaskEnvironment) {
     self.configuration = configuration
     self.environment = environment
-  }
-
-  deinit {
-    for cancellable in cancellables {
-      cancellable.cancel()
-    }
-    cancellables.removeAll()
   }
 
   public func scheduleTask() throws {
@@ -65,41 +56,30 @@ public final class BackgroundAppUpdater {
   }
 
   public func run(task: BackgroundTask) {
-    guard let apps = try? environment.fetchApps() else {
-      task.setTaskCompleted(success: false)
-      return
-    }
+    let lookupAppsTask = Task { [lookupApps = environment.lookupApps] in
+      do {
+        let apps = try environment.fetchApps()
+        let latestApps = try await lookupApps(apps.map(\.id))
 
-    let cancellable = environment.lookupApps(apps.map(\.id))
-      .map { latestApps in
-        latestApps.reduce(into: [] as [AppDetails]) { updatedApps, latestApp in
+        let updatedApps = latestApps.reduce(into: [] as [AppDetails]) { updatedApps, latestApp in
           if var app = apps.first(where: { $0.id == latestApp.id }), latestApp.isUpdated(from: app) {
             app.applyUpdate(latestApp)
             updatedApps.append(app)
           }
         }
+
+        try environment.saveUpdatedApps(updatedApps)
+
+        task.setTaskCompleted(success: true)
+      } catch {
+        task.setTaskCompleted(success: false)
       }
-      .receive(on: environment.system.mainQueue)
-      .sink(
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            task.setTaskCompleted(success: true)
-          case .failure:
-            task.setTaskCompleted(success: false)
-          }
-        },
-        receiveValue: { [environment] updatedApps in
-          try? environment.saveUpdatedApps(updatedApps)
-        }
-      )
+    }
 
     task.expirationHandler = {
       task.setTaskCompleted(success: false)
-      cancellable.cancel()
+      lookupAppsTask.cancel()
     }
-
-    cancellables.insert(cancellable)
 
     try? scheduleTask()
   }

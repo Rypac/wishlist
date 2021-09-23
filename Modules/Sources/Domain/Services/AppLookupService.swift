@@ -1,5 +1,5 @@
 import Combine
 
 public protocol AppLookupService {
-  func lookup(ids: [AppID]) -> AnyPublisher<[AppSummary], Error>
+  func lookup(ids: [AppID]) async throws -> [AppSummary]
 }

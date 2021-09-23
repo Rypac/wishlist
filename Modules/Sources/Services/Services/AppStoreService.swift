@@ -14,9 +14,9 @@ public final class AppStoreService: AppLookupService {
     self.session = session
   }
 
-  public func lookup(ids: [AppID]) -> AnyPublisher<[AppSummary], Error> {
+  public func lookup(ids: [AppID]) async throws -> [AppSummary] {
     if ids.isEmpty {
-      return Result.Publisher([]).eraseToAnyPublisher()
+      return []
     }
 
     var urlComponents = URLComponents(string: "https://itunes.apple.com/lookup")!
@@ -31,11 +31,9 @@ public final class AppStoreService: AppLookupService {
 
     let request = URLRequest(url: urlComponents.url!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
 
-    return session.dataTaskPublisher(for: request)
-      .tryMap { [decoder] data, _ in
-        try decoder.decode(LookupResponse.self, from: data).results.map(AppSummary.init)
-      }
-      .eraseToAnyPublisher()
+    let (data, _) = try await session.data(for: request, delegate: nil)
+
+    return try decoder.decode(LookupResponse.self, from: data).results.map(AppSummary.init)
   }
 }
 

@@ -5,7 +5,7 @@ import Toolbox
 public final class UpdateChecker {
   public struct Environment {
     public var apps: AnyPublisher<[AppDetails], Never>
-    public var lookupApps: ([AppID]) -> AnyPublisher<[AppSummary], Error>
+    public var lookupApps: ([AppID]) async throws -> [AppSummary]
     public var saveApps: ([AppDetails]) throws -> Void
     public var system: SystemEnvironment
     @UserDefault public var lastUpdateDate: Date?
@@ -13,7 +13,7 @@ public final class UpdateChecker {
 
     public init(
       apps: AnyPublisher<[AppDetails], Never>,
-      lookupApps: @escaping ([AppID]) -> AnyPublisher<[AppSummary], Error>,
+      lookupApps: @escaping ([AppID]) async throws -> [AppSummary],
       saveApps: @escaping ([AppDetails]) throws -> Void,
       system: SystemEnvironment,
       lastUpdateDate: UserDefault<Date?>,
@@ -42,16 +42,15 @@ public final class UpdateChecker {
 
     cancellable = environment.apps
       .first()
-      .flatMap { [lookupApps = environment.lookupApps] apps in
-        lookupApps(apps.map(\.id))
-          .map { latestApps in
-            latestApps.reduce(into: [] as [AppDetails]) { updatedApps, latestApp in
-              if var app = apps.first(where: { $0.id == latestApp.id }), latestApp.isUpdated(from: app) {
-                app.applyUpdate(latestApp)
-                updatedApps.append(app)
-              }
-            }
+      .asyncMap { [lookupApps = environment.lookupApps] apps -> [AppDetails] in
+        let latestApps = try await lookupApps(apps.map(\.id))
+
+        return latestApps.reduce(into: [] as [AppDetails]) { updatedApps, latestApp in
+          if var app = apps.first(where: { $0.id == latestApp.id }), latestApp.isUpdated(from: app) {
+            app.applyUpdate(latestApp)
+            updatedApps.append(app)
           }
+        }
       }
       .receive(on: environment.system.mainQueue)
       .sink(
@@ -97,5 +96,24 @@ extension AppSummary {
       || description != app.description
       || icon != app.icon
       || url != app.url
+  }
+}
+
+extension Publisher {
+  func asyncMap<T>(
+    _ transform: @escaping (Output) async throws -> T
+  ) -> Publishers.FlatMap<Future<T, Error>, Publishers.SetFailureType<Self, Error>> {
+    flatMap { value in
+      Future { promise in
+        Task {
+          do {
+            let output = try await transform(value)
+            promise(.success(output))
+          } catch {
+            promise(.failure(error))
+          }
+        }
+      }
+    }
   }
 }

@@ -4,42 +4,36 @@ import Toolbox
 
 public struct AppAdder {
   public struct Environment {
-    public var loadApps: (_ ids: [AppID]) -> AnyPublisher<[AppSummary], Error>
+    public var loadApps: (_ ids: [AppID]) async throws -> [AppSummary]
     public var saveApps: (_ apps: [AppDetails]) throws -> Void
-    public var system: SystemEnvironment
+    public var now: () -> Date
 
     public init(
-      loadApps: @escaping (_ ids: [AppID]) -> AnyPublisher<[AppSummary], Error>,
+      loadApps: @escaping (_ ids: [AppID]) async throws -> [AppSummary],
       saveApps: @escaping (_ apps: [AppDetails]) throws -> Void,
-      system: SystemEnvironment
+      now: @escaping () -> Date
     ) {
       self.loadApps = loadApps
       self.saveApps = saveApps
-      self.system = system
+      self.now = now
     }
   }
 
-  public var environment: Environment
+  public let environment: Environment
 
   public init(environment: Environment) {
     self.environment = environment
   }
 
-  public func addApps(ids: [AppID]) -> AnyPublisher<Bool, Never> {
-    environment.loadApps(ids)
-      .receive(on: environment.system.mainQueue)
-      .tryMap { summaries in
-        let now = environment.system.now()
-        let apps = summaries.map { AppDetails(summary: $0, firstAdded: now, lastViewed: nil) }
-        try environment.saveApps(apps)
-        return true
-      }
-      .catch { _ in Just(false) }
-      .eraseToAnyPublisher()
+  public func addApps(ids: [AppID]) async throws {
+    let summaries = try await environment.loadApps(ids)
+    let now = environment.now()
+    let apps = summaries.map { AppDetails(summary: $0, firstAdded: now, lastViewed: nil) }
+    try environment.saveApps(apps)
   }
 
-  public func addApps(from urls: [URL]) -> AnyPublisher<Bool, Never> {
-    addApps(ids: extractAppIDs(from: urls))
+  public func addApps(from urls: [URL]) async throws {
+    try await addApps(ids: extractAppIDs(from: urls))
   }
 }
 

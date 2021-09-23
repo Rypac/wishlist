@@ -13,7 +13,7 @@ private enum State: Equatable {
 }
 
 private struct Environment {
-  var addApps: ([URL]) -> AnyPublisher<Bool, Never>
+  var addApps: ([URL]) async throws -> Void
   var fetchApps: () throws -> [AppDetails]
 }
 
@@ -26,7 +26,7 @@ class ActionViewController: UIViewController {
       environment: AppAdder.Environment(
         loadApps: appStore.lookup,
         saveApps: repository.add,
-        system: .live
+        now: SystemEnvironment.live.now
       )
     )
     return Environment(addApps: appAdder.addApps(from:), fetchApps: repository.fetchAll)
@@ -34,13 +34,15 @@ class ActionViewController: UIViewController {
 
   private let state = CurrentValueSubject<State, Never>(.resting)
   private var cancellables = Set<AnyCancellable>()
+  private var addAppsTask: Task<Void, Never>?
 
   @IBOutlet private var statusLabel: UILabel!
 
   deinit {
-    cancellables.forEach { cancellable in
+    for cancellable in cancellables {
       cancellable.cancel()
     }
+    addAppsTask?.cancel()
   }
 
   override func viewDidLoad() {
@@ -81,26 +83,24 @@ class ActionViewController: UIViewController {
       }
       .store(in: &cancellables)
 
-    extensionContext!.loadURLs()
-      .tryMap { [environment] urls -> AnyPublisher<State, Error> in
-        let initialApps = Set(try environment.fetchApps().map(\.id))
-        return environment.addApps(urls)
-          .tryMap { added in
-            guard added else {
-              return .failure
-            }
+    loadURLs()
+  }
 
-            let updatedApps = try environment.fetchApps()
-            let newApps = updatedApps.filter { !initialApps.contains($0.id) }
-            return .success(newApps.map(\.summary))
-          }
-          .prepend(.loading(urls))
-          .eraseToAnyPublisher()
+  private func loadURLs() {
+    addAppsTask = Task {
+      do {
+        let urls = try await extensionContext!.loadURLs()
+        state.value = .loading(urls)
+
+        let initialApps = Set(try environment.fetchApps().map(\.id))
+        try await environment.addApps(urls)
+        let updatedApps = try environment.fetchApps()
+        let newApps = updatedApps.filter { !initialApps.contains($0.id) }
+        state.value = .success(newApps.map(\.summary))
+      } catch {
+        state.value = .failure
       }
-      .switchToLatest()
-      .catch { _ in Just(.failure) }
-      .subscribe(state)
-      .store(in: &cancellables)
+    }
   }
 
   @IBAction func done() {
@@ -119,16 +119,24 @@ private extension NSExtensionContext {
       .filter { $0.hasItemConformingToTypeIdentifier(UTType.url.identifier) }
   }
 
-  func loadURLs() -> AnyPublisher<[URL], Error> {
+  func loadURLs() async throws -> [URL] {
     let providers = urlItemProviders
-    if providers.isEmpty {
-      return .just([])
+    switch providers.count {
+    case 0: return []
+    case 1: return [try await providers[0].loadURL()]
+    default:
+      var results = Array<URL?>(repeatElement(nil, count: providers.count))
+      try await withThrowingTaskGroup(of: (Int, URL).self) { group in
+        for (index, provider) in providers.enumerated() {
+          group.addTask {
+            (index, try await provider.loadURL())
+          }
+        }
+        for try await (index, result) in group {
+          results[index] = result
+        }
+      }
+      return results.compactMap { $0 }
     }
-
-    let loadURLs = providers.map { $0.loadURL() }
-    return Publishers.Sequence(sequence: loadURLs)
-      .flatMap { $0 }
-      .collect()
-      .eraseToAnyPublisher()
   }
 }

@@ -23,7 +23,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
       environment: AppAdder.Environment(
         loadApps: appStore.lookup,
         saveApps: appRepository.saveApps,
-        system: system
+        now: system.now
       )
     )
     updateChecker = UpdateChecker(

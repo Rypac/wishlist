@@ -4,13 +4,13 @@ import Foundation
 
 final class URLSchemeHandler {
   struct Environment {
-    var addApps: (_ ids: [AppID]) -> AnyPublisher<Bool, Never>
+    var addApps: (_ ids: [AppID]) async throws -> Void
     var deleteAllApps: () throws -> Void
   }
 
-  private var environment: Environment
+  private let environment: Environment
 
-  private var cancellables = Set<AnyCancellable>()
+  private var cancellables = Set<Task<Void, Never>>()
 
   init(environment: Environment) {
     self.environment = environment
@@ -25,11 +25,16 @@ final class URLSchemeHandler {
   func handle(_ urlScheme: URLScheme) throws {
     switch urlScheme {
     case .addApps(let ids):
-      environment.addApps(ids)
-        .sink { result in
-          print("Successfully added apps: \(result)")
+      cancellables.insert(
+        Task { [environment] in
+          do {
+            try await environment.addApps(ids)
+            print("Successfully added apps")
+          } catch {
+            print("Failed to add apps")
+          }
         }
-        .store(in: &cancellables)
+      )
     case .deleteAll:
       try environment.deleteAllApps()
     case .export: break
