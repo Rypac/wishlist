@@ -13,9 +13,6 @@ let package = Package(
     .library(name: "Domain", targets: ["Domain"]),
     .library(name: "Services", targets: ["Services"])
   ],
-  dependencies: [
-    .package(url: "https://github.com/pointfreeco/combine-schedulers", .upToNextMajor(from: "0.5.0")),
-  ],
   targets: [
     .target(
       name: "Toolbox"
@@ -25,10 +22,7 @@ let package = Package(
     ),
     .target(
       name: "Domain",
-      dependencies: [
-        .product(name: "CombineSchedulers", package: "combine-schedulers"),
-        "Toolbox"
-      ]
+      dependencies: ["Toolbox"]
     ),
     .target(
       name: "Services",
