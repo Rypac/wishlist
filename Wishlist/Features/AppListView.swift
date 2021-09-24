@@ -88,27 +88,20 @@ struct AppListView: View {
 
   var body: some View {
     List(viewModel.apps) { app in
-      Button {
-        viewModel.viewingAppDetails = app
-      } label: {
+      AppRow {
         HStack {
-          AppRow(
-            title: app.title,
-            details: .updated(app.version.date, seen: true),
-            icon: app.icon.medium
-          )
-          Spacer()
-          SFSymbol.chevronForward
-            .font(.caption.bold())
-            .foregroundColor(Color(.tertiaryLabel))
+          AppIcon(app.icon.medium, width: 50)
+          Text(app.title)
+            .fontWeight(.medium)
+          Spacer(minLength: 8)
+          AppUpdateDetails(date: app.version.date, seen: true)
         }
-      }
-      .swipeActions {
-        Button("Delete", role: .destructive) {
-          withAnimation {
-            viewModel.deleteApp(app.id)
-          }
-        }
+      } onSelect: {
+        viewModel.viewingAppDetails = app
+      } onShare: {
+        [app.url]
+      } onDelete: {
+        viewModel.deleteApp(app.id)
       }
     }
     .searchable(text: $viewModel.filterQuery)
@@ -122,24 +115,58 @@ struct AppListView: View {
   }
 }
 
-private struct AppRow: View {
-  let title: String
-  let details: AppListSummary.Details
-  let icon: URL
+private struct AppRow<Content: View>: View {
+  @ViewBuilder let content: () -> Content
+  let onSelect: () -> Void
+  let onShare: () -> [Any]
+  let onDelete: () -> Void
+
+  @State private var displayShareSheet: Bool = false
 
   var body: some View {
-    HStack {
-      AppIcon(icon, width: 50)
-      Text(title)
-        .fontWeight(.medium)
-      Spacer(minLength: 8)
-
-      switch details {
-      case let .price(price, change):
-        AppPriceDetails(price: price, change: change)
-      case let .updated(date, seen):
-        AppUpdateDetails(date: date, seen: seen)
+    Button {
+      onSelect()
+    } label: {
+      HStack {
+        content()
+        Spacer()
+        SFSymbol.chevronForward
+          .font(.caption.bold())
+          .foregroundColor(Color(.tertiaryLabel))
       }
+    }
+    .contextMenu {
+      shareButton
+      Divider()
+      deleteButton
+    }
+    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+      shareButton
+        .tint(.blue)
+    }
+    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+      deleteButton
+    }
+    .sheet(isPresented: $displayShareSheet) {
+      ActivityView(activityItems: onShare(), applicationActivities: nil)
+    }
+  }
+
+  private var shareButton: some View {
+    Button {
+      displayShareSheet = true
+    } label: {
+      Label("Share…", systemImage: SFSymbol.share.rawValue)
+    }
+  }
+
+  private var deleteButton: some View {
+    Button(role: .destructive) {
+      withAnimation {
+        onDelete()
+      }
+    } label: {
+      Label("Delete", systemImage: SFSymbol.trash.rawValue)
     }
   }
 }
