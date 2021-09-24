@@ -49,6 +49,8 @@ final class AppDetailsViewModel: ObservableObject {
 struct AppDetailsView: View {
   @StateObject var viewModel: AppDetailsViewModel
 
+  @State private var displayShareSheet: Bool = false
+
   var body: some View {
     ScrollView(.vertical) {
       VStack(alignment: .leading, spacing: 16) {
@@ -66,6 +68,19 @@ struct AppDetailsView: View {
         AppDescription(description: viewModel.app.description)
       }
       .padding()
+    }
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        Button {
+          displayShareSheet = true
+        } label: {
+          SFSymbol.share
+            .accessibilityLabel("Share")
+        }
+      }
+    }
+    .sheet(isPresented: $displayShareSheet) {
+      ActivityView(activityItems: [viewModel.app.url], applicationActivities: nil)
     }
     .navigation(isActive: $viewModel.displayVersionHistory) {
       VersionHistoryView(viewModel: viewModel.versionHistoryViewModel())
