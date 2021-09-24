@@ -42,27 +42,27 @@ public final class AppRepository {
     .eraseToAnyPublisher()
   }
 
-  public func saveApps(_ apps: [AppDetails]) throws {
+  @MainActor public func saveApps(_ apps: [AppDetails]) throws {
     try persistence.add(apps)
     refreshTrigger.send(.only(apps.map(\.id)))
   }
 
-  public func deleteApps(ids: [AppID]) throws {
+  @MainActor public func deleteApps(ids: [AppID]) throws {
     try persistence.delete(ids: ids)
     refreshTrigger.send(.only(ids))
   }
 
-  public func deleteAllApps() throws {
+  @MainActor public func deleteAllApps() throws {
     try persistence.deleteAll()
     refreshTrigger.send(.all)
   }
 
-  public func recordAppViewed(id: AppID, atDate date: Date) throws {
+  @MainActor public func recordAppViewed(id: AppID, atDate date: Date) throws {
     try persistence.viewedApp(id: id, at: date)
     refreshTrigger.send(.only([id]))
   }
 
-  public func refresh() {
+  @MainActor public func refresh() {
     refreshTrigger.send(.all)
   }
 }

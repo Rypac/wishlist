@@ -9,8 +9,8 @@ struct ContentViewEnvironment {
   var repository: AppListRepository
   var theme: UserDefault<Theme>
   var sortOrderState: AnyPublisher<SortOrderState, Never>
-  var refresh: () -> Void
-  var checkForUpdates: () -> Void
+  var refresh: () async -> Void
+  var checkForUpdates: () async throws -> Void
   var scheduleBackgroundTasks: () throws -> Void
   var system: SystemEnvironment
 }
@@ -58,8 +58,10 @@ struct ContentView: View {
     .onChange(of: scenePhase) { phase in
       switch phase {
       case .active:
-        environment.refresh()
-        environment.checkForUpdates()
+        Task {
+          await environment.refresh()
+          try? await environment.checkForUpdates()
+        }
       case .background:
         try? environment.scheduleBackgroundTasks()
       default:

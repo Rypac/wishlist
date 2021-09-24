@@ -5,12 +5,12 @@ import Toolbox
 public struct AppAdder {
   public struct Environment {
     public var loadApps: (_ ids: [AppID]) async throws -> [AppSummary]
-    public var saveApps: (_ apps: [AppDetails]) throws -> Void
+    public var saveApps: (_ apps: [AppDetails]) async throws -> Void
     public var now: () -> Date
 
     public init(
       loadApps: @escaping (_ ids: [AppID]) async throws -> [AppSummary],
-      saveApps: @escaping (_ apps: [AppDetails]) throws -> Void,
+      saveApps: @escaping (_ apps: [AppDetails]) async throws -> Void,
       now: @escaping () -> Date
     ) {
       self.loadApps = loadApps
@@ -29,7 +29,7 @@ public struct AppAdder {
     let summaries = try await environment.loadApps(ids)
     let now = environment.now()
     let apps = summaries.map { AppDetails(summary: $0, firstAdded: now, lastViewed: nil) }
-    try environment.saveApps(apps)
+    try await environment.saveApps(apps)
   }
 
   public func addApps(from urls: [URL]) async throws {

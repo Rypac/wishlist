@@ -5,7 +5,7 @@ import Foundation
 final class URLSchemeHandler {
   struct Environment {
     var addApps: (_ ids: [AppID]) async throws -> Void
-    var deleteAllApps: () throws -> Void
+    var deleteAllApps: () async throws -> Void
   }
 
   private let environment: Environment
@@ -36,7 +36,9 @@ final class URLSchemeHandler {
         }
       )
     case .deleteAll:
-      try environment.deleteAllApps()
+      Task { [environment] in
+        try await environment.deleteAllApps()
+      }
     case .export: break
     case .viewApp: break
     }

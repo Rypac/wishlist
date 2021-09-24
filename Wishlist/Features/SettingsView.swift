@@ -7,7 +7,7 @@ import Toolbox
 final class SettingsViewModel: ObservableObject {
   struct Environment {
     var theme: UserDefault<Theme>
-    var deleteAllApps: () throws -> Void
+    var deleteAllApps: () async throws -> Void
   }
 
   @Published var theme: Theme {
@@ -25,10 +25,12 @@ final class SettingsViewModel: ObservableObject {
   }
 
   func deleteAllApps() {
-    do {
-      try environment.deleteAllApps()
-    } catch {
-      print(error)
+    Task {
+      do {
+        try await environment.deleteAllApps()
+      } catch {
+        print(error)
+      }
     }
   }
 }

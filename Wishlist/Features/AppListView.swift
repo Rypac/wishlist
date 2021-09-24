@@ -9,9 +9,9 @@ struct AppListRepository {
   var app: (AppID) -> AnyPublisher<AppDetails?, Never>
   var versionHistory: (AppID) -> AnyPublisher<[Version], Never>
   var checkForUpdates: () async throws -> Void
-  var recordViewed: (AppID, Date) throws -> Void
-  var deleteApps: ([AppID]) throws -> Void
-  var deleteAllApps: () throws -> Void
+  var recordViewed: (AppID, Date) async throws -> Void
+  var deleteApps: ([AppID]) async throws -> Void
+  var deleteAllApps: () async throws -> Void
 }
 
 extension AppListRepository {
@@ -19,8 +19,8 @@ extension AppListRepository {
     AppDetailsRepository(
       app: app(id),
       versionHistory: versionHistory(id),
-      delete: { try deleteApps([id]) },
-      recordViewed: { date in try recordViewed(id, date) }
+      delete: { try await deleteApps([id]) },
+      recordViewed: { date in try await recordViewed(id, date) }
     )
   }
 }
@@ -61,11 +61,14 @@ final class AppListViewModel: ObservableObject {
   }
 
   func deleteApp(_ id: AppID) {
-    do {
-      try environment.repository.deleteApps([id])
-      apps.removeAll(where: { $0.id == id })
-    } catch {
-      print("Failed to delete apps with id: \(id)")
+    apps.removeAll(where: { $0.id == id })
+
+    Task {
+      do {
+        try await environment.repository.deleteApps([id])
+      } catch {
+        print("Failed to delete app with id: \(id)")
+      }
     }
   }
 

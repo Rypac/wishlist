@@ -7,8 +7,8 @@ import ToolboxUI
 struct AppDetailsRepository {
   var app: AnyPublisher<AppDetails?, Never>
   var versionHistory: AnyPublisher<[Version], Never>
-  var delete: () throws -> Void
-  var recordViewed: (Date) throws -> Void
+  var delete: () async throws -> Void
+  var recordViewed: (Date) async throws -> Void
 }
 
 final class AppDetailsViewModel: ObservableObject {
@@ -32,9 +32,9 @@ final class AppDetailsViewModel: ObservableObject {
       .assign(to: &$app)
   }
 
-  func onAppear() {
+  func recordAppViewed() async {
     let now = environment.system.now()
-    try? environment.repository.recordViewed(now)
+    try? await environment.repository.recordViewed(now)
   }
 
   func versionHistoryViewModel() -> VersionHistoryViewModel {
@@ -74,8 +74,8 @@ struct AppDetailsView: View {
     }
     .navigationTitle("Details")
     .navigationBarTitleDisplayMode(.inline)
-    .onAppear {
-      viewModel.onAppear()
+    .task {
+      await viewModel.recordAppViewed()
     }
   }
 }

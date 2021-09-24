@@ -22,14 +22,14 @@ public struct BackgroundTaskEnvironment {
   public var submitTask: (BGTaskRequest) throws -> Void
   public var fetchApps: () throws -> [AppDetails]
   public var lookupApps: ([AppID]) async throws -> [AppSummary]
-  public var saveUpdatedApps: ([AppDetails]) throws -> Void
+  public var saveUpdatedApps: ([AppDetails]) async throws -> Void
   public var system: SystemEnvironment
 
   public init(
     submitTask: @escaping (BGTaskRequest) throws -> Void,
     fetchApps: @escaping () throws -> [AppDetails],
     lookupApps: @escaping ([AppID]) async throws -> [AppSummary],
-    saveUpdatedApps: @escaping ([AppDetails]) throws -> Void,
+    saveUpdatedApps: @escaping ([AppDetails]) async throws -> Void,
     system: SystemEnvironment
   ) {
     self.submitTask = submitTask
@@ -68,7 +68,7 @@ public final class BackgroundAppUpdater {
           }
         }
 
-        try environment.saveUpdatedApps(updatedApps)
+        try await environment.saveUpdatedApps(updatedApps)
 
         task.setTaskCompleted(success: true)
       } catch {

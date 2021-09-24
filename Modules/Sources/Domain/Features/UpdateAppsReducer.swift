@@ -6,7 +6,7 @@ public final class UpdateChecker {
   public struct Environment {
     public var fetchApps: () throws -> [AppDetails]
     public var lookupApps: ([AppID]) async throws -> [AppSummary]
-    public var saveApps: ([AppDetails]) throws -> Void
+    public var saveApps: ([AppDetails]) async throws -> Void
     public var system: SystemEnvironment
     @UserDefault public var lastUpdateDate: Date?
     public var updateFrequency: TimeInterval
@@ -14,7 +14,7 @@ public final class UpdateChecker {
     public init(
       fetchApps: @escaping () throws -> [AppDetails],
       lookupApps: @escaping ([AppID]) async throws -> [AppSummary],
-      saveApps: @escaping ([AppDetails]) throws -> Void,
+      saveApps: @escaping ([AppDetails]) async throws -> Void,
       system: SystemEnvironment,
       lastUpdateDate: UserDefault<Date?>,
       updateFrequency: TimeInterval
@@ -39,11 +39,9 @@ public final class UpdateChecker {
     task?.cancel()
   }
 
-  public func updateIfNeeded() {
+  public func updateIfNeeded() async throws {
     if shouldCheckForUpdates {
-      task = Task {
-        try? await update()
-      }
+      try await update()
     }
   }
 
@@ -60,7 +58,7 @@ public final class UpdateChecker {
     }
 
     if !updatedApps.isEmpty {
-      try environment.saveApps(updatedApps)
+      try await environment.saveApps(updatedApps)
     }
 
     environment.lastUpdateDate = environment.system.now()
