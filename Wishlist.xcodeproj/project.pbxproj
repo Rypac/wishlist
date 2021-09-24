@@ -42,6 +42,7 @@
 		94FA20D5231BA2BD00EC1190 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94FA20D4231BA2BD00EC1190 /* Assets.xcassets */; };
 		94FA20D8231BA2BD00EC1190 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94FA20D7231BA2BD00EC1190 /* Preview Assets.xcassets */; };
 		94FA5E882616FDC800430964 /* VersionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA5E872616FDC800430964 /* VersionHistoryView.swift */; };
+		94FA7B1726FDE92100E947AD /* UserDefaultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FA7B1626FDE92100E947AD /* UserDefaultViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +114,7 @@
 		94FA20D7231BA2BD00EC1190 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		94FA20DC231BA2BD00EC1190 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94FA5E872616FDC800430964 /* VersionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionHistoryView.swift; sourceTree = "<group>"; };
+		94FA7B1626FDE92100E947AD /* UserDefaultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 				945B44BB232CC42E00A3B573 /* ActivityView.swift */,
 				942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */,
 				94ADE19826FC503B008029CC /* Input.swift */,
+				94FA7B1626FDE92100E947AD /* UserDefaultViewModel.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -408,6 +411,7 @@
 				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
 				949A58E32610392900B38E78 /* AppDelegate.swift in Sources */,
 				943F705A2462328A007425BA /* URLScheme.swift in Sources */,
+				94FA7B1726FDE92100E947AD /* UserDefaultViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

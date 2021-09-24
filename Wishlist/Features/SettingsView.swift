@@ -11,18 +11,10 @@ final class SettingsViewModel: ObservableObject {
     var deleteAllApps: () async throws -> Void
   }
 
-  @Published var theme: Theme {
-    willSet {
-      environment.theme.wrappedValue = newValue
-    }
-  }
-
-  private var environment: Environment
+  private let environment: Environment
 
   init(environment: Environment) {
     self.environment = environment
-    theme = environment.theme.wrappedValue
-    environment.theme.publisher().assign(to: &$theme)
   }
 
   func deleteAllApps() {
@@ -34,25 +26,22 @@ final class SettingsViewModel: ObservableObject {
       }
     }
   }
+
+  var themeViewModel: UserDefaultViewModel<Theme> {
+    UserDefaultViewModel(environment.theme)
+  }
 }
 
 struct SettingsView: View {
   @StateObject var viewModel: SettingsViewModel
 
-  @Environment(\.dismiss) var dismiss
-
-  @State private var showDeleteAllConfirmation = false
+  @Environment(\.presentationMode) private var presentationMode
 
   var body: some View {
     NavigationView {
       Form {
         Section(header: Text("Appearance")) {
-          Picker("Theme", selection: $viewModel.theme) {
-            ForEach(Theme.allCases, id: \.self) { theme in
-              Text(theme.title).tag(theme)
-            }
-          }
-          .pickerStyle(.segmented)
+          SelectThemeView(viewModel: viewModel.themeViewModel)
         }
         Section(header: Text("Notifications")) {
           NotificationsView()
@@ -65,24 +54,47 @@ struct SettingsView: View {
           header: Text("Danger Zone"),
           footer: Text("This will remove all apps from your Wishlist and cannot be undone.")
         ) {
-          Button("Delete All", role: .destructive) {
-            showDeleteAllConfirmation = true
+          DeleteAllAppsView {
+            viewModel.deleteAllApps()
           }
         }
       }
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("Close") {
-            dismiss()
+            presentationMode.wrappedValue.dismiss()
           }
         }
       }
       .navigationTitle("Settings")
     }
-    .alert("Are you sure you want to delete all apps?", isPresented: $showDeleteAllConfirmation) {
-      Button("Delete", role: .destructive) {
-        viewModel.deleteAllApps()
+  }
+}
+
+private struct SelectThemeView: View {
+  @StateObject var viewModel: UserDefaultViewModel<Theme>
+
+  var body: some View {
+    Picker("Theme", selection: $viewModel.value) {
+      ForEach(Theme.allCases, id: \.self) { theme in
+        Text(theme.title).tag(theme)
       }
+    }
+    .pickerStyle(.segmented)
+  }
+}
+
+private struct DeleteAllAppsView: View {
+  let action: () -> Void
+
+  @State private var showConfirmation = false
+
+  var body: some View {
+    Button("Delete All", role: .destructive) {
+      showConfirmation = true
+    }
+    .alert("Are you sure you want to delete all apps?", isPresented: $showConfirmation) {
+      Button("Delete", role: .destructive, action: action)
     } message: {
       Text("All apps will be deleted. This action cannot be undone.")
     }

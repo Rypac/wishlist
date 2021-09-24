@@ -12,7 +12,7 @@ struct NotificationsView: View {
   @StateObject var model = NotificationsModel()
 
   var body: some View {
-    Toggle("Enable Notifications", isOn: $model.enabled)
+    Toggle("Enable Notifications", isOn: $model.enabled.animation())
 
     if model.enabled {
       ConfigureNotificationsView(
