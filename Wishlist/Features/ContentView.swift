@@ -33,16 +33,17 @@ struct ContentView: View {
           )
         )
       )
-        .navigationTitle("Wishlist")
-        .navigationBarItems(
-          trailing: Button(action: { showSettings = true }) {
-            SFSymbol.settings
-              .imageScale(.large)
-              .accessibility(label: Text("Settings"))
-              .frame(width: 24, height: 24)
+        .toolbar {
+          ToolbarItem(placement: .primaryAction) {
+            Button {
+              showSettings = true
+            } label: {
+              SFSymbol.settings
+                .accessibility(label: Text("Settings"))
+            }
           }
-          .hoverEffect()
-        )
+        }
+        .navigationTitle("Wishlist")
     }
     .sheet(isPresented: $showSettings) {
       SettingsView(

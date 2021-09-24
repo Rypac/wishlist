@@ -67,10 +67,14 @@ struct SettingsView: View {
           }
         }
       }
+      .toolbar {
+        ToolbarItem(placement: .cancellationAction) {
+          Button("Close") {
+            dismiss()
+          }
+        }
+      }
       .navigationBarTitle("Settings")
-      .navigationBarItems(trailing: Button("Close") {
-        dismiss()
-      })
     }
     .alert("Are you sure you want to delete all apps?", isPresented: $showDeleteAllConfirmation) {
       Button("Delete", role: .destructive) {
