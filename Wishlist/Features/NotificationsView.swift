@@ -12,7 +12,7 @@ struct NotificationsView: View {
   @StateObject var model = NotificationsModel()
 
   var body: some View {
-    Toggle("Enable Notifications", isOn: $model.enabled.animation())
+    Toggle("Enable Notifications", isOn: $model.enabled)
 
     if model.enabled {
       ConfigureNotificationsView(
@@ -35,7 +35,7 @@ private struct ConfigureNotificationsView: View {
     NavigationLink {
       Form {
         Section {
-          Toggle("Enable Notifications", isOn: $enabled.animation())
+          Toggle("Enable Notifications", isOn: $enabled)
         }
       }
       .navigationTitle(notification.title)
