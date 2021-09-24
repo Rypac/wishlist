@@ -32,14 +32,14 @@ private struct ConfigureNotificationsView: View {
   @Binding var enabled: Bool
 
   var body: some View {
-    NavigationLink(
-      destination: Form {
+    NavigationLink {
+      Form {
         Section {
           Toggle("Enable Notifications", isOn: $enabled.animation())
         }
       }
-      .navigationBarTitle(notification.title)
-    ) {
+      .navigationTitle(notification.title)
+    } label: {
       HStack {
         Text(notification.title)
         Spacer()

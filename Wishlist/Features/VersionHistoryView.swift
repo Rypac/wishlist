@@ -48,6 +48,6 @@ struct VersionHistoryView: View {
       .padding(.vertical, 8)
     }
     .listStyle(.plain)
-    .navigationBarTitle("Version History")
+    .navigationTitle("Version History")
   }
 }

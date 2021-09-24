@@ -72,7 +72,8 @@ struct AppDetailsView: View {
     .navigation(isActive: $viewModel.displayVersionHistory) {
       VersionHistoryView(viewModel: viewModel.versionHistoryViewModel())
     }
-    .navigationBarTitle("Details", displayMode: .inline)
+    .navigationTitle("Details")
+    .navigationBarTitleDisplayMode(.inline)
     .onAppear {
       viewModel.onAppear()
     }

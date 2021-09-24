@@ -74,7 +74,7 @@ struct SettingsView: View {
           }
         }
       }
-      .navigationBarTitle("Settings")
+      .navigationTitle("Settings")
     }
     .alert("Are you sure you want to delete all apps?", isPresented: $showDeleteAllConfirmation) {
       Button("Delete", role: .destructive) {

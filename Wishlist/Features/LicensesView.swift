@@ -27,7 +27,7 @@ struct LicensesView: View {
       .padding([.top, .bottom], 8)
     }
     .listStyle(.grouped)
-    .navigationBarTitle("Acknowledgements")
+    .navigationTitle("Acknowledgements")
   }
 }
 
