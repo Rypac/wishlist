@@ -39,7 +39,7 @@ struct ContentView: View {
               showSettings = true
             } label: {
               SFSymbol.settings
-                .accessibility(label: Text("Settings"))
+                .accessibilityLabel("Settings")
             }
           }
         }
