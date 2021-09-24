@@ -3,6 +3,7 @@ import Domain
 import Foundation
 import SwiftUI
 import ToolboxUI
+import UniformTypeIdentifiers
 
 struct AppListRepository {
   var apps: AnyPublisher<[AppDetails], Never>
@@ -10,6 +11,7 @@ struct AppListRepository {
   var versionHistory: (AppID) -> AnyPublisher<[Version], Never>
   var checkForUpdates: () async throws -> Void
   var recordViewed: (AppID, Date) async throws -> Void
+  var addApps: ([URL]) async throws -> Void
   var deleteApps: ([AppID]) async throws -> Void
   var deleteAllApps: () async throws -> Void
 }
@@ -60,6 +62,16 @@ final class AppListViewModel: ObservableObject {
     }
   }
 
+  func addApps(_ urls: [URL]) {
+    Task {
+      do {
+        try await environment.repository.addApps(urls)
+      } catch {
+        print("Failed to add apps: \(urls)")
+      }
+    }
+  }
+
   func deleteApp(_ id: AppID) {
     apps.removeAll(where: { $0.id == id })
 
@@ -103,6 +115,19 @@ struct AppListView: View {
       } onDelete: {
         viewModel.deleteApp(app.id)
       }
+      .onDrag {
+        NSItemProvider(url: app.url, title: app.title)
+      }
+    }
+    .onDrop(of: [.url], isTargeted: nil) { itemProviders in
+      for itemProvider in itemProviders {
+        _ = itemProvider.loadObject(ofClass: URL.self) { url, error in
+          if let url = url {
+            viewModel.addApps([url])
+          }
+        }
+      }
+      return true
     }
     .searchable(text: $viewModel.filterQuery)
     .refreshable {

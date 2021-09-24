@@ -14,6 +14,7 @@ final class Wishlist: App {
             versionHistory: appDelegate.appRepository.versionsPublisher(forId:),
             checkForUpdates: appDelegate.updateChecker.update,
             recordViewed: appDelegate.appRepository.recordAppViewed,
+            addApps: appDelegate.appAdder.addApps(from:),
             deleteApps: appDelegate.appRepository.deleteApps(ids:),
             deleteAllApps: appDelegate.appRepository.deleteAllApps
           ),
