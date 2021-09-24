@@ -3,6 +3,7 @@ import Domain
 import Foundation
 import SwiftUI
 
+@MainActor
 final class VersionHistoryViewModel: ObservableObject {
   struct Environment {
     var versionHistory: AnyPublisher<[Version], Never>
@@ -18,7 +19,6 @@ final class VersionHistoryViewModel: ObservableObject {
       .map { versions in
         versions.sorted(by: { $0.date > $1.date })
       }
-      .receive(on: environment.system.mainQueue)
       .assign(to: &$versions)
   }
 }

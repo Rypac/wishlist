@@ -11,6 +11,7 @@ struct AppDetailsRepository {
   var recordViewed: (Date) async throws -> Void
 }
 
+@MainActor
 final class AppDetailsViewModel: ObservableObject {
   struct Environment {
     var repository: AppDetailsRepository
@@ -26,10 +27,7 @@ final class AppDetailsViewModel: ObservableObject {
   init(app: AppDetails, environment: Environment) {
     self.app = app
     self.environment = environment
-    environment.repository.app
-      .compactMap { $0 }
-      .receive(on: environment.system.mainQueue)
-      .assign(to: &$app)
+    environment.repository.app.compactMap { $0 }.assign(to: &$app)
   }
 
   func recordAppViewed() async {

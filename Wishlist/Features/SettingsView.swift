@@ -4,6 +4,7 @@ import Foundation
 import SwiftUI
 import Toolbox
 
+@MainActor
 final class SettingsViewModel: ObservableObject {
   struct Environment {
     var theme: UserDefault<Theme>
