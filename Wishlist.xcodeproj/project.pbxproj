@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		94151ED42469379E00CBD2BE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94151ED32469379E00CBD2BE /* UIKit.swift */; };
 		942088142571FA9C0055137E /* Services in Frameworks */ = {isa = PBXBuildFile; productRef = 942088132571FA9C0055137E /* Services */; };
 		942088162571FA9C0055137E /* Toolbox in Frameworks */ = {isa = PBXBuildFile; productRef = 942088152571FA9C0055137E /* Toolbox */; };
 		9428A496257224130071BDAC /* ToolboxUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9428A495257224130071BDAC /* ToolboxUI */; };
@@ -16,6 +15,7 @@
 		943F705A2462328A007425BA /* URLScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F70592462328A007425BA /* URLScheme.swift */; };
 		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* URLItemProvider.swift */; };
+		9460AC6B26FD60EA003B1FD8 /* ThemeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460AC6A26FD60EA003B1FD8 /* ThemeModifier.swift */; };
 		94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94629D36244682070072C271 /* DeviceVisibilityModifier.swift */; };
 		947E5A8624790AA400EAE43D /* ExpandableTextModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947E5A8524790AA400EAE43D /* ExpandableTextModifier.swift */; };
 		9485D977260F15A100C39C4E /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9485D976260F15A100C39C4E /* App.swift */; };
@@ -80,7 +80,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		94151ED32469379E00CBD2BE /* UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
 		942087FA2571F4460055137E /* Modules */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Modules; sourceTree = "<group>"; };
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
@@ -88,6 +87,7 @@
 		943F70592462328A007425BA /* URLScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLScheme.swift; sourceTree = "<group>"; };
 		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		945CCA55243172DE000B7586 /* URLItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLItemProvider.swift; sourceTree = "<group>"; };
+		9460AC6A26FD60EA003B1FD8 /* ThemeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeModifier.swift; sourceTree = "<group>"; };
 		94629D36244682070072C271 /* DeviceVisibilityModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceVisibilityModifier.swift; sourceTree = "<group>"; };
 		94637EB02431A211005EF584 /* Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wishlist.entitlements; sourceTree = "<group>"; };
 		94637EB12431A33C005EF584 /* Add to Wishlist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Add to Wishlist.entitlements"; sourceTree = "<group>"; };
@@ -167,6 +167,7 @@
 			children = (
 				94629D36244682070072C271 /* DeviceVisibilityModifier.swift */,
 				947E5A8524790AA400EAE43D /* ExpandableTextModifier.swift */,
+				9460AC6A26FD60EA003B1FD8 /* ThemeModifier.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -175,7 +176,6 @@
 			isa = PBXGroup;
 			children = (
 				94A2D386261BD04400FF6258 /* SwiftUI.swift */,
-				94151ED32469379E00CBD2BE /* UIKit.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -390,9 +390,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94151ED42469379E00CBD2BE /* UIKit.swift in Sources */,
 				949A58E0261038F200B38E78 /* AppListView.swift in Sources */,
 				94E4081D247D0E12007EEABE /* SortOrderView.swift in Sources */,
+				9460AC6B26FD60EA003B1FD8 /* ThemeModifier.swift in Sources */,
 				94C28BE3246526320013B41F /* URLSchemes.swift in Sources */,
 				949A58FB2610814600B38E78 /* AppDetailsView.swift in Sources */,
 				947E5A8624790AA400EAE43D /* ExpandableTextModifier.swift in Sources */,
