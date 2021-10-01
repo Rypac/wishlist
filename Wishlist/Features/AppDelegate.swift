@@ -48,6 +48,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     )
     urlSchemeHandler = URLSchemeHandler(
       environment: URLSchemeHandler.Environment(
+        fetchApps: appRepository.fetchApps,
         addApps: appAdder.addApps,
         deleteAllApps: appRepository.deleteAllApps
       )

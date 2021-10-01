@@ -4,6 +4,7 @@ import Foundation
 
 final class URLSchemeHandler {
   struct Environment {
+    var fetchApps: () async throws -> [AppDetails]
     var addApps: (_ ids: [AppID]) async throws -> Void
     var deleteAllApps: () async throws -> Void
   }
@@ -39,7 +40,12 @@ final class URLSchemeHandler {
       Task { [environment] in
         try await environment.deleteAllApps()
       }
-    case .export: break
+    case .export:
+      Task { [environment] in
+        let apps = try await environment.fetchApps()
+        let addAppsUrlScheme = URLScheme.addApps(ids: apps.map(\.id))
+        print(addAppsUrlScheme.rawValue)
+      }
     case .viewApp: break
     }
   }
