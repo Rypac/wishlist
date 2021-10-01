@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import Toolbox
+import UserDefaults
 
 public final class UpdateChecker {
   public struct Environment {

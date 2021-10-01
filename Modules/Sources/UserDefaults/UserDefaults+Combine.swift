@@ -3,12 +3,13 @@ import Combine
 
 // MARK: - Publisher
 
+@available(macOS 10.15, *)
 extension UserDefaults {
-  public func publisher<Value>(for key: UserDefaultsKey<Value>) -> UserDefaults.Publisher<Value> {
+  public func publisher<Value: UserDefaultsSerializable>(for key: UserDefaultsKey<Value>) -> UserDefaults.Publisher<Value> {
     UserDefaults.Publisher(key: key, defaults: self)
   }
 
-  public struct Publisher<Output>: Combine.Publisher {
+  public struct Publisher<Output: UserDefaultsSerializable>: Combine.Publisher {
     public typealias Failure = Never
 
     private let key: UserDefaultsKey<Output>
@@ -28,12 +29,13 @@ extension UserDefaults {
 
 // MARK: - Subject
 
+@available(macOS 10.15, *)
 extension UserDefaults {
-  public func subject<Value>(for key: UserDefaultsKey<Value>) -> UserDefaults.Subject<Value> {
+  public func subject<Value: UserDefaultsSerializable>(for key: UserDefaultsKey<Value>) -> UserDefaults.Subject<Value> {
     UserDefaults.Subject(key: key, defaults: self)
   }
 
-  public final class Subject<Output>: Combine.Subject {
+  public final class Subject<Output: UserDefaultsSerializable>: Combine.Subject {
     public typealias Failure = Never
 
     private let key: UserDefaultsKey<Output>
@@ -76,8 +78,9 @@ extension UserDefaults {
 
 // MARK: - Subscription
 
+@available(macOS 10.15, *)
 private extension UserDefaults {
-  final class Subscription<S: Subscriber>: NSObject, Combine.Subscription {
+  final class Subscription<S: Subscriber>: NSObject, Combine.Subscription where S.Input: UserDefaultsSerializable {
     private var subscriber: S?
     private var requested: Subscribers.Demand = .none
     private var defaultsObserverToken: NSObject?

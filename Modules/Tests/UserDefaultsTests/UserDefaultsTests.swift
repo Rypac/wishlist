@@ -1,5 +1,5 @@
 import XCTest
-@testable import Toolbox
+@testable import UserDefaults
 
 final class UserDefaultsTests: XCTestCase {
   private var userDefaults: UserDefaults!
@@ -97,10 +97,91 @@ final class UserDefaultsTests: XCTestCase {
     XCTAssertEqual(userDefaults[key], [])
   }
 
+  func testIntegerSetKey() {
+    let key = UserDefaultsKey<Set<Int>>(#function, defaultValue: [])
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], Set())
+
+    userDefaults[key] = Set(arrayLiteral: 1, 2, 3)
+
+    XCTAssertTrue(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], Set(arrayLiteral: 1, 2, 3))
+
+    userDefaults.remove(key)
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], Set())
+  }
+
+  func testDictionaryStringIntKey() {
+    let key = UserDefaultsKey<[String: Int]>(#function, defaultValue: [:])
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [:])
+
+    userDefaults[key] = ["hello": 1, "world": 2]
+
+    XCTAssertTrue(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], ["hello": 1, "world": 2])
+
+    userDefaults.remove(key)
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [:])
+  }
+
+  func testEnumKey() {
+    enum Test: String, UserDefaultsSerializable {
+      case hello = "Hello"
+      case world = "World"
+    }
+
+    let key = UserDefaultsKey<Test>(#function, defaultValue: .hello)
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], .hello)
+
+    userDefaults[key] = .world
+
+    XCTAssertTrue(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], .world)
+
+    userDefaults.remove(key)
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], .hello)
+  }
+
+  func testArrayWithEnumElements() {
+    enum Test: String, UserDefaultsSerializable {
+      case hello = "Hello"
+      case world = "World"
+    }
+
+    let key = UserDefaultsKey<[Test]>(#function, defaultValue: [])
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [])
+
+    userDefaults[key] = [.hello, .world]
+
+    XCTAssertTrue(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [.hello, .world])
+
+    userDefaults.remove(key)
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [])
+  }
+
   static var allTests = [
     ("testBooleanKey", testBooleanKey),
     ("testOptionalBooleanKey", testOptionalBooleanKey),
     ("testOptionalBooleanDefaultNilKey", testOptionalBooleanDefaultNilKey),
-    ("testStringArrayKey", testStringArrayKey)
+    ("testStringArrayKey", testStringArrayKey),
+    ("testIntegerSetKey", testIntegerSetKey),
+    ("testDictionaryStringIntKey", testDictionaryStringIntKey),
+    ("testArrayWithEnumElements", testArrayWithEnumElements)
   ]
 }

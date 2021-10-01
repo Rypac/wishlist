@@ -1,9 +1,9 @@
 import SwiftUI
-import Toolbox
+import UserDefaults
 
 @MainActor
-public final class UserDefaultViewModel<Value>: ObservableObject {
-  private var userDefault: UserDefault<Value>
+public final class UserDefaultViewModel<Value: UserDefaultsSerializable>: ObservableObject {
+  private let userDefault: UserDefault<Value>
 
   @Published public var value: Value {
     willSet {

@@ -1,27 +1,27 @@
 import Combine
 import Domain
 import Foundation
-import Toolbox
+import UserDefaults
 
-enum SortOrder: String, CaseIterable, UserDefaultsConvertible {
+enum SortOrder: String, CaseIterable, UserDefaultsSerializable {
   case title
   case price
   case updated
 }
 
-enum Theme: String, CaseIterable, UserDefaultsConvertible {
+enum Theme: String, CaseIterable, UserDefaultsSerializable {
   case system
   case light
   case dark
 }
 
-extension ChangeNotification: UserDefaultsConvertible {}
+extension ChangeNotification: UserDefaultsSerializable {}
 
 final class Settings {
   @UserDefault("sortOrder", defaultValue: .updated)
   var sortOrder: SortOrder
 
-  @UserDefault("lastUpdateCheck", defaultValue: nil)
+  @UserDefault("lastUpdateCheck")
   var lastUpdateDate: Date?
 
   @UserDefault("theme", defaultValue: .system)
@@ -30,7 +30,7 @@ final class Settings {
   @UserDefault("enableNotifications", defaultValue: false)
   var enableNotificaitons: Bool
 
-  @UserDefault(UserDefaultsKey("notifications", defaultValue: Set(ChangeNotification.allCases)))
+  @UserDefault("notifications", defaultValue: Set(ChangeNotification.allCases))
   var notifications: Set<ChangeNotification>
 
   func register() {
