@@ -97,10 +97,28 @@ final class UserDefaultsTests: XCTestCase {
     XCTAssertEqual(userDefaults[key], [])
   }
 
+  func testIntegerSetKey() {
+    let key = UserDefaultsKey<Set<Int>>(#function, defaultValue: [])
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], Set())
+
+    userDefaults[key] = Set(arrayLiteral: 1, 2, 3)
+
+    XCTAssertTrue(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], Set(arrayLiteral: 1, 2, 3))
+
+    userDefaults.remove(key)
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], Set())
+  }
+
   static var allTests = [
     ("testBooleanKey", testBooleanKey),
     ("testOptionalBooleanKey", testOptionalBooleanKey),
     ("testOptionalBooleanDefaultNilKey", testOptionalBooleanDefaultNilKey),
-    ("testStringArrayKey", testStringArrayKey)
+    ("testStringArrayKey", testStringArrayKey),
+    ("testIntegerSetKey", testIntegerSetKey)
   ]
 }

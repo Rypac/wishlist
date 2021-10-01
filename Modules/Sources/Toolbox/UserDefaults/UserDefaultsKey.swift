@@ -3,181 +3,57 @@ import Foundation
 public struct UserDefaultsKey<Value> {
   public let key: String
   public let defaultValue: Value
-  fileprivate let adapter: UserDefaultsAdapter<Value>
-}
 
-public extension UserDefaultsKey where Value: UserDefaultsConvertible {
-  init(_ key: String, defaultValue: Value) {
+  public init(_ key: String, defaultValue: Value) {
     self.key = key
     self.defaultValue = defaultValue
-    self.adapter = Value.userDefaultsAdapter
   }
 }
 
-public extension UserDefaultsKey {
-  init<T>(_ key: String, defaultValue: [T]) where Value == [T], T: RawRepresentable {
+extension UserDefaultsKey {
+  public init<Wrapped>(_ key: String) where Value == Wrapped? {
     self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = UserDefaultsAdapter(
-      get: { defaults, key in
-        guard let rawValues = defaults.array(forKey: key) as? [T.RawValue] else {
-          return nil
-        }
-        return rawValues.compactMap(T.init)
-      },
-      set: { defaults, key, value in
-        defaults.set(value.map(\.rawValue), forKey: key)
-      },
-      register: { defaults, key, value in
-        defaults.register(defaults: [key: value.map(\.rawValue)])
-      }
-    )
-  }
-
-  init<T>(_ key: String, defaultValue: Value) where Value == Set<T>, T: Hashable & RawRepresentable {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = UserDefaultsAdapter(
-      get: { defaults, key in
-        guard let rawValues = defaults.array(forKey: key) as? [T.RawValue] else {
-          return nil
-        }
-        return Set(rawValues.compactMap(T.init))
-      },
-      set: { defaults, key, value in
-        defaults.set(value.map(\.rawValue), forKey: key)
-      },
-      register: { defaults, key, value in
-        defaults.register(defaults: [key: value.map(\.rawValue)])
-      }
-    )
-  }
-}
-
-public extension UserDefaultsKey where Value == [Bool] {
-  init(_ key: String, defaultValue: Value) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = propertyListArrayAdapter()
-  }
-}
-
-public extension UserDefaultsKey where Value == [Int] {
-  init(_ key: String, defaultValue: Value) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = propertyListArrayAdapter()
-  }
-}
-
-public extension UserDefaultsKey where Value == [Float] {
-  init(_ key: String, defaultValue: Value) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = propertyListArrayAdapter()
-  }
-}
-
-public extension UserDefaultsKey where Value == [Double] {
-  init(_ key: String, defaultValue: Value) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = propertyListArrayAdapter()
-  }
-}
-
-public extension UserDefaultsKey where Value == [String] {
-  init(_ key: String, defaultValue: Value) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = propertyListArrayAdapter()
-  }
-}
-
-public extension UserDefaultsKey where Value == [URL] {
-  init(_ key: String, defaultValue: Value) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = propertyListArrayAdapter()
-  }
-}
-
-public extension UserDefaultsKey where Value == [Date] {
-  init(_ key: String, defaultValue: Value) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = propertyListArrayAdapter()
-  }
-}
-
-public extension UserDefaultsKey where Value == [Data] {
-  init(_ key: String, defaultValue: Value) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = propertyListArrayAdapter()
-  }
-}
-
-public extension UserDefaultsKey where Value: Codable {
-  init(_ key: String, defaultValue: Value, encoder: JSONEncoder = JSONEncoder(), decoder: JSONDecoder = JSONDecoder()) {
-    self.key = key
-    self.defaultValue = defaultValue
-    self.adapter = UserDefaultsAdapter(
-      get: { defaults, key in
-        guard let data = defaults.data(forKey: key) else {
-          return nil
-        }
-        return try? decoder.decode(Value.self, from: data)
-      },
-      set: { defaults, key, value in
-        if let data = try? encoder.encode(value) {
-          defaults.set(data, forKey: key)
-        }
-      },
-      register: { defaults, key, value in
-        if let data = try? encoder.encode(value) {
-          defaults.register(defaults: [key: data])
-        }
-      }
-    )
-  }
-}
-
-private func propertyListArrayAdapter<T>() -> UserDefaultsAdapter<[T]> {
-  UserDefaultsAdapter(
-    get: { defaults, key in
-      defaults.array(forKey: key) as? [T]
-    },
-    set: { defaults, key, value in
-      defaults.set(value, forKey: key)
-    },
-    register: { defaults, key, value in
-      defaults.register(defaults: [key: value])
-    }
-  )
-}
-
-public extension UserDefaults {
-  func has<Value>(_ key: UserDefaultsKey<Value>) -> Bool {
-    object(forKey: key.key) != nil
-  }
-
-  func register<Value>(_ key: UserDefaultsKey<Value>) {
-    key.adapter.register(self, key.key, key.defaultValue)
-  }
-
-  func remove<Value>(_ key: UserDefaultsKey<Value>) {
-    removeObject(forKey: key.key)
-  }
-
-  subscript<Value>(key: UserDefaultsKey<Value>) -> Value {
-    get { key.adapter.get(self, key.key) ?? key.defaultValue }
-    set { key.adapter.set(self, key.key, newValue) }
+    self.defaultValue = nil
   }
 }
 
 extension UserDefaults {
-  func has(_ key: String) -> Bool {
-    object(forKey: key) != nil
+  public func register<Value: UserDefaultsSerializable>(_ value: Value, forKey key: String) {
+    if let optionalValue = value as? AnyOptional, optionalValue.isNil {
+      return
+    }
+
+    register(defaults: [key: value.storedValue])
   }
+
+  public func register<Value: UserDefaultsSerializable>(_ key: UserDefaultsKey<Value>) {
+    register(key.defaultValue, forKey: key.key)
+  }
+
+  public subscript<Value: UserDefaultsCodable>(key: String) -> Value? {
+    get { Value.init(from: self, forKey: key) }
+    set { newValue.encode(to: self, forKey: key) }
+  }
+
+  public subscript<Value: UserDefaultsCodable>(key: UserDefaultsKey<Value>) -> Value {
+    get { Value.init(from: self, forKey: key.key) ?? key.defaultValue }
+    set { newValue.encode(to: self, forKey: key.key) }
+  }
+
+  public func has<Value>(_ key: UserDefaultsKey<Value>) -> Bool {
+    object(forKey: key.key) != nil
+  }
+
+  public func remove<Value>(_ key: UserDefaultsKey<Value>) {
+    removeObject(forKey: key.key)
+  }
+}
+
+// Inspired from https://www.swiftbysundell.com/articles/property-wrappers-in-swift/
+private protocol AnyOptional {
+    var isNil: Bool { get }
+}
+
+extension Optional: AnyOptional {
+    var isNil: Bool { self == nil }
 }
