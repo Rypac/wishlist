@@ -19,7 +19,7 @@ private struct Environment {
 
 class ActionViewController: UIViewController {
   private let environment: Environment = {
-    let path = FileManager.default.storeURL(for: "group.wishlisttest.database", databaseName: "Wishlist")
+    let path = FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
     let repository = try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
     let appStore = AppStoreService()
     let appAdder = AppAdder(

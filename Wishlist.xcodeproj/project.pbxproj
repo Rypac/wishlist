@@ -443,7 +443,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ActionExtension/Add to Wishlist.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 4QU8H67B2V;
+				DEVELOPMENT_TEAM = P2RDBY63TT;
 				INFOPLIST_FILE = ActionExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -451,7 +451,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistTest.ActionExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.Watchlist.ActionExtension;
 				PRODUCT_NAME = "Add to Wishlist";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -466,7 +466,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ActionExtension/Add to Wishlist.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 4QU8H67B2V;
+				DEVELOPMENT_TEAM = P2RDBY63TT;
 				INFOPLIST_FILE = ActionExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -474,7 +474,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistTest.ActionExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.Watchlist.ActionExtension;
 				PRODUCT_NAME = "Add to Wishlist";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -608,7 +608,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Wishlist/Preview Content\"";
-				DEVELOPMENT_TEAM = 4QU8H67B2V;
+				DEVELOPMENT_TEAM = P2RDBY63TT;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Wishlist/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -616,7 +616,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistTest;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.Watchlist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -633,7 +633,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Wishlist/Preview Content\"";
-				DEVELOPMENT_TEAM = 4QU8H67B2V;
+				DEVELOPMENT_TEAM = P2RDBY63TT;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Wishlist/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -641,7 +641,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.WishlistTest;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.Watchlist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

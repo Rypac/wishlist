@@ -12,7 +12,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   let backgroundAppUpdater: BackgroundAppUpdater
   let urlSchemeHandler: URLSchemeHandler
   let appRepository: AppRepository = {
-    let path = FileManager.default.storeURL(for: "group.wishlisttest.database", databaseName: "Wishlist")
+    let path = FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
     let persistence = try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
     return AppRepository(persistence: persistence)
   }()
@@ -37,7 +37,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
       )
     )
     backgroundAppUpdater = BackgroundAppUpdater(
-      configuration: BackgroundTaskConfiguration(id: "org.rypac.Wishlist.refresh", frequency: 30 * 60),
+      configuration: BackgroundTaskConfiguration(id: "org.rypac.Watchlist.refresh", frequency: 30 * 60),
       environment: BackgroundTaskEnvironment(
         submitTask: BGTaskScheduler.shared.submit,
         fetchApps: appRepository.fetchApps,

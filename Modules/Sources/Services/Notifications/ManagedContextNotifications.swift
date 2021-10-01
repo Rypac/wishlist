@@ -22,7 +22,7 @@ extension DarwinNotification.Name {
     }
   }
 
-  private static let extensionDidSaveManagedObjectContext: DarwinNotification.Name = "org.rypac.wishlist.extension-did-save"
+  private static let extensionDidSaveManagedObjectContext: DarwinNotification.Name = "org.rypac.Watchlist.extension-did-save"
 
-  private static let appDidSaveManagedObjectContext: DarwinNotification.Name = "org.rypac.wishlist.app-did-save"
+  private static let appDidSaveManagedObjectContext: DarwinNotification.Name = "org.rypac.Watchlist.app-did-save"
 }
