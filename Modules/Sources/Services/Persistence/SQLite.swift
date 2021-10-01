@@ -149,6 +149,17 @@ extension URL: SQLiteDecodable {
   }
 }
 
+extension UUID: SQLiteDecodable {
+  public init(from decoder: inout SQLiteDecoder) throws {
+    let uuidString = try decoder.decode(String.self)
+    guard let uuid = UUID(uuidString: uuidString) else {
+      throw SQLiteDecodingError.dataCorrupted(description: "Invalid UUID: \(uuidString)")
+    }
+
+    self = uuid
+  }
+}
+
 extension Date: SQLiteDecodable {
   public init(from decoder: inout SQLiteDecoder) throws {
     let timestamp = try decoder.decode(String.self)
@@ -320,6 +331,12 @@ extension Date: SQLiteEncodable {
 extension URL: SQLiteEncodable {
   public func encode(to encoder: inout SQLiteEncoder) throws {
     try encoder.encode(absoluteString)
+  }
+}
+
+extension UUID: SQLiteEncodable {
+  public func encode(to encoder: inout SQLiteEncoder) throws {
+    try encoder.encode(uuidString)
   }
 }
 
