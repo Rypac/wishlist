@@ -8,12 +8,16 @@ let package = Package(
     .iOS("15.0")
   ],
   products: [
+    .library(name: "Defaults", targets: ["Defaults"]),
     .library(name: "Toolbox", targets: ["Toolbox"]),
     .library(name: "ToolboxUI", targets: ["ToolboxUI"]),
     .library(name: "Domain", targets: ["Domain"]),
     .library(name: "Services", targets: ["Services"])
   ],
   targets: [
+    .target(
+      name: "Defaults"
+    ),
     .target(
       name: "Toolbox"
     ),
