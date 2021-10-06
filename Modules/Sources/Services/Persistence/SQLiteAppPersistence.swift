@@ -71,9 +71,23 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func add(_ app: AppDetails) throws {
-    try sqlite.execute(
+    try sqlite.execute(literal:
       """
-      INSERT INTO app VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO app VALUES (
+        \(app.id),
+        \(app.bundleID),
+        \(app.title),
+        \(app.description),
+        \(app.seller),
+        \(app.url),
+        \(app.icon.small),
+        \(app.icon.medium),
+        \(app.icon.large),
+        \(app.releaseDate),
+        \(app.version.name),
+        \(app.price.current.formatted),
+        \("AUD")
+      )
       ON CONFLICT(id) DO UPDATE SET
         bundleId = excluded.bundleId,
         title = excluded.title,
@@ -87,48 +101,38 @@ public final class SQLiteAppPersistence: AppPersistence {
         version = excluded.version,
         price = excluded.price,
         currency = excluded.currency;
-      """,
-      app.id,
-      app.bundleID,
-      app.title,
-      app.description,
-      app.seller,
-      app.url,
-      app.icon.small,
-      app.icon.medium,
-      app.icon.large,
-      app.releaseDate,
-      app.version.name,
-      app.price.current.formatted,
-      "AUD"
+      """
     )
 
-    try sqlite.execute(
+    try sqlite.execute(literal:
       """
-      REPLACE INTO version VALUES (?, ?, ?, ?);
-      """,
-      app.id,
-      app.version.name,
-      app.version.date,
-      app.version.notes
+      REPLACE INTO version VALUES (
+        \(app.id),
+        \(app.version.name),
+        \(app.version.date),
+        \(app.version.notes)
+      );
+      """
     )
 
-    try sqlite.execute(
+    try sqlite.execute(literal:
       """
-      REPLACE INTO interaction VALUES (?, ?, ?);
-      """,
-      app.id,
-      app.firstAdded,
-      app.lastViewed
+      REPLACE INTO interaction VALUES (
+        \(app.id),
+        \(app.firstAdded),
+        \(app.lastViewed)
+      );
+      """
     )
 
-    try sqlite.execute(
+    try sqlite.execute(literal:
       """
-      INSERT OR IGNORE INTO notification VALUES (?, ?, ?);
-      """,
-      app.id,
-      app.price.current.value > 0,
-      true
+      INSERT OR IGNORE INTO notification VALUES (
+        \(app.id),
+        \(app.price.current.value > 0),
+        \(true)
+      );
+      """
     )
   }
 
@@ -141,10 +145,7 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func delete(id: AppID) throws {
-    try sqlite.execute(
-      "DELETE FROM app WHERE id = ?;",
-      id
-    )
+    try sqlite.execute(literal: "DELETE FROM app WHERE id = \(id);")
   }
 
   public func delete(ids: [AppID]) throws {
@@ -156,31 +157,28 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func deleteAll() throws {
-    try sqlite.execute("DELETE FROM app;")
+    try sqlite.execute(sql: "DELETE FROM app;")
   }
 
   public func viewedApp(id: AppID, at date: Date) throws {
-    try sqlite.execute(
+    try sqlite.execute(literal:
       """
       UPDATE interaction
-      SET lastViewedDate = ?
-      WHERE appId = ?;
-      """,
-      date,
-      id
+      SET lastViewedDate = \(date)
+      WHERE appId = \(id);
+      """
     )
   }
 
   public func notifyApp(id: AppID, for notifications: Set<ChangeNotification>) throws {
-    try sqlite.execute(
+    try sqlite.execute(literal:
       """
       UPDATE notification
-      SET priceDrop = ?, newVersion = ?
-      WHERE appId = ?;
-      """,
-      notifications.contains(.priceDrop),
-      notifications.contains(.newVersion),
-      id
+      SET
+        priceDrop = \(notifications.contains(.priceDrop)),
+        newVersion = \(notifications.contains(.newVersion))
+      WHERE appId = \(id);
+      """
     )
   }
 
@@ -198,7 +196,7 @@ public final class SQLiteAppPersistence: AppPersistence {
 
 private extension SQLiteAppPersistence {
   func migrate() throws {
-    try sqlite.execute(
+    try sqlite.execute(sql:
       """
       PRAGMA foreign_keys = ON;
 

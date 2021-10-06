@@ -8,12 +8,26 @@ private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.sel
 private let utcISO8601DateFormatter = ISO8601DateFormatter()
 
 public final class SQLite {
+  public enum Location {
+    case path(String)
+    case memory
+    case temporary
+
+    var pathString: String {
+      switch self {
+      case .path(let path): return path
+      case .memory: return ":memory:"
+      case .temporary: return ""
+      }
+    }
+  }
+
   public private(set) var handle: OpaquePointer?
 
-  public init(path: String) throws {
+  public init(location: Location) throws {
     try validate(
       sqlite3_open_v2(
-        path,
+        location.pathString,
         &handle,
         SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
         nil
@@ -21,15 +35,31 @@ public final class SQLite {
     )
   }
 
+  convenience public init(path: String) throws {
+    try self.init(location: .path(path))
+  }
+
   deinit {
     sqlite3_close_v2(handle)
   }
 
-  public func execute(_ sql: String) throws {
+  public func execute(sql: String) throws {
     try validate(sqlite3_exec(handle, sql, nil, nil, nil))
   }
 
-  public func execute(_ sql: String, _ bindings: SQLiteEncodable...) throws {
+  public func execute(literal: SQLiteLiteral) throws {
+    if literal.bindings.isEmpty {
+      try execute(sql: literal.description)
+    } else {
+      try execute(sql: literal.description, bindings: literal.bindings)
+    }
+  }
+
+  public func execute(sql: String, _ bindings: SQLiteEncodable...) throws {
+    try execute(sql: sql, bindings: bindings)
+  }
+
+  private func execute(sql: String, bindings: [SQLiteEncodable]) throws {
     var statement: SQLiteStatement?
     try validate(sqlite3_prepare_v2(handle, sql, -1, &statement, nil))
     defer { sqlite3_finalize(statement) }
@@ -62,9 +92,9 @@ public final class SQLite {
   }
 
   public func transaction(behavior: TransactionBehavior = .deferred, execute work: () throws -> Void) throws {
-    try execute("BEGIN \(behavior.rawValue) TRANSACTION;")
+    try execute(sql: "BEGIN \(behavior.rawValue) TRANSACTION;")
     try work()
-    try execute("COMMIT;")
+    try execute(sql: "COMMIT;")
   }
 
   @discardableResult
@@ -429,4 +459,40 @@ public struct SQLiteEncoder {
 public enum SQLiteEncodingError: Error {
   case invalid(code: Int32)
   case tooManyBindings(count: Int)
+}
+
+// MARK: - SQL Literals
+
+public struct SQLiteLiteral: ExpressibleByStringLiteral, ExpressibleByStringInterpolation, CustomStringConvertible {
+  public struct StringInterpolation: StringInterpolationProtocol {
+    var output = ""
+    var bindings: [SQLiteEncodable] = []
+
+    public init(literalCapacity: Int, interpolationCount: Int) {
+      output.reserveCapacity(literalCapacity + interpolationCount)
+      bindings.reserveCapacity(interpolationCount)
+    }
+
+    public mutating func appendLiteral(_ literal: String) {
+      output.append(literal)
+    }
+
+    public mutating func appendInterpolation(_ value: SQLiteEncodable) {
+      output.append("?")
+      bindings.append(value)
+    }
+  }
+
+  public let description: String
+  public let bindings: [SQLiteEncodable]
+
+  public init(stringLiteral value: String) {
+    description = value
+    bindings = []
+  }
+
+  public init(stringInterpolation: StringInterpolation) {
+    description = stringInterpolation.output
+    bindings = stringInterpolation.bindings
+  }
 }
