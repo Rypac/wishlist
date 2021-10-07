@@ -1,6 +1,7 @@
 import Combine
 import Domain
 import Services
+import SQLite
 import Toolbox
 import UIKit
 import UniformTypeIdentifiers
@@ -20,7 +21,8 @@ private struct Environment {
 class ActionViewController: UIViewController {
   private let environment: Environment = {
     let path = FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
-    let repository = try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
+    let database = try! SQLiteDatabase(location: DatabaseLocation(url: path))
+    let repository = try! SQLiteAppPersistence(sqlite: database)
     let appStore = AppStoreService()
     let appAdder = AppAdder(
       environment: AppAdder.Environment(

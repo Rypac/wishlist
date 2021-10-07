@@ -9,6 +9,7 @@ let package = Package(
   ],
   products: [
     .library(name: "UserDefaults", targets: ["UserDefaults"]),
+    .library(name: "SQLite", targets: ["SQLite"]),
     .library(name: "Toolbox", targets: ["Toolbox"]),
     .library(name: "ToolboxUI", targets: ["ToolboxUI"]),
     .library(name: "Domain", targets: ["Domain"]),
@@ -17,6 +18,9 @@ let package = Package(
   targets: [
     .target(
       name: "UserDefaults"
+    ),
+    .target(
+      name: "SQLite"
     ),
     .target(
       name: "Toolbox"
@@ -30,7 +34,7 @@ let package = Package(
     ),
     .target(
       name: "Services",
-      dependencies: ["Toolbox", "Domain"]
+      dependencies: ["Toolbox", "Domain", "SQLite"]
     ),
     .testTarget(
       name: "UserDefaultsTests",

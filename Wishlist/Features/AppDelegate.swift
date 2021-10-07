@@ -2,6 +2,7 @@ import BackgroundTasks
 import Domain
 import Foundation
 import Services
+import SQLite
 import SwiftUI
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -13,7 +14,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   let urlSchemeHandler: URLSchemeHandler
   let appRepository: AppRepository = {
     let path = FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
-    let persistence = try! SQLiteAppPersistence(sqlite: SQLite(path: path.absoluteString))
+    let database = try! SQLiteDatabase(location: DatabaseLocation(url: path))
+    let persistence = try! SQLiteAppPersistence(sqlite: database)
     return AppRepository(persistence: persistence)
   }()
 
