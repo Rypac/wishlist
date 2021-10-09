@@ -39,7 +39,7 @@ struct SettingsView: View {
 
   var body: some View {
     NavigationView {
-      Form {
+      List {
         Section(header: Text("Appearance")) {
           SelectThemeView(viewModel: viewModel.themeViewModel)
         }

@@ -33,19 +33,15 @@ private struct ConfigureNotificationsView: View {
 
   var body: some View {
     NavigationLink {
-      Form {
+      List {
         Section {
           Toggle("Enable Notifications", isOn: $enabled)
         }
       }
       .navigationTitle(notification.title)
     } label: {
-      HStack {
-        Text(notification.title)
-        Spacer()
-        Text(enabled ? "Enabled" : "Disabled")
-          .foregroundColor(.secondary)
-      }
+      Text(notification.title)
+        .badge(enabled ? "Enabled" : "Disabled")
     }
   }
 }
