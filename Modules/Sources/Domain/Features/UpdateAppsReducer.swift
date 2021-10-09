@@ -5,7 +5,7 @@ import UserDefaults
 
 public final class UpdateChecker {
   public struct Environment {
-    public var fetchApps: () throws -> [AppDetails]
+    public var fetchApps: () async throws -> [AppDetails]
     public var lookupApps: ([AppID]) async throws -> [AppSummary]
     public var saveApps: ([AppDetails]) async throws -> Void
     public var system: SystemEnvironment
@@ -13,7 +13,7 @@ public final class UpdateChecker {
     public var updateFrequency: TimeInterval
 
     public init(
-      fetchApps: @escaping () throws -> [AppDetails],
+      fetchApps: @escaping () async throws -> [AppDetails],
       lookupApps: @escaping ([AppID]) async throws -> [AppSummary],
       saveApps: @escaping ([AppDetails]) async throws -> Void,
       system: SystemEnvironment,
@@ -47,7 +47,7 @@ public final class UpdateChecker {
   }
 
   public func update() async throws {
-    let apps = try environment.fetchApps()
+    let apps = try await environment.fetchApps()
 
     let latestApps = try await environment.lookupApps(apps.map(\.id))
 

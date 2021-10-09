@@ -14,6 +14,7 @@ public final class AppRepository {
     self.persistence = persistence
   }
 
+  @MainActor
   public func fetchApps() throws -> [AppDetails] {
     try persistence.fetchAll()
   }
@@ -42,27 +43,32 @@ public final class AppRepository {
     .eraseToAnyPublisher()
   }
 
-  @MainActor public func saveApps(_ apps: [AppDetails]) throws {
+  @MainActor
+  public func saveApps(_ apps: [AppDetails]) throws {
     try persistence.add(apps)
     refreshTrigger.send(.only(apps.map(\.id)))
   }
 
-  @MainActor public func deleteApps(ids: [AppID]) throws {
+  @MainActor
+  public func deleteApps(ids: [AppID]) throws {
     try persistence.delete(ids: ids)
     refreshTrigger.send(.only(ids))
   }
 
-  @MainActor public func deleteAllApps() throws {
+  @MainActor
+  public func deleteAllApps() throws {
     try persistence.deleteAll()
     refreshTrigger.send(.all)
   }
 
-  @MainActor public func recordAppViewed(id: AppID, atDate date: Date) throws {
+  @MainActor
+  public func recordAppViewed(id: AppID, atDate date: Date) throws {
     try persistence.viewedApp(id: id, at: date)
     refreshTrigger.send(.only([id]))
   }
 
-  @MainActor public func refresh() {
+  @MainActor
+  public func refresh() {
     refreshTrigger.send(.all)
   }
 }

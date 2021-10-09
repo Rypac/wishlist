@@ -20,14 +20,14 @@ public struct BackgroundTaskConfiguration: Identifiable, Equatable {
 
 public struct BackgroundTaskEnvironment {
   public var submitTask: (BGTaskRequest) throws -> Void
-  public var fetchApps: () throws -> [AppDetails]
+  public var fetchApps: () async throws -> [AppDetails]
   public var lookupApps: ([AppID]) async throws -> [AppSummary]
   public var saveUpdatedApps: ([AppDetails]) async throws -> Void
   public var system: SystemEnvironment
 
   public init(
     submitTask: @escaping (BGTaskRequest) throws -> Void,
-    fetchApps: @escaping () throws -> [AppDetails],
+    fetchApps: @escaping () async throws -> [AppDetails],
     lookupApps: @escaping ([AppID]) async throws -> [AppSummary],
     saveUpdatedApps: @escaping ([AppDetails]) async throws -> Void,
     system: SystemEnvironment
@@ -58,7 +58,7 @@ public final class BackgroundAppUpdater {
   public func run(task: BackgroundTask) {
     let lookupAppsTask = Task { [lookupApps = environment.lookupApps] in
       do {
-        let apps = try environment.fetchApps()
+        let apps = try await environment.fetchApps()
         let latestApps = try await lookupApps(apps.map(\.id))
 
         let updatedApps = latestApps.reduce(into: [] as [AppDetails]) { updatedApps, latestApp in
