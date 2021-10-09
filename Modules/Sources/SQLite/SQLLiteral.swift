@@ -1,7 +1,7 @@
 public struct SQLLiteral: ExpressibleByStringLiteral, ExpressibleByStringInterpolation, CustomStringConvertible {
   public struct StringInterpolation: StringInterpolationProtocol {
     var sql = ""
-    var bindings: [StatementBindable] = []
+    var bindings: [StatementBindable?] = []
 
     public init(literalCapacity: Int, interpolationCount: Int) {
       sql.reserveCapacity(literalCapacity + interpolationCount)
@@ -12,14 +12,14 @@ public struct SQLLiteral: ExpressibleByStringLiteral, ExpressibleByStringInterpo
       sql.append(literal)
     }
 
-    public mutating func appendInterpolation(_ value: StatementBindable) {
+    public mutating func appendInterpolation(_ value: StatementBindable?) {
       sql.append("?")
       bindings.append(value)
     }
   }
 
   public let description: String
-  public let bindings: [StatementBindable]
+  public let bindings: [StatementBindable?]
 
   public init(stringLiteral value: String) {
     description = value

@@ -8,7 +8,7 @@ public protocol DatabaseValueConvertible: StatementBindable {
 }
 
 extension DatabaseValueConvertible {
-  public func bind(to statement: SQLiteStatement, at index: Int32) -> Int32 {
+  public func bind(to statement: SQLiteStatement, at index: Int32) -> SQLiteResultCode {
     switch databaseValue.storage {
     case .null:
       return sqlite3_bind_null(statement, index)

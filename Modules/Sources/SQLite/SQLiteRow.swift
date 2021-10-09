@@ -13,8 +13,7 @@ public struct SQLiteRow {
 
   /// Returns the number of columns in the row.
   ///
-  /// See also:
-  ///   [sqlite3_column_count](https://www.sqlite.org/c3ref/column_count.html)
+  /// See <https://www.sqlite.org/c3ref/column_count.html> for more information.
   public var count: Int {
     Int(sqlite3_column_count(statement))
   }

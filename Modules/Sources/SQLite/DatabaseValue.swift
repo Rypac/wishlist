@@ -1,26 +1,60 @@
 import Foundation
 import SQLite3
 
-public enum SQLiteStorage: Equatable {
-  case null
-  case integer(Int64)
-  case real(Double)
-  case text(String)
-  case blob(Data)
-}
-
 public struct DatabaseValue: Equatable {
-  public let storage: SQLiteStorage
+  public enum Storage: Equatable {
+    case null
+    case integer(Int64)
+    case real(Double)
+    case text(String)
+    case blob(Data)
+  }
 
-  public init(storage: SQLiteStorage) {
+  public let storage: Storage
+
+  public init(storage: Storage) {
     self.storage = storage
   }
 }
 
-extension DatabaseValue {
+extension DatabaseValue: ExpressibleByNilLiteral {
   public static let null = DatabaseValue(storage: .null)
 
-  public var isNull: Bool { storage ~= .null }
+  public init(nilLiteral: ()) {
+    self.storage = .null
+  }
+
+  public var isNull: Bool {
+    if case .null = self {
+      return true
+    } else {
+      return false
+    }
+  }
+}
+
+extension DatabaseValue: ExpressibleByBooleanLiteral {
+  public init(booleanLiteral value: Bool) {
+    self.storage = .integer(value ? 1 : 0)
+  }
+}
+
+extension DatabaseValue: ExpressibleByIntegerLiteral {
+  public init(integerLiteral value: Int64) {
+    self.storage = .integer(value)
+  }
+}
+
+extension DatabaseValue: ExpressibleByFloatLiteral {
+  public init(floatLiteral value: Double) {
+    self.storage = .real(value)
+  }
+}
+
+extension DatabaseValue: ExpressibleByStringLiteral {
+  public init(stringLiteral value: String) {
+    self.storage = .text(value)
+  }
 }
 
 extension DatabaseValue: DatabaseValueConvertible {
@@ -48,14 +82,14 @@ extension DatabaseValue: StatementConvertible {
       } else {
         storage = .blob(Data())
       }
-    case let type:
-      fatalError("Unexpected SQLite column type: \(type)")
+    case let columnType:
+      fatalError("Unexpected SQLite column type: \(columnType)")
     }
   }
 }
 
 extension DatabaseValue: StatementBindable {
-  public func bind(to statement: SQLiteStatement, at index: Int32) -> Int32 {
+  public func bind(to statement: SQLiteStatement, at index: Int32) -> SQLiteResultCode {
     switch storage {
     case .null:
       return sqlite3_bind_null(statement, index)

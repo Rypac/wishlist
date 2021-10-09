@@ -1,10 +1,7 @@
-import Foundation
 import SQLite3
 
 public final class Statement {
-
-  var handle: SQLiteStatement?
-
+  var handle: SQLiteStatement? = nil
   let connection: SQLiteDatabase
 
   init(_ connection: SQLiteDatabase, _ sql: String) throws {
@@ -18,20 +15,18 @@ public final class Statement {
 
   /// Returns the number of columns in a result set.
   ///
-  /// See also:
-  ///   [sqlite3_column_count](https://www.sqlite.org/c3ref/column_count.html)
+  /// See <https://www.sqlite.org/c3ref/column_count.html> for more information.
   public lazy var columnCount: Int = Int(sqlite3_column_count(handle))
 
-  public lazy var columnNames: [String] = (0..<Int32(columnCount)).map {
-    String(cString: sqlite3_column_name(handle, $0))
+  public lazy var columnNames: [String] = (0..<Int32(columnCount)).map { index in
+    String(cString: sqlite3_column_name(handle, index))
   }
 
   public lazy var row: SQLiteRow = SQLiteRow(statement: handle!)
 
   /// Evaluate the prepared statement.
   ///
-  /// See also:
-  ///   [sqlite3_step](https://www.sqlite.org/c3ref/step.html)
+  /// See <https://www.sqlite.org/c3ref/step.html> for more information.
   public func step() throws -> Bool {
     try connection.validate(sqlite3_step(handle)) == SQLITE_ROW
   }
@@ -41,9 +36,7 @@ public final class Statement {
   /// - Parameters:
   ///   - clearingBindings: Whether the bound parameters should also be cleared.
   ///
-  /// See also:
-  ///   [sqlite3_reset](https://www.sqlite.org/c3ref/reset.html),
-  ///   [sqlite3_clear_bindings](https://www.sqlite.org/c3ref/clear_bindings.html)
+  /// See <https://www.sqlite.org/c3ref/reset.html> for more information.
   func reset(clearingBindings shouldClearBindings: Bool = true) {
     sqlite3_reset(handle)
     if shouldClearBindings {
@@ -72,10 +65,15 @@ extension Statement {
     }
 
     for index in 1...values.count {
+      let result: SQLiteResultCode
       if let value = values[index - 1] {
-        value.bind(to: handle!, at: Int32(index))
+        result = value.bind(to: handle!, at: Int32(index))
       } else {
-        sqlite3_bind_null(handle!, Int32(index))
+        result = sqlite3_bind_null(handle!, Int32(index))
+      }
+
+      guard result == SQLITE_OK else {
+        throw SQLiteError(code: result, statement: handle!)
       }
     }
 
@@ -92,10 +90,15 @@ extension Statement {
         throw SQLiteBindingError.noParameter(name: name)
       }
 
+      let result: SQLiteResultCode
       if let value = value {
-        value.bind(to: handle!, at: index)
+        result = value.bind(to: handle!, at: index)
       } else {
-        sqlite3_bind_null(handle!, Int32(index))
+        result = sqlite3_bind_null(handle!, Int32(index))
+      }
+
+      guard result == SQLITE_OK else {
+        throw SQLiteError(code: result, statement: handle!)
       }
     }
 

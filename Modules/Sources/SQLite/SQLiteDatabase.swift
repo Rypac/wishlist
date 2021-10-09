@@ -34,8 +34,7 @@ public final class SQLiteDatabase {
 
   /// Returns whether the database connection is read-only.
   ///
-  /// See also:
-  ///   [sqlite3_db_readonly](https://www.sqlite.org/c3ref/db_readonly.html)
+  /// See <https://www.sqlite.org/c3ref/db_readonly.html> for more information.
   public var readOnly: Bool {
     sqlite3_db_readonly(handle, nil) == 1
   }
@@ -44,24 +43,21 @@ public final class SQLiteDatabase {
   ///
   /// If no successful `INSERT`s into rowid tables have ever occurred on the database connection this returns `0`.
   ///
-  /// See also:
-  ///   [sqlite3_last_insert_rowid](https://www.sqlite.org/c3ref/last_insert_rowid.html)
+  /// See <https://www.sqlite.org/c3ref/last_insert_rowid.html> for more information.
   public var lastInsertRowId: Int64 {
     sqlite3_last_insert_rowid(handle)
   }
 
   /// Returns the number of rows modified, inserted or deleted by the most recently completed `INSERT`, `UPDATE` or `DELETE` statement.
   ///
-  /// See also:
-  ///   [sqlite3_changes](https://www.sqlite.org/c3ref/changes.html)
+  /// See <https://www.sqlite.org/c3ref/changes.html> for more information.
   public var changes: Int {
     Int(sqlite3_changes(handle))
   }
 
   /// Returns the number of rows modified, inserted or deleted by the most all completed `INSERT`, `UPDATE` or `DELETE` statements since the database was opened.
   ///
-  /// See also:
-  ///   [sqlite3_total_changes](https://www.sqlite.org/c3ref/total_changes.html)
+  /// See <https://www.sqlite.org/c3ref/total_changes.html> for more information.
   public var totalChanges: Int {
     Int(sqlite3_total_changes(handle))
   }
@@ -71,8 +67,7 @@ public final class SQLiteDatabase {
   /// - Parameters:
   ///   - sql: The SQL to be evaluated.
   ///
-  /// See also:
-  ///   [sqlite3_exec](https://www.sqlite.org/c3ref/exec.html)
+  /// See <https://www.sqlite.org/c3ref/exec.html> for more information.
   public func execute(sql: String) throws {
     try validate(sqlite3_exec(handle, sql, nil, nil, nil))
   }
@@ -85,11 +80,11 @@ public final class SQLiteDatabase {
     }
   }
 
-  public func execute(sql: String, bindings: StatementBindable...) throws {
+  public func execute(sql: String, bindings: StatementBindable?...) throws {
     try execute(sql: sql, bindings: bindings)
   }
 
-  public func execute(sql: String, bindings: [StatementBindable]) throws {
+  public func execute(sql: String, bindings: [StatementBindable?]) throws {
     let statement = try Statement(self, sql).bind(bindings)
     _ = try statement.step()
   }
@@ -105,7 +100,7 @@ public final class SQLiteDatabase {
     return rows
   }
 
-  public func run<Row: SQLiteRowDecodable>(sql: String, bindings: StatementBindable...) throws -> [Row] {
+  public func run<Row: SQLiteRowDecodable>(sql: String, bindings: StatementBindable?...) throws -> [Row] {
     let statement = try Statement(self, sql).bind(bindings)
 
     var rows: [Row] = []
@@ -130,14 +125,14 @@ public final class SQLiteDatabase {
 
   /// Rebuilds the database file, repacking it into a minimal amount of disk space.
   ///
-  /// See also: <https://www.sqlite.org/lang_vacuum.html>
+  /// See <https://www.sqlite.org/lang_vacuum.html> for more information.
   public func vacuum() throws {
     try execute(sql: "VACUUM;")
   }
 
   /// Creates a new database file at the specified path with a minimum amount of disk space.
   ///
-  /// See also: <https://www.sqlite.org/lang_vacuum.html#vacuuminto>
+  /// See <https://www.sqlite.org/lang_vacuum.html#vacuuminto> for more information.
   public func vacuum(into filePath: String) throws {
     try execute(sql: "VACUUM INTO ?;", bindings: filePath)
   }
@@ -146,8 +141,7 @@ public final class SQLiteDatabase {
   ///
   /// This causes any pending database operation to abort and return at its earliest opportunity.
   ///
-  /// See also:
-  ///   [sqlite3_interrupt](https://www.sqlite.org/c3ref/interrupt.html)
+  /// See <https://www.sqlite.org/c3ref/interrupt.html> for more information.
   public func interrupt() {
     sqlite3_interrupt(handle)
   }
@@ -155,7 +149,7 @@ public final class SQLiteDatabase {
 
 extension SQLiteDatabase {
   @discardableResult
-  func validate(_ code: Int32) throws -> Int32 {
+  func validate(_ code: SQLiteResultCode) throws -> SQLiteResultCode {
     guard code == SQLITE_OK || code == SQLITE_ROW || code == SQLITE_DONE else {
       throw SQLiteError(code: code)
     }
