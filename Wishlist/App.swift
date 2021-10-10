@@ -19,6 +19,7 @@ final class Wishlist: App {
             deleteAllApps: appDelegate.appRepository.deleteAllApps
           ),
           theme: appDelegate.settings.$theme,
+          notificationsEnabled: appDelegate.settings.$enableNotificaitons,
           sortOrderState: appDelegate.settings.sortOrderStatePublisher,
           refresh: appDelegate.appRepository.refresh,
           checkForUpdates: appDelegate.updateChecker.updateIfNeeded,

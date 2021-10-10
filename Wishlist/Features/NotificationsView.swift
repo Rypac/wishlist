@@ -2,14 +2,27 @@ import Combine
 import Domain
 import Foundation
 import SwiftUI
+import UserDefaults
 
 final class NotificationsModel: ObservableObject {
-  @Published var enabled = false
+  private let notificationsPreferences: UserDefault<Bool>
+
+  @Published var enabled: Bool {
+    willSet {
+      notificationsPreferences.wrappedValue = newValue
+    }
+  }
   @Published var notifications = Set<ChangeNotification>()
+
+  init(notificationsEnabled: UserDefault<Bool>) {
+    self.notificationsPreferences = notificationsEnabled
+    self.enabled = notificationsEnabled.wrappedValue
+    self.notificationsPreferences.publisher().assign(to: &$enabled)
+  }
 }
 
 struct NotificationsView: View {
-  @StateObject var model = NotificationsModel()
+  @StateObject var model: NotificationsModel
 
   var body: some View {
     Toggle("Enable Notifications", isOn: $model.enabled.animation())

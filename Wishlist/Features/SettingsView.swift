@@ -8,6 +8,7 @@ import UserDefaults
 final class SettingsViewModel: ObservableObject {
   struct Environment {
     var theme: UserDefault<Theme>
+    var notificationsEnabled: UserDefault<Bool>
     var deleteAllApps: () async throws -> Void
   }
 
@@ -30,6 +31,10 @@ final class SettingsViewModel: ObservableObject {
   var themeViewModel: UserDefaultViewModel<Theme> {
     UserDefaultViewModel(environment.theme)
   }
+
+  var notificationsModel: NotificationsModel {
+    NotificationsModel(notificationsEnabled: environment.notificationsEnabled)
+  }
 }
 
 struct SettingsView: View {
@@ -44,7 +49,7 @@ struct SettingsView: View {
           SelectThemeView(viewModel: viewModel.themeViewModel)
         }
         Section(header: Text("Notifications")) {
-          NotificationsView()
+          NotificationsView(model: viewModel.notificationsModel)
         }
         Section(header: Text("About")) {
           NavigationLink("Acknowledgements", destination: LicensesView.init)

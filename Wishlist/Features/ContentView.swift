@@ -8,6 +8,7 @@ import UserDefaults
 struct ContentViewEnvironment {
   var repository: AppListRepository
   var theme: UserDefault<Theme>
+  var notificationsEnabled: UserDefault<Bool>
   var sortOrderState: AnyPublisher<SortOrderState, Never>
   var refresh: () async -> Void
   var checkForUpdates: () async throws -> Void
@@ -50,6 +51,7 @@ struct ContentView: View {
         viewModel: SettingsViewModel(
           environment: SettingsViewModel.Environment(
             theme: environment.theme,
+            notificationsEnabled: environment.notificationsEnabled,
             deleteAllApps: environment.repository.deleteAllApps
           )
         )
