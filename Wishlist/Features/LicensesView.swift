@@ -7,6 +7,11 @@ struct LicensesView: View {
       name: "Combine Schedulers",
       copyright: "2020 Point-Free, Inc.",
       url: URL(string: "https://github.com/pointfreeco/combine-schedulers")!
+    ),
+    .mit(
+      name: "GRDB.swift",
+      copyright: "2015-2020 Gwendal Roué",
+      url: URL(string: "https://github.com/groue/GRDB.swift")!
     )
   ]
 
