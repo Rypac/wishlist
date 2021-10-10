@@ -15,14 +15,14 @@ private enum State: Equatable {
 
 private struct Environment {
   var addApps: ([URL]) async throws -> Void
-  var fetchApps: () throws -> [AppDetails]
+  var fetchApps: () async throws -> [AppDetails]
 }
 
 class ActionViewController: UIViewController {
   private let environment: Environment = {
     let path = FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
-    let database = try! SQLiteDatabase(location: DatabaseLocation(url: path))
-    let repository = try! SQLiteAppPersistence(sqlite: database)
+    let database = try! DatabaseQueue(location: DatabaseLocation(url: path))
+    let repository = try! SQLiteAppPersistence(databaseWriter: database)
     let appStore = AppStoreService()
     let appAdder = AppAdder(
       environment: AppAdder.Environment(
@@ -94,9 +94,9 @@ class ActionViewController: UIViewController {
         let urls = try await extensionContext!.loadURLs()
         state.value = .loading(urls)
 
-        let initialApps = Set(try environment.fetchApps().map(\.id))
+        let initialApps = Set(try await environment.fetchApps().map(\.id))
         try await environment.addApps(urls)
-        let updatedApps = try environment.fetchApps()
+        let updatedApps = try await environment.fetchApps()
         let newApps = updatedApps.filter { !initialApps.contains($0.id) }
         state.value = .success(newApps.map(\.summary))
       } catch {

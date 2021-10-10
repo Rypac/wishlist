@@ -4,8 +4,11 @@ public final class DatabaseQueue: DatabaseWriter {
   private let database: Database
   private let dispatchQueue = DispatchQueue(label: "Wishlist.SQLite")
 
-  public init(_ database: Database) {
-    self.database = database
+  public init(
+    location: DatabaseLocation,
+    configuration: DatabaseConfiguration = DatabaseConfiguration()
+  ) throws {
+    self.database = try Database(location: location, configuration: configuration)
   }
 
   public func read<T>(_ work: @escaping (Database) throws -> T) throws -> T {

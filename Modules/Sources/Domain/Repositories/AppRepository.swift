@@ -14,16 +14,16 @@ public final class AppRepository {
     self.persistence = persistence
   }
 
-  @MainActor
-  public func fetchApps() throws -> [AppDetails] {
-    try persistence.fetchAll()
+  public func fetchApps() async throws -> [AppDetails] {
+    try await persistence.fetchAll()
   }
 
   public var appsPublisher: AnyPublisher<[AppDetails], Never> {
     refreshTrigger
       .prepend(.all)
-      .tryMap { [persistence] _ in try persistence.fetchAll() }
+      .asyncTryMap { [persistence] _ in try await persistence.fetchAll() }
       .catch { _ in Just([]) }
+      .receive(on: DispatchQueue.main)
       .eraseToAnyPublisher()
   }
 
@@ -31,43 +31,48 @@ public final class AppRepository {
     refreshTrigger
       .prepend(.only([id]))
       .filter { $0.includes(id: id) }
-      .tryMap { [persistence] _ in try persistence.fetch(id: id) }
+      .asyncTryMap { [persistence] _ in try await persistence.fetch(id: id) }
       .catch { _ in Just(nil) }
+      .receive(on: DispatchQueue.main)
       .eraseToAnyPublisher()
   }
 
   public func versionsPublisher(forId id: AppID) -> AnyPublisher<[Version], Never> {
     Deferred { [persistence] in
-      Optional.Publisher(try? persistence.versionHistory(id: id))
+      Future { promise in
+        Task {
+          do {
+            promise(.success(try await persistence.versionHistory(id: id)))
+          } catch {
+            promise(.success([]))
+          }
+        }
+      }
     }
+    .receive(on: DispatchQueue.main)
     .eraseToAnyPublisher()
   }
 
-  @MainActor
-  public func saveApps(_ apps: [AppDetails]) throws {
-    try persistence.add(apps)
+  public func saveApps(_ apps: [AppDetails]) async throws {
+    try await persistence.add(apps)
     refreshTrigger.send(.only(apps.map(\.id)))
   }
 
-  @MainActor
-  public func deleteApps(ids: [AppID]) throws {
-    try persistence.delete(ids: ids)
+  public func deleteApps(ids: [AppID]) async throws {
+    try await persistence.delete(ids: ids)
     refreshTrigger.send(.only(ids))
   }
 
-  @MainActor
-  public func deleteAllApps() throws {
-    try persistence.deleteAll()
+  public func deleteAllApps() async throws {
+    try await persistence.deleteAll()
     refreshTrigger.send(.all)
   }
 
-  @MainActor
-  public func recordAppViewed(id: AppID, atDate date: Date) throws {
-    try persistence.viewedApp(id: id, at: date)
+  public func recordAppViewed(id: AppID, atDate date: Date) async throws {
+    try await persistence.viewedApp(id: id, at: date)
     refreshTrigger.send(.only([id]))
   }
 
-  @MainActor
   public func refresh() {
     refreshTrigger.send(.all)
   }

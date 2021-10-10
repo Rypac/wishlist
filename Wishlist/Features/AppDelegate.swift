@@ -14,8 +14,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   let urlSchemeHandler: URLSchemeHandler
   let appRepository: AppRepository = {
     let path = FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
-    let database = try! SQLiteDatabase(location: DatabaseLocation(url: path))
-    let persistence = try! SQLiteAppPersistence(sqlite: database)
+    let database = try! DatabaseQueue(location: DatabaseLocation(url: path))
+    let persistence = try! SQLiteAppPersistence(databaseWriter: database)
     return AppRepository(persistence: persistence)
   }()
 

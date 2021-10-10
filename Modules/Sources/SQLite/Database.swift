@@ -9,7 +9,7 @@ public final class Database {
   private(set) var handle: OpaquePointer? = nil
   let configuration: DatabaseConfiguration
 
-  public init(
+  init(
     location: DatabaseLocation,
     configuration: DatabaseConfiguration = DatabaseConfiguration()
   ) throws {
