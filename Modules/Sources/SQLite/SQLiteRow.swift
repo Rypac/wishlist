@@ -21,7 +21,7 @@ public struct SQLiteRow {
   public subscript<Value: DatabaseValueConvertible>(_ index: Int) -> Value? {
     get throws {
       let databaseValue = DatabaseValue(statement: statement, index: Int32(index))
-      if let value = Value(databaseValue) {
+      if let value = Value(databaseValue: databaseValue) {
         return value
       } else if databaseValue.isNull {
         return nil
@@ -34,7 +34,7 @@ public struct SQLiteRow {
   public subscript<Value: DatabaseValueConvertible>(_ index: Int) -> Value {
     get throws {
       let databaseValue = DatabaseValue(statement: statement, index: Int32(index))
-      if let value = Value(databaseValue) {
+      if let value = Value(databaseValue: databaseValue) {
         return value
       } else {
         throw SQLiteDecodingError.valueMismatch(Self.self, databaseValue: databaseValue)

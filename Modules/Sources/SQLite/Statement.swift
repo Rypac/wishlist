@@ -2,9 +2,9 @@ import SQLite3
 
 public final class Statement {
   var handle: SQLiteStatement? = nil
-  let connection: SQLiteDatabase
+  let connection: Database
 
-  init(_ connection: SQLiteDatabase, _ sql: String) throws {
+  init(_ connection: Database, _ sql: String) throws {
     self.connection = connection
     try connection.validate(sqlite3_prepare_v2(connection.handle, sql, -1, &handle, nil))
   }

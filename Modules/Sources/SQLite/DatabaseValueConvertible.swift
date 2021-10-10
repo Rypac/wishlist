@@ -4,12 +4,12 @@ import SQLite3
 public protocol DatabaseValueConvertible: StatementBindable {
   var databaseValue: DatabaseValue { get }
 
-  init?(_ databaseValue: DatabaseValue)
+  init?(databaseValue: DatabaseValue)
 }
 
 extension DatabaseValueConvertible {
   public func bind(to statement: SQLiteStatement, at index: Int32) -> SQLiteResultCode {
-    switch databaseValue.storage {
+    switch databaseValue {
     case .null:
       return sqlite3_bind_null(statement, index)
     case .integer(let int):
@@ -27,10 +27,10 @@ extension DatabaseValueConvertible {
 }
 
 extension Bool: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .integer(self ? 1 : 0)) }
+  public var databaseValue: DatabaseValue { .integer(self ? 1 : 0) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .integer(let int64):
       self = int64 == 0
     case .real(let double):
@@ -42,10 +42,10 @@ extension Bool: DatabaseValueConvertible {
 }
 
 extension Int: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .integer(Int64(self))) }
+  public var databaseValue: DatabaseValue { .integer(Int64(self)) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .integer(let int64):
       guard let int = Int(exactly: int64) else {
         return nil
@@ -65,10 +65,10 @@ extension Int: DatabaseValueConvertible {
 }
 
 extension Int8: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .integer(Int64(self))) }
+  public var databaseValue: DatabaseValue { .integer(Int64(self)) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .integer(let int64):
       guard let int8 = Int8(exactly: int64) else {
         return nil
@@ -88,10 +88,10 @@ extension Int8: DatabaseValueConvertible {
 }
 
 extension Int16: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .integer(Int64(self))) }
+  public var databaseValue: DatabaseValue { .integer(Int64(self)) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .integer(let int64):
       guard let int16 = Int16(exactly: int64) else {
         return nil
@@ -111,10 +111,10 @@ extension Int16: DatabaseValueConvertible {
 }
 
 extension Int32: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .integer(Int64(self))) }
+  public var databaseValue: DatabaseValue { .integer(Int64(self)) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .integer(let int64):
       guard let int32 = Int32(exactly: int64) else {
         return nil
@@ -134,10 +134,10 @@ extension Int32: DatabaseValueConvertible {
 }
 
 extension Int64: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .integer(self)) }
+  public var databaseValue: DatabaseValue { .integer(self) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .integer(let int64):
       self = int64
     case .real(let double):
@@ -153,10 +153,10 @@ extension Int64: DatabaseValueConvertible {
 }
 
 extension Float: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .real(Double(self))) }
+  public var databaseValue: DatabaseValue { .real(Double(self)) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .integer(let int64):
       self = Float(int64)
     case .real(let double):
@@ -168,10 +168,10 @@ extension Float: DatabaseValueConvertible {
 }
 
 extension Double: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .real(self)) }
+  public var databaseValue: DatabaseValue { .real(self) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .integer(let int64):
       self = Double(int64)
     case .real(let double):
@@ -183,10 +183,10 @@ extension Double: DatabaseValueConvertible {
 }
 
 extension String: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .text(self)) }
+  public var databaseValue: DatabaseValue { .text(self) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .text(let string):
       self = string
     case .blob(let data):
@@ -202,10 +202,10 @@ extension String: DatabaseValueConvertible {
 }
 
 extension URL: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .text(absoluteString)) }
+  public var databaseValue: DatabaseValue { .text(absoluteString) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    guard case .text(let string) = databaseValue.storage, let url = URL(string: string) else {
+  public init?(databaseValue: DatabaseValue) {
+    guard case .text(let string) = databaseValue, let url = URL(string: string) else {
       return nil
     }
 
@@ -214,10 +214,10 @@ extension URL: DatabaseValueConvertible {
 }
 
 extension UUID: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .text(uuidString)) }
+  public var databaseValue: DatabaseValue { .text(uuidString) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    guard case .text(let string) = databaseValue.storage, let uuid = UUID(uuidString: string) else {
+  public init?(databaseValue: DatabaseValue) {
+    guard case .text(let string) = databaseValue, let uuid = UUID(uuidString: string) else {
       return nil
     }
 
@@ -226,10 +226,10 @@ extension UUID: DatabaseValueConvertible {
 }
 
 extension Data: DatabaseValueConvertible {
-  public var databaseValue: DatabaseValue { .init(storage: .blob(self)) }
+  public var databaseValue: DatabaseValue { .blob(self) }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .blob(let data):
       self = data
     case .text(let string):
@@ -249,11 +249,11 @@ extension Date: DatabaseValueConvertible {
   static let utcISO8601DateFormatter = ISO8601DateFormatter()
 
   public var databaseValue: DatabaseValue {
-    .init(storage: .text(Date.utcISO8601DateFormatter.string(from: self)))
+    .text(Date.utcISO8601DateFormatter.string(from: self))
   }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    switch databaseValue.storage {
+  public init?(databaseValue: DatabaseValue) {
+    switch databaseValue {
     case .text(let string):
       guard let date = Date.utcISO8601DateFormatter.date(from: string) else {
         return nil
@@ -273,8 +273,8 @@ extension Date: DatabaseValueConvertible {
 extension DatabaseValueConvertible where Self: RawRepresentable, RawValue: DatabaseValueConvertible {
   public var databaseValue: DatabaseValue { rawValue.databaseValue }
 
-  public init?(_ databaseValue: DatabaseValue) {
-    guard let rawValue = RawValue(databaseValue) else {
+  public init?(databaseValue: DatabaseValue) {
+    guard let rawValue = RawValue(databaseValue: databaseValue) else {
       return nil
     }
 

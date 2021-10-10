@@ -15,6 +15,10 @@ public enum TransactionMode: String {
   case immediate = "IMMEDIATE"
 }
 
+extension TransactionMode: CustomStringConvertible {
+  public var description: String { rawValue }
+}
+
 public enum JournalMode: String {
   case delete = "DELETE"
   case truncate = "TRUNCATE"
@@ -22,4 +26,8 @@ public enum JournalMode: String {
   case memory = "MEMORY"
   case wal = "WAL"
   case off = "OFF"
+}
+
+extension JournalMode: CustomStringConvertible {
+  public var description: String { rawValue }
 }
