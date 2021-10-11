@@ -7,11 +7,11 @@ public struct AppID: Equatable, Hashable, Codable, RawRepresentable {
 }
 
 extension AppID: ExpressibleByIntegerLiteral {
-  public init(integerLiteral value: IntegerLiteralType) {
+  public init(integerLiteral value: Int) {
     rawValue = value
   }
 }
 
 extension AppID: CustomStringConvertible {
-  public var description: String { "\(rawValue)" }
+  public var description: String { String(rawValue) }
 }
