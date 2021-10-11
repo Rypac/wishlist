@@ -10,16 +10,22 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   let system: SystemEnvironment = .live
   let appAdder: AppAdder
   let updateChecker: UpdateChecker
-  let backgroundAppUpdater: BackgroundAppUpdater
   let urlSchemeHandler: URLSchemeHandler
-  let appRepository: AppRepository = {
-    let path = FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
-    let database = try! DatabaseQueue(location: DatabaseLocation(url: path))
-    let persistence = try! SQLiteAppPersistence(databaseWriter: database)
-    return AppRepository(persistence: persistence)
-  }()
+  let appRepository: AppRepository
+
+  private let backgroundAppRefresh: BackgroundAppRefresh
+  private let backgroundDatabaseMaintenance: BackgroundDatabaseMaintenance
 
   override init() {
+    let databaseWriter: DatabaseWriter = try! DatabaseQueue(
+      location: DatabaseLocation(
+        url: FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
+      )
+    )
+    appRepository = AppRepository(
+      persistence: try! SQLiteAppPersistence(databaseWriter: databaseWriter)
+    )
+
     let appStore: AppLookupService = AppStoreService()
     appAdder = AppAdder(
       environment: AppAdder.Environment(
@@ -38,15 +44,20 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         updateFrequency: 5 * 60
       )
     )
-    backgroundAppUpdater = BackgroundAppUpdater(
-      configuration: BackgroundTaskConfiguration(id: "org.rypac.Watchlist.refresh", frequency: 30 * 60),
-      environment: BackgroundTaskEnvironment(
-        submitTask: BGTaskScheduler.shared.submit,
-        fetchApps: appRepository.fetchApps,
-        lookupApps: appStore.lookup(ids:),
-        saveUpdatedApps: appRepository.saveApps,
-        system: system
-      )
+    backgroundAppRefresh = BackgroundAppRefresh(
+      id: "org.rypac.Watchlist.refresh",
+      frequency: 30 * 60,
+      updateChecker: updateChecker,
+      now: system.now
+    )
+    backgroundDatabaseMaintenance = BackgroundDatabaseMaintenance(
+      id: "org.rypac.Watchlist.database-maintenance",
+      cleanupDatabase: {
+        try await databaseWriter.writeAsync { database in
+          try database.vacuum()
+        }
+      },
+      now: system.now
     )
     urlSchemeHandler = URLSchemeHandler(
       environment: URLSchemeHandler.Environment(
@@ -67,14 +78,32 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   // MARK: - Background Tasks
 
   private func registerBackgroundTasks() {
-    let id = backgroundAppUpdater.configuration.id
-    let registeredTask = BGTaskScheduler.shared.register(forTaskWithIdentifier: id, using: nil) { [weak self] task in
-      self?.backgroundAppUpdater.run(task: task)
+    BGTaskScheduler.shared.register(backgroundAppRefresh)
+    BGTaskScheduler.shared.register(backgroundDatabaseMaintenance)
+  }
+
+  func scheduleBackgroundTasks() {
+    BGTaskScheduler.shared.schedule(backgroundAppRefresh)
+    BGTaskScheduler.shared.schedule(backgroundDatabaseMaintenance)
+  }
+}
+
+private extension BGTaskScheduler {
+  func register(_ backgroundTaskScheduler: BackgroundTaskScheduler) {
+    let id = backgroundTaskScheduler.id
+    let registeredTask = BGTaskScheduler.shared.register(forTaskWithIdentifier: id, using: nil) { task in
+      backgroundTaskScheduler.run(task)
     }
     if !registeredTask {
       print("Failed to register task: \(id)")
     }
   }
-}
 
-extension BGTask: BackgroundTask {}
+  func schedule(_ backgroundTaskScheduler: BackgroundTaskScheduler) {
+    do {
+      try BGTaskScheduler.shared.submit(backgroundTaskScheduler.taskRequest)
+    } catch {
+      print("Failed to register task \(backgroundTaskScheduler.id): \(error)")
+    }
+  }
+}

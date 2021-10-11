@@ -12,7 +12,7 @@ struct ContentViewEnvironment {
   var sortOrderState: AnyPublisher<SortOrderState, Never>
   var refresh: () async -> Void
   var checkForUpdates: () async throws -> Void
-  var scheduleBackgroundTasks: () throws -> Void
+  var scheduleBackgroundTasks: () -> Void
   var system: SystemEnvironment
 }
 
@@ -65,7 +65,7 @@ struct ContentView: View {
           try? await environment.checkForUpdates()
         }
       case .background:
-        try? environment.scheduleBackgroundTasks()
+        environment.scheduleBackgroundTasks()
       default:
         break
       }

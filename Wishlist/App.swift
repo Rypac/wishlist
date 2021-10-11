@@ -23,7 +23,7 @@ final class Wishlist: App {
           sortOrderState: appDelegate.settings.sortOrderStatePublisher,
           refresh: appDelegate.appRepository.refresh,
           checkForUpdates: appDelegate.updateChecker.updateIfNeeded,
-          scheduleBackgroundTasks: appDelegate.backgroundAppUpdater.scheduleTask,
+          scheduleBackgroundTasks: appDelegate.scheduleBackgroundTasks,
           system: appDelegate.system
         )
       )
