@@ -53,7 +53,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     backgroundDatabaseMaintenance = BackgroundDatabaseMaintenance(
       id: "org.rypac.Watchlist.database-maintenance",
       cleanupDatabase: {
-        try await databaseWriter.writeAsync { database in
+        try await databaseWriter.write { database in
           try database.vacuum()
         }
       },

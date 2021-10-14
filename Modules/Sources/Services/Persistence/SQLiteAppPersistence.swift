@@ -11,7 +11,7 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func fetchAll() async throws -> [AppDetails] {
-    try await databaseWriter.readAsync { database in
+    try await databaseWriter.read { database in
       try database.run(
         sql: """
           SELECT
@@ -42,7 +42,7 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func fetch(id: AppID) async throws -> AppDetails? {
-    try await databaseWriter.readAsync { database in
+    try await databaseWriter.read { database in
       try database.run(
         literal: """
           SELECT
@@ -75,31 +75,31 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func add(_ app: AppDetails) async throws {
-    try await databaseWriter.writeAsync { database in
+    try await databaseWriter.write { database in
       try database.transaction {
-        try database.addSync(app)
+        try database.add(app)
       }
     }
   }
 
   public func add(_ apps: [AppDetails]) async throws {
-    try await databaseWriter.writeAsync { database in
+    try await databaseWriter.write { database in
       try database.transaction {
         for app in apps {
-          try database.addSync(app)
+          try database.add(app)
         }
       }
     }
   }
 
   public func delete(id: AppID) async throws {
-    try await databaseWriter.writeAsync { database in
+    try await databaseWriter.write { database in
       try database.execute(literal: "DELETE FROM app WHERE id = \(id);")
     }
   }
 
   public func delete(ids: [AppID]) async throws {
-    try await databaseWriter.writeAsync { database in
+    try await databaseWriter.write { database in
       try database.transaction {
         for id in ids {
           try database.execute(literal: "DELETE FROM app WHERE id = \(id);")
@@ -109,13 +109,13 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func deleteAll() async throws {
-    try await databaseWriter.writeAsync { database in
+    try await databaseWriter.write { database in
       try database.execute(sql: "DELETE FROM app;")
     }
   }
 
   public func viewedApp(id: AppID, at date: Date) async throws {
-    try await databaseWriter.writeAsync { database in
+    try await databaseWriter.write { database in
       try database.execute(
         literal: """
           UPDATE interaction
@@ -127,7 +127,7 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func notifyApp(id: AppID, for notifications: Set<ChangeNotification>) async throws {
-    try await databaseWriter.writeAsync { database in
+    try await databaseWriter.write { database in
       try database.execute(
         literal: """
           UPDATE notification
@@ -141,7 +141,7 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 
   public func versionHistory(id: AppID) async throws -> [Version] {
-    try await databaseWriter.readAsync { database in
+    try await databaseWriter.read { database in
       try database.run(
         literal: """
           SELECT name, releaseDate, releaseNotes
@@ -246,7 +246,7 @@ extension Version: SQLiteRowDecodable {
 }
 
 private extension Database {
-  func addSync(_ app: AppDetails) throws {
+  func add(_ app: AppDetails) throws {
     try execute(
       literal: """
         INSERT INTO app VALUES (

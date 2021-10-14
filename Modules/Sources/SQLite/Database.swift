@@ -127,18 +127,6 @@ public final class Database {
     return rows
   }
 
-  public func transaction(mode: TransactionMode? = nil, execute work: () throws -> Void) throws {
-    let transactionMode = mode ?? configuration.defaultTransactionMode
-    try execute(sql: "BEGIN \(transactionMode) TRANSACTION;")
-    do {
-      try work()
-      try execute(sql: "COMMIT;")
-    } catch {
-      try execute(sql: "ROLLBACK TRANSACTION;")
-      throw error
-    }
-  }
-
   /// Interrupt a long-running query.
   ///
   /// This causes any pending database operation to abort and return at its earliest opportunity.
@@ -148,6 +136,107 @@ public final class Database {
     sqlite3_interrupt(handle)
   }
 }
+
+// MARK: - Transactions
+
+extension Database {
+  /// Manually starts a transaction in the given mode.
+  ///
+  /// See <https://www.sqlite.org/lang_transaction.html> for more information.
+  public func beginTransaction(_ mode: TransactionMode = .deferred) throws {
+    try execute(sql: "BEGIN \(mode) TRANSACTION;")
+  }
+
+  /// Commits all operations run within the transaction.
+  ///
+  /// See <https://www.sqlite.org/lang_transaction.html> for more information.
+  public func commit() throws {
+    try execute(sql: "COMMIT;")
+  }
+
+  /// Reverts all operations run within the transaction.
+  ///
+  /// See <https://www.sqlite.org/lang_transaction.html> for more information.
+  public func rollback() throws {
+    try execute(sql: "ROLLBACK TRANSACTION;")
+  }
+
+  /// Executes the given block in a transaction.
+  ///
+  /// See <https://www.sqlite.org/lang_transaction.html> for more information.
+  public func transaction<T>(_ mode: TransactionMode = .deferred, execute work: () throws -> T) throws -> T {
+    try beginTransaction(mode)
+
+    var result: Result<T, Error>
+    do {
+      result = .success(try work())
+      try commit()
+    } catch {
+      result = .failure(error)
+    }
+
+    switch result {
+    case .success(let value):
+      return value
+    case .failure(let error):
+      try? rollback()
+      throw error
+    }
+  }
+}
+
+// MARK: - Savepoints
+
+extension Database {
+  /// Starts a new transaction with the given name.
+  ///
+  /// See <https://www.sqlite.org/lang_savepoint.html> for more information.
+  public func beginSavepoint(_ name: String) throws {
+    try execute(literal: "SAVEPOINT \(name);")
+  }
+
+  /// Removes all savepoints back to and including the most recent savepoint with a matching name from the transaction stack.
+  ///
+  /// See <https://www.sqlite.org/lang_savepoint.html> for more information.
+  public func releaseSavepoint(_ name: String) throws {
+    try execute(literal: "RELEASE SAVEPOINT \(name);")
+  }
+
+  /// Reverts the state of the database back to what it was just after the most recent savepoint with a matching name.
+  ///
+  /// Note that instead of cancelling, this transaction will be restarted and all intervening savepoints will be cancelled.
+  ///
+  /// See <https://www.sqlite.org/lang_savepoint.html> for more information.
+  public func rollbackToSavepoint(_ name: String) throws {
+    try execute(literal: "ROLLBACK TO SAVEPOINT \(name);")
+  }
+
+  /// Executes the given block in a named savepoint.
+  ///
+  /// See <https://www.sqlite.org/lang_savepoint.html> for more information.
+  public func savepoint<T>(_ name: String, execute work: () throws -> T) throws -> T {
+    try beginSavepoint(name)
+
+    var result: Result<T, Error>
+    do {
+      result = .success(try work())
+      try releaseSavepoint(name)
+    } catch {
+      result = .failure(error)
+    }
+
+    switch result {
+    case .success(let value):
+      return value
+    case .failure(let error):
+      try? rollbackToSavepoint(name)
+      try? releaseSavepoint(name)
+      throw error
+    }
+  }
+}
+
+// MARK: - Vacuum
 
 extension Database {
   /// Rebuilds the database file, repacking it into a minimal amount of disk space.
@@ -164,6 +253,8 @@ extension Database {
     try execute(literal: "VACUUM INTO \(filePath);")
   }
 }
+
+// MARK: - Read-only
 
 extension Database {
   /// Returns whether the database connection is read-only.
@@ -196,16 +287,33 @@ extension Database {
   /// will result in an `SQLITE_READONLY` error.
   ///
   /// See <https://www.sqlite.org/pragma.html#pragma_query_only> for more information.
-  public func readOnly<T>(_ work: @escaping () throws -> T) throws -> T {
+  public func readOnly<T>(_ work: () throws -> T) throws -> T {
     if configuration.readOnly {
       return try work()
     }
 
     try beginReadOnly()
-    return try throwingFirstError {
-      try work()
-    } finally: {
+
+    var result: Result<T, Error>
+    do {
+      result = .success(try work())
+    } catch {
+      result = .failure(error)
+    }
+
+    do {
       try endReadOnly()
+    } catch {
+      if case .success = result {
+        result = .failure(error)
+      }
+    }
+
+    switch result {
+    case .success(let value):
+      return value
+    case .failure(let error):
+      throw error
     }
   }
 }
@@ -224,29 +332,5 @@ extension Database {
     }
 
     return code
-  }
-}
-
-private func throwingFirstError<T>(execute: () throws -> T, finally: () throws -> Void) throws -> T {
-  var result: Result<T, Error>
-  do {
-    result = .success(try execute())
-  } catch {
-    result = .failure(error)
-  }
-
-  do {
-    try finally()
-  } catch {
-    if case .success = result {
-      result = .failure(error)
-    }
-  }
-
-  switch result {
-  case .success(let value):
-    return value
-  case .failure(let error):
-    throw error
   }
 }

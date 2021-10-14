@@ -3,7 +3,7 @@ import Foundation
 
 extension NSItemProvider {
   public func loadURL() async throws -> URL {
-    try await withCheckedThrowingContinuation { [item = self] continuation in
+    try await withUnsafeThrowingContinuation { [item = self] continuation in
       _ = item.loadObject(ofClass: URL.self) { url, error in
         if let url = url {
           continuation.resume(returning: url)
