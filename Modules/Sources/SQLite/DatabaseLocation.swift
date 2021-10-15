@@ -10,7 +10,7 @@ public struct DatabaseLocation: Equatable {
 
 extension DatabaseLocation {
   public init(url: URL) {
-    self.path = url.absoluteString
+    self.path = url.path
   }
 }
 

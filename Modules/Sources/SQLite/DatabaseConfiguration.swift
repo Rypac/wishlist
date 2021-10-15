@@ -4,6 +4,7 @@ public struct DatabaseConfiguration {
   public var foreignKeysEnabled = true
   public var readOnly = false
   public var journalMode: JournalMode = .wal
+  public var busyMode: BusyMode = .immediateError
 
   public init() {}
 }
@@ -29,4 +30,12 @@ public enum JournalMode: String {
 
 extension JournalMode: CustomStringConvertible {
   public var description: String { rawValue }
+}
+
+/// The behaviour when a connection trys to access the database while it is locked by another connection.
+///
+/// See <https://www.sqlite.org/c3ref/busy_timeout.html> for more information.
+public enum BusyMode {
+  case immediateError
+  case timeout(TimeInterval)
 }

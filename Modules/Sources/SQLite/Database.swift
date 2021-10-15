@@ -24,6 +24,11 @@ public final class Database {
   }
 
   private func applyConfiguration() throws {
+    if case .timeout(let duration) = configuration.busyMode {
+      let milliseconds = Int32(duration * 1000)
+      sqlite3_busy_timeout(handle, milliseconds)
+    }
+
     try execute {
       "PRAGMA foreign_keys = \(configuration.foreignKeysEnabled ? "ON" : "OFF");"
       "PRAGMA journal_mode = \(configuration.journalMode);"
