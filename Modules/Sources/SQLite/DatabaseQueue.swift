@@ -2,19 +2,22 @@ import Foundation
 
 public final class DatabaseQueue: DatabaseWriter {
   private let database: Database
-  private let dispatchQueue = DispatchQueue(label: "Wishlist.SQLite")
+  private let dispatchQueue = DispatchQueue(label: "SQLite.DatabaseQueue")
 
   public init(
     location: DatabaseLocation,
     configuration: DatabaseConfiguration = DatabaseConfiguration()
   ) throws {
     self.database = try Database(location: location, configuration: configuration)
+    try dispatchQueue.sync {
+      try database.setup()
+    }
   }
 
   // MARK: - DatabaseReader
 
   @_disfavoredOverload // SR-15150 Async overloading in protocol implementation fails
-  public func read<T>(_ work: (Database) throws -> T) throws -> T {
+  public func read<T>(_ work: (Database) throws -> T) rethrows -> T {
     try dispatchQueue.sync { [database] in
       try database.readOnly {
         try work(database)
@@ -37,7 +40,7 @@ public final class DatabaseQueue: DatabaseWriter {
   // MARK: - DatabaseWriter
 
   @_disfavoredOverload // SR-15150 Async overloading in protocol implementation fails
-  public func write<T>(_ updates: (Database) throws -> T) throws -> T {
+  public func write<T>(_ updates: (Database) throws -> T) rethrows -> T {
     try dispatchQueue.sync { [database] in
       try updates(database)
     }

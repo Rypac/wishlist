@@ -2,7 +2,7 @@ import Foundation
 
 public protocol DatabaseReader {
   @_disfavoredOverload // SR-15150 Async overloading in protocol implementation fails
-  func read<T>(_ work: (Database) throws -> T) throws -> T
+  func read<T>(_ work: (Database) throws -> T) rethrows -> T
 
   func asyncRead(_ work: @escaping (Result<Database, Error>) -> Void)
 }

@@ -2,10 +2,10 @@ import Foundation
 
 public class DatabasePool: DatabaseWriter {
   private let readerDatabaseConnection: Database
-  private let readerDatabaseQueue = DispatchQueue(label: "Wishlist.SQLite.Reader")
+  private let readerDatabaseQueue = DispatchQueue(label: "SQLite.DatbasePool.reader")
 
   private let writerDatabaseConnection: Database
-  private let writerDatabaseQueue = DispatchQueue(label: "Wishlist.SQLite.Writer")
+  private let writerDatabaseQueue = DispatchQueue(label: "SQLite.DatbasePool.writer")
 
   public init(
     location: DatabaseLocation,
@@ -15,13 +15,24 @@ public class DatabasePool: DatabaseWriter {
 
     var readerConfiguration = configuration
     readerConfiguration.readOnly = true
+    readerConfiguration.busyMode = .timeout(5)
     self.readerDatabaseConnection = try Database(location: location, configuration: readerConfiguration)
+
+    try writerDatabaseQueue.sync {
+      try writerDatabaseConnection.setup()
+      if !configuration.readOnly {
+        try writerDatabaseConnection.setJournalMode(.wal)
+      }
+    }
+    try readerDatabaseQueue.sync {
+      try readerDatabaseConnection.setup()
+    }
   }
 
   // MARK: - DatabaseReader
 
   @_disfavoredOverload // SR-15150 Async overloading in protocol implementation fails
-  public func read<T>(_ work: (Database) throws -> T) throws -> T {
+  public func read<T>(_ work: (Database) throws -> T) rethrows -> T {
     try readerDatabaseQueue.sync { [readerDatabaseConnection] in
       try work(readerDatabaseConnection)
     }
@@ -36,7 +47,7 @@ public class DatabasePool: DatabaseWriter {
   // MARK: - DatabaseWriter
 
   @_disfavoredOverload // SR-15150 Async overloading in protocol implementation fails
-  public func write<T>(_ updates: (Database) throws -> T) throws -> T {
+  public func write<T>(_ updates: (Database) throws -> T) rethrows -> T {
     try writerDatabaseQueue.sync { [writerDatabaseConnection] in
       try updates(writerDatabaseConnection)
     }

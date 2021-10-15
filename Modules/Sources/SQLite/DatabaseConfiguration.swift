@@ -3,7 +3,6 @@ import Foundation
 public struct DatabaseConfiguration {
   public var foreignKeysEnabled = true
   public var readOnly = false
-  public var journalMode: JournalMode = .wal
   public var busyMode: BusyMode = .immediateError
 
   public init() {}

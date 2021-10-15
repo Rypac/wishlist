@@ -15,27 +15,23 @@ public final class Database {
   ) throws {
     self.configuration = configuration
     let flags = configuration.readOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE
-    try validate(sqlite3_open_v2(location.path, &handle, flags | SQLITE_OPEN_NOMUTEX, nil))
-    try applyConfiguration()
+    let code = sqlite3_open_v2(location.path, &handle, flags | SQLITE_OPEN_NOMUTEX, nil)
+    guard code == SQLITE_OK else {
+      throw SQLiteError(code: code)
+    }
   }
 
   deinit {
     sqlite3_close_v2(handle)
   }
 
-  private func applyConfiguration() throws {
+  func setup() throws {
     if case .timeout(let duration) = configuration.busyMode {
       let milliseconds = Int32(duration * 1000)
       sqlite3_busy_timeout(handle, milliseconds)
     }
 
-    try execute {
-      "PRAGMA foreign_keys = \(configuration.foreignKeysEnabled ? "ON" : "OFF");"
-      "PRAGMA journal_mode = \(configuration.journalMode);"
-      if case .wal = configuration.journalMode {
-        "PRAGMA synchronous = NORMAL;"
-      }
-    }
+    try execute(sql: "PRAGMA foreign_keys = \(configuration.foreignKeysEnabled ? "ON" : "OFF");")
   }
 
   /// Returns the rowid of the most recent successful `INSERT` into a rowid table.
@@ -59,6 +55,26 @@ public final class Database {
   /// See <https://www.sqlite.org/c3ref/total_changes.html> for more information.
   public var totalChanges: Int {
     Int(sqlite3_total_changes(handle))
+  }
+
+  public var version: String {
+    get throws {
+      let statement = try Statement(self, "SELECT sqlite_version();")
+      guard try statement.step() else {
+        throw SQLiteError(code: SQLITE_ERROR)
+      }
+
+      return try statement.row[0]
+    }
+  }
+
+  public func setJournalMode(_ mode: JournalMode) throws {
+    try execute {
+      "PRAGMA journal_mode = \(mode);"
+      if case .wal = mode {
+        "PRAGMA synchronous = NORMAL;"
+      }
+    }
   }
 
   /// Executes an SQL statement.
