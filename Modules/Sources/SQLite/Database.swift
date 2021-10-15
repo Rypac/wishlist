@@ -27,8 +27,7 @@ public final class Database {
 
   func setup() throws {
     if case .timeout(let duration) = configuration.busyMode {
-      let milliseconds = Int32(duration * 1000)
-      sqlite3_busy_timeout(handle, milliseconds)
+      try setBusyTimeout(duration)
     }
 
     try execute(sql: "PRAGMA foreign_keys = \(configuration.foreignKeysEnabled ? "ON" : "OFF");")
@@ -59,12 +58,11 @@ public final class Database {
 
   public var version: String {
     get throws {
-      let statement = try Statement(self, "SELECT sqlite_version();")
-      guard try statement.step() else {
+      guard let version = try String.fetchOne(self, sql: "SELECT sqlite_version();") else {
         throw SQLiteError(code: SQLITE_ERROR)
       }
 
-      return try statement.row[0]
+      return version
     }
   }
 
@@ -77,6 +75,23 @@ public final class Database {
     }
   }
 
+  public func setBusyTimeout(_ duration: TimeInterval) throws {
+    try validate(sqlite3_busy_timeout(handle, Int32(duration * 1_000)))
+  }
+
+  /// Interrupt a long-running query.
+  ///
+  /// This causes any pending database operation to abort and return at its earliest opportunity.
+  ///
+  /// See <https://www.sqlite.org/c3ref/interrupt.html> for more information.
+  public func interrupt() {
+    sqlite3_interrupt(handle)
+  }
+}
+
+// MARK: - Executing
+
+extension Database {
   /// Executes an SQL statement.
   ///
   /// - Parameters:
@@ -113,16 +128,52 @@ public final class Database {
       try execute(sql: literal.description, bindings: literal.bindings)
     }
   }
+}
 
-  public func run<Row: SQLiteRowDecodable>(literal: SQLLiteral) throws -> [Row] {
+// MARK: - Fetching
+
+extension Database {
+  public func fetchOne<Row: SQLiteRowDecodable>(literal: SQLLiteral) throws -> Row? {
     if literal.bindings.isEmpty {
-      return try run(sql: literal.description)
+      return try fetchOne(sql: literal.description)
     } else {
-      return try run(sql: literal.description, bindings: literal.bindings)
+      return try fetchOne(sql: literal.description, bindings: literal.bindings)
     }
   }
 
-  public func run<Row: SQLiteRowDecodable>(sql: String) throws -> [Row] {
+  public func fetchOne<Row: SQLiteRowDecodable>(sql: String) throws -> Row? {
+    let statement = try Statement(self, sql)
+
+    guard try statement.step() else {
+      return nil
+    }
+
+    return try Row(row: statement.row)
+  }
+
+  public func fetchOne<Row: SQLiteRowDecodable>(sql: String, bindings: StatementBindable?...) throws -> Row? {
+    try fetchOne(sql: sql, bindings: bindings)
+  }
+
+  public func fetchOne<Row: SQLiteRowDecodable>(sql: String, bindings: [StatementBindable?]) throws -> Row? {
+    let statement = try Statement(self, sql).bind(bindings)
+
+    guard try statement.step() else {
+      return nil
+    }
+
+    return try Row(row: statement.row)
+  }
+
+  public func fetchAll<Row: SQLiteRowDecodable>(literal: SQLLiteral) throws -> [Row] {
+    if literal.bindings.isEmpty {
+      return try fetchAll(sql: literal.description)
+    } else {
+      return try fetchAll(sql: literal.description, bindings: literal.bindings)
+    }
+  }
+
+  public func fetchAll<Row: SQLiteRowDecodable>(sql: String) throws -> [Row] {
     let statement = try Statement(self, sql)
 
     var rows: [Row] = []
@@ -133,11 +184,11 @@ public final class Database {
     return rows
   }
 
-  public func run<Row: SQLiteRowDecodable>(sql: String, bindings: StatementBindable?...) throws -> [Row] {
-    try run(sql: sql, bindings: bindings)
+  public func fetchAll<Row: SQLiteRowDecodable>(sql: String, bindings: StatementBindable?...) throws -> [Row] {
+    try fetchAll(sql: sql, bindings: bindings)
   }
 
-  public func run<Row: SQLiteRowDecodable>(sql: String, bindings: [StatementBindable?]) throws -> [Row] {
+  public func fetchAll<Row: SQLiteRowDecodable>(sql: String, bindings: [StatementBindable?]) throws -> [Row] {
     let statement = try Statement(self, sql).bind(bindings)
 
     var rows: [Row] = []
@@ -146,15 +197,6 @@ public final class Database {
     }
 
     return rows
-  }
-
-  /// Interrupt a long-running query.
-  ///
-  /// This causes any pending database operation to abort and return at its earliest opportunity.
-  ///
-  /// See <https://www.sqlite.org/c3ref/interrupt.html> for more information.
-  public func interrupt() {
-    sqlite3_interrupt(handle)
   }
 }
 

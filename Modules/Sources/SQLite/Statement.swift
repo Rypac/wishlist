@@ -22,7 +22,7 @@ public final class Statement {
     String(cString: sqlite3_column_name(handle, index))
   }
 
-  public lazy var row: SQLiteRow = SQLiteRow(statement: handle!)
+  public lazy var row: Row = Row(statement: handle!)
 
   /// Evaluate the prepared statement.
   ///

@@ -1,10 +1,6 @@
 import SQLite3
 
-public protocol SQLiteRowDecodable {
-  init(row: SQLiteRow) throws
-}
-
-public struct SQLiteRow {
+public struct Row {
   public let statement: SQLiteStatement
 
   public init(statement: SQLiteStatement) {
@@ -66,7 +62,7 @@ public struct SQLiteRow {
   }
 }
 
-private enum SQLiteDecodingError: Error {
+enum SQLiteDecodingError: Error {
   case failure
   case valueMismatch(_ type: Any.Type, databaseValue: DatabaseValue)
 }
