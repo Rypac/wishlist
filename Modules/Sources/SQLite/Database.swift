@@ -14,8 +14,8 @@ public final class Database {
     configuration: DatabaseConfiguration = DatabaseConfiguration()
   ) throws {
     self.configuration = configuration
-    let flags = configuration.readOnly ? SQLITE_OPEN_CREATE : SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE
-    try validate(sqlite3_open_v2(location.path, &handle, flags, nil))
+    let flags = configuration.readOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE
+    try validate(sqlite3_open_v2(location.path, &handle, flags | SQLITE_OPEN_NOMUTEX, nil))
     try applyConfiguration()
   }
 
