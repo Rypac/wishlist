@@ -13,12 +13,13 @@ public final class Database {
     location: DatabaseLocation,
     configuration: DatabaseConfiguration = DatabaseConfiguration()
   ) throws {
-    self.configuration = configuration
     let flags = configuration.readOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE
     let code = sqlite3_open_v2(location.path, &handle, flags | SQLITE_OPEN_NOMUTEX, nil)
     guard code == SQLITE_OK else {
       throw SQLiteError(code: code)
     }
+
+    self.configuration = configuration
   }
 
   deinit {
@@ -56,6 +57,23 @@ public final class Database {
     Int(sqlite3_total_changes(handle))
   }
 
+  /// Returns the result code of the last error that occurred.
+  ///
+  /// See <https://www.sqlite.org/c3ref/errcode.html> for more information.
+  public var lastErrorCode: SQLiteResultCode {
+    sqlite3_errcode(handle)
+  }
+
+  /// Description of the last error that occurred.
+  ///
+  /// See <https://www.sqlite.org/c3ref/errcode.html> for more information.
+  public var lastErrorMessage: String {
+    String(cString: sqlite3_errmsg(handle))
+  }
+
+  /// Returns the version string for the SQLite library that is running.
+  ///
+  /// See <https://www.sqlite.org/c3ref/libversion.html> for more information.
   public var version: String {
     get throws {
       guard let version = try String.fetchOne(self, sql: "SELECT sqlite_version();") else {
@@ -66,6 +84,9 @@ public final class Database {
     }
   }
 
+  /// Sets the journal mode for databases associated with the current connection.
+  ///
+  /// See <https://www.sqlite.org/pragma.html#pragma_journal_mode> for more information.
   public func setJournalMode(_ mode: JournalMode) throws {
     try execute {
       "PRAGMA journal_mode = \(mode);"
@@ -75,8 +96,17 @@ public final class Database {
     }
   }
 
+  /// Set a busy handler that sleeps for a specified amount of time when a table is locked.
+  ///
+  /// - Parameters:
+  ///   - duration: The busy handler timeout in seconds.
+  ///
+  /// See <https://www.sqlite.org/c3ref/busy_timeout.html> for more information.
   public func setBusyTimeout(_ duration: TimeInterval) throws {
-    try validate(sqlite3_busy_timeout(handle, Int32(duration * 1_000)))
+    let code = sqlite3_busy_timeout(handle, Int32(duration * 1_000))
+    guard code == SQLITE_OK else {
+      throw SQLiteError(code: code)
+    }
   }
 
   /// Interrupt a long-running query.
@@ -99,7 +129,7 @@ extension Database {
   ///
   /// See <https://www.sqlite.org/c3ref/exec.html> for more information.
   public func execute(sql: String) throws {
-    try validate(sqlite3_exec(handle, sql, nil, nil, nil))
+    try execute(sql: sql, bindings: [])
   }
 
   /// Executes an SQL statement.
@@ -109,7 +139,7 @@ extension Database {
   ///
   /// See <https://www.sqlite.org/c3ref/exec.html> for more information.
   public func execute(@SQLBuilder sql: () -> String) throws {
-    try execute(sql: sql())
+    try execute(sql: sql(), bindings: [])
   }
 
   public func execute(sql: String, bindings: StatementBindable?...) throws {
@@ -118,85 +148,20 @@ extension Database {
 
   public func execute(sql: String, bindings: [StatementBindable?]) throws {
     let statement = try Statement(self, sql).bind(bindings)
-    _ = try statement.step()
-  }
-
-  public func execute(literal: SQLLiteral) throws {
-    if literal.bindings.isEmpty {
-      try execute(sql: literal.description)
-    } else {
-      try execute(sql: literal.description, bindings: literal.bindings)
-    }
-  }
-}
-
-// MARK: - Fetching
-
-extension Database {
-  public func fetchOne<Row: SQLiteRowDecodable>(literal: SQLLiteral) throws -> Row? {
-    if literal.bindings.isEmpty {
-      return try fetchOne(sql: literal.description)
-    } else {
-      return try fetchOne(sql: literal.description, bindings: literal.bindings)
+    while true {
+      switch sqlite3_step(statement.handle) {
+      case SQLITE_DONE:
+        return
+      case SQLITE_ROW:
+        continue
+      case let code:
+        throw SQLiteError(code: code)
+      }
     }
   }
 
-  public func fetchOne<Row: SQLiteRowDecodable>(sql: String) throws -> Row? {
-    let statement = try Statement(self, sql)
-
-    guard try statement.step() else {
-      return nil
-    }
-
-    return try Row(row: statement.row)
-  }
-
-  public func fetchOne<Row: SQLiteRowDecodable>(sql: String, bindings: StatementBindable?...) throws -> Row? {
-    try fetchOne(sql: sql, bindings: bindings)
-  }
-
-  public func fetchOne<Row: SQLiteRowDecodable>(sql: String, bindings: [StatementBindable?]) throws -> Row? {
-    let statement = try Statement(self, sql).bind(bindings)
-
-    guard try statement.step() else {
-      return nil
-    }
-
-    return try Row(row: statement.row)
-  }
-
-  public func fetchAll<Row: SQLiteRowDecodable>(literal: SQLLiteral) throws -> [Row] {
-    if literal.bindings.isEmpty {
-      return try fetchAll(sql: literal.description)
-    } else {
-      return try fetchAll(sql: literal.description, bindings: literal.bindings)
-    }
-  }
-
-  public func fetchAll<Row: SQLiteRowDecodable>(sql: String) throws -> [Row] {
-    let statement = try Statement(self, sql)
-
-    var rows: [Row] = []
-    while try statement.step() {
-      rows.append(try Row(row: statement.row))
-    }
-
-    return rows
-  }
-
-  public func fetchAll<Row: SQLiteRowDecodable>(sql: String, bindings: StatementBindable?...) throws -> [Row] {
-    try fetchAll(sql: sql, bindings: bindings)
-  }
-
-  public func fetchAll<Row: SQLiteRowDecodable>(sql: String, bindings: [StatementBindable?]) throws -> [Row] {
-    let statement = try Statement(self, sql).bind(bindings)
-
-    var rows: [Row] = []
-    while try statement.step() {
-      rows.append(try Row(row: statement.row))
-    }
-
-    return rows
+  public func execute(literal: SQL) throws {
+    try execute(sql: literal.description, bindings: literal.bindings)
   }
 }
 
@@ -384,16 +349,5 @@ extension Database {
 extension Database: CustomStringConvertible {
   public var description: String {
     String(cString: sqlite3_db_filename(handle, nil))
-  }
-}
-
-extension Database {
-  @discardableResult
-  func validate(_ code: SQLiteResultCode) throws -> SQLiteResultCode {
-    guard code == SQLITE_OK || code == SQLITE_ROW || code == SQLITE_DONE else {
-      throw SQLiteError(code: code)
-    }
-
-    return code
   }
 }

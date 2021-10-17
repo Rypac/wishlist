@@ -98,3 +98,128 @@ extension StatementConvertible where Self: RawRepresentable, RawValue: Statement
     self.init(rawValue: rawValue)
   }
 }
+
+// MARK: - Fetching
+
+extension DatabaseValueConvertible where Self: StatementConvertible {
+  public static func fetchCursor(_ database: Database, sql: String) throws -> FastDatabaseValueCursor<Self> {
+    try fetchCursor(Statement(database, sql))
+  }
+
+  public static func fetchOne(_ database: Database, sql: String) throws -> Self? {
+    try fetchOne(Statement(database, sql))
+  }
+
+  public static func fetchAll(_ database: Database, sql: String) throws -> [Self] {
+    try fetchAll(Statement(database, sql))
+  }
+}
+
+extension DatabaseValueConvertible where Self: StatementConvertible {
+  public static func fetchCursor(_ database: Database, literal: SQL) throws -> FastDatabaseValueCursor<Self> {
+    try fetchCursor(Statement(database, literal.description).bind(literal.bindings))
+  }
+
+  public static func fetchOne(_ database: Database, literal: SQL) throws -> Self? {
+    try fetchOne(Statement(database, literal.description).bind(literal.bindings))
+  }
+
+  public static func fetchAll(_ database: Database, literal: SQL) throws -> [Self] {
+    try fetchAll(Statement(database, literal.description).bind(literal.bindings))
+  }
+}
+
+extension DatabaseValueConvertible where Self: StatementConvertible {
+  public static func fetchCursor(_ statement: Statement) throws -> FastDatabaseValueCursor<Self> {
+    FastDatabaseValueCursor<Self>(statement: statement.handle)
+  }
+
+  public static func fetchOne(_ statement: Statement) throws -> Self? {
+    let cursor = FastDatabaseValueCursor<Self>(statement: statement.handle)
+    return try cursor.next()
+  }
+
+  public static func fetchAll(_ statement: Statement) throws -> [Self] {
+    try Array(FastDatabaseValueCursor<Self>(statement: statement.handle))
+  }
+}
+
+extension Optional where Wrapped: DatabaseValueConvertible & StatementConvertible {
+  public static func fetchCursor(_ statement: Statement) throws -> FastNullableDatabaseValueCursor<Wrapped> {
+    FastNullableDatabaseValueCursor<Wrapped>(statement: statement.handle)
+  }
+
+  public static func fetchOne(_ statement: Statement) throws -> Wrapped?? {
+    let cursor = FastNullableDatabaseValueCursor<Wrapped>(statement: statement.handle)
+    return try cursor.next()
+  }
+
+  public static func fetchAll(_ statement: Statement) throws -> [Wrapped?] {
+    try Array(FastNullableDatabaseValueCursor<Wrapped>(statement: statement.handle))
+  }
+}
+
+// MARK: - Cursor
+
+public final class FastDatabaseValueCursor<Value: DatabaseValueConvertible & StatementConvertible>: Cursor {
+  private let statement: SQLiteStatement
+
+  init(statement: SQLiteStatement) {
+    self.statement = statement
+  }
+
+  public func next() throws -> Value? {
+    switch sqlite3_step(statement) {
+    case SQLITE_DONE:
+      return nil
+    case SQLITE_ROW:
+      return try Value.decode(fromStatement: statement, atIndex: 0)
+    case let code:
+      throw SQLiteError(code: code, statement: statement)
+    }
+  }
+}
+
+public final class FastNullableDatabaseValueCursor<Value: DatabaseValueConvertible & StatementConvertible>: Cursor {
+  private let statement: SQLiteStatement
+
+  init(statement: SQLiteStatement) {
+    self.statement = statement
+  }
+
+  public func next() throws -> Value?? {
+    switch sqlite3_step(statement) {
+    case SQLITE_DONE:
+      return nil
+    case SQLITE_ROW:
+      return try Value.decodeIfPresent(fromStatement: statement, atIndex: 0)
+    case let code:
+      throw SQLiteError(code: code, statement: statement)
+    }
+  }
+}
+
+// MARK: - Decoding
+
+extension DatabaseValueConvertible where Self: StatementConvertible {
+  static func decode(fromStatement statement: SQLiteStatement, atIndex index: Int32) throws -> Self {
+    guard
+      sqlite3_column_type(statement, index) != SQLITE_NULL,
+      let value = Self(statement: statement, index: Int32(index))
+    else {
+      throw SQLiteDecodingError.failure
+    }
+
+    return value
+  }
+
+  static func decodeIfPresent(fromStatement statement: SQLiteStatement, atIndex index: Int32) throws -> Self? {
+    if sqlite3_column_type(statement, index) == SQLITE_NULL {
+      return nil
+    } else if let value = Self(statement: statement, index: index) {
+      return value
+    } else {
+      throw SQLiteDecodingError.failure
+    }
+  }
+}

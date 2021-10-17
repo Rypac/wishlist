@@ -16,48 +16,25 @@ public struct Row {
 
   public subscript<Value: DatabaseValueConvertible>(_ index: Int) -> Value? {
     get throws {
-      let databaseValue = DatabaseValue(statement: statement, index: Int32(index))
-      if let value = Value(databaseValue: databaseValue) {
-        return value
-      } else if databaseValue.isNull {
-        return nil
-      } else {
-        throw SQLiteDecodingError.valueMismatch(Self.self, databaseValue: databaseValue)
-      }
+      try Value.decodeIfPresent(fromStatement: statement, atIndex: Int32(index))
     }
   }
 
   public subscript<Value: DatabaseValueConvertible>(_ index: Int) -> Value {
     get throws {
-      let databaseValue = DatabaseValue(statement: statement, index: Int32(index))
-      if let value = Value(databaseValue: databaseValue) {
-        return value
-      } else {
-        throw SQLiteDecodingError.valueMismatch(Self.self, databaseValue: databaseValue)
-      }
+      try Value.decode(fromStatement: statement, atIndex: Int32(index))
     }
   }
 
   public subscript<Value: DatabaseValueConvertible & StatementConvertible>(_ index: Int) -> Value? {
     get throws {
-      let index = Int32(index)
-      if sqlite3_column_type(statement, index) == SQLITE_NULL {
-        return nil
-      } else if let value = Value(statement: statement, index: index) {
-        return value
-      } else {
-        throw SQLiteDecodingError.failure
-      }
+      try Value.decodeIfPresent(fromStatement: statement, atIndex: Int32(index))
     }
   }
 
   public subscript<Value: DatabaseValueConvertible & StatementConvertible>(_ index: Int) -> Value {
     get throws {
-      if let value = Value(statement: statement, index: Int32(index)) {
-        return value
-      } else {
-        throw SQLiteDecodingError.failure
-      }
+      try Value.decode(fromStatement: statement, atIndex: Int32(index))
     }
   }
 }

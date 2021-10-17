@@ -1,4 +1,4 @@
-public struct SQLLiteral: ExpressibleByStringLiteral, ExpressibleByStringInterpolation, CustomStringConvertible {
+public struct SQL: ExpressibleByStringLiteral, ExpressibleByStringInterpolation, CustomStringConvertible {
   public struct StringInterpolation: StringInterpolationProtocol {
     var sql = ""
     var bindings: [StatementBindable?] = []

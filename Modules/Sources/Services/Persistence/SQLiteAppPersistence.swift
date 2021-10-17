@@ -12,7 +12,8 @@ public final class SQLiteAppPersistence: AppPersistence {
 
   public func fetchAll() async throws -> [AppDetails] {
     try await databaseWriter.read { database in
-      try database.fetchAll(
+      try AppDetails.fetchAll(
+        database,
         sql: """
           SELECT
             app.id,
@@ -43,7 +44,8 @@ public final class SQLiteAppPersistence: AppPersistence {
 
   public func fetch(id: AppID) async throws -> AppDetails? {
     try await databaseWriter.read { database in
-      try database.fetchOne(
+      try AppDetails.fetchOne(
+        database,
         literal: """
           SELECT
             app.id,
@@ -142,7 +144,8 @@ public final class SQLiteAppPersistence: AppPersistence {
 
   public func versionHistory(id: AppID) async throws -> [Version] {
     try await databaseWriter.read { database in
-      try database.fetchAll(
+      try Version.fetchAll(
+        database,
         literal: """
           SELECT name, releaseDate, releaseNotes
           FROM version
@@ -208,7 +211,7 @@ private extension SQLiteAppPersistence {
 
 extension AppID: DatabaseValueConvertible {}
 
-extension AppDetails: SQLiteRowDecodable {
+extension AppDetails: Record {
   public init(row: Row) throws {
     self.init(
       id: try row[0],
@@ -235,7 +238,7 @@ extension AppDetails: SQLiteRowDecodable {
   }
 }
 
-extension Version: SQLiteRowDecodable {
+extension Version: Record {
   public init(row: Row) throws {
     self.init(
       name: try row[0],
