@@ -17,7 +17,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   private let backgroundDatabaseMaintenance: BackgroundDatabaseMaintenance
 
   override init() {
-    let databaseWriter: DatabaseWriter = try! DatabaseQueue(
+    let databaseWriter: DatabaseWriter = try! DatabasePool(
       location: DatabaseLocation(
         url: FileManager.default.storeURL(for: "group.watchlist.database", databaseName: "Wishlist")
       )
