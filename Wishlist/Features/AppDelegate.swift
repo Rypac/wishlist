@@ -28,11 +28,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
     let appStore: AppLookupService = AppStoreService()
     appAdder = AppAdder(
-      environment: AppAdder.Environment(
-        loadApps: appStore.lookup,
-        saveApps: appRepository.saveApps,
-        now: system.now
-      )
+      loadApps: appStore.lookup,
+      saveApps: appRepository.saveApps,
+      now: system.now
     )
     updateChecker = UpdateChecker(
       environment: UpdateChecker.Environment(
