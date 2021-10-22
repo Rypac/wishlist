@@ -1,13 +1,12 @@
 import Foundation
+import Toolbox
 import UserDefaults
 
 public final class UpdateChecker {
-  private let fetchApps: () async throws -> [AppDetails]
-  private let lookupApps: ([AppID]) async throws -> [AppSummary]
-  private let saveApps: ([AppDetails]) async throws -> Void
   private let system: SystemEnvironment
   @UserDefault private var lastUpdateDate: Date?
   private let updateFrequency: TimeInterval
+  private let updateTask: SharedTask<Void, Error>
 
   public init(
     fetchApps: @escaping () async throws -> [AppDetails],
@@ -17,12 +16,28 @@ public final class UpdateChecker {
     lastUpdateDate: UserDefault<Date?>,
     updateFrequency: TimeInterval
   ) {
-    self.fetchApps = fetchApps
-    self.lookupApps = lookupApps
-    self.saveApps = saveApps
     self.system = system
     self._lastUpdateDate = lastUpdateDate
     self.updateFrequency = updateFrequency
+
+    self.updateTask = SharedTask<Void, Error> {
+      let apps = try await fetchApps()
+
+      let latestApps = try await lookupApps(apps.map(\.id))
+
+      let updatedApps = latestApps.reduce(into: [] as [AppDetails]) { updatedApps, latestApp in
+        if var app = apps.first(where: { $0.id == latestApp.id }), latestApp.isUpdated(from: app) {
+          app.applyUpdate(latestApp)
+          updatedApps.append(app)
+        }
+      }
+
+      if !updatedApps.isEmpty {
+        try await saveApps(updatedApps)
+      }
+
+      lastUpdateDate.wrappedValue = system.now()
+    }
   }
 
   public func updateIfNeeded() async throws {
@@ -32,22 +47,7 @@ public final class UpdateChecker {
   }
 
   public func update() async throws {
-    let apps = try await fetchApps()
-
-    let latestApps = try await lookupApps(apps.map(\.id))
-
-    let updatedApps = latestApps.reduce(into: [] as [AppDetails]) { updatedApps, latestApp in
-      if var app = apps.first(where: { $0.id == latestApp.id }), latestApp.isUpdated(from: app) {
-        app.applyUpdate(latestApp)
-        updatedApps.append(app)
-      }
-    }
-
-    if !updatedApps.isEmpty {
-      try await saveApps(updatedApps)
-    }
-
-    lastUpdateDate = system.now()
+    try await updateTask.run()
   }
 
   private var shouldCheckForUpdates: Bool {
