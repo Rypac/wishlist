@@ -33,14 +33,12 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
       now: system.now
     )
     updateChecker = UpdateChecker(
-      environment: UpdateChecker.Environment(
-        fetchApps: appRepository.fetchApps,
-        lookupApps: appStore.lookup,
-        saveApps: appRepository.saveApps,
-        system: system,
-        lastUpdateDate: settings.$lastUpdateDate,
-        updateFrequency: 5 * 60
-      )
+      fetchApps: appRepository.fetchApps,
+      lookupApps: appStore.lookup,
+      saveApps: appRepository.saveApps,
+      system: system,
+      lastUpdateDate: settings.$lastUpdateDate,
+      updateFrequency: 5 * 60
     )
     backgroundAppRefresh = BackgroundAppRefresh(
       id: "org.rypac.Watchlist.refresh",
