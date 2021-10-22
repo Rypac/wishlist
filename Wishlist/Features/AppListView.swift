@@ -232,6 +232,7 @@ private struct AppUpdateDetails: View {
     ZStack(alignment: .topTrailing) {
       Text(dateFormatter.string(from: date))
         .font(.callout)
+        .foregroundColor(.secondary)
         .lineLimit(1)
 
       if !seen {

@@ -95,6 +95,7 @@ private struct AppHeading: View {
           .font(.headline)
         HStack(alignment: .firstTextBaseline) {
           Text(price)
+            .font(.body.monospacedDigit())
           Spacer()
           Link("VIEW", destination: url)
             .font(.subheadline.bold())
