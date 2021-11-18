@@ -6,11 +6,11 @@ import Toolbox
 import UIKit
 import UniformTypeIdentifiers
 
-private enum State: Equatable {
-  case resting
+private enum State {
+  case initial
   case loading([URL])
   case success([AppSummary])
-  case failure
+  case failure(Error)
 }
 
 private struct Environment {
@@ -32,7 +32,7 @@ class ActionViewController: UIViewController {
     return Environment(addApps: appAdder.addApps(from:), fetchApps: repository.fetchAll)
   }()
 
-  private let state = CurrentValueSubject<State, Never>(.resting)
+  private let state = CurrentValueSubject<State, Never>(.initial)
   private var cancellables = Set<AnyCancellable>()
   private var addAppsTask: Task<Void, Never>?
 
@@ -59,9 +59,9 @@ class ActionViewController: UIViewController {
           return "No apps added to Wishlist"
         case let .success(apps):
           return "Added to Wishlist:\n\n" + apps.map(\.title).joined(separator: "\n")
-        case .failure:
-          return "Failed to add apps to Wishlist"
-        case .resting:
+        case let .failure(error):
+          return "Failed to add apps to Wishlist: \(error)"
+        case .initial:
           return ""
         }
       }
@@ -98,7 +98,7 @@ class ActionViewController: UIViewController {
         let newApps = updatedApps.filter { !initialApps.contains($0.id) }
         state.value = .success(newApps.map(\.summary))
       } catch {
-        state.value = .failure
+        state.value = .failure(error)
       }
     }
   }

@@ -32,7 +32,7 @@ final class URLSchemeHandler {
             try await environment.addApps(ids)
             print("Successfully added apps")
           } catch {
-            print("Failed to add apps")
+            print("Failed to add apps: \(error)")
           }
         }
       )
