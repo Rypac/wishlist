@@ -159,52 +159,70 @@ public final class SQLiteAppPersistence: AppPersistence {
 private extension SQLiteAppPersistence {
   func migrate() throws {
     try databaseWriter.write { database in
-      try database.execute(
-        sql: """
-          CREATE TABLE IF NOT EXISTS app (
-            id INTEGER PRIMARY KEY,
-            bundleId TEXT NOT NULL,
-            title TEXT NOT NULL,
-            description TEXT NOT NULL,
-            seller TEXT NOT NULL,
-            url TEXT NOT NULL,
-            iconSmallUrl TEXT NOT NULL,
-            iconMediumUrl TEXT NOT NULL,
-            iconLargeUrl TEXT NOT NULL,
-            releaseDate TEXT NOT NULL,
-            version TEXT NOT NULL,
-            price TEXT NOT NULL,
-            currency TEXT NOT NULL
-          );
+      try database.transaction {
+        try database.execute(
+          sql: """
+            CREATE TABLE IF NOT EXISTS app (
+              id INTEGER PRIMARY KEY,
+              bundleId TEXT NOT NULL,
+              title TEXT NOT NULL,
+              description TEXT NOT NULL,
+              seller TEXT NOT NULL,
+              url TEXT NOT NULL,
+              iconSmallUrl TEXT NOT NULL,
+              iconMediumUrl TEXT NOT NULL,
+              iconLargeUrl TEXT NOT NULL,
+              releaseDate TEXT NOT NULL,
+              version TEXT NOT NULL,
+              price TEXT NOT NULL,
+              currency TEXT NOT NULL
+            );
+            """
+        )
 
-          CREATE TABLE IF NOT EXISTS version (
-            appId INTEGER NOT NULL REFERENCES app ON DELETE CASCADE,
-            name TEXT NOT NULL,
-            releaseDate TEXT NOT NULL,
-            releaseNotes TEXT,
-            PRIMARY KEY (appId, name)
-          );
+        try database.execute(
+          sql: """
+            CREATE TABLE IF NOT EXISTS version (
+              appId INTEGER NOT NULL REFERENCES app ON DELETE CASCADE,
+              name TEXT NOT NULL,
+              releaseDate TEXT NOT NULL,
+              releaseNotes TEXT,
+              PRIMARY KEY (appId, name)
+            );
+            """
+        )
 
-          CREATE TABLE IF NOT EXISTS price (
-            appId INTEGER NOT NULL REFERENCES app ON DELETE CASCADE,
-            price TEXT NOT NULL,
-            currency TEXT NOT NULL,
-            recordedDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-          );
+        try database.execute(
+          sql: """
+            CREATE TABLE IF NOT EXISTS price (
+              appId INTEGER NOT NULL REFERENCES app ON DELETE CASCADE,
+              price TEXT NOT NULL,
+              currency TEXT NOT NULL,
+              recordedDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            """
+        )
 
-          CREATE TABLE IF NOT EXISTS interaction (
-            appId INTEGER PRIMARY KEY REFERENCES app ON DELETE CASCADE,
-            firstAddedDate TEXT NOT NULL,
-            lastViewedDate TEXT
-          );
+        try database.execute(
+          sql: """
+            CREATE TABLE IF NOT EXISTS interaction (
+              appId INTEGER PRIMARY KEY REFERENCES app ON DELETE CASCADE,
+              firstAddedDate TEXT NOT NULL,
+              lastViewedDate TEXT
+            );
+            """
+        )
 
-          CREATE TABLE IF NOT EXISTS notification (
-            appId INTEGER PRIMARY KEY REFERENCES app ON DELETE CASCADE,
-            priceDrop BOOLEAN NOT NULL,
-            newVersion BOOLEAN NOT NULL
-          );
-          """
-      )
+        try database.execute(
+          sql: """
+            CREATE TABLE IF NOT EXISTS notification (
+              appId INTEGER PRIMARY KEY REFERENCES app ON DELETE CASCADE,
+              priceDrop BOOLEAN NOT NULL,
+              newVersion BOOLEAN NOT NULL
+            );
+            """
+        )
+      }
     }
   }
 }
