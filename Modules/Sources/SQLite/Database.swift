@@ -26,12 +26,13 @@ public final class Database {
     sqlite3_close_v2(handle)
   }
 
+  /// Applies the provided configuration to the current database connection.
   func setup() throws {
     if case .timeout(let duration) = configuration.busyMode {
       try setBusyTimeout(duration)
     }
 
-    try execute(sql: "PRAGMA foreign_keys = \(configuration.foreignKeysEnabled ? "ON" : "OFF");")
+    try setForeignKeysEnabled(configuration.foreignKeysEnabled)
   }
 
   /// Returns the rowid of the most recent successful `INSERT` into a rowid table.
@@ -86,6 +87,9 @@ public final class Database {
 
   /// Sets the journal mode for databases associated with the current connection.
   ///
+  /// - Parameters:
+  ///   - mode: The journal mode to set for all attached databases.
+  ///
   /// See <https://www.sqlite.org/pragma.html#pragma_journal_mode> for more information.
   public func setJournalMode(_ mode: JournalMode) throws {
     try execute {
@@ -119,6 +123,30 @@ public final class Database {
   }
 }
 
+// MARK: - Foreign Keys
+
+extension Database {
+  /// Returns whether foreign key constraints are enabled.
+  ///
+  /// See <https://www.sqlite.org/foreignkeys.html> for more information.
+  public var foreignKeysEnabled: Bool {
+    get throws {
+      guard let value = try Bool.fetchOne(self, sql: "PRAGMA foreign_keys;") else {
+        throw SQLiteError(code: SQLITE_ERROR)
+      }
+
+      return value
+    }
+  }
+
+  /// Set foreign key constraints to enforce "exists" relationships between tables.
+  ///
+  /// See <https://www.sqlite.org/foreignkeys.html> for more information.
+  public func setForeignKeysEnabled(_ enabled: Bool) throws {
+    try execute(sql: "PRAGMA foreign_keys = \(enabled ? "ON" : "OFF");")
+  }
+}
+
 // MARK: - Executing
 
 extension Database {
@@ -142,10 +170,24 @@ extension Database {
     try execute(sql: sql(), bindings: [])
   }
 
+  /// Executes an SQL statement with the given bindings.
+  ///
+  /// - Parameters:
+  ///   - sql: The SQL to be evaluated.
+  ///   - bindings: The SQL statement bindings.
+  ///
+  /// See <https://www.sqlite.org/c3ref/exec.html> for more information.
   public func execute(sql: String, bindings: StatementBindable?...) throws {
     try execute(sql: sql, bindings: bindings)
   }
 
+  /// Executes an SQL statement with the given bindings.
+  ///
+  /// - Parameters:
+  ///   - sql: The SQL to be evaluated.
+  ///   - bindings: The SQL statement bindings.
+  ///
+  /// See <https://www.sqlite.org/c3ref/exec.html> for more information.
   public func execute(sql: String, bindings: [StatementBindable?]) throws {
     let statement = try Statement(self, sql).bind(bindings)
     while true {
@@ -160,6 +202,12 @@ extension Database {
     }
   }
 
+  /// Executes an SQL statement.
+  ///
+  /// - Parameters:
+  ///   - literal: The SQL literal to be evaluated.
+  ///
+  /// See <https://www.sqlite.org/c3ref/exec.html> for more information.
   public func execute(literal: SQL) throws {
     try execute(sql: literal.description, bindings: literal.bindings)
   }
@@ -279,6 +327,13 @@ extension Database {
   /// See <https://www.sqlite.org/lang_vacuum.html#vacuuminto> for more information.
   public func vacuum(into filePath: String) throws {
     try execute(literal: "VACUUM INTO \(filePath);")
+  }
+
+  /// Causes the current database connection to free up as much memory as it can.
+  ///
+  /// See <https://www.sqlite.org/pragma.html#pragma_shrink_memory> for more information.
+  public func shrinkMemory() throws {
+    try execute(sql: "PRAGMA shrink_memory;")
   }
 }
 

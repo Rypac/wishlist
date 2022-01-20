@@ -38,8 +38,3 @@ public struct Row {
     }
   }
 }
-
-enum SQLiteDecodingError: Error {
-  case failure
-  case valueMismatch(_ type: Any.Type, databaseValue: DatabaseValue)
-}

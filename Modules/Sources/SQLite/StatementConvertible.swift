@@ -205,7 +205,7 @@ extension DatabaseValueConvertible where Self: StatementConvertible {
   static func decode(fromStatement statement: SQLiteStatement, atIndex index: Int32) throws -> Self {
     guard
       sqlite3_column_type(statement, index) != SQLITE_NULL,
-      let value = Self(statement: statement, index: Int32(index))
+      let value = Self(statement: statement, index: index)
     else {
       throw SQLiteDecodingError.failure
     }
@@ -222,4 +222,9 @@ extension DatabaseValueConvertible where Self: StatementConvertible {
       throw SQLiteDecodingError.failure
     }
   }
+}
+
+enum SQLiteDecodingError: Error {
+  case failure
+  case valueMismatch(_ type: Any.Type, databaseValue: DatabaseValue)
 }

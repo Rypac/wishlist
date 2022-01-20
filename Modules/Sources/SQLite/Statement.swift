@@ -71,10 +71,22 @@ extension Statement {
     }
   }
 
+  /// Bind the provided parameters to the SQLite statement.
+  ///
+  /// - Parameters:
+  ///   - values: The values to be bound to the literal in the SQLite statement.
+  ///
+  /// See <https://www.sqlite.org/c3ref/bind_blob.html> for more information.
   public func bind(_ values: StatementBindable?...) throws -> Statement {
     try bind(values)
   }
 
+  /// Bind the provided parameters to the SQLite statement.
+  ///
+  /// - Parameters:
+  ///   - values: The values to be bound to the literal in the SQLite statement.
+  ///
+  /// See <https://www.sqlite.org/c3ref/bind_blob.html> for more information.
   public func bind(_ values: [StatementBindable?]) throws -> Statement {
     try reset()
     try clearBindings()
@@ -104,6 +116,12 @@ extension Statement {
     return self
   }
 
+  /// Bind the provided parameters to the SQLite statement.
+  ///
+  /// - Parameters:
+  ///   - values: The values to be bound to the literal in the SQLite statement.
+  ///
+  /// See <https://www.sqlite.org/c3ref/bind_blob.html> for more information.
   public func bind(_ values: [String: StatementBindable?]) throws -> Statement {
     try reset()
     try clearBindings()
