@@ -25,12 +25,10 @@ public struct UserDefault<Value: UserDefaultsSerializable> {
     userDefaults.register(_key)
   }
 
-  @available(macOS 10.15, *)
   public func publisher() -> UserDefaults.Publisher<Value> {
     userDefaults.publisher(for: _key)
   }
 
-  @available(macOS 10.15, *)
   public func subject() -> UserDefaults.Subject<Value> {
     userDefaults.subject(for: _key)
   }

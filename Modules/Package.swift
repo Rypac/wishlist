@@ -5,7 +5,8 @@ import PackageDescription
 let package = Package(
   name: "Modules",
   platforms: [
-    .iOS("15.0")
+    .iOS("15.0"),
+    .macOS("12.0")
   ],
   products: [
     .library(name: "UserDefaults", targets: ["UserDefaults"]),
