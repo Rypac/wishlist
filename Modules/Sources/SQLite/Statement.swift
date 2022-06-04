@@ -91,10 +91,6 @@ extension Statement {
     try reset()
     try clearBindings()
 
-    if values.isEmpty {
-      return self
-    }
-
     let parameterCount = Int(sqlite3_bind_parameter_count(handle))
     guard values.count == parameterCount else {
       throw SQLiteBindingError.invalidBindingCount(received: values.count, expected: parameterCount)
@@ -125,6 +121,11 @@ extension Statement {
   public func bind(_ values: [String: StatementBindable?]) throws -> Statement {
     try reset()
     try clearBindings()
+
+    let parameterCount = Int(sqlite3_bind_parameter_count(handle))
+    guard values.count == parameterCount else {
+      throw SQLiteBindingError.invalidBindingCount(received: values.count, expected: parameterCount)
+    }
 
     for (name, value) in values {
       let index = sqlite3_bind_parameter_index(handle, name)
