@@ -22,12 +22,12 @@ public final class Statement {
   /// Returns the number of columns in a result set.
   ///
   /// See <https://www.sqlite.org/c3ref/column_count.html> for more information.
-  public lazy var columnCount: Int = Int(sqlite3_column_count(handle))
+  public private(set) lazy var columnCount: Int = Int(sqlite3_column_count(handle))
 
   /// Returns the names assigned to the columns in the result set of a `SELECT` statement.
   ///
   /// See <https://www.sqlite.org/c3ref/column_name.html> for more information.
-  public lazy var columnNames: [String] = (0..<Int32(columnCount)).map { index in
+  public private(set) lazy var columnNames: [String] = (0..<Int32(columnCount)).map { index in
     String(cString: sqlite3_column_name(handle, index))
   }
 
@@ -45,7 +45,7 @@ public final class Statement {
     sqlite3_stmt_readonly(handle) != 0
   }
 
-  public lazy var row: Row = Row(statement: handle)
+  public private(set) lazy var row: Row = Row(statement: handle)
 }
 
 // MARK: - Bindings
