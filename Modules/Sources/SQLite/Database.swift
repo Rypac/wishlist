@@ -377,11 +377,8 @@ extension Database {
 
     try beginReadOnly()
 
-    var result: Result<T, Error>
-    do {
-      result = .success(try work())
-    } catch {
-      result = .failure(error)
+    var result = Result {
+      try work()
     }
 
     do {
@@ -392,12 +389,7 @@ extension Database {
       }
     }
 
-    switch result {
-    case .success(let value):
-      return value
-    case .failure(let error):
-      throw error
-    }
+    return try result.get()
   }
 }
 

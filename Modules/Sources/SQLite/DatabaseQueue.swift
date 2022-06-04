@@ -51,11 +51,8 @@ public final class DatabaseQueue: DatabaseWriter {
     completion: @escaping (Database, Result<T, Error>) -> Void
   ) {
     dispatchQueue.async { [database] in
-      let result: Result<T, Error>
-      do {
-        result = .success(try updates(database))
-      } catch {
-        result = .failure(error)
+      let result = Result {
+        try updates(database)
       }
 
       completion(database, result)

@@ -58,11 +58,8 @@ public class DatabasePool: DatabaseWriter {
     completion: @escaping (Database, Result<T, Error>) -> Void
   ) {
     writerDatabaseQueue.async { [writerDatabaseConnection] in
-      let result: Result<T, Error>
-      do {
-        result = .success(try updates(writerDatabaseConnection))
-      } catch {
-        result = .failure(error)
+      let result = Result {
+        try updates(writerDatabaseConnection)
       }
 
       completion(writerDatabaseConnection, result)
