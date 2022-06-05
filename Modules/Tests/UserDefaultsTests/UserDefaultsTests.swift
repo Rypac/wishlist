@@ -11,7 +11,7 @@ final class UserDefaultsTests: XCTestCase {
 
   override func tearDown() {
     super.tearDown()
-    UserDefaults().removeSuite(named: #file)
+    userDefaults.removeSuite(named: #file)
   }
 
   func testBooleanKey() {

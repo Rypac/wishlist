@@ -18,32 +18,20 @@ extension UserDefaultsKey {
 }
 
 extension UserDefaults {
-  public func register<Value: UserDefaultsConvertible>(_ value: Value, forKey key: String) {
-    if let optionalValue = value as? AnyOptional, optionalValue.isNil {
-      return
-    }
-
-    register(defaults: [key: value.storedValue])
-  }
-
   public func register<Value: UserDefaultsConvertible>(_ keys: UserDefaultsKey<Value>...) {
     register(defaults: keys.reduce(into: Dictionary(minimumCapacity: keys.count)) { defaults, key in
-      if let optionalValue = key.defaultValue as? AnyOptional, optionalValue.isNil {
-        return
-      }
-
       defaults[key.key] = key.defaultValue.storedValue
     })
   }
 
-  public subscript<Value: UserDefaultsCodable>(key: String) -> Value? {
-    get { Value(from: self, forKey: key) }
-    set { newValue.encode(to: self, forKey: key) }
+  public subscript<Value: UserDefaultsConvertible>(key: UserDefaultsKey<Value>) -> Value {
+    get { self[key.key] ?? key.defaultValue }
+    set { self[key.key] = newValue }
   }
 
-  public subscript<Value: UserDefaultsCodable>(key: UserDefaultsKey<Value>) -> Value {
-    get { Value(from: self, forKey: key.key) ?? key.defaultValue }
-    set { newValue.encode(to: self, forKey: key.key) }
+  public subscript<Value: UserDefaultsConvertible>(key: UserDefaultsKey<Value?>) -> Value? {
+    get { self[key.key] ?? key.defaultValue }
+    set { self[key.key] = newValue }
   }
 
   public func has<Value>(_ key: UserDefaultsKey<Value>) -> Bool {
@@ -53,13 +41,4 @@ extension UserDefaults {
   public func remove<Value>(_ key: UserDefaultsKey<Value>) {
     removeObject(forKey: key.key)
   }
-}
-
-// Inspired from https://www.swiftbysundell.com/articles/property-wrappers-in-swift/
-private protocol AnyOptional {
-    var isNil: Bool { get }
-}
-
-extension Optional: AnyOptional {
-    var isNil: Bool { self == nil }
 }

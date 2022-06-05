@@ -1,7 +1,7 @@
 import Foundation
 
 @propertyWrapper
-public struct UserDefault<Value: UserDefaultsCodable> {
+public struct UserDefault<Value: UserDefaultsConvertible> {
   private let _key: UserDefaultsKey<Value>
   private let userDefaults: UserDefaults
 
@@ -21,6 +21,10 @@ public struct UserDefault<Value: UserDefaultsCodable> {
 
   public var defaultValue: Value { _key.defaultValue }
 
+  public func register() {
+    userDefaults.register(_key)
+  }
+
   public func publisher() -> UserDefaults.Publisher<Value> {
     userDefaults.publisher(for: _key)
   }
@@ -30,20 +34,14 @@ public struct UserDefault<Value: UserDefaultsCodable> {
   }
 }
 
-extension UserDefault where Value: UserDefaultsConvertible {
-  public func register() {
-    userDefaults.register(_key)
-  }
-}
-
 extension UserDefault {
   public init(_ key: String, defaultValue: Value, userDefaults: UserDefaults = .standard) {
     self._key = UserDefaultsKey(key, defaultValue: defaultValue)
     self.userDefaults = userDefaults
   }
 
-  public init<Wrapped>(_ key: String, userDefaults: UserDefaults = .standard) where Value == Wrapped? {
-    self._key = UserDefaultsKey(key, defaultValue: nil)
-    self.userDefaults = userDefaults
-  }
+//  public init<Wrapped>(_ key: String, userDefaults: UserDefaults = .standard) where Value == Wrapped? {
+//    self._key = UserDefaultsKey(key, defaultValue: nil)
+//    self.userDefaults = userDefaults
+//  }
 }

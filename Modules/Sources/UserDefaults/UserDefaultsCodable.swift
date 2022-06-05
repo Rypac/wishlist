@@ -1,17 +1,19 @@
 import Foundation
 
-public protocol UserDefaultsDecodable {
+protocol UserDefaultsPrimitive {}
+
+protocol UserDefaultsDecodable {
   init?(from userDefaults: UserDefaults, forKey key: String)
 }
 
-public protocol UserDefaultsEncodable {
+protocol UserDefaultsEncodable {
   func encode(to userDefaults: UserDefaults, forKey key: String)
 }
 
-public typealias UserDefaultsCodable = UserDefaultsDecodable & UserDefaultsEncodable
+typealias UserDefaultsCodable = UserDefaultsDecodable & UserDefaultsEncodable
 
-extension Bool: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+extension Bool: UserDefaultsCodable, UserDefaultsPrimitive {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard userDefaults.object(forKey: key) != nil else {
       return nil
     }
@@ -19,13 +21,13 @@ extension Bool: UserDefaultsCodable {
     self = userDefaults.bool(forKey: key)
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     userDefaults.set(self, forKey: key)
   }
 }
 
-extension Int: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+extension Int: UserDefaultsCodable, UserDefaultsPrimitive {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard userDefaults.object(forKey: key) != nil else {
       return nil
     }
@@ -33,13 +35,13 @@ extension Int: UserDefaultsCodable {
     self = userDefaults.integer(forKey: key)
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     userDefaults.set(self, forKey: key)
   }
 }
 
-extension Float: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+extension Float: UserDefaultsCodable, UserDefaultsPrimitive {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard userDefaults.object(forKey: key) != nil else {
       return nil
     }
@@ -47,13 +49,13 @@ extension Float: UserDefaultsCodable {
     self = userDefaults.float(forKey: key)
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     userDefaults.set(self, forKey: key)
   }
 }
 
-extension Double: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+extension Double: UserDefaultsCodable, UserDefaultsPrimitive {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard userDefaults.object(forKey: key) != nil else {
       return nil
     }
@@ -61,13 +63,13 @@ extension Double: UserDefaultsCodable {
     self = userDefaults.double(forKey: key)
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     userDefaults.set(self, forKey: key)
   }
 }
 
-extension String: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+extension String: UserDefaultsCodable, UserDefaultsPrimitive {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let string = userDefaults.string(forKey: key) else {
       return nil
     }
@@ -75,13 +77,13 @@ extension String: UserDefaultsCodable {
     self = string
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     userDefaults.set(self, forKey: key)
   }
 }
 
 extension URL: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let url = userDefaults.url(forKey: key) else {
       return nil
     }
@@ -89,13 +91,13 @@ extension URL: UserDefaultsCodable {
     self = url
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     userDefaults.set(self, forKey: key)
   }
 }
 
-extension Data: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+extension Data: UserDefaultsCodable, UserDefaultsPrimitive {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let data = userDefaults.data(forKey: key) else {
       return nil
     }
@@ -103,13 +105,13 @@ extension Data: UserDefaultsCodable {
     self = data
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     userDefaults.set(self, forKey: key)
   }
 }
 
 extension Date: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let date = userDefaults.object(forKey: key) as? Date else {
       return nil
     }
@@ -117,31 +119,15 @@ extension Date: UserDefaultsCodable {
     self = date
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     userDefaults.set(self, forKey: key)
   }
 }
 
-extension Optional: UserDefaultsCodable where Wrapped: UserDefaultsCodable {
-  public init(from userDefaults: UserDefaults, forKey key: String) {
-    if userDefaults.object(forKey: key) != nil {
-      self = Wrapped(from: userDefaults, forKey: key)
-    } else {
-      self = nil
-    }
-  }
-
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
-    if let value = self {
-      value.encode(to: userDefaults, forKey: key)
-    } else {
-      userDefaults.removeObject(forKey: key)
-    }
-  }
-}
+extension Array: UserDefaultsPrimitive where Element: UserDefaultsPrimitive {}
 
 extension Array: UserDefaultsCodable where Element: UserDefaultsConvertible {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let array = userDefaults.array(forKey: key) else {
       return nil
     }
@@ -153,7 +139,7 @@ extension Array: UserDefaultsCodable where Element: UserDefaultsConvertible {
     }
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     if Element.self is UserDefaultsPrimitive.Type {
       userDefaults.set(self, forKey: key)
     } else {
@@ -163,7 +149,7 @@ extension Array: UserDefaultsCodable where Element: UserDefaultsConvertible {
 }
 
 extension Set: UserDefaultsCodable where Element: UserDefaultsConvertible {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let array = userDefaults.array(forKey: key) else {
       return nil
     }
@@ -179,7 +165,7 @@ extension Set: UserDefaultsCodable where Element: UserDefaultsConvertible {
     }
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     if Element.self is UserDefaultsPrimitive.Type {
       userDefaults.set(Array(self), forKey: key)
     } else {
@@ -188,8 +174,10 @@ extension Set: UserDefaultsCodable where Element: UserDefaultsConvertible {
   }
 }
 
+extension Dictionary: UserDefaultsPrimitive where Key == String, Value: UserDefaultsPrimitive {}
+
 extension Dictionary: UserDefaultsCodable where Key == String, Value: UserDefaultsConvertible {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let dictionary = userDefaults.dictionary(forKey: key) else {
       return nil
     }
@@ -201,7 +189,7 @@ extension Dictionary: UserDefaultsCodable where Key == String, Value: UserDefaul
     }
   }
 
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     if Value.self is UserDefaultsPrimitive.Type {
       userDefaults.set(self, forKey: key)
     } else {
@@ -211,7 +199,7 @@ extension Dictionary: UserDefaultsCodable where Key == String, Value: UserDefaul
 }
 
 extension UserDefaultsDecodable where Self: RawRepresentable, RawValue: UserDefaultsDecodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
+  init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let rawValue = RawValue(from: userDefaults, forKey: key) else {
       return nil
     }
@@ -221,7 +209,7 @@ extension UserDefaultsDecodable where Self: RawRepresentable, RawValue: UserDefa
 }
 
 extension UserDefaultsEncodable where Self: RawRepresentable, RawValue: UserDefaultsEncodable {
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+  func encode(to userDefaults: UserDefaults, forKey key: String) {
     rawValue.encode(to: userDefaults, forKey: key)
   }
 }

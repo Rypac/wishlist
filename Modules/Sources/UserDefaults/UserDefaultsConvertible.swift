@@ -1,25 +1,11 @@
 import Foundation
 
-public protocol UserDefaultsConvertible: UserDefaultsCodable {
+public protocol UserDefaultsConvertible {
   associatedtype StoredValue
 
   var storedValue: StoredValue { get }
 
   init?(storedValue: StoredValue)
-}
-
-extension UserDefaultsConvertible where StoredValue: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
-    guard let storedValue = StoredValue(from: userDefaults, forKey: key) else {
-      return nil
-    }
-
-    self.init(storedValue: storedValue)
-  }
-
-  public func encode(to userDefaults: UserDefaults, forKey key: String) {
-    storedValue.encode(to: userDefaults, forKey: key)
-  }
 }
 
 extension Bool: UserDefaultsConvertible {
@@ -94,18 +80,6 @@ extension Date: UserDefaultsConvertible {
   }
 }
 
-extension Optional: UserDefaultsConvertible where Wrapped: UserDefaultsConvertible {
-  public var storedValue: Wrapped.StoredValue? { self?.storedValue }
-
-  public init(storedValue: Wrapped.StoredValue?) {
-    if let storedValue = storedValue {
-      self = Wrapped(storedValue: storedValue)
-    } else {
-      self = nil
-    }
-  }
-}
-
 extension UserDefaultsConvertible where Self: RawRepresentable, RawValue: UserDefaultsConvertible {
   public var storedValue: RawValue { rawValue }
 
@@ -114,7 +88,8 @@ extension UserDefaultsConvertible where Self: RawRepresentable, RawValue: UserDe
   }
 }
 
-extension Array: UserDefaultsConvertible where Element: UserDefaultsConvertible, Element.StoredValue: UserDefaultsConvertible {
+extension Array: UserDefaultsConvertible
+where Element: UserDefaultsConvertible, Element.StoredValue: UserDefaultsConvertible {
   public typealias StoredValue = [Element.StoredValue]
 
   public var storedValue: StoredValue {
@@ -134,7 +109,8 @@ extension Array: UserDefaultsConvertible where Element: UserDefaultsConvertible,
   }
 }
 
-extension Set: UserDefaultsConvertible where Element: UserDefaultsConvertible, Element.StoredValue: UserDefaultsConvertible {
+extension Set: UserDefaultsConvertible
+where Element: UserDefaultsConvertible, Element.StoredValue: UserDefaultsConvertible {
   public typealias StoredValue = [Element.StoredValue]
 
   public var storedValue: StoredValue {
@@ -154,7 +130,8 @@ extension Set: UserDefaultsConvertible where Element: UserDefaultsConvertible, E
   }
 }
 
-extension Dictionary: UserDefaultsConvertible where Key == String, Value: UserDefaultsConvertible, Value.StoredValue: UserDefaultsConvertible {
+extension Dictionary: UserDefaultsConvertible
+where Key == String, Value: UserDefaultsConvertible, Value.StoredValue: UserDefaultsConvertible {
   public typealias StoredValue = [Key: Value.StoredValue]
 
   public var storedValue: StoredValue {
