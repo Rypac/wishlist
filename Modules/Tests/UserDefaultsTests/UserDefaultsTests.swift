@@ -97,6 +97,23 @@ final class UserDefaultsTests: XCTestCase {
     XCTAssertEqual(userDefaults[key], [])
   }
 
+  func testURLArrayKey() {
+    let key = UserDefaultsKey<[URL]>(#function, defaultValue: [])
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [])
+
+    userDefaults[key] = [URL(string: "http://example.com")!]
+
+    XCTAssertTrue(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [URL(string: "http://example.com")!])
+
+    userDefaults.remove(key)
+
+    XCTAssertFalse(userDefaults.has(key))
+    XCTAssertEqual(userDefaults[key], [])
+  }
+
   func testIntegerSetKey() {
     let key = UserDefaultsKey<Set<Int>>(#function, defaultValue: [])
 
@@ -132,7 +149,7 @@ final class UserDefaultsTests: XCTestCase {
   }
 
   func testEnumKey() {
-    enum Test: String, UserDefaultsSerializable {
+    enum Test: String, UserDefaultsConvertible {
       case hello = "Hello"
       case world = "World"
     }
@@ -154,7 +171,7 @@ final class UserDefaultsTests: XCTestCase {
   }
 
   func testArrayWithEnumElements() {
-    enum Test: String, UserDefaultsSerializable {
+    enum Test: String, UserDefaultsConvertible {
       case hello = "Hello"
       case world = "World"
     }
@@ -180,6 +197,7 @@ final class UserDefaultsTests: XCTestCase {
     ("testOptionalBooleanKey", testOptionalBooleanKey),
     ("testOptionalBooleanDefaultNilKey", testOptionalBooleanDefaultNilKey),
     ("testStringArrayKey", testStringArrayKey),
+    ("testURLArrayKey", testURLArrayKey),
     ("testIntegerSetKey", testIntegerSetKey),
     ("testDictionaryStringIntKey", testDictionaryStringIntKey),
     ("testArrayWithEnumElements", testArrayWithEnumElements)

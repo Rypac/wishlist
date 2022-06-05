@@ -1,14 +1,28 @@
 import Foundation
 
-public protocol UserDefaultsSerializable {
-  associatedtype StoredValue: UserDefaultsCodable
+public protocol UserDefaultsConvertible: UserDefaultsCodable {
+  associatedtype StoredValue
 
   var storedValue: StoredValue { get }
 
   init?(storedValue: StoredValue)
 }
 
-extension Bool: UserDefaultsSerializable {
+extension UserDefaultsConvertible where StoredValue: UserDefaultsCodable {
+  public init?(from userDefaults: UserDefaults, forKey key: String) {
+    guard let storedValue = StoredValue(from: userDefaults, forKey: key) else {
+      return nil
+    }
+
+    self.init(storedValue: storedValue)
+  }
+
+  public func encode(to userDefaults: UserDefaults, forKey key: String) {
+    storedValue.encode(to: userDefaults, forKey: key)
+  }
+}
+
+extension Bool: UserDefaultsConvertible {
   public var storedValue: Bool { self }
 
   public init(storedValue: Bool) {
@@ -16,7 +30,7 @@ extension Bool: UserDefaultsSerializable {
   }
 }
 
-extension Int: UserDefaultsSerializable {
+extension Int: UserDefaultsConvertible {
   public var storedValue: Int { self }
 
   public init(storedValue: Int) {
@@ -24,7 +38,7 @@ extension Int: UserDefaultsSerializable {
   }
 }
 
-extension Float: UserDefaultsSerializable {
+extension Float: UserDefaultsConvertible {
   public var storedValue: Float { self }
 
   public init(storedValue: Float) {
@@ -32,7 +46,7 @@ extension Float: UserDefaultsSerializable {
   }
 }
 
-extension Double: UserDefaultsSerializable {
+extension Double: UserDefaultsConvertible {
   public var storedValue: Double { self }
 
   public init(storedValue: Double) {
@@ -40,7 +54,7 @@ extension Double: UserDefaultsSerializable {
   }
 }
 
-extension String: UserDefaultsSerializable {
+extension String: UserDefaultsConvertible {
   public var storedValue: String { self }
 
   public init(storedValue: String) {
@@ -48,7 +62,7 @@ extension String: UserDefaultsSerializable {
   }
 }
 
-extension URL: UserDefaultsSerializable {
+extension URL: UserDefaultsConvertible {
   public var storedValue: String { absoluteString }
 
   public init?(storedValue: String) {
@@ -56,7 +70,7 @@ extension URL: UserDefaultsSerializable {
   }
 }
 
-extension UUID: UserDefaultsSerializable {
+extension UUID: UserDefaultsConvertible {
   public var storedValue: String { uuidString }
 
   public init?(storedValue: String) {
@@ -64,7 +78,7 @@ extension UUID: UserDefaultsSerializable {
   }
 }
 
-extension Data: UserDefaultsSerializable {
+extension Data: UserDefaultsConvertible {
   public var storedValue: Data { self }
 
   public init(storedValue: Data) {
@@ -72,7 +86,7 @@ extension Data: UserDefaultsSerializable {
   }
 }
 
-extension Date: UserDefaultsSerializable {
+extension Date: UserDefaultsConvertible {
   public var storedValue: Date { self }
 
   public init(storedValue: Date) {
@@ -80,19 +94,19 @@ extension Date: UserDefaultsSerializable {
   }
 }
 
-extension Optional: UserDefaultsSerializable where Wrapped: UserDefaultsSerializable {
+extension Optional: UserDefaultsConvertible where Wrapped: UserDefaultsConvertible {
   public var storedValue: Wrapped.StoredValue? { self?.storedValue }
 
-  public init?(storedValue: Wrapped.StoredValue?) {
-    guard let storedValue = storedValue else {
-      return nil
+  public init(storedValue: Wrapped.StoredValue?) {
+    if let storedValue = storedValue {
+      self = Wrapped(storedValue: storedValue)
+    } else {
+      self = nil
     }
-
-    self = Wrapped(storedValue: storedValue)
   }
 }
 
-extension UserDefaultsSerializable where Self: RawRepresentable, RawValue: UserDefaultsSerializable {
+extension UserDefaultsConvertible where Self: RawRepresentable, RawValue: UserDefaultsConvertible {
   public var storedValue: RawValue { rawValue }
 
   public init?(storedValue: RawValue) {
@@ -100,7 +114,7 @@ extension UserDefaultsSerializable where Self: RawRepresentable, RawValue: UserD
   }
 }
 
-extension Array: UserDefaultsSerializable where Element: UserDefaultsSerializable, Element.StoredValue: UserDefaultsSerializable {
+extension Array: UserDefaultsConvertible where Element: UserDefaultsConvertible, Element.StoredValue: UserDefaultsConvertible {
   public typealias StoredValue = [Element.StoredValue]
 
   public var storedValue: StoredValue {
@@ -120,7 +134,7 @@ extension Array: UserDefaultsSerializable where Element: UserDefaultsSerializabl
   }
 }
 
-extension Set: UserDefaultsSerializable where Element: UserDefaultsSerializable, Element.StoredValue: UserDefaultsSerializable {
+extension Set: UserDefaultsConvertible where Element: UserDefaultsConvertible, Element.StoredValue: UserDefaultsConvertible {
   public typealias StoredValue = [Element.StoredValue]
 
   public var storedValue: StoredValue {
@@ -140,7 +154,7 @@ extension Set: UserDefaultsSerializable where Element: UserDefaultsSerializable,
   }
 }
 
-extension Dictionary: UserDefaultsSerializable where Key == String, Value: UserDefaultsSerializable, Value.StoredValue: UserDefaultsSerializable {
+extension Dictionary: UserDefaultsConvertible where Key == String, Value: UserDefaultsConvertible, Value.StoredValue: UserDefaultsConvertible {
   public typealias StoredValue = [Key: Value.StoredValue]
 
   public var storedValue: StoredValue {

@@ -123,12 +123,12 @@ extension Date: UserDefaultsCodable {
 }
 
 extension Optional: UserDefaultsCodable where Wrapped: UserDefaultsCodable {
-  public init?(from userDefaults: UserDefaults, forKey key: String) {
-    guard userDefaults.object(forKey: key) != nil else {
-      return nil
+  public init(from userDefaults: UserDefaults, forKey key: String) {
+    if userDefaults.object(forKey: key) != nil {
+      self = Wrapped(from: userDefaults, forKey: key)
+    } else {
+      self = nil
     }
-
-    self = Wrapped(from: userDefaults, forKey: key)
   }
 
   public func encode(to userDefaults: UserDefaults, forKey key: String) {
@@ -140,7 +140,7 @@ extension Optional: UserDefaultsCodable where Wrapped: UserDefaultsCodable {
   }
 }
 
-extension Array: UserDefaultsCodable where Element: UserDefaultsSerializable {
+extension Array: UserDefaultsCodable where Element: UserDefaultsConvertible {
   public init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let array = userDefaults.array(forKey: key) else {
       return nil
@@ -162,7 +162,7 @@ extension Array: UserDefaultsCodable where Element: UserDefaultsSerializable {
   }
 }
 
-extension Set: UserDefaultsCodable where Element: UserDefaultsSerializable {
+extension Set: UserDefaultsCodable where Element: UserDefaultsConvertible {
   public init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let array = userDefaults.array(forKey: key) else {
       return nil
@@ -188,7 +188,7 @@ extension Set: UserDefaultsCodable where Element: UserDefaultsSerializable {
   }
 }
 
-extension Dictionary: UserDefaultsCodable where Key == String, Value: UserDefaultsSerializable {
+extension Dictionary: UserDefaultsCodable where Key == String, Value: UserDefaultsConvertible {
   public init?(from userDefaults: UserDefaults, forKey key: String) {
     guard let dictionary = userDefaults.dictionary(forKey: key) else {
       return nil

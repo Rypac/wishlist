@@ -1,7 +1,7 @@
 import Foundation
 
 @propertyWrapper
-public struct UserDefault<Value: UserDefaultsSerializable> {
+public struct UserDefault<Value: UserDefaultsCodable> {
   private let _key: UserDefaultsKey<Value>
   private let userDefaults: UserDefaults
 
@@ -21,16 +21,18 @@ public struct UserDefault<Value: UserDefaultsSerializable> {
 
   public var defaultValue: Value { _key.defaultValue }
 
-  public func register() {
-    userDefaults.register(_key)
-  }
-
   public func publisher() -> UserDefaults.Publisher<Value> {
     userDefaults.publisher(for: _key)
   }
 
   public func subject() -> UserDefaults.Subject<Value> {
     userDefaults.subject(for: _key)
+  }
+}
+
+extension UserDefault where Value: UserDefaultsConvertible {
+  public func register() {
+    userDefaults.register(_key)
   }
 }
 

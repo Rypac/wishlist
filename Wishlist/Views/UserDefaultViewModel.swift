@@ -2,7 +2,7 @@ import SwiftUI
 import UserDefaults
 
 @MainActor
-public final class UserDefaultViewModel<Value: UserDefaultsSerializable>: ObservableObject {
+public final class UserDefaultViewModel<Value: UserDefaultsConvertible>: ObservableObject {
   private let userDefault: UserDefault<Value>
 
   @Published public var value: Value {
