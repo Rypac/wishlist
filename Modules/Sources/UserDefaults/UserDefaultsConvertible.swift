@@ -1,7 +1,7 @@
 import Foundation
 
 public protocol UserDefaultsConvertible {
-  associatedtype StoredValue
+  associatedtype StoredValue: PropertyListValue
 
   var storedValue: StoredValue { get }
 
@@ -88,65 +88,42 @@ extension UserDefaultsConvertible where Self: RawRepresentable, RawValue: UserDe
   }
 }
 
-extension Array: UserDefaultsConvertible
-where Element: UserDefaultsConvertible, Element.StoredValue: UserDefaultsConvertible {
+extension Array: UserDefaultsConvertible where Element: UserDefaultsConvertible {
   public typealias StoredValue = [Element.StoredValue]
 
   public var storedValue: StoredValue {
-    if Element.self is UserDefaultsPrimitive.Type {
-      return self as! StoredValue
-    } else {
-      return map(\.storedValue)
-    }
+    map(\.storedValue)
   }
 
   public init(storedValue: StoredValue) {
-    if Element.self is UserDefaultsPrimitive.Type {
-      self = storedValue as! [Element]
-    } else {
-      self = storedValue.compactMap(Element.init(storedValue:))
+    self = storedValue.compactMap(Element.init(storedValue:))
+  }
+}
+
+extension Set: UserDefaultsConvertible where Element: UserDefaultsConvertible {
+  public typealias StoredValue = [Element.StoredValue]
+
+  public var storedValue: StoredValue {
+    map(\.storedValue)
+  }
+
+  public init(storedValue: StoredValue) {
+    self = storedValue.reduce(into: Set(minimumCapacity: storedValue.count)) { result, value in
+      if let element = Element(storedValue: value) {
+        result.insert(element)
+      }
     }
   }
 }
 
-extension Set: UserDefaultsConvertible
-where Element: UserDefaultsConvertible, Element.StoredValue: UserDefaultsConvertible {
-  public typealias StoredValue = [Element.StoredValue]
-
-  public var storedValue: StoredValue {
-    if Element.self is UserDefaultsPrimitive.Type {
-      return Array(self) as! StoredValue
-    } else {
-      return map(\.storedValue)
-    }
-  }
-
-  public init(storedValue: StoredValue) {
-    if Element.self is UserDefaultsPrimitive.Type {
-      self = Set(storedValue as! [Element])
-    } else {
-      self = Set(storedValue.compactMap(Element.init(storedValue:)))
-    }
-  }
-}
-
-extension Dictionary: UserDefaultsConvertible
-where Key == String, Value: UserDefaultsConvertible, Value.StoredValue: UserDefaultsConvertible {
+extension Dictionary: UserDefaultsConvertible where Key == String, Value: UserDefaultsConvertible {
   public typealias StoredValue = [Key: Value.StoredValue]
 
   public var storedValue: StoredValue {
-    if Value.self is UserDefaultsPrimitive.Type {
-      return self as! StoredValue
-    } else {
-      return mapValues(\.storedValue)
-    }
+    mapValues(\.storedValue)
   }
 
   public init(storedValue: StoredValue) {
-    if Value.self is UserDefaultsPrimitive.Type {
-      self = storedValue as! [Key: Value]
-    } else {
-      self = storedValue.compactMapValues(Value.init(storedValue:))
-    }
+    self = storedValue.compactMapValues(Value.init(storedValue:))
   }
 }
