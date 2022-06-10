@@ -1,7 +1,7 @@
 import Foundation
 
 extension UserDefaults {
-  public func register<Value: UserDefaultsConvertible>(_ value: Value, forKey key: String) {
+  public func register(_ value: some UserDefaultsConvertible, forKey key: String) {
     register(defaults: [key: value.storedValue])
   }
 
