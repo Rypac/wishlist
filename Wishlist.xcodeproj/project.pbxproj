@@ -25,7 +25,7 @@
 		9494DA0C24319285003A7992 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9494DA0B24319285003A7992 /* Media.xcassets */; };
 		9494DA0E24319285003A7992 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9494DA0D24319285003A7992 /* ActionViewController.swift */; };
 		9494DA1124319285003A7992 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9494DA0F24319285003A7992 /* MainInterface.storyboard */; };
-		9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9494DA0924319285003A7992 /* Add to Wishlist.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9494DA0924319285003A7992 /* Add to Wishlist.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		949A58E0261038F200B38E78 /* AppListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949A58DF261038F200B38E78 /* AppListView.swift */; };
 		949A58E32610392900B38E78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949A58E22610392900B38E78 /* AppDelegate.swift */; };
 		949A58E726103A4700B38E78 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949A58E626103A4700B38E78 /* SettingsView.swift */; };
@@ -70,15 +70,15 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9494DA1924319285003A7992 /* Embed App Extensions */ = {
+		9494DA1924319285003A7992 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed App Extensions */,
+				9494DA1524319285003A7992 /* Add to Wishlist.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -309,7 +309,7 @@
 				94FA20C7231BA2BC00EC1190 /* Sources */,
 				94FA20C8231BA2BC00EC1190 /* Frameworks */,
 				94FA20C9231BA2BC00EC1190 /* Resources */,
-				9494DA1924319285003A7992 /* Embed App Extensions */,
+				9494DA1924319285003A7992 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -336,7 +336,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1220;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = "Ryan Davis";
 				TargetAttributes = {
 					9494DA0824319285003A7992 = {
@@ -457,7 +457,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P2RDBY63TT;
 				INFOPLIST_FILE = ActionExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -480,7 +480,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P2RDBY63TT;
 				INFOPLIST_FILE = ActionExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -546,7 +546,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -601,7 +601,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -623,7 +623,7 @@
 				DEVELOPMENT_TEAM = P2RDBY63TT;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Wishlist/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -631,6 +631,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.Watchlist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -648,7 +651,7 @@
 				DEVELOPMENT_TEAM = P2RDBY63TT;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Wishlist/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -656,6 +659,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.rypac.Watchlist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
