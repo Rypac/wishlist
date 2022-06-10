@@ -21,7 +21,7 @@ final class Settings {
   @UserDefault("sortOrder", defaultValue: .updated)
   var sortOrder: SortOrder
 
-  @UserDefault("lastUpdateCheck")
+  @OptionalUserDefault("lastUpdateCheck")
   var lastUpdateDate: Date?
 
   @UserDefault("theme", defaultValue: .system)
@@ -35,7 +35,6 @@ final class Settings {
 
   func register() {
     _sortOrder.register()
-    _lastUpdateDate.register()
     _theme.register()
     _enableNotificaitons.register()
     _notifications.register()

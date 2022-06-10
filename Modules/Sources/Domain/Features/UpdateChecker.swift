@@ -4,7 +4,7 @@ import UserDefaults
 
 public final class UpdateChecker {
   private let system: SystemEnvironment
-  @UserDefault private var lastUpdateDate: Date?
+  @OptionalUserDefault private var lastUpdateDate: Date?
   private let updateFrequency: TimeInterval
   private let updateTask: SharedTask<Void, Error>
 
@@ -13,7 +13,7 @@ public final class UpdateChecker {
     lookupApps: @escaping ([AppID]) async throws -> [AppSummary],
     saveApps: @escaping ([AppDetails]) async throws -> Void,
     system: SystemEnvironment,
-    lastUpdateDate: UserDefault<Date?>,
+    lastUpdateDate: OptionalUserDefault<Date>,
     updateFrequency: TimeInterval
   ) {
     self.system = system

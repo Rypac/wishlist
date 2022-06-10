@@ -5,6 +5,11 @@ public struct UserDefault<Value: UserDefaultsConvertible> {
   private let _key: UserDefaultsKey<Value>
   private let userDefaults: UserDefaults
 
+  public init(_ key: String, defaultValue: Value, userDefaults: UserDefaults = .standard) {
+    self._key = UserDefaultsKey(key, defaultValue: defaultValue)
+    self.userDefaults = userDefaults
+  }
+
   public init(_ key: UserDefaultsKey<Value>, userDefaults: UserDefaults = .standard) {
     self._key = key
     self.userDefaults = userDefaults
@@ -34,14 +39,29 @@ public struct UserDefault<Value: UserDefaultsConvertible> {
   }
 }
 
-extension UserDefault {
-  public init(_ key: String, defaultValue: Value, userDefaults: UserDefaults = .standard) {
+@propertyWrapper
+public struct OptionalUserDefault<Value: UserDefaultsConvertible> {
+  private let _key: UserDefaultsKey<Value?>
+  private let userDefaults: UserDefaults
+
+  public init(_ key: String, defaultValue: Value? = nil, userDefaults: UserDefaults = .standard) {
     self._key = UserDefaultsKey(key, defaultValue: defaultValue)
     self.userDefaults = userDefaults
   }
 
-//  public init<Wrapped>(_ key: String, userDefaults: UserDefaults = .standard) where Value == Wrapped? {
-//    self._key = UserDefaultsKey(key, defaultValue: nil)
-//    self.userDefaults = userDefaults
-//  }
+  public init(_ key: UserDefaultsKey<Value?>, userDefaults: UserDefaults = .standard) {
+    self._key = key
+    self.userDefaults = userDefaults
+  }
+
+  public var wrappedValue: Value? {
+    get { userDefaults[_key] }
+    nonmutating set { userDefaults[_key] = newValue }
+  }
+
+  public var projectedValue: OptionalUserDefault<Value> { self }
+
+  public var key: String { _key.key }
+
+  public var defaultValue: Value? { _key.defaultValue }
 }
