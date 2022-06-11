@@ -40,10 +40,10 @@ final class SettingsViewModel: ObservableObject {
 struct SettingsView: View {
   @StateObject var viewModel: SettingsViewModel
 
-  @Environment(\.presentationMode) private var presentationMode
+  @Environment(\.dismiss) private var dismiss
 
   var body: some View {
-    NavigationView {
+    NavigationStack {
       List {
         Section(header: Text("Appearance")) {
           SelectThemeView(viewModel: viewModel.themeViewModel)
@@ -67,7 +67,7 @@ struct SettingsView: View {
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("Close") {
-            presentationMode.wrappedValue.dismiss()
+            dismiss()
           }
         }
       }

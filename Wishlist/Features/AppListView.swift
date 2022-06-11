@@ -36,7 +36,7 @@ final class AppListViewModel: ObservableObject {
   }
 
   @Published private(set) var apps: [AppDetails] = []
-  @Published var viewingAppDetails: AppDetails? = nil
+  @Published var viewingAppDetails: AppDetails.ID? = nil
   @Input var filterQuery: String = ""
 
   let environment: Environment
@@ -84,11 +84,10 @@ final class AppListViewModel: ObservableObject {
     }
   }
 
-  func detailViewModel(_ app: AppDetails) -> AppDetailsViewModel {
+  func detailViewModel(id: AppID) -> AppDetailsViewModel {
     AppDetailsViewModel(
-      app: app,
       environment: AppDetailsViewModel.Environment(
-        repository: environment.repository.repository(for: app.id),
+        repository: environment.repository.repository(for: id),
         system: environment.system
       )
     )
@@ -100,7 +99,7 @@ struct AppListView: View {
 
   var body: some View {
     List(viewModel.apps) { app in
-      AppRow {
+      NavigationLink(value: app.id) {
         HStack {
           AppIcon(app.icon.medium, width: 50)
           Text(app.title)
@@ -108,25 +107,25 @@ struct AppListView: View {
           Spacer(minLength: 8)
           AppUpdateDetails(date: app.version.date, seen: true)
         }
-      } onSelect: {
-        viewModel.viewingAppDetails = app
-      } onShare: {
-        [app.url]
-      } onDelete: {
-        viewModel.deleteApp(app.id)
-      }
-      .onDrag {
-        NSItemProvider(url: app.url, title: app.title)
-      }
-    }
-    .onDrop(of: [.url], isTargeted: nil) { itemProviders in
-      for itemProvider in itemProviders {
-        _ = itemProvider.loadObject(ofClass: URL.self) { url, error in
-          if let url {
-            viewModel.addApps([url])
-          }
+        .contextMenu {
+          ShareButton(url: app.url)
+          Divider()
+          DeleteButton { viewModel.deleteApp(app.id) }
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+          ShareButton(url: app.url)
+            .tint(.blue)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+          DeleteButton { viewModel.deleteApp(app.id) }
+        }
+        .onDrag {
+          NSItemProvider(url: app.url, title: app.title)
         }
       }
+    }
+    .dropDestination(payloadType: URL.self) { urls, _ in
+      viewModel.addApps(urls)
       return true
     }
     .searchable(text: $viewModel.filterQuery)
@@ -134,58 +133,26 @@ struct AppListView: View {
       await viewModel.checkForUpdates()
     }
     .listStyle(.plain)
-    .navigation(item: $viewModel.viewingAppDetails) { app in
-      AppDetailsView(viewModel: viewModel.detailViewModel(app))
+    .navigationDestination(for: AppID.self) { id in
+      AppDetailsView(viewModel: viewModel.detailViewModel(id: id))
     }
   }
 }
 
-private struct AppRow<Content: View>: View {
-  @ViewBuilder let content: () -> Content
-  let onSelect: () -> Void
-  let onShare: () -> [Any]
-  let onDelete: () -> Void
-
-  @State private var displayShareSheet: Bool = false
+private struct ShareButton: View {
+  let url: URL
 
   var body: some View {
-    Button {
-      onSelect()
-    } label: {
-      HStack {
-        content()
-        Spacer()
-        SFSymbol.chevronForward
-          .font(.caption.bold())
-          .foregroundColor(Color(.tertiaryLabel))
-      }
-    }
-    .contextMenu {
-      shareButton
-      Divider()
-      deleteButton
-    }
-    .swipeActions(edge: .leading, allowsFullSwipe: true) {
-      shareButton
-        .tint(.blue)
-    }
-    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-      deleteButton
-    }
-    .sheet(isPresented: $displayShareSheet) {
-      ActivityView(activityItems: onShare(), applicationActivities: nil)
-    }
-  }
-
-  private var shareButton: some View {
-    Button {
-      displayShareSheet = true
-    } label: {
+    ShareLink(item: url) {
       Label("Share…", systemImage: SFSymbol.share.rawValue)
     }
   }
+}
 
-  private var deleteButton: some View {
+private struct DeleteButton: View {
+  let onDelete: () -> Void
+
+  var body: some View {
     Button(role: .destructive) {
       withAnimation {
         onDelete()

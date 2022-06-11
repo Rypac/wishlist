@@ -18,12 +18,11 @@ final class AppDetailsViewModel: ObservableObject {
     var system: SystemEnvironment
   }
 
-  @Published private(set) var app: AppDetails
+  @Published private(set) var app: AppDetails?
 
   let environment: Environment
 
-  init(app: AppDetails, environment: Environment) {
-    self.app = app
+  init(environment: Environment) {
     self.environment = environment
     environment.repository.app.compactMap { $0 }.assign(to: &$app)
   }
@@ -35,7 +34,6 @@ final class AppDetailsViewModel: ObservableObject {
 
   func versionHistoryViewModel() -> VersionHistoryViewModel {
     VersionHistoryViewModel(
-      latestVersion: app.version,
       environment: VersionHistoryViewModel.Environment(
         versionHistory: environment.repository.versionHistory,
         system: environment.system
@@ -48,31 +46,39 @@ struct AppDetailsView: View {
   @StateObject var viewModel: AppDetailsViewModel
 
   var body: some View {
-    ScrollView(.vertical) {
-      VStack(alignment: .leading, spacing: 16) {
-        AppHeading(app: viewModel.app)
-        Divider()
-        AppNotifications()
-        if viewModel.app.version.notes != nil {
-          Divider()
-          AppVersion(version: viewModel.app.version) {
-            VersionHistoryView(viewModel: viewModel.versionHistoryViewModel())
+    VStack {
+      if let app = viewModel.app {
+        ScrollView(.vertical) {
+          VStack(alignment: .leading, spacing: 16) {
+            AppHeading(app: app)
+            Divider()
+            AppNotifications()
+            if app.version.notes != nil {
+              Divider()
+              AppVersion(version: app.version) {
+                VersionHistoryView(viewModel: viewModel.versionHistoryViewModel())
+              }
+            }
+            Divider()
+            AppDescription(description: app.description)
           }
+          .padding()
         }
-        Divider()
-        AppDescription(description: viewModel.app.description)
-      }
-      .padding()
-    }
-    .toolbar {
-      ToolbarItem(placement: .primaryAction) {
-        ShareAppURLButton(url: viewModel.app.url)
+        .task {
+          await viewModel.recordAppViewed()
+        }
       }
     }
     .navigationTitle("Details")
     .navigationBarTitleDisplayMode(.inline)
-    .task {
-      await viewModel.recordAppViewed()
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        if let url = viewModel.app?.url {
+          ShareLink(item: url)
+        } else {
+          ShareLink(item: "Nothing")
+        }
+      }
     }
   }
 }
@@ -148,8 +154,6 @@ private struct AppVersion<Content: View>: View {
   let version: Version
   @ViewBuilder let content: () -> Content
 
-  @State private var displayVersionHistory: Bool = false
-
   @Environment(\.updateDateFormatter) private var dateFormatter
 
   var body: some View {
@@ -158,10 +162,7 @@ private struct AppVersion<Content: View>: View {
         Text("Release Notes")
           .bold()
         Spacer(minLength: 0)
-        Button("Version History") {
-          displayVersionHistory = true
-        }
-        .navigation(isActive: $displayVersionHistory) {
+        NavigationLink("Version History") {
           content()
         }
       }
@@ -179,24 +180,6 @@ private struct AppVersion<Content: View>: View {
     if let releaseNotes = version.notes {
       Text(releaseNotes)
         .expandable(initialLineLimit: 3)
-    }
-  }
-}
-
-private struct ShareAppURLButton: View {
-  let url: URL
-
-  @State private var displayShareSheet: Bool = false
-
-  var body: some View {
-    Button {
-      displayShareSheet = true
-    } label: {
-      SFSymbol.share
-        .accessibilityLabel("Share")
-    }
-    .sheet(isPresented: $displayShareSheet) {
-      ActivityView(activityItems: [url], applicationActivities: nil)
     }
   }
 }

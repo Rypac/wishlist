@@ -24,7 +24,7 @@ struct ContentView: View {
   @Environment(\.scenePhase) private var scenePhase
 
   var body: some View {
-    NavigationView {
+    NavigationStack {
       AppListView(
         viewModel: AppListViewModel(
           environment: AppListViewModel.Environment(
@@ -71,6 +71,5 @@ struct ContentView: View {
       }
     }
     .theme(environment.theme)
-    .navigationViewStyle(.stack)
   }
 }

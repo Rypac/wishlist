@@ -12,7 +12,6 @@
 		9428A496257224130071BDAC /* ToolboxUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9428A495257224130071BDAC /* ToolboxUI */; };
 		942FC864242E9D7400BF15F4 /* UpdateDateFormatterKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */; };
 		943F705A2462328A007425BA /* URLScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F70592462328A007425BA /* URLScheme.swift */; };
-		945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945B44BB232CC42E00A3B573 /* ActivityView.swift */; };
 		945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945CCA55243172DE000B7586 /* URLItemProvider.swift */; };
 		9460AC6B26FD60EA003B1FD8 /* ThemeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9460AC6A26FD60EA003B1FD8 /* ThemeModifier.swift */; };
 		94629D37244682070072C271 /* DeviceVisibilityModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94629D36244682070072C271 /* DeviceVisibilityModifier.swift */; };
@@ -88,7 +87,6 @@
 		9428D40A2431BEC000CBAC1F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDateFormatterKey.swift; sourceTree = "<group>"; };
 		943F70592462328A007425BA /* URLScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLScheme.swift; sourceTree = "<group>"; };
-		945B44BB232CC42E00A3B573 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		945CCA55243172DE000B7586 /* URLItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLItemProvider.swift; sourceTree = "<group>"; };
 		9460AC6A26FD60EA003B1FD8 /* ThemeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeModifier.swift; sourceTree = "<group>"; };
 		94629D36244682070072C271 /* DeviceVisibilityModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceVisibilityModifier.swift; sourceTree = "<group>"; };
@@ -155,7 +153,6 @@
 			isa = PBXGroup;
 			children = (
 				94629D31244681720072C271 /* Modifiers */,
-				945B44BB232CC42E00A3B573 /* ActivityView.swift */,
 				942FC863242E9D7400BF15F4 /* UpdateDateFormatterKey.swift */,
 				94ADE19826FC503B008029CC /* Input.swift */,
 				94FA7B1626FDE92100E947AD /* UserDefaultViewModel.swift */,
@@ -420,7 +417,6 @@
 				94C7B1532330F13F008181D1 /* Settings.swift in Sources */,
 				945CCA56243172DE000B7586 /* URLItemProvider.swift in Sources */,
 				94A2D387261BD04400FF6258 /* SwiftUI.swift in Sources */,
-				945B44BC232CC42E00A3B573 /* ActivityView.swift in Sources */,
 				949A58E32610392900B38E78 /* AppDelegate.swift in Sources */,
 				943F705A2462328A007425BA /* URLScheme.swift in Sources */,
 				94FA7B1726FDE92100E947AD /* UserDefaultViewModel.swift in Sources */,

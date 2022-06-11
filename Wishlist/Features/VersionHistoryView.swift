@@ -10,11 +10,9 @@ final class VersionHistoryViewModel: ObservableObject {
     var system: SystemEnvironment
   }
 
-  @Published private(set) var versions: [Version]
+  @Published private(set) var versions: [Version] = []
 
-  init(latestVersion: Version, environment: Environment) {
-    versions = [latestVersion]
-
+  init(environment: Environment) {
     environment.versionHistory
       .map { versions in
         versions.sorted(by: { $0.date > $1.date })
