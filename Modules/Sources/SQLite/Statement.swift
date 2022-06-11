@@ -96,9 +96,9 @@ extension Statement {
       throw SQLiteBindingError.invalidBindingCount(received: values.count, expected: parameterCount)
     }
 
-    for index in 1...values.count {
+    for (index, value) in zip(1..., values) {
       let result: SQLiteResultCode
-      if let value = values[index - 1] {
+      if let value {
         result = value.bind(to: handle, at: Int32(index))
       } else {
         result = sqlite3_bind_null(handle, Int32(index))
