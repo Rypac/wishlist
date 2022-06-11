@@ -32,6 +32,16 @@ final class AppDetailsViewModel: ObservableObject {
     try? await environment.repository.recordViewed(now)
   }
 
+  func delete() {
+    Task {
+      do {
+        try await environment.repository.delete()
+      } catch {
+        print("Failed to delete app: \(error)")
+      }
+    }
+  }
+
   func versionHistoryViewModel() -> VersionHistoryViewModel {
     VersionHistoryViewModel(
       environment: VersionHistoryViewModel.Environment(

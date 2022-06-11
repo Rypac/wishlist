@@ -67,7 +67,7 @@ final class AppListViewModel: ObservableObject {
       do {
         try await environment.repository.addApps(urls)
       } catch {
-        print("Failed to add apps: \(urls)")
+        print("Failed to add apps \(urls): \(error)")
       }
     }
   }
@@ -79,7 +79,7 @@ final class AppListViewModel: ObservableObject {
       do {
         try await environment.repository.deleteApps([id])
       } catch {
-        print("Failed to delete app with id: \(id)")
+        print("Failed to delete app with id \(id): \(error)")
       }
     }
   }
