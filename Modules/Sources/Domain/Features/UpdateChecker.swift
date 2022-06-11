@@ -51,7 +51,7 @@ public final class UpdateChecker {
   }
 
   private var shouldCheckForUpdates: Bool {
-    guard let lastUpdateDate = lastUpdateDate else {
+    guard let lastUpdateDate else {
       return true
     }
 

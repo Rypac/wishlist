@@ -51,7 +51,7 @@ private struct URLDropRepresentation: Encodable {
   }
 
   private var metadata: [String: String] {
-    guard let title = title else {
+    guard let title else {
       return [:]
     }
     return ["title": title]

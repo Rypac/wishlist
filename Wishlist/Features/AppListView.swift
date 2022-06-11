@@ -122,7 +122,7 @@ struct AppListView: View {
     .onDrop(of: [.url], isTargeted: nil) { itemProviders in
       for itemProvider in itemProviders {
         _ = itemProvider.loadObject(ofClass: URL.self) { url, error in
-          if let url = url {
+          if let url {
             viewModel.addApps([url])
           }
         }

@@ -109,7 +109,7 @@ private extension UserDefaults {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
       lock.lock()
       defer { lock.unlock() }
-      guard let subscriber = subscriber, requested > .none else {
+      guard let subscriber, requested > .none else {
         return
       }
 

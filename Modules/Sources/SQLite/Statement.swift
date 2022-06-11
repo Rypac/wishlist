@@ -134,7 +134,7 @@ extension Statement {
       }
 
       let result: SQLiteResultCode
-      if let value = value {
+      if let value {
         result = value.bind(to: handle, at: index)
       } else {
         result = sqlite3_bind_null(handle, index)
