@@ -42,7 +42,7 @@ final class Settings {
 }
 
 extension Settings {
-  var sortOrderStatePublisher: AnyPublisher<SortOrderState, Never> {
+  var sortOrderStatePublisher: some Publisher<SortOrderState, Never> {
     $sortOrder.publisher()
       .map { sortOrder in
         SortOrderState(
@@ -54,6 +54,5 @@ extension Settings {
           )
         )
       }
-      .eraseToAnyPublisher()
   }
 }

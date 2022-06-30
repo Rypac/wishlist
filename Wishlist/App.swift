@@ -5,23 +5,23 @@ final class Wishlist: App {
   @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
 
   var body: some Scene {
-    WindowGroup { [handleURLScheme = appDelegate.urlSchemeHandler.handle] in
+    WindowGroup { [appRepository = appDelegate.appRepository, handleURLScheme = appDelegate.urlSchemeHandler.handle] in
       ContentView(
         environment: ContentViewEnvironment(
           repository: AppListRepository(
-            apps: appDelegate.appRepository.appsPublisher,
-            app: appDelegate.appRepository.appPublisher(forId:),
-            versionHistory: appDelegate.appRepository.versionsPublisher(forId:),
+            apps: appRepository.appsPublisher.eraseToAnyPublisher(),
+            app: { appRepository.appPublisher(forId: $0).eraseToAnyPublisher() },
+            versionHistory: { appRepository.versionsPublisher(forId: $0).eraseToAnyPublisher() },
             checkForUpdates: appDelegate.updateChecker.update,
-            recordViewed: appDelegate.appRepository.recordAppViewed,
+            recordViewed: appRepository.recordAppViewed,
             addApps: appDelegate.appAdder.addApps(from:),
-            deleteApps: appDelegate.appRepository.deleteApps(ids:),
-            deleteAllApps: appDelegate.appRepository.deleteAllApps
+            deleteApps: appRepository.deleteApps(ids:),
+            deleteAllApps: appRepository.deleteAllApps
           ),
           theme: appDelegate.settings.$theme,
           notificationsEnabled: appDelegate.settings.$enableNotificaitons,
-          sortOrderState: appDelegate.settings.sortOrderStatePublisher,
-          refresh: appDelegate.appRepository.refresh,
+          sortOrderState: appDelegate.settings.sortOrderStatePublisher.eraseToAnyPublisher(),
+          refresh: appRepository.refresh,
           checkForUpdates: appDelegate.updateChecker.updateIfNeeded,
           scheduleBackgroundTasks: appDelegate.scheduleBackgroundTasks,
           system: appDelegate.system

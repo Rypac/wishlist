@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 @propertyWrapper
@@ -30,11 +31,11 @@ public struct UserDefault<Value: UserDefaultsConvertible> {
     userDefaults.register(_key)
   }
 
-  public func publisher() -> UserDefaults.Publisher<Value> {
+  public func publisher() -> some Publisher<Value, Never> {
     userDefaults.publisher(for: _key)
   }
 
-  public func subject() -> UserDefaults.Subject<Value> {
+  public func subject() -> some Subject<Value, Never> {
     userDefaults.subject(for: _key)
   }
 }

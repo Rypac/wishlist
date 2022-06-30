@@ -19,26 +19,24 @@ public final class AppRepository {
     try await persistence.fetchAll()
   }
 
-  public var appsPublisher: AnyPublisher<[AppDetails], Never> {
+  public var appsPublisher: some Publisher<[AppDetails], Never> {
     refreshTrigger
       .prepend(.all)
       .asyncTryMap { [persistence] _ in try await persistence.fetchAll() }
       .catch { _ in Just([]) }
       .receive(on: DispatchQueue.main)
-      .eraseToAnyPublisher()
   }
 
-  public func appPublisher(forId id: AppID) -> AnyPublisher<AppDetails?, Never> {
+  public func appPublisher(forId id: AppID) -> some Publisher<AppDetails?, Never> {
     refreshTrigger
       .prepend(.only([id]))
       .filter { $0.includes(id: id) }
       .asyncTryMap { [persistence] _ in try await persistence.fetch(id: id) }
       .catch { _ in Just(nil) }
       .receive(on: DispatchQueue.main)
-      .eraseToAnyPublisher()
   }
 
-  public func versionsPublisher(forId id: AppID) -> AnyPublisher<[Version], Never> {
+  public func versionsPublisher(forId id: AppID) -> some Publisher<[Version], Never> {
     Deferred { [persistence] in
       Future { promise in
         Task {
@@ -51,7 +49,6 @@ public final class AppRepository {
       }
     }
     .receive(on: DispatchQueue.main)
-    .eraseToAnyPublisher()
   }
 
   public func saveApps(_ apps: [AppDetails]) async throws {

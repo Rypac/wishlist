@@ -14,7 +14,7 @@ extension NSItemProvider {
     }
   }
 
-  public func loadURLPublisher() -> AnyPublisher<URL, Error> {
+  public func loadURLPublisher() -> some Publisher<URL, Error> {
     Deferred {
       Future { [item = self] promise in
         _ = item.loadObject(ofClass: URL.self) { url, error in
@@ -25,7 +25,7 @@ extension NSItemProvider {
           }
         }
       }
-    }.eraseToAnyPublisher()
+    }
   }
 }
 

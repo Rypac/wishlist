@@ -4,11 +4,11 @@ import Combine
 // MARK: - Publisher
 
 extension UserDefaults {
-  public func publisher<Value: UserDefaultsConvertible>(for key: UserDefaultsKey<Value>) -> UserDefaults.Publisher<Value> {
+  public func publisher<Value: UserDefaultsConvertible>(for key: UserDefaultsKey<Value>) -> some Combine.Publisher<Value, Never> {
     UserDefaults.Publisher(key: key, defaults: self)
   }
 
-  public struct Publisher<Output: UserDefaultsConvertible>: Combine.Publisher {
+  private struct Publisher<Output: UserDefaultsConvertible>: Combine.Publisher {
     public typealias Failure = Never
 
     private let key: UserDefaultsKey<Output>
@@ -29,11 +29,11 @@ extension UserDefaults {
 // MARK: - Subject
 
 extension UserDefaults {
-  public func subject<Value: UserDefaultsConvertible>(for key: UserDefaultsKey<Value>) -> UserDefaults.Subject<Value> {
+  public func subject<Value: UserDefaultsConvertible>(for key: UserDefaultsKey<Value>) -> some Combine.Subject<Value, Never> {
     UserDefaults.Subject(key: key, defaults: self)
   }
 
-  public final class Subject<Output: UserDefaultsConvertible>: Combine.Subject {
+  private final class Subject<Output: UserDefaultsConvertible>: Combine.Subject {
     public typealias Failure = Never
 
     private let key: UserDefaultsKey<Output>
