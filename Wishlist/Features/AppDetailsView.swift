@@ -83,8 +83,10 @@ struct AppDetailsView: View {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .primaryAction) {
-        if let url = viewModel.app?.url {
-          ShareLink(item: url)
+        if let app = viewModel.app {
+          ShareLink(item: app.url, message: Text(app.title), preview: SharePreview(app.title))
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.hidden)
         } else {
           ShareLink(item: "Nothing")
         }
