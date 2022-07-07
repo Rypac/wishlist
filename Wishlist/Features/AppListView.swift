@@ -124,10 +124,6 @@ struct AppListView: View {
         }
       }
     }
-    .dropDestination(payloadType: URL.self) { urls, _ in
-      viewModel.addApps(urls)
-      return true
-    }
     .searchable(text: $viewModel.filterQuery)
     .refreshable {
       await viewModel.checkForUpdates()
