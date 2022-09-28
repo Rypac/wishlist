@@ -6,7 +6,7 @@ extension Publisher {
   }
 
   public static func empty(completeImmediately: Bool = true) -> some Publisher<Output, Failure> {
-    Empty()
+    Empty(completeImmediately: completeImmediately)
   }
 
   public static func never() -> some Publisher<Output, Failure> {
