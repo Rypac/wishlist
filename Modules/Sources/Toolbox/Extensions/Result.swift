@@ -1,3 +1,5 @@
+import Combine
+
 public extension Result.Publisher where Failure == Error {
   init(catching body: () throws -> Success) {
     do {
