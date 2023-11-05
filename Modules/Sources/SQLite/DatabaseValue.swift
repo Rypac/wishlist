@@ -13,15 +13,15 @@ extension DatabaseValue: CustomStringConvertible {
   public var description: String {
     switch self {
     case .null:
-      return "NULL"
+      "NULL"
     case .integer(let int64):
-      return String(int64)
+      String(int64)
     case .real(let double):
-      return String(double)
+      String(double)
     case .text(let string):
-      return String(reflecting: string)
+      String(reflecting: string)
     case .blob(let data):
-      return "Data(\(data.description))"
+      "Data(\(data.description))"
     }
   }
 }
@@ -33,9 +33,9 @@ extension DatabaseValue: ExpressibleByNilLiteral {
 
   public var isNull: Bool {
     if case .null = self {
-      return true
+      true
     } else {
-      return false
+      false
     }
   }
 }
@@ -99,15 +99,15 @@ extension DatabaseValue: StatementBindable {
   public func bind(to statement: SQLiteStatement, at index: Int32) -> SQLiteResultCode {
     switch self {
     case .null:
-      return sqlite3_bind_null(statement, index)
+      sqlite3_bind_null(statement, index)
     case .integer(let int):
-      return sqlite3_bind_int64(statement, index, int)
+      sqlite3_bind_int64(statement, index, int)
     case .real(let double):
-      return sqlite3_bind_double(statement, index, double)
+      sqlite3_bind_double(statement, index, double)
     case .text(let string):
-      return sqlite3_bind_text(statement, index, string, -1, SQLITE_TRANSIENT)
+      sqlite3_bind_text(statement, index, string, -1, SQLITE_TRANSIENT)
     case .blob(let data):
-      return data.withUnsafeBytes { bytes in
+      data.withUnsafeBytes { bytes in
         sqlite3_bind_blob(statement, index, bytes.baseAddress, Int32(bytes.count), SQLITE_TRANSIENT)
       }
     }

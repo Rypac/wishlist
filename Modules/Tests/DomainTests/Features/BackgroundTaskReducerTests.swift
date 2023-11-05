@@ -136,13 +136,13 @@ extension BackgroundTaskAction: Equatable {
   public static func == (_ lhs: BackgroundTaskAction, _ rhs: BackgroundTaskAction) -> Bool {
     switch (lhs, rhs) {
     case (.scheduleAppUpdateTask, .scheduleAppUpdateTask):
-      return true
+      true
     case let (.handleAppUpdateTask(task1), .handleAppUpdateTask(task2)):
-      return task1.identifier == task2.identifier
+      task1.identifier == task2.identifier
     case let (.failedToRegisterTask(task1), .failedToRegisterTask(task2)):
-      return task1 == task2
+      task1 == task2
     default:
-      return false
+      false
     }
   }
 }

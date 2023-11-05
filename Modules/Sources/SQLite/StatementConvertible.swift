@@ -171,9 +171,9 @@ public final class FastDatabaseValueCursor<Value: DatabaseValueConvertible & Sta
   public func next() throws -> Value? {
     switch sqlite3_step(statement) {
     case SQLITE_DONE:
-      return nil
+      nil
     case SQLITE_ROW:
-      return try Value.decode(fromStatement: statement, atIndex: 0)
+      try Value.decode(fromStatement: statement, atIndex: 0)
     case let code:
       throw SQLiteError(code: code, statement: statement)
     }
@@ -190,9 +190,9 @@ public final class FastNullableDatabaseValueCursor<Value: DatabaseValueConvertib
   public func next() throws -> Value?? {
     switch sqlite3_step(statement) {
     case SQLITE_DONE:
-      return nil
+      nil
     case SQLITE_ROW:
-      return try Value.decodeIfPresent(fromStatement: statement, atIndex: 0)
+      try Value.decodeIfPresent(fromStatement: statement, atIndex: 0)
     case let code:
       throw SQLiteError(code: code, statement: statement)
     }

@@ -79,8 +79,8 @@ public final class AppRepository {
 private extension AppRepository.RefreshStrategy {
   func includes(id: AppID) -> Bool {
     switch self {
-    case .all: return true
-    case .only(let ids): return ids.contains(id)
+    case .all: true
+    case .only(let ids): ids.contains(id)
     }
   }
 }

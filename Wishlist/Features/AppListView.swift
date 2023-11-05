@@ -178,9 +178,9 @@ private struct AppPriceDetails: View {
 
   private var color: Color {
     switch change {
-    case .same: return .primary
-    case .decrease: return .green
-    case .increase: return .red
+    case .same: .primary
+    case .decrease: .green
+    case .increase: .red
     }
   }
 }

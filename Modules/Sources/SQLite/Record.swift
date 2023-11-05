@@ -64,9 +64,9 @@ public class RecordCurser<Value: Record>: Cursor {
   public func next() throws -> Value? {
     switch sqlite3_step(statement) {
     case SQLITE_DONE:
-      return nil
+      nil
     case SQLITE_ROW:
-      return try Value(row: row)
+      try Value(row: row)
     case let code:
       throw SQLiteError(code: code, statement: statement)
     }

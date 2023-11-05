@@ -11,15 +11,15 @@ extension DatabaseValueConvertible {
   public func bind(to statement: SQLiteStatement, at index: Int32) -> SQLiteResultCode {
     switch databaseValue {
     case .null:
-      return sqlite3_bind_null(statement, index)
+      sqlite3_bind_null(statement, index)
     case .integer(let int):
-      return sqlite3_bind_int64(statement, index, int)
+      sqlite3_bind_int64(statement, index, int)
     case .real(let double):
-      return sqlite3_bind_double(statement, index, double)
+      sqlite3_bind_double(statement, index, double)
     case .text(let string):
-      return sqlite3_bind_text(statement, index, string, -1, SQLITE_TRANSIENT)
+      sqlite3_bind_text(statement, index, string, -1, SQLITE_TRANSIENT)
     case .blob(let data):
-      return data.withUnsafeBytes { bytes in
+      data.withUnsafeBytes { bytes in
         sqlite3_bind_blob(statement, index, bytes.baseAddress, Int32(bytes.count), SQLITE_TRANSIENT)
       }
     }
@@ -354,9 +354,9 @@ public final class DatabaseValueCursor<Value: DatabaseValueConvertible>: Cursor 
   public func next() throws -> Value? {
     switch sqlite3_step(statement) {
     case SQLITE_DONE:
-      return nil
+      nil
     case SQLITE_ROW:
-      return try Value.decode(fromStatement: statement, atIndex: 0)
+      try Value.decode(fromStatement: statement, atIndex: 0)
     case let code:
       throw SQLiteError(code: code, statement: statement)
     }
@@ -373,9 +373,9 @@ public final class NullableDatabaseValueCursor<Value: DatabaseValueConvertible>:
   public func next() throws -> Value?? {
     switch sqlite3_step(statement) {
     case SQLITE_DONE:
-      return nil
+      nil
     case SQLITE_ROW:
-      return try Value.decodeIfPresent(fromStatement: statement, atIndex: 0)
+      try Value.decodeIfPresent(fromStatement: statement, atIndex: 0)
     case let code:
       throw SQLiteError(code: code, statement: statement)
     }

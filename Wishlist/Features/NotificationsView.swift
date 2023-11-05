@@ -62,8 +62,8 @@ private struct ConfigureNotificationsView: View {
 private extension ChangeNotification {
   var title: String {
     switch self {
-    case .newVersion: return "Updates"
-    case .priceDrop: return "Price Drops"
+    case .newVersion: "Updates"
+    case .priceDrop: "Price Drops"
     }
   }
 }

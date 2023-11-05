@@ -52,17 +52,17 @@ class ActionViewController: UIViewController {
       .map { state in
         switch state {
         case let .loading(ids) where ids.isEmpty:
-          return "No apps to add"
+          "No apps to add"
         case let .loading(ids):
-          return "Adding \(ids.count) apps to Wishlist…"
+          "Adding \(ids.count) apps to Wishlist…"
         case let .success(apps) where apps.isEmpty:
-          return "No apps added to Wishlist"
+          "No apps added to Wishlist"
         case let .success(apps):
-          return "Added to Wishlist:\n\n" + apps.map(\.title).joined(separator: "\n")
+          "Added to Wishlist:\n\n" + apps.map(\.title).joined(separator: "\n")
         case let .failure(error):
-          return "Failed to add apps to Wishlist: \(error)"
+          "Failed to add apps to Wishlist: \(error)"
         case .initial:
-          return ""
+          ""
         }
       }
       .receive(on: DispatchQueue.main)

@@ -109,9 +109,9 @@ private struct DeleteAllAppsView: View {
 private extension Theme {
   var title: String {
     switch self {
-    case .system: return "System"
-    case .light: return "Light"
-    case .dark: return "Dark"
+    case .system: "System"
+    case .light: "Light"
+    case .dark: "Dark"
     }
   }
 }
