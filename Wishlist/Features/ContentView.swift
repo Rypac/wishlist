@@ -57,8 +57,8 @@ struct ContentView: View {
         )
       )
     }
-    .onChange(of: scenePhase) { phase in
-      switch phase {
+    .onChange(of: scenePhase) { _, newPhase in
+      switch newPhase {
       case .active:
         Task {
           await environment.refresh()

@@ -1,5 +1,6 @@
 extension Dictionary {
-  public subscript<Key>(key: Key) -> Value? where Key: RawRepresentable, Key.RawValue == Self.Key {
+  public subscript<RawRepresentableKey>(key: RawRepresentableKey) -> Value?
+    where RawRepresentableKey: RawRepresentable, RawRepresentableKey.RawValue == Self.Key {
     get { self[key.rawValue] }
     set { self[key.rawValue] = newValue }
   }
