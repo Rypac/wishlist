@@ -15,7 +15,7 @@ enum Theme: String, CaseIterable, UserDefaultsConvertible {
   case dark
 }
 
-extension ChangeNotification: UserDefaultsConvertible {}
+extension ChangeNotification: @retroactive UserDefaultsConvertible {}
 
 final class Settings {
   @UserDefault("sortOrder", defaultValue: .updated)

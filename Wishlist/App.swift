@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-final class Wishlist: App {
+struct Wishlist: App {
   @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
 
   var body: some Scene {
@@ -12,19 +12,19 @@ final class Wishlist: App {
             apps: appRepository.appsPublisher.eraseToAnyPublisher(),
             app: { appRepository.appPublisher(forId: $0).eraseToAnyPublisher() },
             versionHistory: { appRepository.versionsPublisher(forId: $0).eraseToAnyPublisher() },
-            checkForUpdates: appDelegate.updateChecker.update,
+            checkForUpdates: self.appDelegate.updateChecker.update,
             recordViewed: appRepository.recordAppViewed,
-            addApps: appDelegate.appAdder.addApps(from:),
+            addApps: self.appDelegate.appAdder.addApps(from:),
             deleteApps: appRepository.deleteApps(ids:),
             deleteAllApps: appRepository.deleteAllApps
           ),
-          theme: appDelegate.settings.$theme,
-          notificationsEnabled: appDelegate.settings.$enableNotificaitons,
-          sortOrderState: appDelegate.settings.sortOrderStatePublisher.eraseToAnyPublisher(),
+          theme: self.appDelegate.settings.$theme,
+          notificationsEnabled: self.appDelegate.settings.$enableNotificaitons,
+          sortOrderState: self.appDelegate.settings.sortOrderStatePublisher.eraseToAnyPublisher(),
           refresh: appRepository.refresh,
-          checkForUpdates: appDelegate.updateChecker.updateIfNeeded,
-          scheduleBackgroundTasks: appDelegate.scheduleBackgroundTasks,
-          system: appDelegate.system
+          checkForUpdates: self.appDelegate.updateChecker.updateIfNeeded,
+          scheduleBackgroundTasks: self.appDelegate.scheduleBackgroundTasks,
+          system: self.appDelegate.system
         )
       )
       .onOpenURL { url in

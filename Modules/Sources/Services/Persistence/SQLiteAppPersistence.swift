@@ -227,9 +227,9 @@ private extension SQLiteAppPersistence {
   }
 }
 
-extension AppID: DatabaseValueConvertible {}
+extension AppID: @retroactive DatabaseValueConvertible {}
 
-extension AppDetails: Record {
+extension AppDetails: @retroactive Record {
   public init(row: Row) throws {
     self.init(
       id: try row[0],
@@ -256,7 +256,7 @@ extension AppDetails: Record {
   }
 }
 
-extension Version: Record {
+extension Version: @retroactive Record {
   public init(row: Row) throws {
     self.init(
       name: try row[0],
