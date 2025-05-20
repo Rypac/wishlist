@@ -4,4 +4,4 @@
 
 Wishlist allows you to monitor App Store apps for price drops and version updates.
 
-It is currently a work in progress and makes heavy use of SwiftUI, Combine and [Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture).
+It is currently a work in progress and makes heavy use of SwiftUI, Combine and SQLite.
