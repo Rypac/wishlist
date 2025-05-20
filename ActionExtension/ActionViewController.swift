@@ -1,7 +1,7 @@
 import Combine
 import Domain
-import Services
 import SQLite
+import Services
 import Toolbox
 import UIKit
 import UniformTypeIdentifiers
@@ -108,8 +108,8 @@ class ActionViewController: UIViewController {
   }
 }
 
-private extension NSExtensionContext {
-  var urlItemProviders: [NSItemProvider] {
+extension NSExtensionContext {
+  fileprivate var urlItemProviders: [NSItemProvider] {
     guard let items = inputItems as? [NSExtensionItem] else {
       return []
     }
@@ -119,13 +119,13 @@ private extension NSExtensionContext {
       .filter { $0.hasItemConformingToTypeIdentifier(UTType.url.identifier) }
   }
 
-  func loadURLs() async throws -> [URL] {
+  fileprivate func loadURLs() async throws -> [URL] {
     let providers = urlItemProviders
     switch providers.count {
     case 0: return []
     case 1: return [try await providers[0].loadURL()]
     default:
-      var results = Array<URL?>(repeatElement(nil, count: providers.count))
+      var results = [URL?](repeatElement(nil, count: providers.count))
       try await withThrowingTaskGroup(of: (Int, URL).self) { group in
         for (index, provider) in providers.enumerated() {
           group.addTask {

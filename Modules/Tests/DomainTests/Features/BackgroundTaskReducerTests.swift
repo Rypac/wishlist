@@ -1,8 +1,8 @@
 import BackgroundTasks
 import Combine
 import ComposableArchitecture
-import Foundation
 import Domain
+import Foundation
 import Toolbox
 import XCTest
 
@@ -71,7 +71,8 @@ class BackgroundTaskReducerTests: XCTestCase {
             appsToUpdate = ids
             return Future { subscriber in
               subscriber(.success([updatedThings]))
-            }.eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
           },
           saveUpdatedApps: { updatedApps = $0 }
         )
@@ -89,7 +90,7 @@ class BackgroundTaskReducerTests: XCTestCase {
     XCTAssertEqual(appsToUpdate, apps.map(\.id))
     XCTAssertEqual(updatedApps, [AppDetails(updatedThings, firstAdded: now)])
 
-      // Reset test assertions
+    // Reset test assertions
     refreshTask.reset()
     appsToUpdate = nil
     updatedApps = nil
@@ -97,7 +98,8 @@ class BackgroundTaskReducerTests: XCTestCase {
       appsToUpdate = ids
       return Future { subscriber in
         subscriber(.failure(FetchAppsError()))
-      }.eraseToAnyPublisher()
+      }
+      .eraseToAnyPublisher()
     }
 
     // Failure to lookup apps flow

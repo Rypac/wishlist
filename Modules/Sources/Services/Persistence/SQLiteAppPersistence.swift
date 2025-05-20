@@ -156,8 +156,8 @@ public final class SQLiteAppPersistence: AppPersistence {
   }
 }
 
-private extension SQLiteAppPersistence {
-  func migrate() throws {
+extension SQLiteAppPersistence {
+  fileprivate func migrate() throws {
     try databaseWriter.write { database in
       try database.transaction {
         try database.execute(
@@ -266,8 +266,8 @@ extension Version: @retroactive Record {
   }
 }
 
-private extension Database {
-  func add(_ app: AppDetails) throws {
+extension Database {
+  fileprivate func add(_ app: AppDetails) throws {
     try execute(
       literal: """
         INSERT INTO app VALUES (

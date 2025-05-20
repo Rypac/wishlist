@@ -13,11 +13,14 @@ final class URLItemProvider: NSObject, Encodable, NSItemProviderWriting {
   static var writableTypeIdentifiersForItemProvider: [String] {
     [
       UTType.url.identifier,
-      UTType.plainText.identifier
+      UTType.plainText.identifier,
     ]
   }
 
-  func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
+  func loadData(
+    withTypeIdentifier typeIdentifier: String,
+    forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void
+  ) -> Progress? {
     switch typeIdentifier {
     case UTType.url.identifier:
       do {

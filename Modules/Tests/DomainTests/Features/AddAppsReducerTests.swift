@@ -1,7 +1,7 @@
 import Combine
 import ComposableArchitecture
-import Foundation
 import Domain
+import Foundation
 import Toolbox
 import XCTest
 
@@ -42,11 +42,11 @@ class AddAppsReducerTests: XCTestCase {
       URL(string: "https://apps.apple.com/au/id1016366447")!,
       URL(string: "https://itunes.apple.com/us/id1080840241")!,
       URL(string: "https://apps.apple.com/us/app/things-3/id904237743")!,
-      URL(string: "https://apps.google.com/us/id5678")!
+      URL(string: "https://apps.google.com/us/id5678")!,
     ]
 
     testStore.send(.addAppsFromURLs(urls))
-    testStore.receive(.addApps([1016366447, 1080840241, 904237743])) {
+    testStore.receive(.addApps([1_016_366_447, 1_080_840_241, 904_237_743])) {
       $0.addingApps = true
     }
     scheduler.advance()

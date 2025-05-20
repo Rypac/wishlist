@@ -31,7 +31,7 @@ public class DatabasePool: DatabaseWriter {
 
   // MARK: - DatabaseReader
 
-  @_disfavoredOverload // SR-15150 Async overloading in protocol implementation fails
+  @_disfavoredOverload  // SR-15150 Async overloading in protocol implementation fails
   public func read<T>(_ work: (Database) throws -> T) rethrows -> T {
     try readerDatabaseQueue.sync { [readerDatabaseConnection] in
       try work(readerDatabaseConnection)
@@ -46,7 +46,7 @@ public class DatabasePool: DatabaseWriter {
 
   // MARK: - DatabaseWriter
 
-  @_disfavoredOverload // SR-15150 Async overloading in protocol implementation fails
+  @_disfavoredOverload  // SR-15150 Async overloading in protocol implementation fails
   public func write<T>(_ updates: (Database) throws -> T) rethrows -> T {
     try writerDatabaseQueue.sync { [writerDatabaseConnection] in
       try updates(writerDatabaseConnection)

@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import UserDefaults
 
 final class UserDefaultsTests: XCTestCase {
@@ -200,6 +201,6 @@ final class UserDefaultsTests: XCTestCase {
     ("testURLArrayKey", testURLArrayKey),
     ("testIntegerSetKey", testIntegerSetKey),
     ("testDictionaryStringIntKey", testDictionaryStringIntKey),
-    ("testArrayWithEnumElements", testArrayWithEnumElements)
+    ("testArrayWithEnumElements", testArrayWithEnumElements),
   ]
 }

@@ -27,9 +27,10 @@ public final class Statement {
   /// Returns the names assigned to the columns in the result set of a `SELECT` statement.
   ///
   /// See <https://www.sqlite.org/c3ref/column_name.html> for more information.
-  public private(set) lazy var columnNames: [String] = (0..<Int32(columnCount)).map { index in
-    String(cString: sqlite3_column_name(handle, index))
-  }
+  public private(set) lazy var columnNames: [String] = (0..<Int32(columnCount))
+    .map { index in
+      String(cString: sqlite3_column_name(handle, index))
+    }
 
   /// Returns the raw SQL text used to create the prepared statement.
   ///

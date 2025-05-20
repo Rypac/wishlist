@@ -1,8 +1,8 @@
 import BackgroundTasks
 import Combine
 import ComposableArchitecture
-import Foundation
 import Domain
+import Foundation
 import Toolbox
 import XCTest
 
@@ -141,8 +141,8 @@ class UpdateAppsReducerTests: XCTestCase {
   }
 }
 
-private extension UpdateAppsReducerTests {
-  func details(_ summary: AppSummary) -> AppDetails {
+extension UpdateAppsReducerTests {
+  fileprivate func details(_ summary: AppSummary) -> AppDetails {
     AppDetails(summary, firstAdded: now.addingTimeInterval(-20000))
   }
 }

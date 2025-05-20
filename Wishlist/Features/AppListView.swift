@@ -173,7 +173,7 @@ private struct AppPriceDetails: View {
       Text(price)
         .lineLimit(1)
     }
-      .foregroundColor(color)
+    .foregroundColor(color)
   }
 
   private var color: Color {
@@ -228,15 +228,15 @@ struct AppListSummary: Identifiable, Equatable {
   let url: URL
 }
 
-private extension NSItemProvider {
-  convenience init(url: URL, title: String) {
+extension NSItemProvider {
+  fileprivate convenience init(url: URL, title: String) {
     self.init(object: URLItemProvider(url: url, title: title))
     self.suggestedName = title
   }
 }
 
-private extension AppListSummary.Details {
-  init(sortOrder: SortOrder, app: AppDetails) {
+extension AppListSummary.Details {
+  fileprivate init(sortOrder: SortOrder, app: AppDetails) {
     switch sortOrder {
     case .updated:
       if let lastViewed = app.lastViewed {
@@ -251,8 +251,8 @@ private extension AppListSummary.Details {
   }
 }
 
-private extension AppDetails {
-  var priceChange: AppListSummary.PriceChange {
+extension AppDetails {
+  fileprivate var priceChange: AppListSummary.PriceChange {
     guard let previousPrice = price.previous else {
       return .same
     }
@@ -266,16 +266,16 @@ private extension AppDetails {
 
 extension Collection where Element == AppDetails {
   func applying(_ sorting: SortOrderState, titleFilter: String) -> [AppDetails] {
-      filter { app in
-        guard titleFilter.isEmpty || app.title.localizedCaseInsensitiveContains(titleFilter) else {
-          return false
-        }
-        if sorting.sortOrder == .price && !sorting.configuration.price.includeFree {
-          return app.price.current.value > 0
-        }
-        return true
+    filter { app in
+      guard titleFilter.isEmpty || app.title.localizedCaseInsensitiveContains(titleFilter) else {
+        return false
       }
-      .sorted(by: sorting)
+      if sorting.sortOrder == .price && !sorting.configuration.price.includeFree {
+        return app.price.current.value > 0
+      }
+      return true
+    }
+    .sorted(by: sorting)
   }
 
   private func sorted(by order: SortOrderState) -> [AppDetails] {

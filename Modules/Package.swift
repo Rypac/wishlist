@@ -6,7 +6,7 @@ let package = Package(
   name: "Modules",
   platforms: [
     .iOS("16.0"),
-    .macOS("13.0")
+    .macOS("13.0"),
   ],
   products: [
     .library(name: "UserDefaults", targets: ["UserDefaults"]),
@@ -14,7 +14,7 @@ let package = Package(
     .library(name: "Toolbox", targets: ["Toolbox"]),
     .library(name: "ToolboxUI", targets: ["ToolboxUI"]),
     .library(name: "Domain", targets: ["Domain"]),
-    .library(name: "Services", targets: ["Services"])
+    .library(name: "Services", targets: ["Services"]),
   ],
   targets: [
     .target(
@@ -44,7 +44,7 @@ let package = Package(
     .testTarget(
       name: "DomainTests",
       dependencies: ["Domain"]
-    )
+    ),
   ],
   swiftLanguageVersions: [
     .v5

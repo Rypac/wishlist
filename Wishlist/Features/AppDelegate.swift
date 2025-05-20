@@ -1,8 +1,8 @@
 import BackgroundTasks
 import Domain
 import Foundation
-import Services
 import SQLite
+import Services
 import SwiftUI
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -64,7 +64,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     )
   }
 
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
     settings.register()
     registerBackgroundTasks()
 
@@ -84,8 +87,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
   }
 }
 
-private extension BGTaskScheduler {
-  func register(_ backgroundTaskScheduler: BackgroundTaskScheduler) {
+extension BGTaskScheduler {
+  fileprivate func register(_ backgroundTaskScheduler: BackgroundTaskScheduler) {
     let id = backgroundTaskScheduler.id
     let registeredTask = BGTaskScheduler.shared.register(forTaskWithIdentifier: id, using: nil) { task in
       backgroundTaskScheduler.run(task)
@@ -95,7 +98,7 @@ private extension BGTaskScheduler {
     }
   }
 
-  func schedule(_ backgroundTaskScheduler: BackgroundTaskScheduler) {
+  fileprivate func schedule(_ backgroundTaskScheduler: BackgroundTaskScheduler) {
     do {
       try BGTaskScheduler.shared.submit(backgroundTaskScheduler.taskRequest)
     } catch {

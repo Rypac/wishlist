@@ -59,8 +59,8 @@ private struct ConfigureNotificationsView: View {
   }
 }
 
-private extension ChangeNotification {
-  var title: String {
+extension ChangeNotification {
+  fileprivate var title: String {
     switch self {
     case .newVersion: "Updates"
     case .priceDrop: "Price Drops"

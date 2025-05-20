@@ -34,17 +34,17 @@ struct ContentView: View {
           )
         )
       )
-        .toolbar {
-          ToolbarItem(placement: .primaryAction) {
-            Button {
-              showSettings = true
-            } label: {
-              SFSymbol.settings
-                .accessibilityLabel("Settings")
-            }
+      .toolbar {
+        ToolbarItem(placement: .primaryAction) {
+          Button {
+            showSettings = true
+          } label: {
+            SFSymbol.settings
+              .accessibilityLabel("Settings")
           }
         }
-        .navigationTitle("Wishlist")
+      }
+      .navigationTitle("Wishlist")
     }
     .sheet(isPresented: $showSettings) {
       SettingsView(

@@ -126,8 +126,8 @@ private struct AppHeading: View {
   }
 }
 
-private extension AppHeading {
-  init(app: AppDetails) {
+extension AppHeading {
+  fileprivate init(app: AppDetails) {
     title = app.title
     seller = app.seller
     price = app.price.current.formatted

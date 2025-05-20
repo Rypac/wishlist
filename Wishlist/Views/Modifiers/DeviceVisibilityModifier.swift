@@ -15,12 +15,12 @@ public struct DeviceVisibilityModifier: ViewModifier {
   }
 }
 
-public extension View {
-  func visible(on devices: UIUserInterfaceIdiom...) -> some View {
+extension View {
+  public func visible(on devices: UIUserInterfaceIdiom...) -> some View {
     modifier(DeviceVisibilityModifier(devices: Set(devices)))
   }
 
-  func visible(on devices: Set<UIUserInterfaceIdiom>) -> some View {
+  public func visible(on devices: Set<UIUserInterfaceIdiom>) -> some View {
     modifier(DeviceVisibilityModifier(devices: devices))
   }
 }

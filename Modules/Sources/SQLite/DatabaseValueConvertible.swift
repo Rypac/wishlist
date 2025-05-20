@@ -387,11 +387,10 @@ public final class NullableDatabaseValueCursor<Value: DatabaseValueConvertible>:
 extension DatabaseValueConvertible {
   static func decode(fromStatement statement: SQLiteStatement, atIndex index: Int32) throws -> Self {
     let databaseValue = DatabaseValue(statement: statement, index: index)
-    if let value = Self(databaseValue: databaseValue) {
-      return value
-    } else {
+    guard let value = Self(databaseValue: databaseValue) else {
       throw SQLiteDecodingError.valueMismatch(Self.self, databaseValue: databaseValue)
     }
+    return value
   }
 
   static func decodeIfPresent(fromStatement statement: SQLiteStatement, atIndex index: Int32) throws -> Self? {

@@ -1,7 +1,7 @@
 import Combine
 
-public extension Result.Publisher where Failure == Error {
-  init(catching body: () throws -> Success) {
+extension Result.Publisher where Failure == Error {
+  public init(catching body: () throws -> Success) {
     do {
       self.init(try body())
     } catch {

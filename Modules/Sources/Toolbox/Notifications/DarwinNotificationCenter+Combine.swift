@@ -7,12 +7,12 @@ extension DarwinNotification.Name: ExpressibleByStringLiteral {
   }
 }
 
-public extension DarwinNotificationCenter {
-  func publisher(for notification: DarwinNotification.Name) -> Publisher {
+extension DarwinNotificationCenter {
+  public func publisher(for notification: DarwinNotification.Name) -> Publisher {
     Publisher(notificationCenter: self, notification: notification)
   }
 
-  struct Publisher: Combine.Publisher {
+  public struct Publisher: Combine.Publisher {
     public typealias Output = Void
     public typealias Failure = Never
 

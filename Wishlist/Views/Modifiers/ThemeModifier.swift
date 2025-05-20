@@ -16,18 +16,18 @@ extension View {
   }
 }
 
-private extension UIUserInterfaceStyle {
-  init(_ theme: Theme) {
-    self = switch theme {
-    case .system: .unspecified
-    case .light: .light
-    case .dark: .dark
+extension UIUserInterfaceStyle {
+  fileprivate init(_ theme: Theme) {
+    switch theme {
+    case .system: self = .unspecified
+    case .light: self = .light
+    case .dark: self = .dark
     }
   }
 }
 
-private extension ColorScheme {
-  init?(_ theme: Theme) {
+extension ColorScheme {
+  fileprivate init?(_ theme: Theme) {
     switch theme {
     case .system: return nil
     case .light: self = .light

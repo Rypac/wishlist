@@ -19,9 +19,11 @@ extension UserDefaultsKey {
 
 extension UserDefaults {
   public func register<Value: UserDefaultsConvertible>(_ keys: UserDefaultsKey<Value>...) {
-    register(defaults: keys.reduce(into: Dictionary(minimumCapacity: keys.count)) { defaults, key in
-      defaults[key.key] = key.defaultValue.storedValue
-    })
+    register(
+      defaults: keys.reduce(into: Dictionary(minimumCapacity: keys.count)) { defaults, key in
+        defaults[key.key] = key.defaultValue.storedValue
+      }
+    )
   }
 
   public subscript<Value: UserDefaultsConvertible>(key: UserDefaultsKey<Value>) -> Value {

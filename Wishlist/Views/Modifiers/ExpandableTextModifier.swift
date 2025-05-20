@@ -29,7 +29,7 @@ public struct ExpandableTextModifier: ViewModifier {
           LinearGradient(
             gradient: Gradient(stops: [
               Gradient.Stop(color: Color(.systemBackground).opacity(0), location: 0),
-              Gradient.Stop(color: Color(.systemBackground), location: 0.25)
+              Gradient.Stop(color: Color(.systemBackground), location: 0.25),
             ]),
             startPoint: .leading,
             endPoint: .trailing
@@ -40,8 +40,8 @@ public struct ExpandableTextModifier: ViewModifier {
   }
 }
 
-public extension View {
-  func expandable(initialLineLimit: Int, expandedLineLimit: Int? = nil) -> some View {
+extension View {
+  public func expandable(initialLineLimit: Int, expandedLineLimit: Int? = nil) -> some View {
     modifier(ExpandableTextModifier(initialLineLimit: initialLineLimit, expandedLineLimit: expandedLineLimit))
   }
 }

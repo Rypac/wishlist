@@ -1,7 +1,7 @@
 import Foundation
 
 public protocol DatabaseWriter: DatabaseReader {
-  @_disfavoredOverload // SR-15150 Async overloading in protocol implementation fails
+  @_disfavoredOverload  // SR-15150 Async overloading in protocol implementation fails
   func write<T>(_ updates: (Database) throws -> T) rethrows -> T
 
   func asyncWrite<T>(

@@ -1,10 +1,12 @@
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - Publisher
 
 extension UserDefaults {
-  public func publisher<Value: UserDefaultsConvertible>(for key: UserDefaultsKey<Value>) -> some Combine.Publisher<Value, Never> {
+  public func publisher<Value: UserDefaultsConvertible>(
+    for key: UserDefaultsKey<Value>
+  ) -> some Combine.Publisher<Value, Never> {
     UserDefaults.Publisher(key: key, defaults: self)
   }
 
@@ -29,7 +31,9 @@ extension UserDefaults {
 // MARK: - Subject
 
 extension UserDefaults {
-  public func subject<Value: UserDefaultsConvertible>(for key: UserDefaultsKey<Value>) -> some Combine.Subject<Value, Never> {
+  public func subject<Value: UserDefaultsConvertible>(
+    for key: UserDefaultsKey<Value>
+  ) -> some Combine.Subject<Value, Never> {
     UserDefaults.Subject(key: key, defaults: self)
   }
 
@@ -76,8 +80,9 @@ extension UserDefaults {
 
 // MARK: - Subscription
 
-private extension UserDefaults {
-  final class Subscription<S: Subscriber>: NSObject, Combine.Subscription where S.Input: UserDefaultsConvertible {
+extension UserDefaults {
+  fileprivate final class Subscription<S: Subscriber>: NSObject, Combine.Subscription
+  where S.Input: UserDefaultsConvertible {
     private var subscriber: S?
     private var requested: Subscribers.Demand = .none
     private var defaultsObserverToken: NSObject?
@@ -106,7 +111,12 @@ private extension UserDefaults {
       defaults.addObserver(self, forKeyPath: key.key, options: [.initial], context: nil)
     }
 
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+    override func observeValue(
+      forKeyPath keyPath: String?,
+      of object: Any?,
+      change: [NSKeyValueChangeKey: Any]?,
+      context: UnsafeMutableRawPointer?
+    ) {
       lock.lock()
       defer { lock.unlock() }
       guard let subscriber, requested > .none else {

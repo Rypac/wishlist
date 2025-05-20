@@ -1,6 +1,6 @@
-import Foundation
 import Combine
 import Domain
+import Foundation
 
 public final class AppStoreService: AppLookupService {
   private let session: URLSession
@@ -26,8 +26,9 @@ public final class AppStoreService: AppLookupService {
       URLQueryItem(name: "id", value: ids.shuffled().map { String($0.rawValue) }.joined(separator: ",")),
       URLQueryItem(name: "country", value: "au"),
       URLQueryItem(name: "media", value: "software"),
-      URLQueryItem(name: "limit", value: String(ids.count))
-    ].shuffled()
+      URLQueryItem(name: "limit", value: String(ids.count)),
+    ]
+    .shuffled()
 
     let request = URLRequest(url: urlComponents.url!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
 
@@ -78,8 +79,8 @@ private struct LookupResponse: Decodable {
   }
 }
 
-private extension AppSummary {
-  init(app: LookupResponse.App) {
+extension AppSummary {
+  fileprivate init(app: LookupResponse.App) {
     self.init(
       id: app.id,
       title: app.title.trimmingCharacters(in: .whitespacesAndNewlines),
